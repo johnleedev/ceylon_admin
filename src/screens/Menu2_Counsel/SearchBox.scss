@@ -1,0 +1,133 @@
+@mixin middle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  };
+  
+  .Menu2 {
+    height: auto;
+    
+    .searchbox {
+      @include middle();
+      flex-direction: column;
+
+      .cover {
+        display: flex;
+        width: 1400px;
+        border: 1px solid #cfcfcf;
+
+        .title {
+          width: 120px;
+          height: 70px;
+          @include middle();
+          background-color: #e2e2e2;
+          
+          h3 {
+            font-size: 18px;  
+          }
+        }
+        .content {
+          width: 1280px;
+          height: 70px;
+          display: flex;
+          align-items: center;
+          padding: 0 10px;
+          background-color: #fff;
+
+          .calendarbox {
+            position: relative;
+            width: 210px;
+            height: 50px; 
+            display: flex; 
+            align-items: center;
+      
+            .dateinput {
+              font-size: 15px;
+              font-weight: normal;
+              width: 200px;
+              height: 40px;
+              text-align: center;
+              border: 1px solid #E9E9E9;
+              box-sizing: border-box;
+              border-radius: 5px;
+            }
+            .calender-icon {
+              position: absolute;
+              right: 20px;
+              pointer-events: none; 
+            }
+          }
+          .btn-row {
+            display: flex;
+            margin: 0 10px;
+
+            .btnbox {
+              padding: 7px 10px;
+              border: 1px solid #E9E9E9;
+              border-radius: 5px;
+              margin: 0 5px;
+            }
+            .btnbox:hover {
+              cursor: pointer;
+              background-color: #e2e2e2;
+            }
+          }
+          > .input {
+            font-size: 15px;
+            font-weight: normal;
+            height: 50px;
+            text-align: center;
+            border: 1px solid #E9E9E9;
+            box-sizing: border-box;
+            border-radius: 5px;
+          }
+        }
+      }
+      .buttonbox {
+        width: 1300px;
+        height: 100px;
+        @include middle();
+
+        .buttons {
+          width: 300px;
+          height: 80px;
+          @include middle();
+
+          .btn {
+            padding: 10px 20px;
+            border: 1px solid #E9E9E9;
+            margin: 0 10px;
+            border-radius: 5px;
+          }
+          .searching {
+            background-color: #4f5460;
+            p {
+              color: #fff;
+            }
+          }
+          .reset {
+            background-color: #fff;
+            p {
+              color: #333;
+            }
+          }
+          .btn:hover {
+            cursor: pointer;
+            border: 1px solid #333;
+          }
+        }
+      }
+      
+    }
+   
+  }
+  
+  
+  @media screen and (max-width : 600px) { 
+    
+    
+  }
+  
+    
+  
+    
