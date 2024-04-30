@@ -8,6 +8,7 @@ import MainSchdule from './screens/Menu1_Schedule/MainSchedule';
 import MainCounsel from './screens/Menu2_Counsel/MainCounsel';
 import ManinReserve from './screens/Menu3_Reserve/MainReserve';
 import MainUser from './screens/Menu4_User/MainUser';
+import CounselDetail from './screens/Menu2_Counsel/CounselDetail';
 
 function App() {
 

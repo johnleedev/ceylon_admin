@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { TitleBox } from '../../boxs/TitleBox';
 import { SelectBox } from '../../boxs/SelectBox';
 import { InputBox } from '../../boxs/InputBox';
-import { DateBox } from '../../boxs/DateBox';
+import { DateBoxKo } from '../../boxs/DateBoxKo';
 import { RadioBox } from '../../boxs/RadioBox';
 
 const userInfoData = [
@@ -71,7 +71,7 @@ export default function ModalReserve (props : any) {
 
 
   return (
-    <div className='modal-content'>
+    <div className='modal-reserve'>
       <div className='close'
         onClick={()=>{props.setIsViewModal(false)}}>
         <IoMdClose size={30}/>
@@ -203,7 +203,7 @@ export default function ModalReserve (props : any) {
           </div>
           <div className="coverrow half">
             <TitleBox width={120} text='담당자'/>
-            <h3>계약자</h3>
+            <h3 style={{marginLeft:'10px'}}>계약자</h3>
             <SelectBox 
               notice={{ value: '선택', label: '선택' }}
               widthmain={150} selectWidth={150} selectTextWidth={140}
@@ -276,7 +276,7 @@ export default function ModalReserve (props : any) {
                 { value: 'n3', label: '대구공항' },
               ]} 
             />
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <p>~</p>
             <SelectBox 
               notice={{ value: '선택', label: '도착공항' }}
@@ -287,7 +287,7 @@ export default function ModalReserve (props : any) {
                 { value: 'n3', label: '대구공항' },
               ]} 
             />
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
           </div>
         </div>
       </section>
@@ -393,7 +393,7 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={200} value={''} func={(e)=>{}} />
@@ -410,7 +410,7 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={200} value={''} func={(e)=>{}} />
@@ -427,7 +427,7 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={200} value={''} func={(e)=>{}} />
@@ -444,7 +444,7 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={200} value={''} func={(e)=>{}} />
@@ -476,7 +476,7 @@ export default function ModalReserve (props : any) {
           </div>
           <div className="coverrow quarter" style={{justifyContent:'space-between'}} >
             <TitleBox width={120} text='날짜'/>
-            <DateBox date={startDate} func={handleSelectDateChange} width={220}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange} width={220} subWidth={180} right={30}/>
           </div>
           <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
             <TitleBox width={120} text='상태'/>
@@ -501,7 +501,7 @@ export default function ModalReserve (props : any) {
           </div>
           <div className="coverrow quarter" style={{justifyContent:'space-between'}} >
             <TitleBox width={120} text='날짜'/>
-            <DateBox date={startDate} func={handleSelectDateChange} width={220}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange} width={220} subWidth={180} right={30}/>
           </div>
           <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
             <TitleBox width={120} text='상태'/>
@@ -526,7 +526,7 @@ export default function ModalReserve (props : any) {
           </div>
           <div className="coverrow quarter" style={{justifyContent:'space-between'}} >
             <TitleBox width={120} text='날짜'/>
-            <DateBox date={startDate} func={handleSelectDateChange} width={220}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange} width={220} subWidth={180} right={30}/>
           </div>
           <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
             <TitleBox width={120} text='상태'/>
@@ -554,9 +554,9 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <p>~</p>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={300} value={''} func={(e)=>{}} />
             <SelectBox 
@@ -572,9 +572,9 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <p>~</p>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={300} value={''} func={(e)=>{}} />
             <SelectBox 
@@ -590,9 +590,9 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <p>~</p>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={300} value={''} func={(e)=>{}} />
             <SelectBox 
@@ -608,9 +608,9 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <p>~</p>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <InputBox width={300} value={''} func={(e)=>{}} />
             <SelectBox 
@@ -675,7 +675,7 @@ export default function ModalReserve (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow half">
-            <TitleBox width={120} text='포함사항'/>
+            <TitleBox width={120} text='여행자보험'/>
             <RadioBox text='포함' width={100} selectedValue={selectedValue} func={()=>{}} />
             <RadioBox text='불포함' width={100} selectedValue={selectedValue} func={()=>{}} />
           </div>
@@ -706,7 +706,7 @@ export default function ModalReserve (props : any) {
             <h3 style={{marginRight:'20px'}}>추가경비:</h3>
             <h3 style={{fontSize:'20px'}}>0</h3>
           </div>
-          <div className="coverrow third rightborder" style={{height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+          <div className="coverrow third" style={{height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
             <h3 style={{marginRight:'20px'}}>최종 여행경비:</h3>
             <h3 style={{fontSize:'20px'}}>0</h3>
           </div>
@@ -721,9 +721,9 @@ export default function ModalReserve (props : any) {
                   <p>원</p>
                 </div>
                 <div className="coverrow third rightborder" style={{height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <DateBox date={startDate} func={handleSelectDateChange}/>
+                  <DateBoxKo date={startDate} func={handleSelectDateChange}/>
                 </div>
-                <div className="coverrow third rightborder" style={{height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                <div className="coverrow third" style={{height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
                   <SelectBox 
                     notice={{ value: '선택', label: '선택' }}
                     widthmain={150} selectWidth={150} selectTextWidth={140}
@@ -752,7 +752,7 @@ export default function ModalReserve (props : any) {
             <p>원</p>
           </div>
           <div className="coverrow third rightborder" style={{height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
           </div>
         </div>
         <div className="coverbox">
@@ -773,7 +773,7 @@ export default function ModalReserve (props : any) {
             <h3 style={{marginLeft:'50px'}}>인증번호</h3>
             <InputBox width={200} value={''} func={(e)=>{}} />
             <h3 style={{marginLeft:'30px'}}>발급일</h3>
-            <DateBox date={startDate} func={handleSelectDateChange}/>
+            <DateBoxKo date={startDate} func={handleSelectDateChange}/>
           </div>
         </div>
       </section>
@@ -797,8 +797,8 @@ export default function ModalReserve (props : any) {
                 <div className="coverrow hole">
                   <TitleBox width={120} text={item}/>
                   <div style={{flex:1, display:'flex', justifyContent:'space-between'}}>
-                    <DateBox date={startDate} func={handleSelectDateChange}/>
-                    <DateBox date={startDate} func={handleSelectDateChange}/>
+                    <DateBoxKo date={startDate} func={handleSelectDateChange}/>
+                    <DateBoxKo date={startDate} func={handleSelectDateChange}/>
                     <SelectBox 
                       notice={{ value: '선택', label: '선택' }}
                       widthmain={250} selectWidth={250} selectTextWidth={240}

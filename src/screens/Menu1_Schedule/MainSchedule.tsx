@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './Menu1Schedule.scss'
+import './MainSchedule.scss'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import ModalReserve from './ModalReserve';
+import ModalCheck from './ModalCheck';
 
 
 export default function MainSchdule() {
@@ -26,26 +27,34 @@ export default function MainSchdule() {
   )
   
   // 달력 ---------------------------------------------------------
+  const [checkContent, setCheckContent] = useState();
   const events = [
-    { title: 'Meeting', date: '2024-04-01' }
+    { title: 'Meeting', date: '2024-04-01', charge: '김철수', person1: '김실론', person2: '이투어' },
+    { title: 'Meeting', date: '2024-04-07', charge: '김철수', person1: '김실론', person2: '이투어' },
+    { title: 'Meeting', date: '2024-04-16', charge: '김철수', person1: '김실론', person2: '이투어' },
+    { title: 'Meeting', date: '2024-04-25', charge: '김철수', person1: '김실론', person2: '이투어'},
   ]
 
   function renderEventContent(eventInfo:any) {
     return (
       <div
-        onClick={()=>{console.log('sklfjd')}}
+        onClick={()=>{
+          setIsViewCheckModal(true);
+          setCheckContent(eventInfo.event);
+        }}
         className='dayBox'
       >
-        <h2>김철수</h2>
-        <p>김철수</p>
+        <h2>{eventInfo.event.extendedProps.charge}</h2>
+        <p>{eventInfo.event.extendedProps.person1}</p>
         <p>/</p>
-        <p>김철수</p>
+        <p>{eventInfo.event.extendedProps.person2}</p>
       </div>
     )
   }
 
   // 모달 ---------------------------------------------------------
   const [isViewModal, setIsViewModal] = useState<boolean>(false);
+  const [isViewCheckModal, setIsViewCheckModal] = useState<boolean>(false);
   const divAreaRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
@@ -114,18 +123,30 @@ export default function MainSchdule() {
           }}
           
         />
+        {/* 확인 모달창 */}
+        {
+          isViewCheckModal &&
+          <div className="modalcheck-cover">
+            <div className="modalcheck-backcover"
+              onClick={()=>{setIsViewCheckModal(false);}}
+            ></div>
+            <ModalCheck setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>
+          </div>
+        }
       </div>
 
       {/* 예약등록 모달창 */}
       {
         isViewModal &&
-        <div className='Modal-Reserve'>
+        <div className='Modal'>
           <div className='modal-backcover' style={{height : height + 100}}></div>
           <div className='modal-maincover' ref={divAreaRef}>
              <ModalReserve setIsViewModal={setIsViewModal}/>
           </div>
         </div>
       }
+
+      
     
      
     </div>

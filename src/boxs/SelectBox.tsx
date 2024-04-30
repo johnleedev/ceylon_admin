@@ -16,7 +16,7 @@ export const SelectBox : React.FC<SelectBoxProps> = ({widthmain, notice, data, s
       options={data}
       blurInputOnSelect
       styles={{ control: (baseStyles, state) => ({...baseStyles, width: `${selectWidth}px`, height:'30px',}),
-        singleValue: (styles, { data }) => ({ ...styles, width: `${selectTextWidth}px`, fontSize:'15px' })}}
+        singleValue: (styles, { data }) => ({ ...styles, width: `${selectTextWidth}px`, fontSize:'15px', })}}
     />
   </div>
 )

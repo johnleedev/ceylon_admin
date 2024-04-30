@@ -4,11 +4,12 @@ interface TextBoxProps {
   width : number;
   height? : number;
   fontSize?: number;
+  justify?: string;
 }
 
-export const TextBox : React.FC<TextBoxProps> = ({text, text2, width, height, fontSize}) => (
+export const TextBoxPL10 : React.FC<TextBoxProps> = ({text, text2, width, height, fontSize, justify }) => (
   <div className="text"
-     style={{width:`${width}px`, height: `${height}px` ?? '50px'}}>
+     style={{width:`${width}px`, height: `${height}px` ?? '50px', justifyContent: justify ?? 'flex-start', padding: '0 10px'}}>
     {
       text2 ? 
       <div>

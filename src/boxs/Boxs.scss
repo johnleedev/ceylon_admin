@@ -24,16 +24,14 @@
   @include middle();
 
   p {
-    font-size: 16px;
     font-weight: normal;
     line-height: 20px;
   }
 }
 
-// DateBox
+// DateBoxKo
 .calendarbox {
   position: relative;
-  width: 210px;
   height: 50px; 
   display: flex; 
   align-items: center;
@@ -41,22 +39,21 @@
   .dateinput {
     font-size: 15px;
     font-weight: normal;
-    width: 200px;
-    height: 40px;
+    width: calc(100% - 10px);
+    height: 35px;
     text-align: center;
     border: 1px solid #E9E9E9;
-    box-sizing: border-box;
     border-radius: 5px;
+    padding-left: 7px;
   }
   .calender-icon {
     position: absolute;
-    right: 20px;
     pointer-events: none; 
   }
 }
 
 // Inputbox & Radiobox
-.input {
+.inputdefault {
   font-size: 15px;
   font-weight: normal;
   height: 40px;
@@ -64,6 +61,7 @@
   border: 1px solid #E9E9E9;
   box-sizing: border-box;
   border-radius: 5px;
+  padding-left: 10px;
 }
 
 // Selectbox

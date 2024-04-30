@@ -9,16 +9,17 @@
   min-height: 100vh;
   
   .menu {
-    width: 300px;
+    width: 245px;
     height: 100%;
+    
   }
   .main {
-    width: calc(100vw - 310px);
+    width: calc(100vw - 260px);
     height: 100%;
     background-color: #f0f0f0;
 
     .mainarea {
-      padding: 30px;
+      
     }
   }
 }

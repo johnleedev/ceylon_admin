@@ -5,11 +5,11 @@
 };
 
 .menubar {
-  min-width: 300px;
+  width: 245px;
   height: 100vh;
   position: fixed;
   top:0;
-  background-color: #242c3f;
+  background-color: #303a51;
   z-index: 7;
   border-bottom: 2px solid #EAEAEA;
 
@@ -26,7 +26,7 @@
         margin-bottom: 20px;
 
         img {
-          width: 230px;
+          width: 200px;
         }
         img:hover {
           opacity: 0.8;
@@ -57,7 +57,9 @@
       }
 
       .sub-box {
-        margin: 10px 50px;
+        padding: 10px;
+        padding-left: 69px;
+        background-color: #162133;
 
         .box-row {
           height: 35px;

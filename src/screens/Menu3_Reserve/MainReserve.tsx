@@ -5,6 +5,7 @@ import Sub2_Arrange from './Sub2_Arrange';
 import Sub3_MoneyState from './Sub3_MoneyState';
 import Sub4_Notification from './Sub4_Notification';
 import Sub5_CancelRefund from './Sub5_CancelRefund';
+import ReserveDetail from './ReserveDetail';
 
 export default function ManinReserve() {
 
@@ -16,6 +17,7 @@ export default function ManinReserve() {
         <Route path="/moneystate" element={<Sub3_MoneyState/>}/>
         <Route path="/notification" element={<Sub4_Notification/>}/>
         <Route path="/cancelrefund" element={<Sub5_CancelRefund/>}/>
+        <Route path="/reservedetail" element={<ReserveDetail/>}/>
       </Routes>
     </div>
   );

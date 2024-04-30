@@ -8,7 +8,7 @@ interface InputBoxProps {
 
 export const InputBox : React.FC<InputBoxProps> = ({width, value, func }) => (
   <input 
-    className="input" type="text" 
+    className="inputdefault" type="text" 
     style={{width:`${width}px`}} value={value}
     onChange={func}
   />
