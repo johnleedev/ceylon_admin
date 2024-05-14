@@ -1,7 +1,7 @@
 import './Boxs.scss'
 
 interface InputBoxProps {
-  width: number;
+  width: string;
   value: any;
   func: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -9,7 +9,8 @@ interface InputBoxProps {
 export const InputBox : React.FC<InputBoxProps> = ({width, value, func }) => (
   <input 
     className="inputdefault" type="text" 
-    style={{width:`${width}px`}} value={value}
+    style={{width:`${width}`}} 
+    value={value}
     onChange={func}
   />
 )

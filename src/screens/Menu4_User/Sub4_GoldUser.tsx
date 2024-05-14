@@ -43,7 +43,7 @@ export default function Sub4_GoldUser (props:any) {
 
 				<div className="main-list-cover">
 					<div className="titlebox">
-						<TitleBox width={80} text='NO'/>
+						{/* <TitleBox width={80} text='NO'/>
 						<TitleBox width={100} text='구분'/>
 						<TitleBox width={100} text='성함'/>
 						<TitleBox width={150} text='연락처'/>
@@ -51,7 +51,7 @@ export default function Sub4_GoldUser (props:any) {
 						<TitleBox width={100} text='최근여행일'/>
 						<TitleBox width={100} text='이용횟수'/>
 						<TitleBox width={100} text='이용금액'/>
-						<TitleBox width={100} text='혜택'/>
+						<TitleBox width={100} text='혜택'/> */}
 					</div>
 					
 					{

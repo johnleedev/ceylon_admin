@@ -10,6 +10,7 @@ import { InputBox } from '../../boxs/InputBox';
 import { TitleBox } from '../../boxs/TitleBox';
 import { TextBox } from '../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
+import { DateBoxNum } from '../../boxs/DateBoxNum';
 
 export default function Sub1_Online (props:any) {
 
@@ -18,25 +19,25 @@ export default function Sub1_Online (props:any) {
 	const example = [
 		{ no: 1, requestDate: '2024-04-24 15:00', name : '김실론어', phone : '010-1234-5678',
 			tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-			requestPath : '온라인', state : '대기중', charge : '김철수'},
+			requestPath : '온라인', state : '대기중', charger : '김철수'},
 		{ no: 2, requestDate: '2024-04-24 15:00', name : '김실론어2', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charge : '김철수'},
+		requestPath : '온라인', state : '대기중', charger : '김철수'},
 		{ no: 3, requestDate: '2024-04-24 15:00', name : '김실론어3', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charge : '김철수'},
+		requestPath : '온라인', state : '대기중', charger : '김철수'},
 		{ no: 4, requestDate: '2024-04-24 15:00', name : '김실론어4', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charge : '김철수'},
+		requestPath : '온라인', state : '대기중', charger : '김철수'},
 		{ no: 5, requestDate: '2024-04-24 15:00', name : '김실론어5', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charge : '김철수'},
+		requestPath : '온라인', state : '대기중', charger : '김철수'},
 		{ no: 6, requestDate: '2024-04-24 15:00', name : '김실론어6', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charge : '김철수'},
+		requestPath : '온라인', state : '대기중', charger : '김철수'},
 		{ no: 7, requestDate: '2024-04-24 15:00', name : '김실론어7', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charge : '김철수'},
+		requestPath : '온라인', state : '대기중', charger : '김철수'},
 	]
 
 	// 날짜 선택 ----------------------------------------------
@@ -67,7 +68,7 @@ export default function Sub1_Online (props:any) {
 					</div>
 					<div className="content">
 						<h3 style={{margin:'0 10px'}}>계약일</h3>
-						<DateBoxKo date={startDate} func={handleSelectDateChange}/>
+						{/* <DateBoxNum date={startDate} func={handleSelectDateChange} width={150} subWidth={120}/> */}
 						<div className="btn-row">
 							{
 								["오늘", "어제", "3일", "7일", "1개월", "3개월", "6개월"]
@@ -80,9 +81,9 @@ export default function Sub1_Online (props:any) {
 								})
 							}
 						</div>
-						<DateBoxKo date={startDate} func={handleSelectDateChange}/>
+						{/* <DateBoxNum date={startDate} func={handleSelectDateChange}/> */}
 						<p>~</p>
-						<DateBoxKo date={startDate} func={handleSelectDateChange}/>
+						{/* <DateBoxNum date={startDate} func={handleSelectDateChange}/> */}
 					</div>
 				</div>
 				<div className="cover">
@@ -113,7 +114,7 @@ export default function Sub1_Online (props:any) {
 								]} 
 							/>
 						</div>
-						<InputBox width={400} value={''} func={(e)=>{}} />
+						<InputBox width='5%' value={''} func={(e)=>{}} />
 					</div>
 				</div>
 				<div className="buttonbox">
@@ -144,7 +145,7 @@ export default function Sub1_Online (props:any) {
 
 				<div className="main-list-cover">
 					<div className="titlebox">
-						<TitleBox width={50} text='NO'/>
+						{/* <TitleBox width={50} text='NO'/>
 						<TitleBox width={180} text='문의일'/>
 						<TitleBox width={100} text='성함'/>
 						<TitleBox width={150} text='연락처'/>
@@ -155,7 +156,7 @@ export default function Sub1_Online (props:any) {
 						<TitleBox width={50} text='인원'/>
 						<TitleBox width={100} text='방문경로'/>
 						<TitleBox width={100} text='상태'/>
-						<TitleBox width={100} text='담당자'/>
+						<TitleBox width={100} text='담당자'/> */}
   				</div>
 					
 					{
@@ -178,7 +179,7 @@ export default function Sub1_Online (props:any) {
 									<TextBox width={50} text={item.tourPersonNum} fontSize={15}/>
 									<TextBox width={100} text={item.requestPath} fontSize={15}/>
 									<TextBox width={100} text={item.state} fontSize={15}/>
-									<TextBox width={100} text={item.charge} fontSize={15}/>
+									<TextBox width={100} text={item.charger} fontSize={15}/>
 								</div>
 							)
 						})

@@ -20,7 +20,7 @@ export default function Sub4_CloseList (props:any) {
 
 				<div className="main-list-cover">
 					<div className="titlebox">
-						<TitleBox width={80} text='NO'/>
+						{/* <TitleBox width={80} text='NO'/>
 						<TitleBox width={150} text='문의일 / 답변일'/>
 						<TitleBox width={100} text='성함'/>
 						<TitleBox width={150} text='연락처'/>
@@ -31,7 +31,7 @@ export default function Sub4_CloseList (props:any) {
 						<TitleBox width={50} text='인원'/>
 						<TitleBox width={100} text='방문경로'/>
 						<TitleBox width={100} text='상태'/>
-						<TitleBox width={100} text='담당자'/>
+						<TitleBox width={100} text='담당자'/> */}
 					</div>
 					
 					{

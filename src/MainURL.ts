@@ -1,4 +1,4 @@
-let MainURL = ""
+let MainURL = "http://www.ceylonadmin.store"
 
 // let MainURL = "http://121.151.61.190:8000"
 

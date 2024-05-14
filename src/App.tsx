@@ -8,7 +8,10 @@ import MainSchdule from './screens/Menu1_Schedule/MainSchedule';
 import MainCounsel from './screens/Menu2_Counsel/MainCounsel';
 import ManinReserve from './screens/Menu3_Reserve/MainReserve';
 import MainUser from './screens/Menu4_User/MainUser';
-import CounselDetail from './screens/Menu2_Counsel/CounselDetail';
+import MainProducts from './screens/Menu5_Products/MainProducts';
+import MainMenual from './screens/Menu6_Menual/MainMenual';
+import MainState from './screens/Menu7_State/MainState';
+import MainSystem from './screens/Menu8_System/MainSystem';
 
 function App() {
 
@@ -27,6 +30,10 @@ function App() {
             <Route path="/counsel/*" element={<MainCounsel/>}/>
             <Route path="/reserve/*" element={<ManinReserve/>}/>
             <Route path="/user/*" element={<MainUser/>}/>
+            <Route path="/products/*" element={<MainProducts/>}/>
+            <Route path="/menual/*" element={<MainMenual/>}/>
+            <Route path="/state/*" element={<MainState/>}/>
+            <Route path="/system/*" element={<MainSystem/>}/>
           </Routes>
         </div>
       </div>

@@ -11,25 +11,25 @@ export default function Sub2_CounselList (props:any) {
 	const example = [
 		{ no: 1, requestDate: '2024-04-24 15:00', responseDate:'2024-04-24 15:00', name : '김실론어', phone : '010-1234-5678',
 			tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-			requestPath : '온라인', state : '문의/접수', charge : '김철수'},
+			requestPath : '온라인', state : '문의/접수', charger : '김철수'},
 		{ no: 2, requestDate: '2024-04-24 15:00', responseDate:'2024-04-24 15:00', name : '김실론어2', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '문의/접수', charge : '김철수'},
+		requestPath : '온라인', state : '문의/접수', charger : '김철수'},
 		{ no: 3, requestDate: '2024-04-24 15:00', responseDate:'2024-04-24 15:00', name : '김실론어3', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '문의/접수', charge : '김철수'},
+		requestPath : '온라인', state : '문의/접수', charger : '김철수'},
 		{ no: 4, requestDate: '2024-04-24 15:00', responseDate:'2024-04-24 15:00', name : '김실론어4', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '문의/접수', charge : '김철수'},
+		requestPath : '온라인', state : '문의/접수', charger : '김철수'},
 		{ no: 5, requestDate: '2024-04-24 15:00', responseDate:'2024-04-24 15:00', name : '김실론어5', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '문의/접수', charge : '김철수'},
+		requestPath : '온라인', state : '문의/접수', charger : '김철수'},
 		{ no: 6, requestDate: '2024-04-24 15:00', responseDate:'2024-04-24 15:00', name : '김실론어6', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '문의/접수', charge : '김철수'},
+		requestPath : '온라인', state : '문의/접수', charger : '김철수'},
 		{ no: 7, requestDate: '2024-04-24 15:00', responseDate:'2024-04-24 15:00', name : '김실론어7', phone : '010-1234-5678',
 		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '문의/접수', charge : '김철수'},
+		requestPath : '온라인', state : '문의/접수', charger : '김철수'},
 	]
 
 	return (
@@ -43,14 +43,14 @@ export default function Sub2_CounselList (props:any) {
 
 				<div className="main-list-cover">
 					<div className="titlebox">
-						<TitleBox width={80} text='NO'/>
+						{/* <TitleBox width={80} text='NO'/>
 						<TitleBox width={150} text='문의일 / 답변일'/>
 						<TitleBox width={100} text='성함'/>
 						<TitleBox width={150} text='연락처'/>
 						<TitleBox width={120} text='여행지'/>
 						<TitleBox width={100} text='방문경로'/>
 						<TitleBox width={100} text='진행상황'/>
-						<TitleBox width={100} text='담당자'/>
+						<TitleBox width={100} text='담당자'/> */}
 					</div>
 					
 					{
@@ -68,7 +68,7 @@ export default function Sub2_CounselList (props:any) {
 									<TextBox width={120} text={item.tourLocation} fontSize={15}/>
 									<TextBox width={100} text={item.requestPath} fontSize={15}/>
 									<TextBox width={100} text={item.state} fontSize={15}/>
-									<TextBox width={100} text={item.charge} fontSize={15}/>
+									<TextBox width={100} text={item.charger} fontSize={15}/>
 								</div>
 							)
 						})

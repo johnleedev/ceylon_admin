@@ -20,7 +20,7 @@ export default function Sub5_Switch (props:any) {
 
 				<div className="main-list-cover">
 					<div className="titlebox">
-						<TitleBox width={80} text='NO'/>
+						{/* <TitleBox width={80} text='NO'/>
 						<TitleBox width={150} text='문의일 / 답변일'/>
 						<TitleBox width={100} text='성함'/>
 						<TitleBox width={150} text='연락처'/>
@@ -31,7 +31,7 @@ export default function Sub5_Switch (props:any) {
 						<TitleBox width={50} text='인원'/>
 						<TitleBox width={100} text='방문경로'/>
 						<TitleBox width={120} text='랜드'/>
-						<TitleBox width={100} text='담당자'/>
+						<TitleBox width={100} text='담당자'/> */}
 					</div>
 					
 					{

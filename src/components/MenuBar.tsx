@@ -120,46 +120,47 @@ export default function MenuBar () {
             </div>
           }
 
-          <MenuBox num={5} text='상품관리' icon={icon5} link="javascript:void(0)"/>
+          <MenuBox num={5} text='상품관리' icon={icon5} link="/products"/>
           {
             currentTab === 5 &&
             <div className="sub-box">
-              <RowBox num={1} text='여행지등록' link="javascript:void(0)"/>
-              <RowBox num={2} text='호텔등록' link="javascript:void(0)"/>
-              <RowBox num={3} text='요금등록' link="javascript:void(0)"/>
-              <RowBox num={4} text='일정등록' link="javascript:void(0)"/>
+              <RowBox num={1} text='여행지등록' link="/products"/>
+              <RowBox num={2} text='호텔등록' link="/products/hotelregister"/>
+              <RowBox num={3} text='일정관리' link="/products/schedule"/>
+              <RowBox num={4} text='선택일정관리' link="/products/selectschedule"/>
+              <RowBox num={5} text='랜드사관리' link="javascript:void(0)"/>
             </div>
           }
 
-          <MenuBox num={6} text='업무메뉴얼' icon={icon6} link="javascript:void(0)"/>
+          <MenuBox num={6} text='업무메뉴얼' icon={icon6} link="/menual"/>
           {
             currentTab === 6 &&
             <div className="sub-box">
-              <RowBox num={1} text='예약진행프로세스' link="javascript:void(0)"/>
-              <RowBox num={2} text='고객응대프로세스' link="javascript:void(0)"/>
-              <RowBox num={3} text='사내문서' link="javascript:void(0)"/>
-              <RowBox num={4} text='내규' link="javascript:void(0)"/>
+              <RowBox num={1} text='예약진행프로세스' link="/menual"/>
+              <RowBox num={2} text='고객응대프로세스' link="/menual/receptionprocess"/>
+              <RowBox num={3} text='사내문서' link="/menual/companydocument"/>
+              <RowBox num={4} text='내규' link="/menual/internalrule"/>
             </div>
           }
 
-          <MenuBox num={7} text='운영현황' icon={icon7} link="javascript:void(0)"/>
+          <MenuBox num={7} text='운영현황' icon={icon7} link="/state"/>
           {
             currentTab === 7 &&
             <div className="sub-box">
-              <RowBox num={1} text='예약현황' link="javascript:void(0)"/>
-              <RowBox num={2} text='출발현황' link="javascript:void(0)"/>
-              <RowBox num={3} text='정산' link="javascript:void(0)"/>
+              <RowBox num={1} text='예약현황' link="/state"/>
+              <RowBox num={2} text='출발현황' link="/state/departstate"/>
+              <RowBox num={3} text='정산' link="/state/calculate"/>
             </div>
           }
 
-          <MenuBox num={8} text='시스템관리' icon={icon8} link="javascript:void(0)"/>
+          <MenuBox num={8} text='시스템관리' icon={icon8} link="/system"/>
           {
             currentTab === 8 &&
             <div className="sub-box">
-              <RowBox num={1} text='권한관리' link="javascript:void(0)"/>
-              <RowBox num={2} text='임직원관리' link="javascript:void(0)"/>
-              <RowBox num={3} text='IP관리' link="javascript:void(0)"/>
-              <RowBox num={4} text='로그인내역' link="javascript:void(0)"/>
+              <RowBox num={1} text='권한관리' link="/system"/>
+              <RowBox num={2} text='임직원관리' link="/system/executive"/>
+              <RowBox num={3} text='IP관리' link="/system/iplist"/>
+              <RowBox num={4} text='로그인내역' link="/system/loginhistory"/>
             </div>
           }
 

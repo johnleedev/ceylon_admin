@@ -21,43 +21,43 @@ export default function Sub3_MoneyState (props:any) {
 			reserveCost: 75000000, reserveCostDate: '24-11-10', 
 			middleCost: 75000000, middleCostDate: '24-11-10', 
 			restCost: 75000000, restCostDate: '24-11-10',
-			landCp: '퍼시픽', landCpCostDate: '24-11-10', charge : '김철수'},
+			landCp: '퍼시픽', landCpCostDate: '24-11-10', charger : '김철수'},
 		{ no: 2, reserveDate: '2024-04-24', startDate: '2024-04-24', name1 : '김실론어', name2 : '이박투어', phone1 : '010-1234-5678', phone2 : '010-1234-5678',
 			tourProduct : 'OZ 인천 하와이 5박 7일', 
 			reserveCost: 75000000, reserveCostDate: '24-11-10', 
 			middleCost: 75000000, middleCostDate: '24-11-10', 
 			restCost: 75000000, restCostDate: '24-11-10', 
-			landCp: '퍼시픽', landCpCostDate: '24-11-10', charge : '김철수'},
+			landCp: '퍼시픽', landCpCostDate: '24-11-10', charger : '김철수'},
 		{ no: 3, reserveDate: '2024-04-24', startDate: '2024-04-24', name1 : '김실론어', name2 : '이박투어', phone1 : '010-1234-5678', phone2 : '010-1234-5678',
 			tourProduct : 'OZ 인천 하와이 5박 7일', 
 			reserveCost: 75000000, reserveCostDate: '24-11-10', 
 			middleCost: 75000000, middleCostDate: '24-11-10', 
 			restCost: 75000000, restCostDate: '24-11-10', 
-			landCp: '퍼시픽', landCpCostDate: '24-11-10', charge : '김철수'},
+			landCp: '퍼시픽', landCpCostDate: '24-11-10', charger : '김철수'},
 		{ no: 4, reserveDate: '2024-04-24', startDate: '2024-04-24', name1 : '김실론어', name2 : '이박투어', phone1 : '010-1234-5678', phone2 : '010-1234-5678',
 			tourProduct : 'OZ 인천 하와이 5박 7일', 
 			reserveCost: 75000000, reserveCostDate: '24-11-10', 
 			middleCost: 75000000, middleCostDate: '24-11-10', 
 			restCost: 75000000, restCostDate: '24-11-10',
-			landCp: '퍼시픽', landCpCostDate: '24-11-10', charge : '김철수'},
+			landCp: '퍼시픽', landCpCostDate: '24-11-10', charger : '김철수'},
 		{ no: 5, reserveDate: '2024-04-24', startDate: '2024-04-24', name1 : '김실론어', name2 : '이박투어', phone1 : '010-1234-5678', phone2 : '010-1234-5678',
 			tourProduct : 'OZ 인천 하와이 5박 7일', 
 			reserveCost: 75000000, reserveCostDate: '24-11-10', 
 			middleCost: 75000000, middleCostDate: '24-11-10', 
 			restCost: 75000000, restCostDate: '24-11-10', 
-			landCp: '퍼시픽', landCpCostDate: '24-11-10', charge : '김철수'},
+			landCp: '퍼시픽', landCpCostDate: '24-11-10', charger : '김철수'},
 		{ no: 6, reserveDate: '2024-04-24', startDate: '2024-04-24',name1 : '김실론어', name2 : '이박투어', phone1 : '010-1234-5678', phone2 : '010-1234-5678',
 			tourProduct : 'OZ 인천 하와이 5박 7일', 
 			reserveCost: 75000000, reserveCostDate: '24-11-10',  
 			middleCost: 75000000, middleCostDate: '24-11-10', 
 			restCost: 75000000, restCostDate: '24-11-10', 
-			landCp: '퍼시픽', landCpCostDate: '24-11-10', charge : '김철수'},
+			landCp: '퍼시픽', landCpCostDate: '24-11-10', charger : '김철수'},
 		{ no: 7, reserveDate: '2024-04-24', startDate: '2024-04-24', name1 : '김실론어', name2 : '이박투어', phone1 : '010-1234-5678', phone2 : '010-1234-5678',
 			tourProduct : 'OZ 인천 하와이 5박 7일', 
 			reserveCost: 75000000, reserveCostDate: '24-11-10', 
 			middleCost: 75000000, middleCostDate: '24-11-10', 
 			restCost: 75000000, restCostDate: '24-11-10',
-			landCp: '퍼시픽', landCpCostDate: '24-11-10', charge : '김철수'},
+			landCp: '퍼시픽', landCpCostDate: '24-11-10', charger : '김철수'},
 	]
 
 	// 날짜 선택 ----------------------------------------------
@@ -143,7 +143,7 @@ export default function Sub3_MoneyState (props:any) {
 								{ value: 'n2', label: '신규상담' }
 							]} 
 						/>
-						<InputBox width={400} value={''} func={(e)=>{}} />
+						<InputBox width='5%' value={''} func={(e)=>{}} />
 					</div>
 				</div>
 				<div className="buttonbox">
@@ -166,7 +166,7 @@ export default function Sub3_MoneyState (props:any) {
 
 				<div className="main-list-cover">
 					<div className="titlebox">
-						<TitleBox width={50} text='NO'/>
+						{/* <TitleBox width={50} text='NO'/>
 						<TitleBox width={100} text='예약일/출발일'/>
 						<TitleBox width={100} text='성함'/>
 						<TitleBox width={150} text='연락처'/>
@@ -176,7 +176,7 @@ export default function Sub3_MoneyState (props:any) {
 						<TitleBox width={120} text='잔금/기타경비'/>
 						<TitleBox width={100} text='랜드사'/>
 						<TitleBox width={100} text='지상비/지급일'/>
-						<TitleBox width={100} text='담당자'/>
+						<TitleBox width={100} text='담당자'/> */}
   				</div>
 					
 					{
@@ -198,7 +198,7 @@ export default function Sub3_MoneyState (props:any) {
 									<TextBox width={120} text={`${item.restCost}원`} text2={item.restCostDate} fontSize={15}/>
 									<TextBox width={100} text={item.landCp} fontSize={15}/>
 									<TextBox width={100} text={item.landCpCostDate} fontSize={15}/>
-									<TextBox width={100} text={item.charge} fontSize={15}/>
+									<TextBox width={100} text={item.charger} fontSize={15}/>
 								</div>
 							)
 						})

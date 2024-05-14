@@ -3,28 +3,43 @@ import  "react-datepicker/dist/react-datepicker.css" ;
 import {ko} from "date-fns/locale";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import './Boxs.scss'
+import { format } from "date-fns";
 
 interface DateBoxNumProps {
   date: any;
-  func: (date: Date | null, event: React.SyntheticEvent<any> | undefined) => void;
-  width?: number,
-  subWidth? : number,
+  setSelectDate : any;
+  width?: string,
+  subWidth? : string,
   right?: number
 }
 
-export const DateBoxNum : React.FC<DateBoxNumProps> = ({date, func, width, subWidth, right }) => (
-  <div className='calendarbox' style={{width : width ? `${width}px` : '200px', display:'flex', justifyContent:'center'}}>
-    <div className="datebox" style={{width: subWidth ? `${subWidth}px` : '170px'}}>
-      <DatePicker
-        className="dateinput"
-        locale={ko}
-        dateFormat='yyyy-MM-dd'
-        shouldCloseOnSelect
-        minDate={new Date('2012-01-01')}
-        selected={date}
-        onChange={func}
-      />
-    </div>
-    <FaRegCalendarAlt className='calender-icon' style={{right: right ? `${right}px` : '15px'}}/>
-  </div>
-)
+export const DateBoxNum : React.FC<DateBoxNumProps> = ({date, setSelectDate, width, subWidth, right }) => {
+
+  const handleSelectDateChange = ( event : any) => {
+    const copy = event.toLocaleDateString('ko-KR');
+    const splitCopy = copy.slice(0, -1).split('. ');
+    const splitCopy2Copy = splitCopy[1] < 10 ? `0${splitCopy[1]}` : splitCopy[1];
+    const splitCopy3Copy = splitCopy[2] < 10 ? `0${splitCopy[2]}` : splitCopy[2];
+    const reformmedText = `${splitCopy[0]}-${splitCopy2Copy}-${splitCopy3Copy}`;
+    setSelectDate(reformmedText);
+  }
+
+  return (
+    <div className='calendarbox' style={{width : width ? `${width}` : '200px', marginLeft:'5px'}}>
+      <div className="datebox" style={{width: subWidth ? `${subWidth}` : '170px'}}>
+        <DatePicker
+          className="dateinput"
+          locale={ko}
+          dateFormat='yyyy-MM-dd'
+          shouldCloseOnSelect
+          minDate={new Date('2012-01-01')}
+          selected={date}
+          onChange={handleSelectDateChange}
+        />
+      </div>
+      <FaRegCalendarAlt className='calender-icon' style={{right: right ? `${right}px` : '20px'}}/>
+    </div>  
+  )
+}
+  
+  

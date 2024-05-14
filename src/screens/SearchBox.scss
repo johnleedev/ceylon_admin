@@ -15,7 +15,7 @@
 
       .cover {
         display: flex;
-        width: 1400px;
+        min-width: 1000px;
         border: 1px solid #cfcfcf;
 
         .title {
@@ -29,7 +29,7 @@
           }
         }
         .content {
-          width: 1280px;
+          min-width: 1000px;
           height: 60px;
           display: flex;
           align-items: center;

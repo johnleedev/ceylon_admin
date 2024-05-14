@@ -15,7 +15,6 @@ export default function CounselDetail (props : any) {
 
   const propsData = location.state;
   
-  console.log(propsData);
 
   return (
     <div className='counsel-detail'>
@@ -26,7 +25,7 @@ export default function CounselDetail (props : any) {
         <h1>{`[${propsData.requestDate}]`}</h1>
       </div>
 
-      <section>
+      {/* <section>
         <div className="bottombar"></div>
         <div className="coverbox">
           <div className="coverrow hole">
@@ -116,7 +115,7 @@ export default function CounselDetail (props : any) {
             />
           </div>
         </div>
-      </section>
+      </section> */}
 
       <div className='btn-box'>
         <div className="btn" >
