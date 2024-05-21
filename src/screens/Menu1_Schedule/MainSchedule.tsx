@@ -4,11 +4,13 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction';
 import ModalReserve from './ModalReserve';
-import ModalCheck from './ModalCheck';
+import ModalCheckCounsel from './ModalCheckCounsel';
 import ModalCounsel from './ModalCounsel';
 import axios from 'axios';
 import MainURL from '../../MainURL';
 import { DropdownBox } from '../../boxs/DropdownBox';
+import ModalCheckOnline from './ModalCheckOnline';
+import ModalCompanySchedule from './ModalCompanySchedule';
 
 
 export default function MainSchdule() {
@@ -17,26 +19,30 @@ export default function MainSchdule() {
   const [refresh, setRefresh] = useState<boolean>(false);
   const [sort, setSort] = useState('H');
   const [serialNum, setSerialNum] = useState('');
+  const [onlines, setOnlines] = useState<EventsProps[]>([]);
+  const [counsels, setCounsels] = useState<EventsProps[]>([]);
+  const [reserves, setReserves] = useState<EventsProps[]>([]);
   const [events, setEvents] = useState<EventsProps[]>([]);
 
   interface SelectBoxProps {
     num: number;
     text: string;
-    content : any;
   }
   
-  const SelectBox: React.FC<SelectBoxProps> = ({ num, text, content }) => (
+  const SelectBox: React.FC<SelectBoxProps> = ({ num, text }) => (
     <div 
       className="select-box" 
       style={{backgroundColor: currentTab === num ? '#242d3f' : '#fff', 
               color: currentTab === num ? '#fff' : '#242d3f' }}
       onClick={()=>{
         setCurrentTab(num);
-        setEvents(content);
+        if (num === 1) {fetchOnlinePosts();}
+        if (num === 2) {fetchCounselPosts();}
+        if (num === 3) {fetchReservePosts();}
+        if (num === 6) {fetchScheduleCoPosts();}
       }}
     >{text}</div>
   )
-
 
   // 게시글 가져오기 ------------------------------------------------------
   interface EventsProps {
@@ -45,35 +51,47 @@ export default function MainSchdule() {
     name: string;
     visitTime : string;
   }
-  
-  const [counsels, setCounsels] = useState<EventsProps[]>([]);
-  const [reserves, setReserves] = useState<EventsProps[]>([]);
 
-  const fetchPosts = async () => {
-    const resCounsel = await axios.get(`${MainURL}/admincounsel/getlist`)
-    if (resCounsel) {
-      setCounsels(resCounsel.data);
-    }
-    const resReserve = await axios.get(`${MainURL}/adminreserve/getreserve`)
-    if (resReserve) {
-      setReserves(resReserve.data);
+  const fetchOnlinePosts = async () => {
+    const resOnline = await axios.get(`${MainURL}/adminschedule/getonlinelist`)
+    if (resOnline) {
+      setEvents(resOnline.data)
     }
   };
 
   useEffect(() => {
-    fetchPosts();
+    fetchOnlinePosts();
   }, [refresh]);  
   
+  const fetchCounselPosts = async () => {
+    const resCounsel = await axios.get(`${MainURL}/adminschedule/getcounsellist`)
+    if (resCounsel) {
+      setEvents(resCounsel.data);
+    }
+  };
+  const fetchReservePosts = async () => {
+    const resReserve = await axios.get(`${MainURL}/adminreserve/getreserve`)
+    if (resReserve) {
+      setEvents(resReserve.data);
+    }
+  };
+  const fetchScheduleCoPosts = async () => {
+    const resScheduleCo = await axios.get(`${MainURL}/adminschedule/getschedulecompany`)
+    if (resScheduleCo) {
+      setEvents(resScheduleCo.data);
+    }
+  };
  
   // 달력 ---------------------------------------------------------
   const [checkContent, setCheckContent] = useState();
   const companySchedule = [
     {
-      title: 'schedule', start: '2024-05-23', end: '2024-05-25', content : "테스트일정", color: '#333'
+      title: 'schedule', start: '2024-05-23', end: '2024-05-25', content : "테스트일정", ccolor: '#8C8C8C'
     },
   ]
 
   function renderEventContent(eventInfo:any) {
+
     return (
       <div
         onClick={()=>{
@@ -81,22 +99,26 @@ export default function MainSchdule() {
           setCheckContent(eventInfo.event);
         }}
         className='dayBox'
-        style={{border: `2px solid ${currentTab === 6 ? eventInfo.event.extendedProps.color : '#fff'}`}}
+        style={{border: `1px solid ${currentTab === 6 ? eventInfo.event.extendedProps.fontColor : '#fff'}`}}
       >
-        { currentTab === 2 &&
-        <>
-          <p style={{marginRight:'5px'}}>{eventInfo.event.extendedProps.visitTime}</p>
+        { currentTab === 1 && <>
+          <div style={{padding:'1px 3px', border:'1px solid #BDBDBD', borderRadius:'3px', marginRight:'3px', 
+                      backgroundColor:eventInfo.event.extendedProps.sort === '상담' ? '#3a9fe5' : '#b8d257'}}>
+            <p style={{color:'#fff'}}>{eventInfo.event.extendedProps.sort === '상담' ? '상담' : '견적'}신청</p>
+          </div>
+          <p>{eventInfo.event.extendedProps.name}</p>
+        </>}
+        { currentTab === 2 &&<>
           <h2>{eventInfo.event.extendedProps.charger}</h2>
           <p>{eventInfo.event.extendedProps.name}</p>
-        </>
-        }
-         { currentTab === 3 &&
-          <>
-            <h2>{eventInfo.event.extendedProps.charger}</h2>
-            <p>{eventInfo.event.extendedProps.name}</p>
-          </>
-        }
-        { currentTab === 6 && <h2>{eventInfo.event.extendedProps.content}</h2> }
+        </>}
+        { currentTab === 3 &&<>
+          <h2>{eventInfo.event.extendedProps.charger}</h2>
+          <p>{eventInfo.event.extendedProps.name}</p>
+        </>}
+        { currentTab === 6 && <>
+          <h3 style={{color: `${eventInfo.event.extendedProps.fontColor}`}}>{eventInfo.event.extendedProps.content}</h3>
+        </>}
       </div>
     )
   }
@@ -109,7 +131,9 @@ export default function MainSchdule() {
     setSelectDate(result);
   }
 
-  // 예액등록 함수 ---------------------------------------------------------
+
+  // 예약 등록 함수 ---------------------------------------------------------
+  // alert
   const isReserve = async () => {
     if (selectDate === '') {
       alert('날짜를 선택해주세요')
@@ -122,7 +146,7 @@ export default function MainSchdule() {
       }
     }
   };
-
+  // function
   const handleReserveMain = async () => {
     await axios
     .post(`${MainURL}/adminreserve/savemain`, {
@@ -145,6 +169,7 @@ export default function MainSchdule() {
   const [isViewCounselModal, setIsViewCounselModal] = useState<boolean>(false);
   const [isViewReserveModal, setIsViewReserveModal] = useState<boolean>(false);
   const [isViewCheckModal, setIsViewCheckModal] = useState<boolean>(false);
+  const [isViewScheduleModal, setIsViewScheduleModal] = useState<boolean>(false);
   const divAreaRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
@@ -179,49 +204,62 @@ export default function MainSchdule() {
 
       <div className="top-row">
         <div className='rowbox'>
-          <SelectBox num={1} text='온라인문의' content={events}/>
-          <SelectBox num={2} text='상담스케줄' content={counsels}/>
-          <SelectBox num={3} text='예약건' content={reserves}/>
-          <SelectBox num={4} text='출발건' content={events}/>
-          <SelectBox num={5} text='취소일' content={events}/>
-          <SelectBox num={6} text='회사일정' content={companySchedule}/>
+          <SelectBox num={1} text='온라인문의'/>
+          <SelectBox num={2} text='상담스케줄'/>
+          <SelectBox num={3} text='예약건'/>
+          <SelectBox num={4} text='출발건'/>
+          <SelectBox num={5} text='취소일'/>
+          <SelectBox num={6} text='회사일정'/>
         </div>
-        <div className='rowbox'>
-          <p>{selectDate}</p>
-          {
-            currentTab === 2 
-            ?
+        {
+          currentTab === 6 
+          ?
+          <div className='rowbox'>
             <div 
               className="select-box" 
-              style={{backgroundColor: '#5fb7df', color: '#fff' }}
-              onClick={()=>{
-                if (selectDate === '') {
-                  alert('날짜를 선택해주세요')
-                } else {
-                  setIsViewCounselModal(true);
-                }
-              }}
-            >상담등록</div>
-            :
-            <DropdownBox
-              widthmain='70px'
-              height='35px'
-              selectedValue={sort}
-              options={[
-                { value: 'H', label: '허니문' },
-                { value: 'G', label: '일반' },
-              ]}    
-              handleChange={(e)=>{setSort(e.target.value)}}
-            />
-          }
-          <div 
-            className="select-box" 
-            style={{backgroundColor: '#242d3f', color: '#fff' }}
-            onClick={isReserve}
-          >예약등록</div>
-        </div>
+              style={{backgroundColor: '#3a9fe5', color: '#fff' }}
+              onClick={()=>{setIsViewScheduleModal(true)}}
+            >일정등록</div>
+          </div>
+          :
+          <div className='rowbox'>
+            <p>{selectDate}</p>
+            {
+              currentTab === 2 
+              ?
+              <div 
+                className="select-box" 
+                style={{backgroundColor: '#5fb7df', color: '#fff' }}
+                onClick={()=>{
+                  if (selectDate === '') {
+                    alert('날짜를 선택해주세요')
+                  } else {
+                    setIsViewCounselModal(true);
+                  }
+                }}
+              >상담등록</div>
+              :
+              <DropdownBox
+                widthmain='70px'
+                height='35px'
+                selectedValue={sort}
+                options={[
+                  { value: 'H', label: '허니문' },
+                  { value: 'G', label: '일반' },
+                ]}    
+                handleChange={(e)=>{setSort(e.target.value)}}
+              />
+            }
+            <div 
+              className="select-box" 
+              style={{backgroundColor: '#242d3f', color: '#fff' }}
+              onClick={isReserve}
+            >예약등록</div>
+          </div>
+        }
       </div>
 
+      {/* 달력 -------------------------------------------------------------------------------------- */}
       <div className='calendar'>
         <FullCalendar
           locale= "ko"
@@ -242,13 +280,14 @@ export default function MainSchdule() {
           dateClick={(e)=>{handleSelectDate(e)}}
         />
         {/* 확인 모달창 */}
-        {
+        { 
           isViewCheckModal &&
           <div className="modalcheck-cover">
             <div className="modalcheck-backcover"
               onClick={()=>{setIsViewCheckModal(false);}}
             ></div>
-            <ModalCheck setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>
+            { currentTab === 1 && <ModalCheckOnline setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/> }
+            { currentTab === 2 && <ModalCheckCounsel setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>}
           </div>
         }
       </div>
@@ -285,9 +324,22 @@ export default function MainSchdule() {
         </div>
       }
 
-      
-    
-     
+      {/* 일정등록 모달창 */}
+      {
+        isViewScheduleModal &&
+        <div className='Modal'>
+          <div className='modal-backcover' style={{height : height + 100}}></div>
+          <div className='modal-maincover' ref={divAreaRef}>
+            <ModalCompanySchedule
+              selectDate={selectDate}
+              setIsViewScheduleModal={setIsViewScheduleModal}
+              refresh={refresh}
+              setRefresh={setRefresh}
+             />
+          </div>
+        </div>
+      } 
+
     </div>
   );
 }

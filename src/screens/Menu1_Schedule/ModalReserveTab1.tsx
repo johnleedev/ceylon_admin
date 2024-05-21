@@ -35,7 +35,7 @@ export default function ModalReserveTab1(props:any) {
   const [recommender, setRecommender] = useState('');
     
   // 수정저장 함수
-  const handleReserveSave = async () => {
+  const handleReserveSaveTab1 = async () => {
   
     await axios
     .post(`${MainURL}/adminreserve/saveuserinfo`, {
@@ -50,10 +50,8 @@ export default function ModalReserveTab1(props:any) {
     })
     .then((res)=>{
       if (res.data) {
-        alert('입력되었습니다.');
+        alert('저장되었습니다.');
         props.setInputState('save');
-        console.log(res.data);
-        // props.setIsViewCounselModal(false);
       }
     })
     .catch((err)=>{
@@ -71,11 +69,16 @@ export default function ModalReserveTab1(props:any) {
   // 생년월일 변경
   const handleBirth = async (e:any, index:number) => {
     const text = e.target.value; 
+
     const inputs = [...userInfo]; 
     if (text.includes('-')) {
       inputs[index].birth = text.replace(/-/g, ''); 
       setUserInfo(inputs);
     } else {
+      if (isNaN(text)) {
+        alert('숫자만 입력가능합니다.')
+        return;
+      }
       if (text.length === 8) {
         const year = text.substring(0, 4);
         const month = text.substring(4, 6);
@@ -98,6 +101,10 @@ export default function ModalReserveTab1(props:any) {
       inputs[index].passportDate = text.replace(/-/g, ''); 
       setUserInfo(inputs);
     } else {
+      if (isNaN(text)) {
+        alert('숫자만 입력가능합니다.')
+        return;
+      }
       if (text.length === 8) {
         const year = text.substring(0, 4);
         const month = text.substring(4, 6);
@@ -120,6 +127,10 @@ export default function ModalReserveTab1(props:any) {
       inputs[index].residentNum = text.replace(/-/g, ''); 
       setUserInfo(inputs);
     } else {
+      if (isNaN(text)) {
+        alert('숫자만 입력가능합니다.')
+        return;
+      }
       if (text.length === 13) {
         const num1 = text.substring(0, 6);
         const num2 = text.substring(6, 13);
@@ -141,6 +152,10 @@ export default function ModalReserveTab1(props:any) {
       inputs[index].phone = text.replace(/-/g, ''); 
       setUserInfo(inputs);
     } else {
+      if (isNaN(text)) {
+        alert('숫자만 입력가능합니다.')
+        return;
+      }
       if (text.length === 11) {
         const num1 = text.substring(0, 3);
         const num2 = text.substring(3, 7);
@@ -194,6 +209,7 @@ export default function ModalReserveTab1(props:any) {
                       handleChange={(e)=>{
                         const inputs = [...userInfo]; inputs[index].sort = e.target.value; setUserInfo(inputs);
                       }}
+                      marginHorisontal={1}
                     />
                     <input style={{width:'7%'}}  value={item.nameko} className="inputdefault" type="text" 
                       onChange={(e) => {const inputs = [...userInfo]; inputs[index].nameko = e.target.value; setUserInfo(inputs);}}/>
@@ -204,7 +220,7 @@ export default function ModalReserveTab1(props:any) {
                     <input style={{width:'10%'}}  value={item.birth} className="inputdefault" type="text" placeholder='8자리'
                       onChange={(e)=>{handleBirth(e, index)}} maxLength={8} />
                     <DropdownBox widthmain='5%' height='35px' selectedValue={item.gender}
-                      options={[{ value: '남', label: '남' }, { value: '여', label: '여' }]}    
+                      options={[{ value: '남', label: '남' }, { value: '여', label: '여' }]}   marginHorisontal={1}
                       handleChange={(e)=>{const inputs = [...userInfo]; inputs[index].gender = e.target.value; setUserInfo(inputs);}}
                     />
                     <input style={{width:'7%'}}  value={item.nation} className="inputdefault" type="text" 
@@ -212,11 +228,11 @@ export default function ModalReserveTab1(props:any) {
                     <input style={{width:'10%'}}  value={item.passportNum} className="inputdefault" type="text" 
                       onChange={(e)=>{const inputs = [...userInfo]; inputs[index].passportNum = e.target.value; setUserInfo(inputs);}} />
                     <input style={{width:'10%'}}  value={item.passportDate} className="inputdefault" type="text" placeholder='8자리'
-                      onChange={(e)=>{handlePassportNum(e, index)}} />
+                      onChange={(e)=>{handlePassportNum(e, index)}} maxLength={8}/>
                     <input style={{width:'12%'}}  value={item.residentNum} className="inputdefault" type="text" placeholder='13자리'
                       onChange={(e)=>{handleResidentNum(e, index)}} maxLength={13} />
                     <input style={{width:'12%'}}  value={item.phone} className="inputdefault" type="text" placeholder='11자리'
-                      onChange={(e)=>{handlePhone(e, index)}} />
+                      onChange={(e)=>{handlePhone(e, index)}} maxLength={11}/>
                     <div style={{width:'3%', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}
                       className='minus-btn-box' onClick={()=>{userDelete(item.residentNum)}} >
                       <CiCircleMinus className='minus-btn'/>
@@ -293,7 +309,7 @@ export default function ModalReserveTab1(props:any) {
             </div>
             <div className="coverrow half">
               <TitleBox width='120px' text='추천인'/>
-              <input className="inputdefault" type="text" style={{width:'60%'}} 
+              <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
                 value={recommender} onChange={(e)=>{setRecommender(e.target.value)}}/>
             </div>
           </div>
@@ -310,12 +326,11 @@ export default function ModalReserveTab1(props:any) {
               <p>전체삭제</p>
             </div>
             <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#5fb7df'}}
-              onClick={handleReserveSave}
+              onClick={handleReserveSaveTab1}
             >
               <p>저장</p>
             </div>
           </div>
-
         </section>
 
     </div>

@@ -9,7 +9,7 @@ import { DropdownBox } from '../../boxs/DropdownBox';
 import { DropDowncharger, DropDownNum, DropDownTime, DropDownVisitPath } from '../DefaultData';
 
 
-export default function ModalCounsel(props:any) {
+export default function ModalCompanySchedule(props:any) {
 
   const [sort, setSort] = useState('honeymoon');
   const [name, setName] = useState('');
@@ -64,7 +64,7 @@ export default function ModalCounsel(props:any) {
   return (
     <div className='modal-counsel'>
       <div className='close'
-        onClick={()=>{props.setIsViewCounselModal(false)}}>
+        onClick={()=>{props.setIsViewScheduleModal(false)}}>
         <IoMdClose size={30}/>
       </div>
       

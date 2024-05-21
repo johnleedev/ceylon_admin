@@ -30,24 +30,7 @@ export default function ModalReserve (props : any) {
     </div>
   )
 
-
-  // 날짜 선택 ----------------------------------------------
-  const [startDate, setStartDate] = useState();
-  const handleSelectDateChange = ( event : any) => {
-    setStartDate(event);
-    const day = format(event, 'EEE', { locale: ko });
-    const copy = event.toLocaleDateString('ko-KR');
-    const splitCopy = copy.split('. ');
-    const thirdText = splitCopy[2].slice(0, -1);
-    const reformmedTextko = `${splitCopy[0]}년 ${splitCopy[1]}월 ${thirdText}일 (${day})`
-    const splitCopy2Copy = splitCopy[1] < 10 ? `0${splitCopy[1]}` : splitCopy[1];
-    const splitCopy3Copy = splitCopy[2] < 10 ? `0${splitCopy[2]}` : splitCopy[2];
-    const reformmedText = `${splitCopy[0]}.${splitCopy2Copy}.${splitCopy3Copy}`;
-  //  setDate(reformmedTextko);
-  //  setDateOrigin(reformmedText);
-  }
-
-  // 예액등록삭제 함수 ---------------------------------------------------------
+  // 예약최초 등록 및 삭제 함수 ---------------------------------------------------------
   const [inputState, setInputState] = useState('new');
 
   const isCancel = async () => {
@@ -132,23 +115,23 @@ export default function ModalReserve (props : any) {
         <ModalReserveTab1 serialNum={props.serialNum} setInputState={setInputState}/>
       }
 
-      {/* {
+      {
         (selectTab === 1 || selectTab === 3)
         &&
-        <ModalReserveTab2 serialNum={props.serialNum}/>
-      } */}
+        <ModalReserveTab2 serialNum={props.serialNum} setInputState={setInputState}/>
+      }
 
-      {/* {
+      {
         (selectTab === 1 || selectTab === 4)
         &&
-        <ModalReserveTab3 serialNum={props.serialNum}/>
-      } */}
+        <ModalReserveTab3 serialNum={props.serialNum} setInputState={setInputState}/>
+      }
 
-      {/* {
+      {
         (selectTab === 1 || selectTab === 5)
         &&
-        <ModalReserveTab4 serialNum={props.serialNum}/>
-      } */}
+        <ModalReserveTab4 serialNum={props.serialNum} setInputState={setInputState}/>
+      }
 
     </div>     
   )

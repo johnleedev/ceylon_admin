@@ -6,14 +6,13 @@ import { format } from "date-fns";
 import { TitleBox } from '../../boxs/TitleBox';
 
 
-export default function ModalCheck (props : any) {
+export default function ModalCheckCounsel (props : any) {
 
   const datecopy = props.checkContent.start;
   const date = format(datecopy, 'yyyy-MM-dd', { locale: ko });
   const time = format(datecopy, 'HH:mm', { locale: ko });
   const propsData = props.checkContent.extendedProps;
   
-
   return (
     <div className='modal-check'>
       <div className='close'
@@ -22,7 +21,7 @@ export default function ModalCheck (props : any) {
       </div>
 
       <div className="header">
-        <h1>{`[${date}] ${time}`}</h1>
+        <h1>{`[${date}] ${propsData.visitTime}`}</h1>
       </div>
 
       <section>
@@ -30,51 +29,51 @@ export default function ModalCheck (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='여행형태'/>
-            <p>허니문</p>
+            <p>{propsData.sort === "honeymoon" ? "허니문" : "일반"}</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow half">
             <TitleBox width="120px" text='성함'/>
-            <p>이실론</p>
+            <p>{propsData.name}</p>
           </div>
           <div className="coverrow half">
             <TitleBox width="120px" text='연락처'/>
-            <p>010-0000-0000</p>
+            <p>{propsData.phone}</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
-            <TitleBox width="120px" text='예식일 / 지역'/>
-            <p>2022-11-10(월) / 대구</p>
+            <TitleBox width="120px" text='예식일'/>
+            <p>{propsData.dateCeremony}</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='여행기간'/>
-            <p>2022-11-10(월) ~ 2022-11-26(화)</p>
+            <p>{propsData.dateStart} ~ {propsData.dateEnd}</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow half">
             <TitleBox width="120px" text='여행지'/>
-            <p>유럽</p>
+            <p>{propsData.tourLocation}</p>
           </div>
           <div className="coverrow half">
             <TitleBox width="120px" text='방문경로'/>
-            <p>웨딩쿨</p>
+            <p>{propsData.visitPath}</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='여행인원'/>
-            <p>2명</p>
+            <p>{propsData.tourPersonNum}명</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole bigHeight">
             <TitleBox width="120px" text='문의사항' height={100}/>
-            <p>고객이 문의하신 내용</p>
+            <p>{propsData.requestion}</p>
           </div>
         </div>
       </section>
@@ -84,25 +83,25 @@ export default function ModalCheck (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='방문일'/>
-            <p>2022-11-10 (월)</p>
+            <p>{date}</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='방문시간'/>
-            <p>오후 2~3시</p>
+            <p>{propsData.visitTime}</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='담당자'/>
-            <p>김철수</p>
+            <p>{propsData.charger}</p>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole bigHeight">
             <TitleBox width="120px" text='설명' height={100}/>
-            <p>상담한 내용</p>
+            <p>{propsData.notice}</p>
           </div>
         </div>
       </section>

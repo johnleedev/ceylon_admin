@@ -11,9 +11,10 @@ interface DateBoxNumProps {
   width?: string,
   subWidth? : string,
   right?: number
+  marginLeft? : number
 }
 
-export const DateBoxNum : React.FC<DateBoxNumProps> = ({date, setSelectDate, width, subWidth, right }) => {
+export const DateBoxNum : React.FC<DateBoxNumProps> = ({date, setSelectDate, width, subWidth, right, marginLeft }) => {
 
   const handleSelectDateChange = ( event : any) => {
     const copy = event.toLocaleDateString('ko-KR');
@@ -25,7 +26,7 @@ export const DateBoxNum : React.FC<DateBoxNumProps> = ({date, setSelectDate, wid
   }
 
   return (
-    <div className='calendarbox' style={{width : width ? `${width}` : '200px', marginLeft:'5px'}}>
+    <div className='calendarbox' style={{width : width ? `${width}` : '200px', marginLeft: marginLeft ? `${marginLeft}px` : '5px'}}>
       <div className="datebox" style={{width: subWidth ? `${subWidth}` : '170px'}}>
         <DatePicker
           className="dateinput"
