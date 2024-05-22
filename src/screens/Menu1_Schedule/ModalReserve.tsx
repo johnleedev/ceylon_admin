@@ -112,25 +112,25 @@ export default function ModalReserve (props : any) {
       {
         (selectTab === 1 || selectTab === 2)
         &&
-        <ModalReserveTab1 serialNum={props.serialNum} setInputState={setInputState}/>
+        <ModalReserveTab1 serialNum={props.serialNum} setInputState={setInputState} selectTab={selectTab}/>
       }
 
       {
         (selectTab === 1 || selectTab === 3)
         &&
-        <ModalReserveTab2 serialNum={props.serialNum} setInputState={setInputState}/>
+        <ModalReserveTab2 serialNum={props.serialNum} setInputState={setInputState} selectTab={selectTab}/>
       }
 
       {
         (selectTab === 1 || selectTab === 4)
         &&
-        <ModalReserveTab3 serialNum={props.serialNum} setInputState={setInputState}/>
+        <ModalReserveTab3 serialNum={props.serialNum} setInputState={setInputState} selectTab={selectTab}/>
       }
 
       {
         (selectTab === 1 || selectTab === 5)
         &&
-        <ModalReserveTab4 serialNum={props.serialNum} setInputState={setInputState}/>
+        <ModalReserveTab4 serialNum={props.serialNum} setInputState={setInputState} selectTab={selectTab}/>
       }
 
     </div>     

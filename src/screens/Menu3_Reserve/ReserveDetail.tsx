@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './ReserveDetail.scss'
 import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
@@ -10,73 +10,119 @@ import { DateBoxKo } from '../../boxs/DateBoxKo';
 import { RadioBox } from '../../boxs/RadioBox';
 import { TextBoxPL10 } from '../../boxs/TextBoxPL10';
 import { DateBoxNum } from '../../boxs/DateBoxNum';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import MainURL from '../../MainURL';
+import { AirportStateProps, DepositCostProps, EtcStateProps, HotelReserveStateProps, RefundCostProps, ReserveInfoProps, 
+        TicketingStateProps, UserInfoProps, productCostProps } from './InterfaceData';
+import Loading from '../../components/Loading';
 
-
-const userInfoData = [
-  {no:1, sort : '성인', name: '김실론', lastName: 'KIM', firstName: 'CEYLON',
-   birth: '1988-02-01', male: '남', nation: '대한민국', 
-   passPortNum: 'M35623397', passPortDate: '2024-02-01',
-   residentNum : '880201-1110113', phone: '010-9324-1891'
-  },
-  {no:2, sort : '성인', name: '김실론', lastName: 'KIM', firstName: 'CEYLON',
-   birth: '1988-02-01', male: '여', nation: '대한민국', 
-   passPortNum: 'M35623397', passPortDate: '2024-02-01',
-   residentNum : '880201-1110113', phone: '010-9324-1891'
-  }
-]
 
 export default function ReserveDetail (props : any) {
 
   let navigate = useNavigate();
+  const location = useLocation();
+  const serialNum = location.state;
 
-  const [currentState, setCurrentState] = useState(1);
-  const [isChecked, setIsChecked] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfoProps[]>([]);
+  const [reserveInfo, setReserveInfo] = useState<ReserveInfoProps>();
+  const [productCost, setProductCost] = useState<productCostProps>();
+  const [airportState, setAirportState] = useState<AirportStateProps[]>([]);
+  const [ticketingState, setTicketingState] = useState<TicketingStateProps[]>([]);
+  const [hotelReserveState, setHotelReserveState] = useState<HotelReserveStateProps[]>([]);
+  const [etcState, setEtcState] = useState<EtcStateProps>();
+  const [contractCost, setContractCost] = useState<DepositCostProps>();
+  const [airportCost, setAirportCost] = useState<DepositCostProps>();
+  const [middleCost, setMiddleCost] = useState<DepositCostProps>();
+  const [restCost, setRestCost] = useState<DepositCostProps>();
+  const [additionCost, setAdditionCost] = useState<DepositCostProps>();
+  const [refundCost, setRefundCost] = useState<RefundCostProps>();
+  
+	const fetchPosts = async () => {
+		const resuser = await axios.get(`${MainURL}/adminreserve/getreserveuser/${serialNum}`)
+		if (resuser) {
+			setUserInfo(resuser.data);
+		}
+    const resinfo = await axios.get(`${MainURL}/adminreserve/getreserveinfo/${serialNum}`)
+    if (resinfo) {
+			setReserveInfo(resinfo.data[0]);
+      setProductCost(JSON.parse(resinfo.data[0].productCost));
+      setAirportState(JSON.parse(resinfo.data[0].airportState));
+      setTicketingState(JSON.parse(resinfo.data[0].ticketingState));
+      setHotelReserveState(JSON.parse(resinfo.data[0].hotelReserveState));
+      setEtcState(JSON.parse(resinfo.data[0].etcState));
+      setContractCost(JSON.parse(resinfo.data[0].contractCost));
+      setAirportCost(JSON.parse(resinfo.data[0].airportCost));
+      setMiddleCost(JSON.parse(resinfo.data[0].middleCost));
+      setRestCost(JSON.parse(resinfo.data[0].restCost));
+      setAdditionCost(JSON.parse(resinfo.data[0].additionCost));
+      setRefundCost(JSON.parse(resinfo.data[0].refundCost));
 
-  interface UserInfoProps {
-    no: number, 
-    sort : string, 
-    name: string, 
-    lastName: string, 
-    firstName: string,
-    birth: string, 
-    male: string, 
-    nation: string, 
-    passPortNum: string, 
-    passPortDate: string,
-    residentNum : string, 
-    phone: string
-  }
-  const [userInfo, setUserInfo] = useState<UserInfoProps[]>(userInfoData);
-  const [selectedSortOption, setSelectedSortOption] = useState({ value: '선택', label: '선택' });
+      // const deliveryList = [
+      //   JSON.parse(resinfo.data[0].eTicket),
+      //   JSON.parse(resinfo.data[0].visaEsta),
+      //   JSON.parse(resinfo.data[0].decideDoc),
+      //   JSON.parse(resinfo.data[0].prepare),
+      //   JSON.parse(resinfo.data[0].freeGift),
+      //   JSON.parse(resinfo.data[0].happyCall),
+      //   JSON.parse(resinfo.data[0].refund)
+      // ];
+      
+      console.log(JSON.parse(resinfo.data[0].eTicket));
 
-  const handleSelectSortChange = ( event : any, index:number) => {
-    setSelectedSortOption(event);
-    const inputs = [...userInfo]; 
-    inputs[index].sort = event.value; 
-    setUserInfo(inputs);
-  }
+		}
+	};
 
-  // 날짜 선택 ----------------------------------------------
-  const [startDate, setStartDate] = useState();
-  const handleSelectDateChange = ( event : any) => {
-    setStartDate(event);
-    const day = format(event, 'EEE', { locale: ko });
-    const copy = event.toLocaleDateString('ko-KR');
-    const splitCopy = copy.split('. ');
-    const thirdText = splitCopy[2].slice(0, -1);
-    const reformmedTextko = `${splitCopy[0]}년 ${splitCopy[1]}월 ${thirdText}일 (${day})`
-    const splitCopy2Copy = splitCopy[1] < 10 ? `0${splitCopy[1]}` : splitCopy[1];
-    const splitCopy3Copy = splitCopy[2] < 10 ? `0${splitCopy[2]}` : splitCopy[2];
-    const reformmedText = `${splitCopy[0]}.${splitCopy2Copy}.${splitCopy3Copy}`;
-  //  setDate(reformmedTextko);
-  //  setDateOrigin(reformmedText);
-  }
+	useEffect(() => {
+		fetchPosts();
+	}, []);  
 
-  const [selectedValue, setSelectedValue] = useState('');
+  // const [currentState, setCurrentState] = useState(1);
+  // const [isChecked, setIsChecked] = useState(false);
 
 
+  // const [selectedSortOption, setSelectedSortOption] = useState({ value: '선택', label: '선택' });
+
+  // const handleSelectSortChange = ( event : any, index:number) => {
+  //   setSelectedSortOption(event);
+  //   const inputs = [...userInfo]; 
+  //   inputs[index].sort = event.value; 
+  //   setUserInfo(inputs);
+  // }
+
+  const CostBox: React.FC<any> = ({ content }) => (
+    <div className="coverbox">
+      <div className="coverrow rightborder" style={{width:'40%'}}>
+        <TitleBox width="100px" text={content.nameko}/>
+        <TextBoxPL10 width="40%" text={content.cost} justify='flex-end'/>
+        <p>원</p>
+      </div>
+      <div className="coverrow" style={{width:'60%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+        <TextBoxPL10 width="80%" text={content.date} justify='center'/>
+        <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
+        <TextBoxPL10 width="80%" text={content.type} justify='center'/>
+        <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
+        <TextBoxPL10 width="80%" text={content.deposit} justify='center'/>
+      </div>
+    </div>
+  )
+  
   return (
+    (userInfo.length > 0 
+      && (reserveInfo !== undefined && reserveInfo !== null) 
+      && (productCost !== undefined && productCost !== null)
+      && (airportState.length > 0)
+      && (ticketingState.length > 0)
+      && (hotelReserveState.length > 0)
+      && (etcState !== undefined && etcState !== null)
+      && (contractCost !== undefined && contractCost !== null)
+      && (airportCost !== undefined && airportCost !== null)
+      && (middleCost !== undefined && middleCost !== null)
+      && (restCost !== undefined && restCost !== null)
+      && (additionCost !== undefined && additionCost !== null)
+      && (refundCost !== undefined && refundCost !== null)
+    )
+    ?
     <div className='reservedetail'>
 
       <div className="topcover">
@@ -120,12 +166,11 @@ export default function ReserveDetail (props : any) {
           </div>
 
           <div className="search-box">
-            <InputBox width='5%' value={''} func={(e)=>{}}/>
+            <input className="inputdefault" type="text" style={{width:'80%'}} 
+                value={''} onChange={(e)=>{}}/>
           </div>
-          
 
         </div>
-
       </div>
 
       <div className="bottomcover">
@@ -135,7 +180,7 @@ export default function ReserveDetail (props : any) {
           <section>
             <h1>1. 진행상황</h1>
 
-            <div className='state-row' style={{width:'100%'}}>
+            <div className='state-row' style={{width:'100%' , fontSize:'14px'}}>
               <div className='textbox'>
                 <p>계약완료</p>
               </div>
@@ -160,33 +205,32 @@ export default function ReserveDetail (props : any) {
             <div className="bottombar"></div>
             <div className='content'>
               <div className="coverbox titlerow">
-                {/* <TitleBox width={50} text='구분'/>
-                <TitleBox width={70} text='이름'/>
-                <TitleBox width={70} text={`Last.N`}/>
-                <TitleBox width={120} text={`First.N`}/>
-                <TitleBox width={100} text='생년월일'/>
-                <TitleBox width={50} text='성별'/>
-                <TitleBox width={70} text='국적'/>
-                <TitleBox width={120} text='여권번호'/>
-                <TitleBox width={100} text='만료일'/>
-                <TitleBox width={150} text='주민번호'/>
-                <TitleBox width={150} text='연락처'/> */}
+                <TitleBox width="5%" text='구분' fontSize={14}/>
+                <TitleBox width="7%" text='이름' fontSize={14}/>
+                <TitleBox width="7%" text={`Last.N`} fontSize={14}/>
+                <TitleBox width="12%" text={`First.N`} fontSize={14}/>
+                <TitleBox width="10%" text='생년월일' fontSize={14}/>
+                <TitleBox width="7%" text='국적' fontSize={14}/>
+                <TitleBox width="12%" text='여권번호' fontSize={14}/>
+                <TitleBox width="10%" text='만료일' fontSize={14}/>
+                <TitleBox width="15%" text='주민번호' fontSize={14}/>
+                <TitleBox width="15%" text='연락처' fontSize={14}/>
               </div>
               {
                 userInfo.map((item:any, index:any)=>{
                   return(
                     <div className="coverbox info" key={index}>
-                      <p style={{width:'50px'}}>{item.sort}</p>
-                      <p style={{width:'70px'}}>{item.name}</p>
-                      <p style={{width:'70px'}}>{item.lastName}</p>
-                      <p style={{width:'120px'}}>{item.firstName}</p>
-                      <p style={{width:'100px'}}>{item.birth}</p>
-                      <p style={{width:'50px'}}>{item.male}</p>
-                      <p style={{width:'70px'}}>{item.nation}</p>
-                      <p style={{width:'120px'}}>{item.passPortNum}</p>
-                      <p style={{width:'100px'}}>{item.passPortDate}</p>
-                      <p style={{width:'150px'}}>{item.residentNum}</p>
-                      <p style={{width:'150px'}}>{item.phone}</p>
+                      <p style={{width:'5%', fontSize:'14px'}}>{item.sort}</p>
+                      <p style={{width:'7%', fontSize:'14px'}}>{item.nameKo}</p>
+                      <p style={{width:'7%', fontSize:'14px'}}>{item.lastName}</p>
+                      <p style={{width:'12%', fontSize:'14px'}}>{item.firstName}</p>
+                      <p style={{width:'10%', fontSize:'14px'}}>{item.birth}</p>
+                      <p style={{width:'5%', fontSize:'14px'}}>{item.male}</p>
+                      <p style={{width:'7%', fontSize:'14px'}}>{item.nation}</p>
+                      <p style={{width:'12%', fontSize:'14px'}}>{item.passPortNum}</p>
+                      <p style={{width:'10%', fontSize:'14px'}}>{item.passPortDate}</p>
+                      <p style={{width:'15%', fontSize:'14px'}}>{item.residentNum}</p>
+                      <p style={{width:'15%', fontSize:'14px'}}>{item.phone}</p>
                     </div>
                   )
                 })
@@ -195,30 +239,32 @@ export default function ReserveDetail (props : any) {
 
           </section>
 
-          {/* <section>
+          <section>
             <h1>3. 방문경로</h1>
             <div className="bottombar"></div>
 
             <div className="coverbox">
               <div className="coverrow half">
-                <TitleBox width={120} text='예약지점'/>
-                <TextBoxPL10 width={200} text='________________' />
+                <TitleBox width="100px" text='예약지점'/>
+                <TextBoxPL10 width="50%" text={reserveInfo.reserveLocation} />
               </div>
               <div className="coverrow half">
-                <TitleBox width={120} text='담당자'/>
-                <h3 style={{marginLeft:'10px'}}>계약자</h3>
-                <TextBoxPL10 width={150} text='________________' />
+                <TitleBox width="100px" text='담당자'/>
+                <div style={{display:'flex', alignItems:'center', width:'50%'}}>
+                  <h3 style={{marginLeft:'10px', fontSize:'14px'}}>계약자</h3>
+                  <TextBoxPL10 width="30%" text={reserveInfo.charger} height={20} />
+                </div>
               </div>
             </div>
 
             <div className="coverbox">
               <div className="coverrow half">
-                <TitleBox width={120} text='방문경로'/>
-                <TextBoxPL10 width={300} text='________________' />
+                <TitleBox width="100px" text='방문경로'/>
+                <TextBoxPL10 width="50%" text={reserveInfo.visitPath} />
               </div>
               <div className="coverrow half">
-                <TitleBox width={120} text='추천인'/>
-                <TextBoxPL10 width={300} text='________________' />
+                <TitleBox width="100px" text='추천인'/>
+                <TextBoxPL10 width="50%" text={reserveInfo.recommender} />
               </div>
             </div>
 
@@ -229,24 +275,25 @@ export default function ReserveDetail (props : any) {
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width={120} text='상품명'/>
-                <TextBoxPL10 width={300} text='________________'/>
+                <TitleBox width="100px" text='상품명'/>
+                <TextBoxPL10 width="50%" text={reserveInfo.productName}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow half">
-                <TitleBox width={120} text='여행지'/>
-                <TextBoxPL10 width={300} text='________________'/>
+                <TitleBox width="100px" text='여행지'/>
+                <TextBoxPL10 width="50%" text={reserveInfo.tourLocation}/>
               </div>
               <div className="coverrow half">
-                <TitleBox width={120} text='항공사'/>
-                <TextBoxPL10 width={300} text='________________'/>
+                <TitleBox width="100px" text='항공사'/>
+                <TextBoxPL10 width="50%" text={reserveInfo.airline}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width={120} text='여행기간'/>
-                <TextBoxPL10 width={500} text='________________________________'/>
+                <TitleBox width="100px" text='여행기간'/>
+                <TextBoxPL10 width="50%" 
+                  text={`${reserveInfo.tourStartAirport} ${reserveInfo.tourStartPeriod} ~ ${reserveInfo.tourEndAirport} ${reserveInfo.tourEndPeriod} `}/>
               </div>
             </div>
           </section>
@@ -256,60 +303,64 @@ export default function ReserveDetail (props : any) {
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow half">
-                <TitleBox width={120} text='1인요금' height={160}/>
-                <div>
+                <TitleBox width="100px" text='1인요금' height={160}/>
+                <div style={{width:'60%'}}>
                   <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px'}}>성인</h3>
-                    <TextBoxPL10 width={100} text='________________' justify='flex-end'/>
+                    <h3 style={{margin:'0 10px', width:'25%'}}>성인</h3>
+                    <TextBoxPL10 width="35%" text={productCost.costAdult} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width={50} text='______' justify='flex-end'/>
+                    <TextBoxPL10 width="15%" text={productCost.costAdultNum} justify='flex-end'/>
                     <p>명</p>
                   </div>
                   <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px'}}>소아</h3>
-                    <TextBoxPL10 width={100} text='________________' justify='flex-end'/>
+                    <h3 style={{margin:'0 10px', width:'25%'}}>소아</h3>
+                    <TextBoxPL10 width="35%" text={productCost.costChild} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width={50} text='______' justify='flex-end'/>
+                    <TextBoxPL10 width="15%" text={productCost.costChildNum} justify='flex-end'/>
                     <p>명</p>
                   </div>
                   <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px'}}>유아</h3>
-                    <TextBoxPL10 width={100} text='________________' justify='flex-end'/>
+                    <h3 style={{margin:'0 10px', width:'25%'}}>유아</h3>
+                    <TextBoxPL10 width="35%" text={productCost.costInfant} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width={50} text='______' justify='flex-end'/>
+                    <TextBoxPL10 width="15%" text={productCost.costInfantNum} justify='flex-end'/>
                     <p>명</p>
                   </div>
                 </div>
               </div>
               <div className="coverrow half">
-                <TitleBox width={120} text='전체요금' height={160}/>
-                <TextBoxPL10 width={400} text='________________________________' justify='flex-end'/>
+                <TitleBox width="100px" text='전체요금' height={160}/>
+                <TextBoxPL10 width="50%" text='' justify='flex-end'/>
                 <p>원</p>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width={120} text='계약당시 환율'/>
-                <h3 style={{margin:'0 10px'}}>1USD</h3>
-                <TextBoxPL10 width={200} text='________________' justify='center'/>
-                <p># 잔금지불시 변동환율 적용여부 공지</p>
-                <div style={{marginLeft: '30px', display:'flex', alignItems:'center'}}>
-                  <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                    <input className="input" type="checkbox"
-                      checked={isChecked}
-                      onChange={()=>{setIsChecked(!isChecked);}}
-                      style={{width:'20px', height:'20px', backgroundColor:'red'}}
-                    />
+                <TitleBox width="100px" text='계약당시 환율'/>
+                <div style={{width:'85%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                  <div style={{display:'flex', alignItems:'center'}}>
+                    <h3 style={{margin:'0 10px'}}>1USD</h3>
+                    <TextBoxPL10 width="30px" text={productCost.reserveExchangeRate} justify='center'/>
                   </div>
-                  <p>공지했음</p>
-                  <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                    <input className="input" type="checkbox"
-                      checked={isChecked}
-                      onChange={()=>{setIsChecked(!isChecked);}}
-                      style={{width:'20px', height:'20px', backgroundColor:'red'}}
-                    />
+                  <div style={{display:'flex', alignItems:'center', marginLeft: '10px'}}>
+                    <p># 잔금지불시 변동환율 적용여부 공지</p>
+                    <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                      <input className="input" type="checkbox"
+                        // checked={isChecked}
+                        // onChange={()=>{setIsChecked(!isChecked);}}
+                        style={{width:'20px', height:'20px', backgroundColor:'red'}}
+                      />
+                    </div>
+                    <p>공지했음</p>
+                    <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                      <input className="input" type="checkbox"
+                        // checked={isChecked}
+                        // onChange={()=>{setIsChecked(!isChecked);}}
+                        style={{width:'20px', height:'20px', backgroundColor:'red'}}
+                      />
+                    </div>
+                    <p>고객확인</p>
                   </div>
-                  <p>고객확인</p>
                 </div>
               </div>
             </div>
@@ -319,24 +370,24 @@ export default function ReserveDetail (props : any) {
             <h1>6. 항공 예약현황</h1>
             <div className="bottombar"></div>
             <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#E2E2E2' }}>
-              <TitleBox width={210} text='날짜'/>
-              <TitleBox width={200} text='구간'/>
-              <TitleBox width={200} text='항공편'/>
-              <TitleBox width={200} text='출발시간'/>
-              <TitleBox width={200} text='도착시간'/>
-              <TitleBox width={120} text='상태'/>
+              <TitleBox width="18%" text='날짜'/>
+              <TitleBox width="18%" text='구간'/>
+              <TitleBox width="18%" text='항공편'/>
+              <TitleBox width="18%" text='출발시간'/>
+              <TitleBox width="18%" text='도착시간'/>
+              <TitleBox width="10%" text='상태'/>
             </div>
             {
-              [1,2,3,4].map((item:any, index:any)=>{
+              ticketingState.map((item:any, index:any)=>{
                 return (
-                  <div className="coverbox">
+                  <div className="coverbox" key={index}>
                     <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                      <TextBoxPL10 width={210} text='________________' justify='center'/>
-                      <TextBoxPL10 width={200} text='________________' justify='center'/>
-                      <TextBoxPL10 width={200} text='________________' justify='center'/>
-                      <TextBoxPL10 width={200} text='________________' justify='center'/>
-                      <TextBoxPL10 width={200} text='________________' justify='center'/>
-                      <TextBoxPL10 width={120} text='________________' justify='center'/>
+                      <TextBoxPL10 width="18%" text={item.date} justify='center'/>
+                      <TextBoxPL10 width="18%" text={item.section} justify='center'/>
+                      <TextBoxPL10 width="18%" text={item.airport} justify='center'/>
+                      <TextBoxPL10 width="18%" text={item.timeDepart} justify='center'/>
+                      <TextBoxPL10 width="18%" text={item.timeArrive} justify='center'/>
+                      <TextBoxPL10 width="10%" text={item.state} justify='center'/>
                     </div>
                   </div>
                 )
@@ -349,24 +400,24 @@ export default function ReserveDetail (props : any) {
             <h1>7. 발권현황</h1>
             <div className="bottombar"></div>
             {
-              [1,2].map((item:any, index:any)=>{
+              ticketingState.map((item:any, index:any)=>{
                 return (
-                  <div className="coverbox">
+                  <div className="coverbox" key={index}>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
-                      <TitleBox width={120} text='항공사'/>
-                      <TextBoxPL10 width={200} text='________________' />
+                      <TitleBox width="60px" text='항공사'/>
+                      <TextBoxPL10 width="50%" text={item.company} />
                     </div>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
-                      <TitleBox width={120} text='발권처'/>
-                      <TextBoxPL10 width={200} text='________________' />
+                      <TitleBox width="60px" text='발권처'/>
+                      <TextBoxPL10 width="50%" text={item.ticketBooth} />
                     </div>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}} >
-                      <TitleBox width={120} text='날짜'/>
-                      <TextBoxPL10 width={200} text='________________' />
+                      <TitleBox width="60px" text='날짜'/>
+                      <TextBoxPL10 width="50%" text={item.date} />
                     </div>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
-                      <TitleBox width={120} text='상태'/>
-                      <TextBoxPL10 width={200} text='________________' />
+                      <TitleBox width="60px" text='상태'/>
+                      <TextBoxPL10 width="50%" text={item.state} />
                     </div>
                   </div>
                 )
@@ -378,22 +429,22 @@ export default function ReserveDetail (props : any) {
             <h1>8. 호텔 예약현황</h1>
             <div className="bottombar"></div>
             <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#E2E2E2' }}>
-              <TitleBox width={300} text='체크인'/>
-              <TitleBox width={200} text='여행지'/>
-              <TitleBox width={300} text='호텔명'/>
-              <TitleBox width={200} text='룸타입'/>
-              <TitleBox width={100} text='박수'/>
+              <TitleBox width="20%" text='체크인'/>
+              <TitleBox width="25%" text='여행지'/>
+              <TitleBox width="25%" text='호텔명'/>
+              <TitleBox width="20%" text='룸타입'/>
+              <TitleBox width="10%" text='박수'/>
             </div>
             {
-              [1,2].map((item:any, index:any)=>{
+              hotelReserveState.map((item:any, index:any)=>{
                 return (
-                  <div className="coverbox">
+                  <div className="coverbox" key={index}>
                     <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                      <TextBoxPL10 width={300} text='________________' justify='center'/>
-                      <TextBoxPL10 width={200} text='________________' justify='center'/>
-                      <TextBoxPL10 width={300} text='________________' justify='center'/>
-                      <TextBoxPL10 width={200} text='________________' justify='center'/>
-                      <TextBoxPL10 width={100} text='_________' justify='center'/>
+                      <TextBoxPL10 width="20%" text={item.date1} justify='center'/>
+                      <TextBoxPL10 width="25%" text={item.location} justify='center'/>
+                      <TextBoxPL10 width="25%" text={item.hotelName} justify='center'/>
+                      <TextBoxPL10 width="20%" text={item.roomType} justify='center'/>
+                      <TextBoxPL10 width="10%" text={item.days} justify='center'/>
                     </div>
                   </div>
                 )
@@ -407,30 +458,30 @@ export default function ReserveDetail (props : any) {
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width={120} text='포함사항'/>
-                <TextBoxPL10 width={300} text='________________'/>
+                <TitleBox width="100px" text='포함사항'/>
+                <TextBoxPL10 width="70%" text={etcState.includes}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width={120} text='불포함사항'/>
-                <TextBoxPL10 width={300} text='________________'/>
+                <TitleBox width="100px" text='불포함사항'/>
+                <TextBoxPL10 width="70%" text={etcState.notIncludes}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow half">
-                <TitleBox width={120} text='여행자보험'/>
-                <TextBoxPL10 width={300} text='________________'/>
+                <TitleBox width="100px" text='여행자보험'/>
+                <TextBoxPL10 width="50%" text={etcState.travelInsurance}/>
               </div>
               <div className="coverrow half">
-                <TitleBox width={120} text='보험회사'/>
-                <TextBoxPL10 width={300} text='________________'/>
+                <TitleBox width="100px" text='보험회사'/>
+                <TextBoxPL10 width="50%" text={etcState.insuranceCompany}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width={120} text='계약금액'/>
-                <TextBoxPL10 width={300} text='________________'/>
+                <TitleBox width="100px" text='계약금액'/>
+                <TextBoxPL10 width="70%" text={etcState.insuranceCost}/>
               </div>
             </div>
           </section>
@@ -439,72 +490,59 @@ export default function ReserveDetail (props : any) {
             <h1>10. 입금내역</h1>
             <div className="bottombar"></div>
             <div className="coverbox">
-              <div className="coverrow third rightborder">
-                <TitleBox width={120} text='계약금액'/>
-                <TextBoxPL10 width={150} text='________________' justify='flex-end'/>
+              <div className="coverrow rightborder" style={{width:'40%'}}>
+                <TitleBox width="100px" text='계약금액'/>
+                <TextBoxPL10 width="40%" text={reserveInfo.tourTotalContractCost} justify='flex-end'/>
                 <p>원</p>
               </div>
-              <div className="coverrow" style={{width:'66%', height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+              <div className="coverrow" style={{width:'60%' , fontSize:'14px', height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
                 <h3 style={{marginRight:'20px'}}>최종 여행 경비:</h3>
-                <TextBoxPL10 width={150} text='________________' justify='center'/>
+                <TextBoxPL10 width="40%" text={reserveInfo.totalCost} justify='right'/>
                 <p>원</p>
               </div>
             </div>
-            {
-              ["계약금", "항공료", "중도금", "잔금", "추가경비"].map((item:any, index:any)=>{
-                return (
-                  <div className="coverbox" key={index}>
-                    <div className="coverrow third rightborder">
-                      <TitleBox width={120} text={item}/>
-                      <TextBoxPL10 width={150} text='________________' justify='flex-end'/>
-                      <p>원</p>
-                    </div>
-                    <div className="coverrow third rightborder" style={{height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                      <TextBoxPL10 width={150} text='________________' justify='center'/>
-                    </div>
-                    <div className="coverrow third" style={{height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                      <div className="half rightborder">
-                        <TextBoxPL10 width={150} text='________________' justify='center'/>
-                      </div>
-                      <div className="half">
-                        <TextBoxPL10 width={150} text='________________' justify='center'/>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })
-            }
+
+            <CostBox content={contractCost}/>
+            <CostBox content={airportCost}/>
+            <CostBox content={middleCost}/>
+            <CostBox content={restCost}/>
+            <CostBox content={additionCost}/>
+
             <div className="coverbox">
-              <div className="coverrow hole">
-                <TitleBox width={120} text='환불'/>
-                <TextBoxPL10 width={200} text='________________' justify='flex-end'/>
+              <div className="coverrow rightborder" style={{width:'40%'}}>
+                <TitleBox width="100px" text='환불'/>
+                <TextBoxPL10 width="40%" text={refundCost.cost} justify='flex-end'/>
                 <p>원</p>
               </div>
-            </div>
-            <div className="coverbox">
-              <div className="coverrow hole">
-                <TitleBox width={120} text='밸런스'/>
-                <TextBoxPL10 width={200} text='________________' justify='flex-end'/>
+              <div className="coverrow" style={{width:'60%'}}>
+                <TextBoxPL10 width="40%" text={refundCost.date} justify='flex-end'/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width={120} text='현금영수증'/>
-                <TextBoxPL10 width={200} text='________________' justify='flex-end'/>
+                <TitleBox width="100px" text='밸런스'/>
+                <TextBoxPL10 width="50%" text={reserveInfo.balance} justify='flex-end'/>
+              </div>
+            </div>
+            <div className="coverbox">
+              <div className="coverrow hole">
+                <TitleBox width="100px" text='현금영수증'/>
+                <TextBoxPL10 width="30%" text={reserveInfo.isCashBill}/>
+                <TextBoxPL10 width="30%" text={reserveInfo.cashBillInfo}/>
               </div>
             </div>
           </section>
 
-          <section>
+         <section>
             <h1>11. OT 및 고객전달 사항</h1>
             <div className="bottombar"></div>
             <div className="coverbox titlerow" style={{backgroundColor:'#E2E2E2' }}>
-              <TitleBox width={120} text=''/>
+              <TitleBox width="100px" text=''/>
               <div style={{flex:1, display:'flex', justifyContent:'space-between'}}>
-                <TitleBox width={210} text='요청일'/>
-                <TitleBox width={210} text='처리일'/>
-                <TitleBox width={150} text='전달방식'/>
-                <TitleBox width={150} text='담당자'/>
+                <TitleBox width="20%" text='요청일'/>
+                <TitleBox width="20%" text='처리일'/>
+                <TitleBox width="20%" text='전달방식'/>
+                <TitleBox width="20%" text='담당자'/>
               </div>
             </div>
             {
@@ -512,12 +550,12 @@ export default function ReserveDetail (props : any) {
                 return (
                   <div className="coverbox">
                     <div className="coverrow hole">
-                      <TitleBox width={120} text={item}/>
+                      <TitleBox width="100px" text={item}/>
                       <div style={{flex:1, display:'flex', justifyContent:'space-between'}}>
-                        <TextBoxPL10 width={210} text='________________' justify='center'/>
-                        <TextBoxPL10 width={210} text='________________' justify='center'/>
-                        <TextBoxPL10 width={150} text='________________' justify='center'/>
-                        <TextBoxPL10 width={150} text='________________' justify='center'/>
+                        <TextBoxPL10 width="20%" text={''} justify='center'/>
+                        <TextBoxPL10 width="20%" text={''} justify='center'/>
+                        <TextBoxPL10 width="20%" text={''} justify='center'/>
+                        <TextBoxPL10 width="20%" text={''} justify='center'/>
                       </div>
                     </div>
                   </div>
@@ -529,23 +567,23 @@ export default function ReserveDetail (props : any) {
         </div>
         
         <div className='right-cover'>
-          <div className="content">
+         {/*   <div className="content">
             
             <section>
               <h1>온라인 계약서 (전자서명, 동의서)</h1>
               <div className="bottombar"></div>
               <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor: '#E2E2E2'}}>
-                <TitleBox width={120} text='날짜'/>
-                <TitleBox width={120} text='경로'/>
-                <TitleBox width={120} text='상태'/>
+                <TitleBox width="100px" text='날짜'/>
+                <TitleBox width="100px" text='경로'/>
+                <TitleBox width="100px" text='상태'/>
                 <TitleBox width={150} text='보기'/>
               </div>
               <div className="coverbox">
                 <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                  <DateBoxNum date={startDate} func={handleSelectDateChange} width={120} subWidth={120} right={7}/>
+                  <DateBoxNum date={startDate} func={handleSelectDateChange} width="100px" subwidth="100px" right={7}/>
                   <SelectBox 
                     notice={{ value: '선택', label: '선택' }}
-                    widthmain={120} selectWidth={120} selectTextWidth={90}
+                    widthmain={120} selectwidth="100px" selectTextWidth={90}
                     data={[ 
                       { value: 'n1', label: '이메일' },
                       { value: 'n2', label: '이메일' },
@@ -553,7 +591,7 @@ export default function ReserveDetail (props : any) {
                   />
                   <SelectBox 
                     notice={{ value: '선택', label: '선택' }}
-                    widthmain={120} selectWidth={120} selectTextWidth={90}
+                    widthmain={120} selectwidth="100px" selectTextWidth={90}
                     data={[ 
                       { value: 'n1', label: '전달' },
                       { value: 'n2', label: '전달' },
@@ -568,9 +606,9 @@ export default function ReserveDetail (props : any) {
               <h1>수배 확정 내역</h1>
               <div className="bottombar"></div>
               <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor: '#E2E2E2'}}>
-                <TitleBox width={120} text='날짜'/>
-                <TitleBox width={120} text='경로'/>
-                <TitleBox width={120} text='상태'/>
+                <TitleBox width="100px" text='날짜'/>
+                <TitleBox width="100px" text='경로'/>
+                <TitleBox width="100px" text='상태'/>
                 <TitleBox width={150} text='보기'/>
               </div>
               {
@@ -578,10 +616,10 @@ export default function ReserveDetail (props : any) {
                   return (
                     <div className="coverbox">
                       <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                        <DateBoxNum date={startDate} func={handleSelectDateChange} width={120} subWidth={120} right={7}/>
+                        <DateBoxNum date={startDate} func={handleSelectDateChange} width="100px" subwidth="100px" right={7}/>
                         <SelectBox 
                           notice={{ value: '선택', label: '선택' }}
-                          widthmain={120} selectWidth={120} selectTextWidth={90}
+                          widthmain={120} selectwidth="100px" selectTextWidth={90}
                           data={[ 
                             { value: 'n1', label: '이메일' },
                             { value: 'n2', label: '이메일' },
@@ -589,7 +627,7 @@ export default function ReserveDetail (props : any) {
                         />
                         <SelectBox 
                           notice={{ value: '선택', label: '선택' }}
-                          widthmain={120} selectWidth={120} selectTextWidth={90}
+                          widthmain={120} selectwidth="100px" selectTextWidth={90}
                           data={[ 
                             { value: 'n1', label: '전달' },
                             { value: 'n2', label: '전달' },
@@ -645,6 +683,8 @@ export default function ReserveDetail (props : any) {
 
       </div>
 
-    </div>     
+    </div>
+    :
+    <Loading />     
   )
 }

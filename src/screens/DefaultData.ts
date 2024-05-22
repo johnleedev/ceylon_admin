@@ -254,4 +254,12 @@ export const DropDownDeliveryType = [
   { value: '전화', label: '전화' }
 ]
 
+export const DropDownSearchSelect = [
+  { value: '계약일', label: '계약일' },
+  { value: '출발일', label: '출발일' },
+  { value: '도착일', label: '도착일' },
+  { value: '작성일', label: '작성일' },
+  { value: '수정일', label: '수정일' }
+]
+
 

@@ -188,7 +188,7 @@ export default function Sub3_MoneyState (props:any) {
 										
 									}}
 								>
-									<TextBox width={50} text={item.no} fontSize={15}/>
+									{/* <TextBox width={50} text={item.no} fontSize={15}/>
 									<TextBox width={100} text={item.reserveDate} text2={item.startDate} fontSize={15}/>
 									<TextBox width={100} text={item.name1} text2={item.name2} fontSize={15}/>
 									<TextBox width={150} text={item.phone1} text2={item.phone2} fontSize={15}/>
@@ -198,7 +198,7 @@ export default function Sub3_MoneyState (props:any) {
 									<TextBox width={120} text={`${item.restCost}원`} text2={item.restCostDate} fontSize={15}/>
 									<TextBox width={100} text={item.landCp} fontSize={15}/>
 									<TextBox width={100} text={item.landCpCostDate} fontSize={15}/>
-									<TextBox width={100} text={item.charger} fontSize={15}/>
+									<TextBox width={100} text={item.charger} fontSize={15}/> */}
 								</div>
 							)
 						})

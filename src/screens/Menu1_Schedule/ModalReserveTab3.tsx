@@ -22,7 +22,7 @@ export default function ModalReserveTab3(props:any) {
   const [middleCost, setMiddleCost] = useState<CostProps>({nameko: '중도금', cost: '', date: '', type: '', deposit: false});
   const [restCost, setRestCost] = useState<CostProps>({nameko: '잔금', cost: '', date: '', type: '', deposit: false});
   const [costListSum, setCostListSum] = useState('');
-  const [additionCost, setAdditionCost] = useState<CostProps>({nameko: '환불', cost: '', date: '', type: '', deposit: false});
+  const [additionCost, setAdditionCost] = useState<CostProps>({nameko: '추가경비', cost: '', date: '', type: '', deposit: false});
   const [refundCost, setRefundCost] = useState<{nameko : string; cost : string; date : string;}>({nameko: '환불', cost: '', date: ''});
   const [totalCost, setTotalCost] = useState('');
   const [ballance, setBallance] = useState('');
@@ -401,22 +401,25 @@ export default function ModalReserveTab3(props:any) {
         </div>
       </section> 
 
-      <section>
-        <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
-          <div className='btn-row' style={{marginRight:'5px', width:'120px'}}
-            onClick={()=>{
-              
-            }}
-          >
-            <p>전체삭제</p>
+      {
+        props.selectTab !== 1 &&
+        <section>
+          <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
+            <div className='btn-row' style={{marginRight:'5px', width:'120px'}}
+              onClick={()=>{
+                
+              }}
+            >
+              <p>전체삭제</p>
+            </div>
+            <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#5fb7df'}}
+              onClick={handleReserveSaveTab3}
+            >
+              <p>저장</p>
+            </div>
           </div>
-          <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#5fb7df'}}
-            onClick={handleReserveSaveTab3}
-          >
-            <p>저장</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      }
     </div>
   )
 }

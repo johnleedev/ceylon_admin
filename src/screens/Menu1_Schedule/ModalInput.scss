@@ -69,6 +69,25 @@
        text-align: left;
        padding-left: 10px;
       }
+      .checkInputCover {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+
+        .checkInput {
+          width: 30px;
+          height: 30px; 
+          display: flex;
+          align-items: center; 
+          justify-content: center;
+  
+          .input {
+            width: 20px;
+            height: 20px;
+          }
+        }
+      }
+      
     }
   }
   .half {

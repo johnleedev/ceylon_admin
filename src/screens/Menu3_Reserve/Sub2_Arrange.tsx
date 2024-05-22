@@ -168,7 +168,7 @@ export default function Sub2_Arrange (props:any) {
 										
 									}}
 								>
-									<TextBox width={50} text={item.no} fontSize={15}/>
+									{/* <TextBox width={50} text={item.no} fontSize={15}/>
 									<TextBox width={100} text={item.reserveDate} text2={item.startDate} fontSize={15}/>
 									<TextBox width={100} text={item.name1} text2={item.name2} fontSize={15}/>
 									<TextBox width={150} text={item.phone1} text2={item.phone2} fontSize={15}/>
@@ -179,7 +179,7 @@ export default function Sub2_Arrange (props:any) {
 									<TextBox width={100} text={item.landCompany} fontSize={15}/>
 									<TextBox width={100} text={item.state} fontSize={15}/>
 									<TextBox width={100} text={item.reservePath} fontSize={15}/>
-									<TextBox width={100} text={item.charger} fontSize={15}/>
+									<TextBox width={100} text={item.charger} fontSize={15}/> */}
 								</div>
 							)
 						})

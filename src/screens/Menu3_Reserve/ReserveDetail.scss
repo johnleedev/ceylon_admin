@@ -7,7 +7,7 @@
 .reservedetail {
    
   .topcover {
-    padding: 30px 50px;
+    padding: 30px 30px;
     box-sizing: border-box;
 
     .topmenu {
@@ -17,11 +17,15 @@
       @include middle();
 
       .menu-btn-box {
+        width: 45%;
         display: flex;
-        margin-right: 50px;
+        justify-content: center;
+        margin-right: 20px;
 
         .menu-btn {
-          padding: 5px 50px;
+          width: 25%;
+          text-align: center;
+          padding: 3px 5px;
           border: 1px solid #b1b1b1;
           margin: 0 10px;
           border-radius: 5px;
@@ -33,12 +37,15 @@
       }
 
       .btn-box {
+        width: 25%;
         display: flex;
         justify-content: center;
         align-items: center;
     
         .btn {
-          padding: 5px 25px;
+          width: 25%;
+          text-align: center;
+          padding: 5px 5px;
           border: 1px solid #EAEAEA;
           margin: 0 5px;
           border-radius: 5px;
@@ -54,6 +61,7 @@
       }
       
       .search-box {
+        width: 25%;
         margin-left: 50px;
       }
     }

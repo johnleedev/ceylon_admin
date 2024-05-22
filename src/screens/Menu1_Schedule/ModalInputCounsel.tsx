@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './ModalCounsel.scss'
+import './ModalInput.scss'
 import { IoMdClose } from "react-icons/io";
 import { TitleBox } from '../../boxs/TitleBox';
 import axios from 'axios'
@@ -32,7 +32,7 @@ export default function ModalCounsel(props:any) {
   const handleCounselSave = async () => {
   
     await axios
-    .post(`${MainURL}/adminschedule/save`, {
+    .post(`${MainURL}/adminschedule/savecounsel`, {
       sort : sort,
       name : name,
       phone: phone,
@@ -78,7 +78,7 @@ export default function ModalCounsel(props:any) {
           <div className="coverrow hole">
             <TitleBox width="120px" text='여행형태'/>
             <div style={{marginLeft: '10px', display:'flex', alignItems:'center'}}>
-              <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+              <div className='checkInput'>
                 <input className="input" type="checkbox"
                   checked={sort === 'honeymoon'}
                   onChange={()=>{setSort('honeymoon')}}
@@ -86,7 +86,7 @@ export default function ModalCounsel(props:any) {
                 />
               </div>
               <p>허니문</p>
-              <div style={{marginLeft: '20px', width:'30px', height:'30px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+              <div className='checkInput' style={{marginLeft:'10px'}}>
                 <input className="input" type="checkbox"
                   checked={sort === 'general'}
                   onChange={()=>{setSort('general')}}

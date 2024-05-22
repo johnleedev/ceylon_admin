@@ -1,22 +1,22 @@
 interface TextBoxProps {
   text: string;
   text2?: string;
-  width : number;
+  width : string;
   height? : number;
   fontSize?: number;
 }
 
 export const TextBox : React.FC<TextBoxProps> = ({text, text2, width, height, fontSize}) => (
   <div className="text"
-     style={{width:`${width}px`, height: `${height}px` ?? '50px'}}>
+     style={{width:`${width}`, height: `${height}px` ?? '50px', textAlign:'center'}}>
     {
       text2 ? 
       <div>
-        <p  style={{fontSize: `${fontSize}px` ?? '16px', color:'#1e99d6', marginBottom:'3px'}}>{text}</p>
-        <p style={{fontSize: `${fontSize}px` ?? '16px'}}>{text2}</p>
+        <p  style={{fontSize: fontSize ? `${fontSize}px` : '15px', color:'#1e99d6', marginBottom:'3px'}}>{text}</p>
+        <p style={{fontSize: fontSize ? `${fontSize}px` : '15px'}}>{text2}</p>
       </div>
       :
-      <p style={{fontSize: `${fontSize}px` ?? '16px'}}>{text}</p>
+      <p style={{fontSize: fontSize ? `${fontSize}px` : '15px'}}>{text}</p>
     }
     
   </div>

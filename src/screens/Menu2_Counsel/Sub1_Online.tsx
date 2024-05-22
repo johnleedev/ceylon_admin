@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../SearchBox.scss'
 import '../SearchList.scss'
 import { SelectBox } from '../../boxs/SelectBox';
@@ -11,52 +11,66 @@ import { TitleBox } from '../../boxs/TitleBox';
 import { TextBox } from '../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
 import { DateBoxNum } from '../../boxs/DateBoxNum';
+import { DropdownBox } from '../../boxs/DropdownBox';
+import { DropDownSearchSelect } from '../DefaultData';
+import axios from 'axios';
+import MainURL from '../../MainURL';
 
 export default function Sub1_Online (props:any) {
 
 	let navigate = useNavigate();
 
-	const example = [
-		{ no: 1, requestDate: '2024-04-24 15:00', name : '김실론어', phone : '010-1234-5678',
-			tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-			requestPath : '온라인', state : '대기중', charger : '김철수'},
-		{ no: 2, requestDate: '2024-04-24 15:00', name : '김실론어2', phone : '010-1234-5678',
-		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charger : '김철수'},
-		{ no: 3, requestDate: '2024-04-24 15:00', name : '김실론어3', phone : '010-1234-5678',
-		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charger : '김철수'},
-		{ no: 4, requestDate: '2024-04-24 15:00', name : '김실론어4', phone : '010-1234-5678',
-		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charger : '김철수'},
-		{ no: 5, requestDate: '2024-04-24 15:00', name : '김실론어5', phone : '010-1234-5678',
-		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charger : '김철수'},
-		{ no: 6, requestDate: '2024-04-24 15:00', name : '김실론어6', phone : '010-1234-5678',
-		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charger : '김철수'},
-		{ no: 7, requestDate: '2024-04-24 15:00', name : '김실론어7', phone : '010-1234-5678',
-		tourLocation : '하와이나라', tourType : '허니문', tourPeriod: '5박 7일', tourDate : `2023-04-02 ~ 2023-04-07`, tourPersonNum : '2명',
-		requestPath : '온라인', state : '대기중', charger : '김철수'},
-	]
+	const [dateSort, setDateSort] = useState('');
+	const [startDate, setStartDate] = useState('');
+	const [endDate, setEndDate] = useState('');
+	const [sort, setSort] = useState('');
+	const [word, setWord] = useState('');
 
-	// 날짜 선택 ----------------------------------------------
-	const [startDate, setStartDate] = useState();
-	const handleSelectDateChange = ( event : any) => {
-		setStartDate(event);
-		const day = format(event, 'EEE', { locale: ko });
-		const copy = event.toLocaleDateString('ko-KR');
-		const splitCopy = copy.split('. ');
-		const thirdText = splitCopy[2].slice(0, -1);
-		const reformmedTextko = `${splitCopy[0]}년 ${splitCopy[1]}월 ${thirdText}일 (${day})`
-		const splitCopy2Copy = splitCopy[1] < 10 ? `0${splitCopy[1]}` : splitCopy[1];
-		const splitCopy3Copy = splitCopy[2] < 10 ? `0${splitCopy[2]}` : splitCopy[2];
-		const reformmedText = `${splitCopy[0]}.${splitCopy2Copy}.${splitCopy3Copy}`;
-	//  setDate(reformmedTextko);
-	//  setDateOrigin(reformmedText);
+	interface CheckBoxProps {
+    title: string;
+  }
+
+  const CheckBox: React.FC<CheckBoxProps> = ({ title }) => (
+    <div className='checkInputCover'>
+      <div className='checkInput'>
+        <input className="input" type="checkbox"
+          checked={sort === title}
+          onChange={()=>{
+            setSort(title);
+          }}
+        />
+      </div>
+      <p>{title}</p>
+    </div>
+  )
+
+
+	// 게시글 가져오기 ------------------------------------------------------
+	interface ListProps {
+		id: number;
+		date: string;
+		name: string;
+		phone: string;
+		interestLocation: string;
+		callTime : string;
+		dateCeremony: string;
+		sort: string;
+		stage: string
+		visitTime: string;
 	}
+	const [list, setList] = useState<ListProps[]>([]);
 
-	const [selectedValue, setSelectedValue] = useState('');
+	const fetchPosts = async () => {
+		const res = await axios.get(`${MainURL}/adminschedule/getonlinelist`)
+		if (res) {
+			setList(res.data);
+		}
+	};
+
+	useEffect(() => {
+		fetchPosts();
+	}, []);  
+
 
 	return (
 		<div className='Menu2'>
@@ -67,8 +81,13 @@ export default function Sub1_Online (props:any) {
 						<h3>기간</h3>
 					</div>
 					<div className="content">
-						<h3 style={{margin:'0 10px'}}>계약일</h3>
-						{/* <DateBoxNum date={startDate} func={handleSelectDateChange} width={150} subWidth={120}/> */}
+						<DropdownBox
+                widthmain='100px'
+                height='35px'
+                selectedValue={dateSort}
+                options={DropDownSearchSelect}
+                handleChange={(e)=>{setDateSort(e.target.value)}}
+              />
 						<div className="btn-row">
 							{
 								["오늘", "어제", "3일", "7일", "1개월", "3개월", "6개월"]
@@ -81,9 +100,9 @@ export default function Sub1_Online (props:any) {
 								})
 							}
 						</div>
-						{/* <DateBoxNum date={startDate} func={handleSelectDateChange}/> */}
+						<DateBoxNum width='150px' subWidth='130px' right={15} setSelectDate={setStartDate} date={startDate} marginLeft={1}/>
 						<p>~</p>
-						{/* <DateBoxNum date={startDate} func={handleSelectDateChange}/> */}
+						<DateBoxNum width='150px' subWidth='130px' right={15} setSelectDate={setEndDate} date={endDate} marginLeft={1}/>
 					</div>
 				</div>
 				<div className="cover">
@@ -91,30 +110,32 @@ export default function Sub1_Online (props:any) {
 						<h3>검색어</h3>
 					</div>
 					<div className="content">
-						<RadioBox text='예약자명' width={100} selectedValue={selectedValue} func={()=>{}} />
-						<RadioBox text='전화번호' width={100} selectedValue={selectedValue} func={()=>{}} />
-						<RadioBox text='상품코드' width={100} selectedValue={selectedValue} func={()=>{}} />
-						<RadioBox text='아이디' width={100} selectedValue={selectedValue} func={()=>{}} />
-						<div style={{width:`200px`, display:'flex', alignItems:'center'}}>
-							<input
-								style={{width:'15px'}}
-								type="radio"
-								id="신규상담"
-								className="input"
-								value="신규상담"
-								checked={selectedValue === "신규상담"}
-								onChange={()=>{}}
-							/>
-							<SelectBox 
-								notice={{ value: '선택', label: '선택' }}
-								widthmain={100} selectWidth={100} selectTextWidth={90}
-								data={[ 
-									{ value: 'n1', label: '신규상담' },
-									{ value: 'n2', label: '신규상담' }
-								]} 
+						<CheckBox title='예약자명'/>
+						<CheckBox title='전화번호'/>
+						<CheckBox title='상품코드'/>
+						<CheckBox title='아이디'/>
+						<div className='checkInputCover'>
+						<div className='checkInput'>
+							<input className="input" type="checkbox"
+								checked={sort === 'drop'}
+								onChange={()=>{
+									setSort('drop')
+								}}
 							/>
 						</div>
-						<InputBox width='5%' value={''} func={(e)=>{}} />
+						<DropdownBox
+                widthmain='100px'
+                height='35px'
+                selectedValue={''}
+                options={[
+									{ value: '신규상담', label: '신규상담' },
+									{ value: '신규상담', label: '신규상담' },
+								]}
+                handleChange={(e)=>{}}
+              />
+					</div>
+						<input className="inputdefault" type="text" style={{width:'30%', textAlign:'left'}} 
+              value={word} onChange={(e)=>{setWord(e.target.value)}}/>
 					</div>
 				</div>
 				<div className="buttonbox">
@@ -145,41 +166,34 @@ export default function Sub1_Online (props:any) {
 
 				<div className="main-list-cover">
 					<div className="titlebox">
-						{/* <TitleBox width={50} text='NO'/>
-						<TitleBox width={180} text='문의일'/>
-						<TitleBox width={100} text='성함'/>
-						<TitleBox width={150} text='연락처'/>
-						<TitleBox width={120} text='여행지'/>
-						<TitleBox width={100} text='타입'/>
-						<TitleBox width={100} text='기간'/>
-						<TitleBox width={230} text='여행날짜'/>
-						<TitleBox width={50} text='인원'/>
-						<TitleBox width={100} text='방문경로'/>
-						<TitleBox width={100} text='상태'/>
-						<TitleBox width={100} text='담당자'/> */}
+						<TitleBox width='3%' text='NO'/>
+						<TitleBox width='5%' text='형태'/>
+						<TitleBox width='8%' text='성함'/>
+						<TitleBox width='12%' text='연락처'/>
+						<TitleBox width='12%' text='예식일'/>
+						<TitleBox width='10%' text='관심여행지'/>
+						<TitleBox width='10%' text='통화가능시간'/>
+						<TitleBox width='12%' text='방문예정일'/>
+						<TitleBox width='7%' text='방문시간'/>
+						<TitleBox width='7%' text='장소'/>
+						<TitleBox width='5%' text='상태'/>
   				</div>
 					
 					{
-						example.map((item:any, index:any)=>{
+						list.map((item:any, index:any)=>{
 							return (
-								<div key={index}
-									className="rowbox"
-									onClick={()=>{
-										navigate('counseldetail', {state : item});
-									}}
-								>
-									<TextBox width={50} text={item.no} fontSize={15}/>
-									<TextBox width={180} text={item.requestDate} fontSize={15}/>
-									<TextBox width={100} text={item.name} fontSize={15}/>
-									<TextBox width={150} text={item.phone} fontSize={15}/>
-									<TextBox width={120} text={item.tourLocation} fontSize={15}/>
-									<TextBox width={100} text={item.tourType} fontSize={15}/>
-									<TextBox width={100} text={item.tourPeriod} fontSize={15}/>
-									<TextBox width={230} text={item.tourDate}/>
-									<TextBox width={50} text={item.tourPersonNum} fontSize={15}/>
-									<TextBox width={100} text={item.requestPath} fontSize={15}/>
-									<TextBox width={100} text={item.state} fontSize={15}/>
-									<TextBox width={100} text={item.charger} fontSize={15}/>
+								<div key={index} className="rowbox">
+									<TextBox width='3%' text={index+1} />
+									<TextBox width='5%' text={item.sort} />
+									<TextBox width='8%' text={item.name} />
+									<TextBox width='12%' text={item.phone} />
+									<TextBox width='12%' text={item.dateCeremony} />
+									<TextBox width='10%' text={item.interestLocation} />
+									<TextBox width='10%' text={item.callTime} />
+									<TextBox width='12%' text={item.date} />
+									<TextBox width='7%' text={item.visitTime} />
+									<TextBox width='7%' text={item.stage} />
+									<TextBox width='5%' text={item.state} />
 								</div>
 							)
 						})

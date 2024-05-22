@@ -13,7 +13,7 @@
     align-items: center;
     
     .main-title {
-      width: 1400px;
+      width: 95%;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -38,12 +38,13 @@
   
     }
     .main-list-cover {
-      width: 1400px;
+      width: 95%;
 
       .titlebox {
         display: flex;
         justify-content: space-between;
         background-color: #E2E2E2;;
+        padding: 0 5px;
       }
       .rowbox {
         display: flex;
@@ -52,7 +53,7 @@
         justify-content: space-between;
         background-color: #fff;;
         border-bottom: 1px solid #E2E2E2;
-  
+        padding: 0 5px;
       }
       .rowbox:hover {
         cursor: pointer;

@@ -15,7 +15,7 @@
 
       .cover {
         display: flex;
-        min-width: 1000px;
+        width: 95%;
         border: 1px solid #cfcfcf;
 
         .title {
@@ -29,7 +29,7 @@
           }
         }
         .content {
-          min-width: 1000px;
+          width: calc(100% - 120px);
           height: 60px;
           display: flex;
           align-items: center;
@@ -43,21 +43,6 @@
             display: flex; 
             align-items: center;
       
-            .dateinput {
-              font-size: 15px;
-              font-weight: normal;
-              width: 200px;
-              height: 40px;
-              text-align: center;
-              border: 1px solid #E9E9E9;
-              box-sizing: border-box;
-              border-radius: 5px;
-            }
-            .calender-icon {
-              position: absolute;
-              right: 20px;
-              pointer-events: none; 
-            }
           }
           .btn-row {
             display: flex;
@@ -68,21 +53,40 @@
               border: 1px solid #E9E9E9;
               border-radius: 5px;
               margin: 0 5px;
+             p {
+                font-size: 14px;
+              }
             }
             .btnbox:hover {
               cursor: pointer;
               background-color: #e2e2e2;
             }
           }
-          > .input {
-            font-size: 15px;
-            font-weight: normal;
-            height: 40px;
-            border: 1px solid #E9E9E9;
-            box-sizing: border-box;
-            border-radius: 5px;
-            text-align: start;
+          .inputdefault {
+            margin-left: 5px; 
+            text-align: left;
             padding-left: 10px;
+           }
+          .checkInputCover {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+    
+            .checkInput {
+              width: 30px;
+              height: 30px; 
+              display: flex;
+              align-items: center; 
+              justify-content: center;
+      
+              .input {
+                width: 20px;
+                height: 20px;
+              }
+            }
+            p {
+              font-size: 14px;
+            }
           }
         }
       }

@@ -62,7 +62,7 @@ export default function Sub9_Notification (props:any) {
 										navigate('/counsel/counseldetail', {state : item});
 									}}
 								>
-									<TextBox width={80} text={index+1} fontSize={15}/>
+									{/* <TextBox width={80} text={index+1} fontSize={15}/>
 									<TextBox width={100} text={item.sort} fontSize={15}/>
 									<TextBox width={100} text={item.name}  fontSize={15}/>
 									<TextBox width={150} text={item.phone} fontSize={15}/>
@@ -70,7 +70,7 @@ export default function Sub9_Notification (props:any) {
 									<TextBox width={100} text={item.lastTourDate} fontSize={15}/>
 									<TextBox width={100} text={`${item.useNum}회`} fontSize={15}/>
 									<TextBox width={100} text={item.useCost} fontSize={15}/>
-									<TextBox width={100} text={item.present} fontSize={15}/>
+									<TextBox width={100} text={item.present} fontSize={15}/> */}
 								</div>
 							)
 						})

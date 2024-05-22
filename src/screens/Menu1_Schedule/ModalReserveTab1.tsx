@@ -316,22 +316,26 @@ export default function ModalReserveTab1(props:any) {
 
         </section>
 
-        <section>
-          <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
-            <div className='btn-row' style={{marginRight:'5px', width:'120px'}}
-              onClick={()=>{
-                
-              }}
-            >
-              <p>전체삭제</p>
+        {
+          props.selectTab !== 1 &&
+          <section>
+            <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
+              <div className='btn-row' style={{marginRight:'5px', width:'120px'}}
+                onClick={()=>{
+                  
+                }}
+              >
+                <p>전체삭제</p>
+              </div>
+              <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#5fb7df'}}
+                onClick={handleReserveSaveTab1}
+              >
+                <p>저장</p>
+              </div>
             </div>
-            <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#5fb7df'}}
-              onClick={handleReserveSaveTab1}
-            >
-              <p>저장</p>
-            </div>
-          </div>
-        </section>
+          </section>
+        }
+        
 
     </div>
   )

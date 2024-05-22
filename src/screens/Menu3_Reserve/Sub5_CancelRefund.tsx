@@ -188,7 +188,7 @@ export default function Sub5_CancelRefund (props:any) {
 										navigate('counseldetail', {state : item});
 									}}
 								>
-									<TextBox width={50} text={item.no} fontSize={15}/>
+									{/* <TextBox width={50} text={item.no} fontSize={15}/>
 									<TextBox width={100} text={item.reserveDate} text2={item.startDate} fontSize={15}/>
 									<TextBox width={100} text={item.name1} text2={item.name2} fontSize={15}/>
 									<TextBox width={150} text={item.phone1} text2={item.phone2} fontSize={15}/>
@@ -199,7 +199,7 @@ export default function Sub5_CancelRefund (props:any) {
 									<TextBox width={120} text={`${item.balanceCost}원`} text2={item.balanceCostDate} fontSize={15}/>
 									
 									<TextBox width={100} text={item.reservePath} fontSize={15}/>
-									<TextBox width={100} text={item.charger} fontSize={15}/>
+									<TextBox width={100} text={item.charger} fontSize={15}/> */}
 								</div>
 							)
 						})

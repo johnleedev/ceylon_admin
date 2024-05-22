@@ -5,25 +5,25 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction';
 import ModalReserve from './ModalReserve';
 import ModalCheckCounsel from './ModalCheckCounsel';
-import ModalCounsel from './ModalCounsel';
+import ModalInputCounsel from './ModalInputCounsel';
 import axios from 'axios';
 import MainURL from '../../MainURL';
 import { DropdownBox } from '../../boxs/DropdownBox';
 import ModalCheckOnline from './ModalCheckOnline';
-import ModalCompanySchedule from './ModalCompanySchedule';
-
+import ModalInputCompanySchedule from './ModalInputCompanySchedule';
+import ModalCheckCompanySchedule from './ModalCheckCompanySchedule';
+import { useNavigate } from 'react-router-dom';
 
 export default function MainSchdule() {
+
+  let navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState(1);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [sort, setSort] = useState('H');
   const [serialNum, setSerialNum] = useState('');
-  const [onlines, setOnlines] = useState<EventsProps[]>([]);
-  const [counsels, setCounsels] = useState<EventsProps[]>([]);
-  const [reserves, setReserves] = useState<EventsProps[]>([]);
   const [events, setEvents] = useState<EventsProps[]>([]);
-
+ 
   interface SelectBoxProps {
     num: number;
     text: string;
@@ -82,21 +82,19 @@ export default function MainSchdule() {
     }
   };
  
-  // 달력 ---------------------------------------------------------
+  // 달력 ---------------------------------------------------------------------------------------------
   const [checkContent, setCheckContent] = useState();
-  const companySchedule = [
-    {
-      title: 'schedule', start: '2024-05-23', end: '2024-05-25', content : "테스트일정", ccolor: '#8C8C8C'
-    },
-  ]
 
   function renderEventContent(eventInfo:any) {
-
     return (
       <div
         onClick={()=>{
-          setIsViewCheckModal(true);
-          setCheckContent(eventInfo.event);
+          if (currentTab === 3) {
+            navigate(`/reserve/reservedetail`, {state : eventInfo.event.extendedProps.serialNum});
+          } else {
+            setIsViewCheckModal(true);
+            setCheckContent(eventInfo.event);
+          }
         }}
         className='dayBox'
         style={{border: `1px solid ${currentTab === 6 ? eventInfo.event.extendedProps.fontColor : '#fff'}`}}
@@ -117,11 +115,17 @@ export default function MainSchdule() {
           <p>{eventInfo.event.extendedProps.name}</p>
         </>}
         { currentTab === 6 && <>
-          <h3 style={{color: `${eventInfo.event.extendedProps.fontColor}`}}>{eventInfo.event.extendedProps.content}</h3>
+          <div style={{backgroundColor:`${eventInfo.event.extendedProps.fontColor}`, padding:'2px 5px',
+                      borderRadius:'3px', marginRight:'5px'}}>
+            <p style={{color:'#fff'}}>{eventInfo.event.extendedProps.sort}</p>
+          </div>
+          <h3 style={{color: `${eventInfo.event.extendedProps.fontColor}`}}>{eventInfo.event.title}</h3>
         </>}
       </div>
     )
   }
+
+  // 날짜 선택
   const [selectDate, setSelectDate] = useState('');
   const handleSelectDate = (e:any) => {
     const year = e.date.getFullYear();
@@ -130,7 +134,6 @@ export default function MainSchdule() {
     const result = `${year}-${month}-${day}` 
     setSelectDate(result);
   }
-
 
   // 예약 등록 함수 ---------------------------------------------------------
   // alert
@@ -288,6 +291,7 @@ export default function MainSchdule() {
             ></div>
             { currentTab === 1 && <ModalCheckOnline setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/> }
             { currentTab === 2 && <ModalCheckCounsel setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>}
+            { currentTab === 6 && <ModalCheckCompanySchedule setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>}
           </div>
         }
       </div>
@@ -298,7 +302,7 @@ export default function MainSchdule() {
         <div className='Modal'>
           <div className='modal-backcover' style={{height : height + 100}}></div>
           <div className='modal-maincover' ref={divAreaRef}>
-            <ModalCounsel 
+            <ModalInputCounsel 
               selectDate={selectDate}
               setIsViewCounselModal={setIsViewCounselModal}
               refresh={refresh}
@@ -330,7 +334,7 @@ export default function MainSchdule() {
         <div className='Modal'>
           <div className='modal-backcover' style={{height : height + 100}}></div>
           <div className='modal-maincover' ref={divAreaRef}>
-            <ModalCompanySchedule
+            <ModalInputCompanySchedule
               selectDate={selectDate}
               setIsViewScheduleModal={setIsViewScheduleModal}
               refresh={refresh}

@@ -42,7 +42,7 @@ export default function Sub3_EstimateList (props:any) {
 										navigate('/counsel/counseldetail', {state : item});
 									}}
 								>
-									<TextBox width={80} text={index+1} fontSize={15}/>
+									{/* <TextBox width={80} text={index+1} fontSize={15}/>
 									<TextBox width={150} text='2023-04-02' text2='2023-04-07' fontSize={15}/>
 									<TextBox width={100} text='김실론어' fontSize={15}/>
 									<TextBox width={150} text='010-1234-5678' fontSize={15}/>
@@ -53,7 +53,7 @@ export default function Sub3_EstimateList (props:any) {
 									<TextBox width={50} text='2명' fontSize={15}/>
 									<TextBox width={100} text='소개' fontSize={15}/>
 									<TextBox width={100} text='견적서 생성' fontSize={15}/>
-									<TextBox width={100} text='김철수' fontSize={15}/>
+									<TextBox width={100} text='김철수' fontSize={15}/> */}
 								</div>
 							)
 						})

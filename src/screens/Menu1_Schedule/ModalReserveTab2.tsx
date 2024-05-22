@@ -199,7 +199,7 @@ export default function ModalReserveTab2(props:any) {
       ticketingState: JSON.stringify(ticketingState),
       hotelReserveState : JSON.stringify(hotelReserveState),
       landCompany : JSON.stringify(landCompany),
-      etcState : JSON.stringify(landCompany)
+      etcState : JSON.stringify(etcState)
     })
     .then((res)=>{
       if (res.data) {
@@ -378,7 +378,7 @@ export default function ModalReserveTab2(props:any) {
         {
           airportState.map((item:any, index:any)=>{
             return (
-              <div className="coverbox">
+              <div className="coverbox" key={index}>
                 <div className="coverrow hole" style={{justifyContent:'space-between'}}>
                   <DateBoxNum width='150px' subWidth='130px' right={15}   setSelectDate={(e:any) => handleAirportDateChange(e, index)} date={item.date} marginLeft={5}/>
                   <input style={{width:'17%', textAlign:'center'}}
@@ -424,7 +424,7 @@ export default function ModalReserveTab2(props:any) {
         {
           ticketingState.map((item:any, index:any)=>{
             return (
-              <div className="coverbox">
+              <div className="coverbox" key={index}>
                 <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
                   <TitleBox width="30%" text={`항공사${index+1}`}/>
                   <input style={{width:'68%', textAlign:'center', marginRight:'3px'}}
@@ -482,7 +482,7 @@ export default function ModalReserveTab2(props:any) {
         {
           hotelReserveState.map((item:any, index:any)=>{
             return (
-              <div className="coverbox">
+              <div className="coverbox" key={index}>
                 <div className="coverrow hole" style={{justifyContent:'space-between'}}>
                   <div style={{display:'flex', alignItems:'center', width:'30%', justifyContent:'center'}}>
                     <DateBoxNum width='150px' subWidth='130px' right={15}   setSelectDate={(e:any) => handleHotelReserveDate1Change(e, index)} date={item.date1} marginLeft={5}/>
@@ -535,7 +535,7 @@ export default function ModalReserveTab2(props:any) {
               {
                 landCompany.map((item:any, index:any)=>{
                   return (
-                    <div style={{display:'flex', alignItems:'center', minHeight:'50px'}}>
+                    <div key={index} style={{display:'flex', alignItems:'center', minHeight:'50px'}}>
                       <DropdownBox
                         widthmain='30%' height='35px' selectedValue={item.companyName}
                         options={DropDownLandCompany}    
@@ -653,22 +653,25 @@ export default function ModalReserveTab2(props:any) {
         </div>
       </section>
 
-      <section>
-        <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
-          <div className='btn-row' style={{marginRight:'5px', width:'120px'}}
-            onClick={()=>{
-              
-            }}
-          >
-            <p>전체삭제</p>
+      {
+        props.selectTab !== 1 &&
+        <section>
+          <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
+            <div className='btn-row' style={{marginRight:'5px', width:'120px'}}
+              onClick={()=>{
+                
+              }}
+            >
+              <p>전체삭제</p>
+            </div>
+            <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#5fb7df'}}
+              onClick={handleReserveSaveTab2}
+            >
+              <p>저장</p>
+            </div>
           </div>
-          <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#5fb7df'}}
-            onClick={handleReserveSaveTab2}
-          >
-            <p>저장</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      }
 
     </div>
   )
