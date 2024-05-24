@@ -3,9 +3,12 @@ import './TopBar.scss'
 import { DropdownBox } from "../boxs/DropdownBox";
 import { useSetRecoilState } from "recoil";
 import { recoilExchangeRate } from "../RecoilStore";
+import { useNavigate } from "react-router-dom";
 
 
 export default function TopBar () {
+
+  let navigate = useNavigate();
   
   const [date, setDate] = useState('');
   const [base, setBase] = useState('USD');
@@ -30,6 +33,14 @@ export default function TopBar () {
   useEffect(() => {
     fetchExchangeRate();
   }, [base])
+
+  const handleLogout = async () => {
+    navigate('/');
+    alert('로그아웃 되었습니다.')
+    sessionStorage.clear();
+    window.location.reload();
+  };
+
 
   return (
     <header className="topbar">
@@ -61,11 +72,14 @@ export default function TopBar () {
        <div className="menubtn">
         <p>관리자</p> 
         <div className="divider"></div>
-        <p>로그아웃</p> 
+        {
+          (sessionStorage.getItem('userName') === null || sessionStorage.getItem('userName') === undefined)
+          ? <p>로그인</p> 
+          : <p onClick={handleLogout}>로그아웃</p> 
+        }
+        
         <div className="divider"></div>
         <p>사이트메인</p> 
-        <div className="divider"></div>
-        <p>SMS발송</p> 
        </div>
       </div>
        

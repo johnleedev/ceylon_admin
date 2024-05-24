@@ -3,17 +3,13 @@ import './ModalReserve.scss'
 import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";
-import { TitleBox } from '../../boxs/TitleBox';
-import { SelectBox } from '../../boxs/SelectBox';
-import { InputBox } from '../../boxs/InputBox';
-import { DateBoxKo } from '../../boxs/DateBoxKo';
-import { RadioBox } from '../../boxs/RadioBox';
+import { TitleBox } from '../../../boxs/TitleBox';
 import ModalReserveTab1 from './ModalReserveTab1';
 import ModalReserveTab2 from './ModalReserveTab2';
 import ModalReserveTab3 from './ModalReserveTab3';
 import ModalReserveTab4 from './ModalReserveTab4';
 import axios from 'axios';
-import MainURL from '../../MainURL';
+import MainURL from '../../../MainURL';
 
 
 export default function ModalReserve (props : any) {

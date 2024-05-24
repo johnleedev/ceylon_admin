@@ -31,9 +31,16 @@ export default function MenuBar () {
       className="box" 
       style={{backgroundColor : currentTab === num ? '#3cb2ef' : ''}}
       onClick={()=>{
-        setCurrentTab(num); 
-        setSubCurrentTab(1);
-        navigate(`${link}`);
+        const copy = sessionStorage.getItem('userName');
+        if (copy === null || copy === undefined) {
+          alert('로그인이 필요합니다.')
+        } else {
+          setCurrentTab(num); 
+          setSubCurrentTab(1);
+          navigate(`${link}`);
+          window.scrollTo(0, 0);
+        }
+        
       }}
     >
       <img src={icon} />
@@ -52,6 +59,7 @@ export default function MenuBar () {
       onClick={()=>{
         setSubCurrentTab(num);
         navigate(`${link}`);
+        window.scrollTo(0, 0);
       }}
     >
       <div className="selectrow" 
@@ -60,7 +68,8 @@ export default function MenuBar () {
       <p style={{color: subCurrentTab === num ? '#fff' : '#BDBDBD'}}>{text}</p>
     </div>
   )
-  
+
+ 
 
   return (
     

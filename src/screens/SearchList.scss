@@ -19,10 +19,17 @@
       align-items: center;
       margin-bottom: 15px;
   
-      h1 {
-        font-size: 30px;
-        font-weight: bold;
+      .title-box {
+        display: flex;
+        align-items: center;
+
+        h1 {
+          font-size: 30px;
+          font-weight: bold;
+          margin-right: 15px;
+        }
       }
+      
       .contactBtn-box {
         display: flex;
         align-items: center;

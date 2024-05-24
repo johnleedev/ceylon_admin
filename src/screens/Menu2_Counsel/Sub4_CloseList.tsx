@@ -39,7 +39,7 @@ export default function Sub4_CloseList (props:any) {
 							return (
 								<div className="rowbox"
 									onClick={()=>{
-										navigate('/counsel/counseldetail', {state : item});
+										
 									}}
 								>
 									{/* <TextBox width={80} text={index+1} fontSize={15}/>

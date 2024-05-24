@@ -41,16 +41,20 @@
         margin-left: 20px;
       }
       > .textarea {
-        margin-left: 20px;
+        margin-left: 5px;
         font-size: 15px;
         font-weight: normal;
         flex: 1;
-        min-height: 150px;
+        min-height: 180px;
         text-align: start;
         border: 1px solid #E9E9E9;
         box-sizing: border-box;
         border-radius: 5px;
         padding: 10px;
+      }
+      input {
+        text-align:left;
+        padding-left: 10px;
       }
     }
   }

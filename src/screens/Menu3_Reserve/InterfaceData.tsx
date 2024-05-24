@@ -21,34 +21,6 @@ export interface ReserveInfoProps {
   charger: string;
   costListSum: string;
   date: string;
-  decideDoc: {
-      name: string;
-      requestDate: string;
-      completeDate: string;
-      deliveryType: string;
-      charger: string;
-  };
-  eTicket: {
-      name: string;
-      requestDate: string;
-      completeDate: string;
-      deliveryType: string;
-      charger: string;
-  };
-  freeGift: {
-      name: string;
-      requestDate: string;
-      completeDate: string;
-      deliveryType: string;
-      charger: string;
-  };
-  happyCall: {
-      name: string;
-      requestDate: string;
-      completeDate: string;
-      deliveryType: string;
-      charger: string;
-  };
   id: number;
   inputState: string;
   isCashBill: string;
@@ -57,24 +29,8 @@ export interface ReserveInfoProps {
       notice: string;
   }[];
   name: string;
-  prepare: {
-      name: string;
-      requestDate: string;
-      completeDate: string;
-      deliveryType: string;
-      charger: string;
-  };
-
   productName: null;
   recommender: string;
-  refund: {
-      name: string;
-      requestDate: string;
-      completeDate: string;
-      deliveryType: string;
-      charger: string;
-  };
-
   reserveLocation: string;
   serialNum: string;
   totalCost: string;
@@ -85,13 +41,6 @@ export interface ReserveInfoProps {
   tourStartAirport: null;
   tourStartPeriod: null;
   tourTotalContractCost: string;
-  visaEsta: {
-      name: string;
-      requestDate: string;
-      completeDate: string;
-      deliveryType: string;
-      charger: string;
-  };
   visitPath: string;
 }
 
@@ -155,4 +104,12 @@ export interface RefundCostProps {
     nameko: string;
     cost: string;
     date: string;
+};
+
+export interface DeliveryProps {
+    name: string;
+    requestDate: string;
+    completeDate: string;
+    deliveryType: string;
+    charger: string;
 };

@@ -4,18 +4,18 @@ import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";
 import { TitleBox } from '../../boxs/TitleBox';
-import { SelectBox } from '../../boxs/SelectBox';
-import { InputBox } from '../../boxs/InputBox';
-import { DateBoxKo } from '../../boxs/DateBoxKo';
-import { RadioBox } from '../../boxs/RadioBox';
+
+
+
 import { TextBoxPL10 } from '../../boxs/TextBoxPL10';
 import { DateBoxNum } from '../../boxs/DateBoxNum';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../MainURL';
-import { AirportStateProps, DepositCostProps, EtcStateProps, HotelReserveStateProps, RefundCostProps, ReserveInfoProps, 
+import { AirportStateProps, DeliveryProps, DepositCostProps, EtcStateProps, HotelReserveStateProps, RefundCostProps, ReserveInfoProps, 
         TicketingStateProps, UserInfoProps, productCostProps } from './InterfaceData';
 import Loading from '../../components/Loading';
+import { DropdownBox } from '../../boxs/DropdownBox';
 
 
 export default function ReserveDetail (props : any) {
@@ -31,13 +31,11 @@ export default function ReserveDetail (props : any) {
   const [ticketingState, setTicketingState] = useState<TicketingStateProps[]>([]);
   const [hotelReserveState, setHotelReserveState] = useState<HotelReserveStateProps[]>([]);
   const [etcState, setEtcState] = useState<EtcStateProps>();
-  const [contractCost, setContractCost] = useState<DepositCostProps>();
-  const [airportCost, setAirportCost] = useState<DepositCostProps>();
-  const [middleCost, setMiddleCost] = useState<DepositCostProps>();
-  const [restCost, setRestCost] = useState<DepositCostProps>();
-  const [additionCost, setAdditionCost] = useState<DepositCostProps>();
+  const [depositCostList, setDepositCostList] = useState<DepositCostProps[]>([]);
   const [refundCost, setRefundCost] = useState<RefundCostProps>();
+  const [deliveryList, setDeliveryList] = useState<DeliveryProps[]>([]);
   
+  // 데이터 가져오기 ------------------------------------------------------------------------------------------------------
 	const fetchPosts = async () => {
 		const resuser = await axios.get(`${MainURL}/adminreserve/getreserveuser/${serialNum}`)
 		if (resuser) {
@@ -51,25 +49,26 @@ export default function ReserveDetail (props : any) {
       setTicketingState(JSON.parse(resinfo.data[0].ticketingState));
       setHotelReserveState(JSON.parse(resinfo.data[0].hotelReserveState));
       setEtcState(JSON.parse(resinfo.data[0].etcState));
-      setContractCost(JSON.parse(resinfo.data[0].contractCost));
-      setAirportCost(JSON.parse(resinfo.data[0].airportCost));
-      setMiddleCost(JSON.parse(resinfo.data[0].middleCost));
-      setRestCost(JSON.parse(resinfo.data[0].restCost));
-      setAdditionCost(JSON.parse(resinfo.data[0].additionCost));
+      const costListCopy = [
+        JSON.parse(resinfo.data[0].contractCost),
+        JSON.parse(resinfo.data[0].airportCost),
+        JSON.parse(resinfo.data[0].middleCost),
+        JSON.parse(resinfo.data[0].restCost),
+        JSON.parse(resinfo.data[0].additionCost)
+      ]
+      setDepositCostList(costListCopy);
       setRefundCost(JSON.parse(resinfo.data[0].refundCost));
-
-      // const deliveryList = [
-      //   JSON.parse(resinfo.data[0].eTicket),
-      //   JSON.parse(resinfo.data[0].visaEsta),
-      //   JSON.parse(resinfo.data[0].decideDoc),
-      //   JSON.parse(resinfo.data[0].prepare),
-      //   JSON.parse(resinfo.data[0].freeGift),
-      //   JSON.parse(resinfo.data[0].happyCall),
-      //   JSON.parse(resinfo.data[0].refund)
-      // ];
+      const deliveryListCopy = [
+        JSON.parse(resinfo.data[0].eTicket),
+        JSON.parse(resinfo.data[0].visaEsta),
+        JSON.parse(resinfo.data[0].decideDoc),
+        JSON.parse(resinfo.data[0].prepare),
+        JSON.parse(resinfo.data[0].freeGift),
+        JSON.parse(resinfo.data[0].happyCall),
+        JSON.parse(resinfo.data[0].refund)
+      ];
+      setDeliveryList(deliveryListCopy)
       
-      console.log(JSON.parse(resinfo.data[0].eTicket));
-
 		}
 	};
 
@@ -77,35 +76,9 @@ export default function ReserveDetail (props : any) {
 		fetchPosts();
 	}, []);  
 
-  // const [currentState, setCurrentState] = useState(1);
-  // const [isChecked, setIsChecked] = useState(false);
+  // 오른쪽바 데이터 입력 ------------------------------------------------------------------------------------------------------
+  const [test, setTest] = useState('');
 
-
-  // const [selectedSortOption, setSelectedSortOption] = useState({ value: '선택', label: '선택' });
-
-  // const handleSelectSortChange = ( event : any, index:number) => {
-  //   setSelectedSortOption(event);
-  //   const inputs = [...userInfo]; 
-  //   inputs[index].sort = event.value; 
-  //   setUserInfo(inputs);
-  // }
-
-  const CostBox: React.FC<any> = ({ content }) => (
-    <div className="coverbox">
-      <div className="coverrow rightborder" style={{width:'40%'}}>
-        <TitleBox width="100px" text={content.nameko}/>
-        <TextBoxPL10 width="40%" text={content.cost} justify='flex-end'/>
-        <p>원</p>
-      </div>
-      <div className="coverrow" style={{width:'60%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-        <TextBoxPL10 width="80%" text={content.date} justify='center'/>
-        <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
-        <TextBoxPL10 width="80%" text={content.type} justify='center'/>
-        <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
-        <TextBoxPL10 width="80%" text={content.deposit} justify='center'/>
-      </div>
-    </div>
-  )
   
   return (
     (userInfo.length > 0 
@@ -115,11 +88,7 @@ export default function ReserveDetail (props : any) {
       && (ticketingState.length > 0)
       && (hotelReserveState.length > 0)
       && (etcState !== undefined && etcState !== null)
-      && (contractCost !== undefined && contractCost !== null)
-      && (airportCost !== undefined && airportCost !== null)
-      && (middleCost !== undefined && middleCost !== null)
-      && (restCost !== undefined && restCost !== null)
-      && (additionCost !== undefined && additionCost !== null)
+      && (depositCostList.length > 0)
       && (refundCost !== undefined && refundCost !== null)
     )
     ?
@@ -307,23 +276,23 @@ export default function ReserveDetail (props : any) {
                 <div style={{width:'60%'}}>
                   <div style={{display:'flex', alignItems:'center'}}>
                     <h3 style={{margin:'0 10px', width:'25%'}}>성인</h3>
-                    <TextBoxPL10 width="35%" text={productCost.costAdult} justify='flex-end'/>
+                    <TextBoxPL10 width="40%" text={productCost.costAdult} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width="15%" text={productCost.costAdultNum} justify='flex-end'/>
+                    <TextBoxPL10 width="10%" text={productCost.costAdultNum} justify='flex-end'/>
                     <p>명</p>
                   </div>
                   <div style={{display:'flex', alignItems:'center'}}>
                     <h3 style={{margin:'0 10px', width:'25%'}}>소아</h3>
-                    <TextBoxPL10 width="35%" text={productCost.costChild} justify='flex-end'/>
+                    <TextBoxPL10 width="40%" text={productCost.costChild} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width="15%" text={productCost.costChildNum} justify='flex-end'/>
+                    <TextBoxPL10 width="10%" text={productCost.costChildNum} justify='flex-end'/>
                     <p>명</p>
                   </div>
                   <div style={{display:'flex', alignItems:'center'}}>
                     <h3 style={{margin:'0 10px', width:'25%'}}>유아</h3>
-                    <TextBoxPL10 width="35%" text={productCost.costInfant} justify='flex-end'/>
+                    <TextBoxPL10 width="40%" text={productCost.costInfant} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width="15%" text={productCost.costInfantNum} justify='flex-end'/>
+                    <TextBoxPL10 width="10%" text={productCost.costInfantNum} justify='flex-end'/>
                     <p>명</p>
                   </div>
                 </div>
@@ -501,13 +470,26 @@ export default function ReserveDetail (props : any) {
                 <p>원</p>
               </div>
             </div>
-
-            <CostBox content={contractCost}/>
-            <CostBox content={airportCost}/>
-            <CostBox content={middleCost}/>
-            <CostBox content={restCost}/>
-            <CostBox content={additionCost}/>
-
+            { 
+              depositCostList.map((item:any, index:any)=>{
+                return (
+                  <div className="coverbox" key={index}>
+                    <div className="coverrow rightborder" style={{width:'40%'}}>
+                      <TitleBox width="100px" text={item.nameko}/>
+                      <TextBoxPL10 width="40%" text={item.cost} justify='flex-end'/>
+                      <p>원</p>
+                    </div>
+                    <div className="coverrow" style={{width:'60%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                      <TextBoxPL10 width="80%" text={item.date} justify='center'/>
+                      <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
+                      <TextBoxPL10 width="80%" text={item.type} justify='center'/>
+                      <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
+                      <TextBoxPL10 width="80%" text={item.deposit} justify='center'/>
+                    </div>
+                  </div>
+                )
+              })
+            }
             <div className="coverbox">
               <div className="coverrow rightborder" style={{width:'40%'}}>
                 <TitleBox width="100px" text='환불'/>
@@ -546,16 +528,16 @@ export default function ReserveDetail (props : any) {
               </div>
             </div>
             {
-              ["e-Ticket", "비자/ESTA", "확정서", "여행준비물", "캐리어사은품", "해피콜", "환불/과입금"].map((item:any, index:any)=>{
+              deliveryList.map((item:any, index:any)=>{
                 return (
                   <div className="coverbox">
                     <div className="coverrow hole">
-                      <TitleBox width="100px" text={item}/>
+                      <TitleBox width="100px" text={item.name}/>
                       <div style={{flex:1, display:'flex', justifyContent:'space-between'}}>
-                        <TextBoxPL10 width="20%" text={''} justify='center'/>
-                        <TextBoxPL10 width="20%" text={''} justify='center'/>
-                        <TextBoxPL10 width="20%" text={''} justify='center'/>
-                        <TextBoxPL10 width="20%" text={''} justify='center'/>
+                        <TextBoxPL10 width="20%" text={item.requestDate} justify='center'/>
+                        <TextBoxPL10 width="20%" text={item.completeDate} justify='center'/>
+                        <TextBoxPL10 width="20%" text={item.deliveryType} justify='center'/>
+                        <TextBoxPL10 width="20%" text={item.charger} justify='center'/>
                       </div>
                     </div>
                   </div>
@@ -566,38 +548,41 @@ export default function ReserveDetail (props : any) {
           </section>
         </div>
         
+        {/* 오른쪽 바 데이터 입력 ------------------------------------------------------------------------------------------------------------------------------ */}
         <div className='right-cover'>
-         {/*   <div className="content">
+         <div className="content">
             
             <section>
               <h1>온라인 계약서 (전자서명, 동의서)</h1>
               <div className="bottombar"></div>
               <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor: '#E2E2E2'}}>
-                <TitleBox width="100px" text='날짜'/>
-                <TitleBox width="100px" text='경로'/>
-                <TitleBox width="100px" text='상태'/>
-                <TitleBox width={150} text='보기'/>
+                <TitleBox width="130px" text='날짜'/>
+                <TitleBox width="20%" text='경로'/>
+                <TitleBox width="20%" text='상태'/>
+                <TitleBox width="25%" text='보기'/>
               </div>
               <div className="coverbox">
                 <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                  <DateBoxNum date={startDate} func={handleSelectDateChange} width="100px" subwidth="100px" right={7}/>
-                  <SelectBox 
-                    notice={{ value: '선택', label: '선택' }}
-                    widthmain={120} selectwidth="100px" selectTextWidth={90}
-                    data={[ 
-                      { value: 'n1', label: '이메일' },
-                      { value: 'n2', label: '이메일' },
-                    ]} 
+                  <DateBoxNum width='130px' subWidth='110px' right={15}   setSelectDate={setTest} date={test} marginLeft={5}/>
+                  <DropdownBox
+                    widthmain='20%' height='35px' selectedValue={''}
+                    options={[
+                      { value: '이메일', label: '이메일' },
+                      { value: '이메일', label: '이메일' }
+                    ]}    
+                    handleChange={(e)=>{}}
                   />
-                  <SelectBox 
-                    notice={{ value: '선택', label: '선택' }}
-                    widthmain={120} selectwidth="100px" selectTextWidth={90}
-                    data={[ 
-                      { value: 'n1', label: '전달' },
-                      { value: 'n2', label: '전달' },
-                    ]} 
+                  <DropdownBox
+                    widthmain='20%' height='35px' selectedValue={''}
+                    options={[
+                      { value: '대기', label: '대기' },
+                      { value: '전달', label: '전달' }
+                    ]}    
+                    handleChange={(e)=>{}}
                   />
-                  <InputBox width={150} value={''} func={(e)=>{}} />
+                  <input style={{width:'25%', textAlign:'center'}}
+                    value={''} className="inputdefault" type="text" 
+                    onChange={(e) => {}}/>
                 </div>
               </div>
             </section>
@@ -606,34 +591,37 @@ export default function ReserveDetail (props : any) {
               <h1>수배 확정 내역</h1>
               <div className="bottombar"></div>
               <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor: '#E2E2E2'}}>
-                <TitleBox width="100px" text='날짜'/>
-                <TitleBox width="100px" text='경로'/>
-                <TitleBox width="100px" text='상태'/>
-                <TitleBox width={150} text='보기'/>
+                <TitleBox width="130px" text='날짜'/>
+                <TitleBox width="20%" text='경로'/>
+                <TitleBox width="20%" text='상태'/>
+                <TitleBox width="25%" text='보기'/>
               </div>
               {
                 [1,2,3].map((item:any, index:any)=>{
                   return (
                     <div className="coverbox">
                       <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                        <DateBoxNum date={startDate} func={handleSelectDateChange} width="100px" subwidth="100px" right={7}/>
-                        <SelectBox 
-                          notice={{ value: '선택', label: '선택' }}
-                          widthmain={120} selectwidth="100px" selectTextWidth={90}
-                          data={[ 
-                            { value: 'n1', label: '이메일' },
-                            { value: 'n2', label: '이메일' },
-                          ]} 
+                        <DateBoxNum width='130px' subWidth='110px' right={15}   setSelectDate={setTest} date={test} marginLeft={5}/>
+                        <DropdownBox
+                          widthmain='20%' height='35px' selectedValue={''}
+                          options={[
+                            { value: '이메일', label: '이메일' },
+                            { value: '이메일', label: '이메일' }
+                          ]}    
+                          handleChange={(e)=>{}}
                         />
-                        <SelectBox 
-                          notice={{ value: '선택', label: '선택' }}
-                          widthmain={120} selectwidth="100px" selectTextWidth={90}
-                          data={[ 
-                            { value: 'n1', label: '전달' },
-                            { value: 'n2', label: '전달' },
-                          ]} 
+                        <DropdownBox
+                          widthmain='20%' height='35px' selectedValue={''}
+                          options={[
+                            { value: '예약', label: '예약' },
+                            { value: '대기', label: '대기' },
+                            { value: '확정', label: '확정' }
+                          ]}    
+                          handleChange={(e)=>{}}
                         />
-                        <InputBox width={150} value={''} func={(e)=>{}} />
+                        <input style={{width:'25%', textAlign:'center'}}
+                          value={''} className="inputdefault" type="text" 
+                          onChange={(e) => {}}/>
                       </div>
                   </div>
                   )
@@ -676,9 +664,9 @@ export default function ReserveDetail (props : any) {
                 )
               })
             }
-            </section> 
+            </section>
 
-          </div> */}
+          </div>
         </div>
 
       </div>

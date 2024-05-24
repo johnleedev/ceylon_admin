@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { TitleBox } from '../../boxs/TitleBox';
-import { DropdownBox } from '../../boxs/DropdownBox';
-import { DateBoxNum } from '../../boxs/DateBoxNum';
-import { DropDownAirline, DropDownLandCompany, DropDownNum, DropDownTourLocation } from '../DefaultData';
+import { TitleBox } from '../../../boxs/TitleBox';
+import { DropdownBox } from '../../../boxs/DropdownBox';
+import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DropDownAirline, DropDownLandCompany, DropDownNum, DropDownTourLocation } from '../../DefaultData';
 import { useRecoilValue } from 'recoil';
-import { recoilExchangeRate } from '../../RecoilStore';
+import { recoilExchangeRate } from '../../../RecoilStore';
 import axios from 'axios';
-import MainURL from '../../MainURL';
+import MainURL from '../../../MainURL';
 
 
 export default function ModalReserveTab2(props:any) {

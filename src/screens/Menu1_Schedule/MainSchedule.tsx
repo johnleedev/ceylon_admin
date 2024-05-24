@@ -3,16 +3,17 @@ import './MainSchedule.scss'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction';
-import ModalReserve from './ModalReserve';
-import ModalCheckCounsel from './ModalCheckCounsel';
+import ModalReserve from './ModalReserve/ModalReserve';
+import ModalCheckCounsel from './ModalCheck/ModalCheckCounsel';
 import ModalInputCounsel from './ModalInputCounsel';
 import axios from 'axios';
 import MainURL from '../../MainURL';
 import { DropdownBox } from '../../boxs/DropdownBox';
-import ModalCheckOnline from './ModalCheckOnline';
+import ModalCheckVisit from './ModalCheck/ModalCheckVisit';
 import ModalInputCompanySchedule from './ModalInputCompanySchedule';
-import ModalCheckCompanySchedule from './ModalCheckCompanySchedule';
+import ModalCheckCompanySchedule from './ModalCheck/ModalCheckCompanySchedule';
 import { useNavigate } from 'react-router-dom';
+import ModalCheckEstimate from './ModalCheck/ModalCheckEsimate';
 
 export default function MainSchdule() {
 
@@ -53,7 +54,7 @@ export default function MainSchdule() {
   }
 
   const fetchOnlinePosts = async () => {
-    const resOnline = await axios.get(`${MainURL}/adminschedule/getonlinelist`)
+    const resOnline = await axios.get(`${MainURL}/adminschedule/getonlinelist/all`)
     if (resOnline) {
       setEvents(resOnline.data)
     }
@@ -84,7 +85,7 @@ export default function MainSchdule() {
  
   // 달력 ---------------------------------------------------------------------------------------------
   const [checkContent, setCheckContent] = useState();
-
+  const [which_Visit_Counsel, setWhich_Visit_Counsel] = useState(1);
   function renderEventContent(eventInfo:any) {
     return (
       <div
@@ -92,6 +93,9 @@ export default function MainSchdule() {
           if (currentTab === 3) {
             navigate(`/reserve/reservedetail`, {state : eventInfo.event.extendedProps.serialNum});
           } else {
+            if (currentTab === 1) {
+              eventInfo.event.extendedProps.sort === '상담' ? setWhich_Visit_Counsel(1) : setWhich_Visit_Counsel(2);
+            }
             setIsViewCheckModal(true);
             setCheckContent(eventInfo.event);
           }
@@ -102,7 +106,7 @@ export default function MainSchdule() {
         { currentTab === 1 && <>
           <div style={{padding:'1px 3px', border:'1px solid #BDBDBD', borderRadius:'3px', marginRight:'3px', 
                       backgroundColor:eventInfo.event.extendedProps.sort === '상담' ? '#3a9fe5' : '#b8d257'}}>
-            <p style={{color:'#fff'}}>{eventInfo.event.extendedProps.sort === '상담' ? '상담' : '견적'}신청</p>
+            <p style={{color:'#fff'}}>{eventInfo.event.extendedProps.sort}신청</p>
           </div>
           <p>{eventInfo.event.extendedProps.name}</p>
         </>}
@@ -289,7 +293,12 @@ export default function MainSchdule() {
             <div className="modalcheck-backcover"
               onClick={()=>{setIsViewCheckModal(false);}}
             ></div>
-            { currentTab === 1 && <ModalCheckOnline setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/> }
+            { currentTab === 1 && 
+              ( which_Visit_Counsel === 1 
+                ? <ModalCheckVisit setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>
+                : <ModalCheckEstimate setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>
+              )
+            }
             { currentTab === 2 && <ModalCheckCounsel setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>}
             { currentTab === 6 && <ModalCheckCompanySchedule setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>}
           </div>

@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
-import '../SearchBox.scss'
 import '../SearchList.scss'
-import { SelectBox } from '../../boxs/SelectBox';
-import { DateBoxKo } from '../../boxs/DateBoxKo';
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";
-import { RadioBox } from '../../boxs/RadioBox';
-import { InputBox } from '../../boxs/InputBox';
 import { TitleBox } from '../../boxs/TitleBox';
 import { TextBox } from '../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
@@ -60,82 +55,6 @@ export default function Sub4_Notification (props:any) {
 	return (
 		<div className='Menu2'>
 				
-			<div className="searchbox">
-				<div className="cover">
-					<div className="title">
-						<h3>기간</h3>
-					</div>
-					<div className="content">
-						<h3 style={{margin:'0 10px'}}>계약일</h3>
-						<DateBoxKo date={startDate} func={handleSelectDateChange}/>
-						<div className="btn-row">
-							{
-								["오늘", "어제", "3일", "7일", "1개월", "3개월", "6개월"]
-								.map((item:any, index:any)=>{
-									return (
-										<div className='btnbox' key={index}>
-											<p>{item}</p>
-										</div>
-									)
-								})
-							}
-						</div>
-						<DateBoxKo date={startDate} func={handleSelectDateChange}/>
-						<p>~</p>
-						<DateBoxKo date={startDate} func={handleSelectDateChange}/>
-					</div>
-				</div>
-				<div className="cover">
-					<div className="title">
-						<h3>검색어</h3>
-					</div>
-					<div className="content">
-						<SelectBox 
-							notice={{ value: '선택', label: '여행지' }}
-							widthmain={100} selectWidth={100} selectTextWidth={90}
-							data={[ 
-								{ value: 'n1', label: '신규상담' },
-								{ value: 'n2', label: '신규상담' }
-							]} 
-						/>
-						<SelectBox 
-							notice={{ value: '선택', label: '소개업체' }}
-							widthmain={100} selectWidth={100} selectTextWidth={90}
-							data={[ 
-								{ value: 'n1', label: '신규상담' },
-								{ value: 'n2', label: '신규상담' }
-							]} 
-						/>
-						<SelectBox 
-							notice={{ value: '선택', label: '랜드사' }}
-							widthmain={100} selectWidth={100} selectTextWidth={90}
-							data={[ 
-								{ value: 'n1', label: '신규상담' },
-								{ value: 'n2', label: '신규상담' }
-							]} 
-						/>
-						<SelectBox 
-							notice={{ value: '선택', label: '담당자' }}
-							widthmain={100} selectWidth={100} selectTextWidth={90}
-							data={[ 
-								{ value: 'n1', label: '신규상담' },
-								{ value: 'n2', label: '신규상담' }
-							]} 
-						/>
-						<InputBox width='5%' value={''} func={(e)=>{}} />
-					</div>
-				</div>
-				<div className="buttonbox">
-					<div className="buttons">
-						<div className="btn searching">
-							<p>검색</p>
-						</div>
-						<div className="btn reset">
-							<p>초기화</p>
-						</div>
-					</div>
-				</div>
-			</div>
 
 			<div className="seachlist">
 

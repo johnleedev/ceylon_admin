@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { TitleBox } from '../../boxs/TitleBox';
-import { DropdownBox } from '../../boxs/DropdownBox';
-import { DateBoxNum } from '../../boxs/DateBoxNum';
-import { DropDownDepositType } from '../DefaultData';
+import { TitleBox } from '../../../boxs/TitleBox';
+import { DropdownBox } from '../../../boxs/DropdownBox';
+import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DropDownDepositType } from '../../DefaultData';
 import axios from 'axios';
-import MainURL from '../../MainURL';
+import MainURL from '../../../MainURL';
 
 export default function ModalReserveTab3(props:any) {
 

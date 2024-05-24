@@ -43,34 +43,30 @@ export default function Sub5_VipUser (props:any) {
 
 				<div className="main-list-cover">
 					<div className="titlebox">
-						{/* <TitleBox width={80} text='NO'/>
-						<TitleBox width={100} text='구분'/>
-						<TitleBox width={100} text='성함'/>
-						<TitleBox width={150} text='연락처'/>
-						<TitleBox width={250} text='여행상품'/>
-						<TitleBox width={100} text='최근여행일'/>
-						<TitleBox width={100} text='이용횟수'/>
-						<TitleBox width={100} text='이용금액'/>
-						<TitleBox width={100} text='혜택'/> */}
+						<TitleBox width="5%" text='NO'/>
+						<TitleBox width="7%" text='구분'/>
+						<TitleBox width="10%" text='성함'/>
+						<TitleBox width="15%" text='연락처'/>
+						<TitleBox width="25%" text='여행상품'/>
+						<TitleBox width="10%" text='최근여행일'/>
+						<TitleBox width="7%" text='이용횟수'/>
+						<TitleBox width="10%" text='이용금액'/>
+						<TitleBox width="7%" text='혜택'/>
 					</div>
 					
 					{
 						example.map((item:any, index:any)=>{
 							return (
-								<div className="rowbox"
-									onClick={()=>{
-										navigate('/counsel/counseldetail', {state : item});
-									}}
-								>
-									{/* <TextBox width={80} text={index+1} fontSize={15}/>
-									<TextBox width={100} text={item.sort} fontSize={15}/>
-									<TextBox width={100} text={item.name}  fontSize={15}/>
-									<TextBox width={150} text={item.phone} fontSize={15}/>
-									<TextBox width={250} text={item.tourProduct} fontSize={15}/>
-									<TextBox width={100} text={item.lastTourDate} fontSize={15}/>
-									<TextBox width={100} text={`${item.useNum}회`} fontSize={15}/>
-									<TextBox width={100} text={item.useCost} fontSize={15}/>
-									<TextBox width={100} text={item.present} fontSize={15}/> */}
+								<div className="rowbox">
+									<TextBox width="5%" text={index+1} fontSize={15}/>
+									<TextBox width="7%" text={item.sort} fontSize={15}/>
+									<TextBox width="10%" text={item.name}  fontSize={15}/>
+									<TextBox width="15%" text={item.phone} fontSize={15}/>
+									<TextBox width="25%" text={item.tourProduct} fontSize={15}/>
+									<TextBox width="10%" text={item.lastTourDate} fontSize={15}/>
+									<TextBox width="7%" text={`${item.useNum}회`} fontSize={15}/>
+									<TextBox width="10%" text={item.useCost} fontSize={15}/>
+									<TextBox width="7%" text={item.present} fontSize={15}/>
 								</div>
 							)
 						})

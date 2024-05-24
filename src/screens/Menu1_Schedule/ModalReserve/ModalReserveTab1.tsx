@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import './ModalReserve.scss'
 import axios from 'axios'
-import MainURL from "../../MainURL";
+import MainURL from "../../../MainURL";
 import { CiCircleMinus } from "react-icons/ci";
-import { TitleBox } from '../../boxs/TitleBox';
-import { DropdownBox } from '../../boxs/DropdownBox';
-import { DropDowncharger, DropDownVisitPath } from '../DefaultData';
+import { TitleBox } from '../../../boxs/TitleBox';
+import { DropdownBox } from '../../../boxs/DropdownBox';
+import { DropDowncharger, DropDownVisitPath } from '../../DefaultData';
 
 
 export default function ModalReserveTab1(props:any) {

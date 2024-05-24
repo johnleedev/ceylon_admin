@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './Document.scss';
 import logo from '../../images/logobk.png';
-import Select from 'react-select';
+import { DropdownBox } from '../../boxs/DropdownBox';
+import { DropDownAirline } from '../DefaultData';
 
 export default function DocumentReserve() {
 
@@ -110,15 +111,12 @@ export default function DocumentReserve() {
           </div>
           <D_Title text='항공사' />
           <div style={{flex:1}}>
-            <Select
-              value={{ value: '선택', label: '선택' }}
-              onChange={(e)=>{}}
-              options={optionsdata}
-              blurInputOnSelect
-              styles={{ 
-                control: (baseStyles, state) => ({...baseStyles, width: `160px`}),
-                singleValue: (styles, { data }) => ({ ...styles, width: `150px`, fontSize:'15px'}),
-              }}
+            <DropdownBox
+              widthmain='190px'
+              height='35px'
+              selectedValue={''}
+              options={DropDownAirline}
+              handleChange={(e)=>{''}}
             />
           </div>
         </div>

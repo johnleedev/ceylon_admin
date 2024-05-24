@@ -3,7 +3,7 @@ import './ModalCheck.scss'
 import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";
-import { TitleBox } from '../../boxs/TitleBox';
+import { TitleBox } from '../../../boxs/TitleBox';
 
 
 export default function ModalCheckCompanySchedule (props : any) {

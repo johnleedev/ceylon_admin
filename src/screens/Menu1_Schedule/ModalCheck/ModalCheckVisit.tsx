@@ -3,10 +3,10 @@ import './ModalCheck.scss'
 import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";
-import { TitleBox } from '../../boxs/TitleBox';
+import { TitleBox } from '../../../boxs/TitleBox';
 
 
-export default function ModalCheckOnline (props : any) {
+export default function ModalCheckVisit (props : any) {
 
   const datecopy = props.checkContent.start;
   const date = format(datecopy, 'yyyy-MM-dd', { locale: ko });
@@ -54,7 +54,7 @@ export default function ModalCheckOnline (props : any) {
         <div className="coverbox">
           <div className="coverrow half">
             <TitleBox width="120px" text='방문일'/>
-            <p>{date}</p>
+            <p>{propsData.visitDate}</p>
           </div>
           <div className="coverrow half">
             <TitleBox width="120px" text='방문시간'/>

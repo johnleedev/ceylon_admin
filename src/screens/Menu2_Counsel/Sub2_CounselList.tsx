@@ -42,7 +42,6 @@ export default function Sub2_CounselList (props:any) {
 		fetchPosts();
 	}, []);  
 
-	console.log(list);
 
 	return (
 		<div className='Menu2'>
@@ -60,8 +59,8 @@ export default function Sub2_CounselList (props:any) {
 						<TitleBox width='8%' text='성함'/>
 						<TitleBox width='12%' text='연락처'/>
 						<TitleBox width='12%' text='예식일'/>
-						<TitleBox width='10%' text='관심여행지'/>
-						<TitleBox width='10%' text='통화가능시간'/>
+						<TitleBox width='10%' text='여행지'/>
+						<TitleBox width='10%' text='방문경로'/>
 						<TitleBox width='12%' text='방문예정일'/>
 						<TitleBox width='7%' text='방문시간'/>
 						<TitleBox width='5%' text='상태'/>
@@ -73,16 +72,17 @@ export default function Sub2_CounselList (props:any) {
 								<div key={index}
 									className="rowbox"
 									onClick={()=>{
-										navigate('counseldetail', {state : item});
+										navigate('/counsel/counseldetail', {state : {data: item, pathType:"revise"}});
+										window.scrollTo(0, 0);
 									}}
 								>
 									<TextBox width='3%' text={index+1} />
-									<TextBox width='5%' text={item.sort} />
+									<TextBox width='5%' text={item.sort === 'honeymoon' ? '허니문' : '일반'} />
 									<TextBox width='8%' text={item.name} />
 									<TextBox width='12%' text={item.phone} />
 									<TextBox width='12%' text={item.dateCeremony} />
-									<TextBox width='10%' text={item.interestLocation} />
-									<TextBox width='10%' text={item.callTime} />
+									<TextBox width='10%' text={item.tourLocation} />
+									<TextBox width='10%' text={item.visitPath} />
 									<TextBox width='12%' text={item.date} />
 									<TextBox width='7%' text={item.visitTime} />
 									<TextBox width='5%' text={item.state} />
