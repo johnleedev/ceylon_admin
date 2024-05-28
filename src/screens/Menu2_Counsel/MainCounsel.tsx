@@ -7,6 +7,7 @@ import Sub4_CloseList from './Sub4_CloseList';
 import Sub5_Switch from './Sub5_Switch';
 import Sub6_AllList from './Sub6_AllList';
 import CounselDetail from './CounselDetail';
+import EstimateDetail from './EstimateDetail';
 
 
 export default function MainCounsel() {
@@ -21,6 +22,7 @@ export default function MainCounsel() {
         <Route path="/switch" element={<Sub5_Switch/>}/>
         <Route path="/alllist" element={<Sub6_AllList/>}/>
         <Route path="/counseldetail" element={<CounselDetail/>}/>
+        <Route path="/estimatedetail" element={<EstimateDetail/>}/>
       </Routes>
     </div>
   );

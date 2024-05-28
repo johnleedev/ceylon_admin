@@ -6,24 +6,18 @@ import { TitleBox } from '../../boxs/TitleBox';
 import { TextBox } from '../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
 import { DropdownBox } from '../../boxs/DropdownBox';
-import { DropDownLandCompany, DropDownSearchSelect, DropDownTourLocation, DropDowncharger } from '../DefaultData';
+import { DropDownTourLocation, DropDowncharger } from '../DefaultData';
 import { DateBoxNum } from '../../boxs/DateBoxNum';
 import axios from 'axios';
 import MainURL from '../../MainURL';
-import { SearchBox } from '../../boxs/SearchBox';
+import { SearchBox } from './SearchBox';
+import Loading from '../../components/Loading';
 
 export default function Sub1_ReserveList (props:any) {
 
 	let navigate = useNavigate();
 
 
-	const [dateSort, setDateSort] = useState('');
-	const [startDate, setStartDate] = useState('');
-	const [endDate, setEndDate] = useState('');
-	const [sort, setSort] = useState('');
-	const [word, setWord] = useState('');
-
-	
 	// 게시글 가져오기 ------------------------------------------------------
 	interface ListProps {
 		id: number;
@@ -43,11 +37,16 @@ export default function Sub1_ReserveList (props:any) {
 		tourEndPeriod : string;
 	}
 	const [list, setList] = useState<ListProps[]>([]);
+	const [viewList, setViewList] = useState<ListProps[]>([]);
+	const [isVewListZero, setIsViewListZero] = useState<boolean>(false);
+	const [arrangeWord1, setArrangeWord1] = useState('');
+	const [arrangeWord2, setArrangeWord2] = useState('');
 
 	const fetchPosts = async () => {
 		const res = await axios.get(`${MainURL}/adminreserve/getreserve`)
 		if (res) {
 			setList(res.data);
+			setViewList(res.data);
 		}
 	};
 
@@ -58,12 +57,53 @@ export default function Sub1_ReserveList (props:any) {
 	return (
 		<div className='Menu2'>
 
-			<SearchBox />
+			<SearchBox list={list} setViewList={setViewList} setIsViewListZero={setIsViewListZero}/>
 				
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>예약 리스트</h1>
+					<div className='title-box'>
+						<h1>예약리스트</h1>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={arrangeWord1}
+							options={DropDownTourLocation}
+							handleChange={(text:any)=>{
+								const textCopy = text.target.value;
+								setArrangeWord1(textCopy);
+								if (textCopy === '선택') {
+									setViewList(list);
+								} else {
+									const copy = list.filter((e:any)=> e.tourLocation === textCopy);
+									if (copy.length === 0) {
+										setIsViewListZero(true);
+									} 
+									setViewList(copy);
+								}
+							}}
+						/>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={arrangeWord2}
+							options={DropDowncharger}
+							handleChange={(text:any)=>{
+								const textCopy = text.target.value;
+								setArrangeWord2(textCopy);
+								if (textCopy === '선택') {
+									setViewList(list);
+								} else {
+									const copy = list.filter((e:any)=> e.charger === textCopy);
+									if (copy.length === 0) {
+										setIsViewListZero(true);
+									} 
+									setViewList(copy);
+									console.log(copy);
+								}
+							}}
+						/>
+					</div>
 				</div>
 
 				<div className="main-list-cover">
@@ -74,13 +114,14 @@ export default function Sub1_ReserveList (props:any) {
 						<TitleBox width='8%' text='성함'/>
 						<TitleBox width='8%' text='여행지'/>
 						<TitleBox width='15%' text='여행상품'/>
-						<TitleBox width='7%' text='랜드사'/>
 						<TitleBox width='7%' text='진행상황'/>
 						<TitleBox width='5%' text='담당자'/>
   				</div>
 					
 					{
-						list.map((item:any, index:any)=>{
+						viewList.length > 0
+						?
+						viewList.map((item:any, index:any)=>{
 							return (
 								<div key={index}
 									className="rowbox"
@@ -94,12 +135,25 @@ export default function Sub1_ReserveList (props:any) {
 									<TextBox width='8%' text={item.name} />
 									<TextBox width='8%' text={item.tourLocation} />
 									<TextBox width='15%' text={item.productName} />
-									<TextBox width='7%' text={item.stage} />
 									<TextBox width='7%' text={item.state} />
 									<TextBox width='5%' text={item.charger} />
 								</div>
 							)
 						})
+						:
+						<>
+							{
+								isVewListZero
+								?
+								<div style={{textAlign:'center'}}>
+									<p style={{marginTop:'50px'}}>검색결과가 없습니다.</p>
+								</div>
+								:
+								<div className='Menu2' style={{paddingTop:'200px'}}>
+									<Loading />
+								</div>
+							}
+						</>
 					}
 				</div>
 

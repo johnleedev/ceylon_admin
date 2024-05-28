@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { TitleBox } from '../../../boxs/TitleBox';
-import { DropdownBox } from '../../../boxs/DropdownBox';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
-import { DropDownDepositType } from '../../DefaultData';
+import { TitleBox } from '../../boxs/TitleBox';
+import { DropdownBox } from '../../boxs/DropdownBox';
+import { DateBoxNum } from '../../boxs/DateBoxNum';
+import { DropDownDepositType } from '../DefaultData';
 import axios from 'axios';
-import MainURL from '../../../MainURL';
+import MainURL from '../../MainURL';
 
 export default function ModalReserveTab3(props:any) {
 
@@ -16,18 +16,18 @@ export default function ModalReserveTab3(props:any) {
     deposit : boolean;
   }
 
-  const [tourTotalContractCost, setTourTotalContractCost] = useState('');
-  const [contractCost, setContractCost] = useState<CostProps>({nameko: '계약금', cost: '', date: '', type: '', deposit: false});
-  const [airportCost, setAirportCost] = useState<CostProps>({nameko: '항공료', cost: '', date: '', type: '', deposit: false});
-  const [middleCost, setMiddleCost] = useState<CostProps>({nameko: '중도금', cost: '', date: '', type: '', deposit: false});
-  const [restCost, setRestCost] = useState<CostProps>({nameko: '잔금', cost: '', date: '', type: '', deposit: false});
-  const [costListSum, setCostListSum] = useState('');
-  const [additionCost, setAdditionCost] = useState<CostProps>({nameko: '추가경비', cost: '', date: '', type: '', deposit: false});
-  const [refundCost, setRefundCost] = useState<{nameko : string; cost : string; date : string;}>({nameko: '환불', cost: '', date: ''});
-  const [totalCost, setTotalCost] = useState('');
-  const [ballance, setBallance] = useState('');
-  const [isCashBill, setIsCashBill] = useState<boolean>(false);
-  const [cashBillInfo, setCashBillInfo] = useState<{type : string; AuthNum : string; date : string;}>({type: '', AuthNum: '', date: ''});
+  const [tourTotalContractCost, setTourTotalContractCost] = useState(props.modalSort === 'revise' ? props.reserveInfo.tourTotalContractCost : '');
+  const [contractCost, setContractCost] = useState<CostProps>(props.modalSort === 'revise' ? props.depositCostList[0] : {nameko: '계약금', cost: '', date: '', type: '', deposit: false});
+  const [airportCost, setAirportCost] = useState<CostProps>(props.modalSort === 'revise' ? props.depositCostList[1] : {nameko: '항공료', cost: '', date: '', type: '', deposit: false});
+  const [middleCost, setMiddleCost] = useState<CostProps>(props.modalSort === 'revise' ? props.depositCostList[2] : {nameko: '중도금', cost: '', date: '', type: '', deposit: false});
+  const [restCost, setRestCost] = useState<CostProps>(props.modalSort === 'revise' ? props.depositCostList[3] : {nameko: '잔금', cost: '', date: '', type: '', deposit: false});
+  const [costListSum, setCostListSum] = useState(props.modalSort === 'revise' ? props.reserveInfo.costListSum : '');
+  const [additionCost, setAdditionCost] = useState<CostProps>(props.modalSort === 'revise' ? props.depositCostList[4] : {nameko: '추가경비', cost: '', date: '', type: '', deposit: false});
+  const [refundCost, setRefundCost] = useState<{nameko : string; cost : string; date : string;}>(props.modalSort === 'revise' ? props.refundCost : {nameko: '환불', cost: '', date: ''});
+  const [totalCost, setTotalCost] = useState(props.modalSort === 'revise' ? props.reserveInfo.totalCost :'');
+  const [ballance, setBallance] = useState(props.modalSort === 'revise' ? props.reserveInfo.ballance : '');
+  const [isCashBill, setIsCashBill] = useState<boolean>(props.modalSort === 'revise' ? props.reserveInfo.isCashBill : false);
+  const [cashBillInfo, setCashBillInfo] = useState<{type : string; AuthNum : string; date : string;}>(props.modalSort === 'revise' ? JSON.parse(props.reserveInfo.cashBillInfo) : { type: '', AuthNum: '', date: ''});
 
 
   // 입력된숫자 금액으로 변경
@@ -99,8 +99,7 @@ export default function ModalReserveTab3(props:any) {
 
   // 수정저장 함수 ----------------------------------------------------------------------------
   const handleReserveSaveTab3 = async () => {
-    await axios
-    .post(`${MainURL}/adminreserve/savedepositinfo`, {
+    const data = {
       serialNum : props.serialNum,
       tourTotalContractCost : tourTotalContractCost,
       contractCost : JSON.stringify(contractCost),
@@ -114,16 +113,35 @@ export default function ModalReserveTab3(props:any) {
       ballance : ballance,
       isCashBill : isCashBill,
       cashBillInfo : JSON.stringify(cashBillInfo)
-    })
-    .then((res)=>{
-      if (res.data) {
-        alert('저장되었습니다.');
-        props.setInputState('save');
-      }
-    })
-    .catch((err)=>{
-      alert('다시 시도해주세요.')
-    })
+    }
+
+    if (props.modalSort === 'revise') {  
+      await axios
+      .post(`${MainURL}/adminreserve/revisedepositinfo`, data)
+      .then((res)=>{
+        if (res.data) {
+          alert('수정되었습니다.');
+          props.setRefresh(!props.refresh);
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      })
+    } else {
+      await axios
+      .post(`${MainURL}/adminreserve/savedepositinfo`, data)
+      .then((res)=>{
+        if (res.data) {
+          alert('저장되었습니다.');
+          props.reserveCheck();
+          props.setInputState('save');
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      })
+    }
+    
   };
   
   return (

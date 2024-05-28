@@ -106,6 +106,13 @@ export interface RefundCostProps {
     date: string;
 };
 
+export interface CashBillInfoProps {
+    type: string;
+    AuthNum: string;
+    date: string;
+};
+
+
 export interface DeliveryProps {
     name: string;
     requestDate: string;

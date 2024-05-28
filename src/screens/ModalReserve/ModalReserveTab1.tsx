@@ -1,22 +1,23 @@
 import React, { useState } from 'react'
 import './ModalReserve.scss'
 import axios from 'axios'
-import MainURL from "../../../MainURL";
+import MainURL from "../../MainURL";
 import { CiCircleMinus } from "react-icons/ci";
-import { TitleBox } from '../../../boxs/TitleBox';
-import { DropdownBox } from '../../../boxs/DropdownBox';
-import { DropDowncharger, DropDownVisitPath } from '../../DefaultData';
+import { TitleBox } from '../../boxs/TitleBox';
+import { DropdownBox } from '../../boxs/DropdownBox';
+import { DropDowncharger, DropDownVisitPath } from '../DefaultData';
 
 
 export default function ModalReserveTab1(props:any) {
 
   const userInfoData = [
-    { sort : '성인', nameko: '', nameLast: '', nameFirst: '', birth: '', gender: '', nation: '', passportNum: '', passportDate: '', residentNum : '', phone: ''}
+    { userNum: 1, sort : '성인', nameKo: '', nameLast: '', nameFirst: '', birth: '', gender: '', nation: '', passportNum: '', passportDate: '', residentNum : '', phone: ''}
   ]
 
   interface UserInfoProps {
+    userNum : number;
     sort : string, 
-    nameko: string, 
+    nameKo: string, 
     nameLast: string, 
     nameFirst: string,
     birth: string, 
@@ -27,18 +28,17 @@ export default function ModalReserveTab1(props:any) {
     residentNum : string, 
     phone: string
   }
-  const [userInfo, setUserInfo] = useState<UserInfoProps[]>(userInfoData);
-  const [reserveLocation, setReserveLocation] = useState('본사');
-  const [charger, setcharger] = useState(DropDowncharger[0].value);
-  const [accepter, setAccepter] = useState(DropDowncharger[0].value);
-  const [visitPath, setVisitPath] = useState(DropDownVisitPath[0].value);
-  const [recommender, setRecommender] = useState('');
+  const [userInfo, setUserInfo] = useState<UserInfoProps[]>(props.modalSort === 'revise' ? props.userInfo : userInfoData );
+  const [reserveLocation, setReserveLocation] = useState(props.modalSort === 'revise' ? props.reserveInfo.reserveLocation : '본사');
+  const [charger, setcharger] = useState(props.modalSort === 'revise' ? props.reserveInfo.charger : DropDowncharger[0].value);
+  const [accepter, setAccepter] = useState(props.modalSort === 'revise' ? props.reserveInfo.accepter : DropDowncharger[0].value);
+  const [visitPath, setVisitPath] = useState(props.modalSort === 'revise' ? props.reserveInfo.visitPath : DropDownVisitPath[0].value);
+  const [recommender, setRecommender] = useState(props.modalSort === 'revise' ? props.reserveInfo.recommender : '');
     
   // 수정저장 함수
   const handleReserveSaveTab1 = async () => {
-  
-    await axios
-    .post(`${MainURL}/adminreserve/saveuserinfo`, {
+   
+    const data = {
       serialNum: props.serialNum,
       inputState : 'save',
       userInfo: userInfo,
@@ -47,16 +47,35 @@ export default function ModalReserveTab1(props:any) {
       charger: charger,
       accepter: accepter,
       recommender : recommender
-    })
-    .then((res)=>{
-      if (res.data) {
-        alert('저장되었습니다.');
-        props.setInputState('save');
-      }
-    })
-    .catch((err)=>{
-      alert('다시 시도해주세요.')
-    })
+    }
+    
+    if (props.modalSort === 'revise') {
+      await axios
+      .post(`${MainURL}/adminreserve/reviseuserinfo`, data)
+      .then((res)=>{
+        if (res.data) {
+          alert('수정되었습니다.');
+          props.setRefresh(!props.refresh);
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      })
+    } else {
+      await axios
+      .post(`${MainURL}/adminreserve/saveuserinfo`, data)
+      .then((res)=>{
+        if (res.data) {
+          alert('저장되었습니다.');
+          props.reserveCheck();
+          props.setInputState('save');
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      }) 
+    }
+   
   };
 
   // user row delete
@@ -170,7 +189,7 @@ export default function ModalReserveTab1(props:any) {
     }
   };
 
-  
+
   return (
     <div>
       <section className='userInfo'>
@@ -192,8 +211,10 @@ export default function ModalReserveTab1(props:any) {
               <TitleBox width='12%' text='연락처'/>
               <TitleBox width='3%' text='삭제'/>
             </div>
-            {
+            { 
               userInfo.map((item:any, index:any)=>{
+
+                console.log(item);
                 return(
                   <div className="coverbox info" key={index}>
                     <p style={{width:'3%'}}>{index+1}</p>
@@ -211,8 +232,8 @@ export default function ModalReserveTab1(props:any) {
                       }}
                       marginHorisontal={1}
                     />
-                    <input style={{width:'7%'}}  value={item.nameko} className="inputdefault" type="text" 
-                      onChange={(e) => {const inputs = [...userInfo]; inputs[index].nameko = e.target.value; setUserInfo(inputs);}}/>
+                    <input style={{width:'7%'}}  value={item.nameKo} className="inputdefault" type="text" 
+                      onChange={(e) => {const inputs = [...userInfo]; inputs[index].nameKo = e.target.value; setUserInfo(inputs);}}/>
                     <input style={{width:'5%'}}  value={item.nameLast} className="inputdefault" type="text" 
                       onChange={(e)=>{const inputs = [...userInfo]; inputs[index].nameLast = e.target.value; setUserInfo(inputs);}}/>
                     <input style={{width:'8%'}}  value={item.nameFirst} className="inputdefault" type="text" 
@@ -245,7 +266,7 @@ export default function ModalReserveTab1(props:any) {
               <div className='btn-row' style={{marginRight:'5px'}}
                 onClick={()=>{
                   setUserInfo([...userInfo, 
-                    { sort : '성인', nameko: '', nameLast: '', nameFirst: '', 
+                    { userNum: userInfo.length+1, sort : '성인', nameKo: '', nameLast: '', nameFirst: '', 
                       birth: '', gender: '', nation: '', passportNum: '', passportDate: '', residentNum : '', phone: ''
                     }]);
                 }}

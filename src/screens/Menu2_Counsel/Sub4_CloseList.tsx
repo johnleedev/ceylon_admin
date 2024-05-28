@@ -15,7 +15,9 @@ export default function Sub4_CloseList (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>상담종료</h1>
+					<div className='title-box'>
+						<h1>상담종료</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

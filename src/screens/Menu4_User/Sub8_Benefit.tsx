@@ -38,7 +38,9 @@ export default function Sub8_Benefit (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>혜택관리</h1>
+					<div className='title-box'>
+						<h1>혜택관리</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

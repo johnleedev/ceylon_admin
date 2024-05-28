@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Document.scss';
-import logo from '../../images/logobk.png';
+import logo from '../../../images/logobk.png';
 import Select from 'react-select';
 
 export default function DocumentCalculate() {

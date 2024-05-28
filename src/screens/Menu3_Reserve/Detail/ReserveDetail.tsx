@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './ReserveDetail.scss'
-import { IoMdClose } from "react-icons/io";
-import {ko} from "date-fns/locale";
-import { format } from "date-fns";
-import { TitleBox } from '../../boxs/TitleBox';
-
-
-
-import { TextBoxPL10 } from '../../boxs/TextBoxPL10';
-import { DateBoxNum } from '../../boxs/DateBoxNum';
+import { TitleBox } from '../../../boxs/TitleBox';
+import { TextBoxPL10 } from '../../../boxs/TextBoxPL10';
+import { DateBoxNum } from '../../../boxs/DateBoxNum';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import MainURL from '../../MainURL';
-import { AirportStateProps, DeliveryProps, DepositCostProps, EtcStateProps, HotelReserveStateProps, RefundCostProps, ReserveInfoProps, 
-        TicketingStateProps, UserInfoProps, productCostProps } from './InterfaceData';
-import Loading from '../../components/Loading';
-import { DropdownBox } from '../../boxs/DropdownBox';
+import MainURL from '../../../MainURL';
+import { AirportStateProps, CashBillInfoProps, DeliveryProps, DepositCostProps, EtcStateProps, HotelReserveStateProps, RefundCostProps, ReserveInfoProps, 
+        TicketingStateProps, UserInfoProps, productCostProps } from '../../InterfaceData';
+import Loading from '../../../components/Loading';
+import { DropdownBox } from '../../../boxs/DropdownBox';
+import ModalReserve from '../../ModalReserve/ModalReserve';
+import { TextBox } from '../../../boxs/TextBox';
 
 
 export default function ReserveDetail (props : any) {
@@ -23,6 +19,7 @@ export default function ReserveDetail (props : any) {
   let navigate = useNavigate();
   const location = useLocation();
   const serialNum = location.state;
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   const [userInfo, setUserInfo] = useState<UserInfoProps[]>([]);
   const [reserveInfo, setReserveInfo] = useState<ReserveInfoProps>();
@@ -33,6 +30,7 @@ export default function ReserveDetail (props : any) {
   const [etcState, setEtcState] = useState<EtcStateProps>();
   const [depositCostList, setDepositCostList] = useState<DepositCostProps[]>([]);
   const [refundCost, setRefundCost] = useState<RefundCostProps>();
+  const [cashBillInfo, setCashBillInfo] = useState<CashBillInfoProps>();
   const [deliveryList, setDeliveryList] = useState<DeliveryProps[]>([]);
   
   // 데이터 가져오기 ------------------------------------------------------------------------------------------------------
@@ -67,19 +65,33 @@ export default function ReserveDetail (props : any) {
         JSON.parse(resinfo.data[0].happyCall),
         JSON.parse(resinfo.data[0].refund)
       ];
+      setCashBillInfo(JSON.parse(resinfo.data[0].cashBillInfo));
       setDeliveryList(deliveryListCopy)
-      
 		}
 	};
 
 	useEffect(() => {
 		fetchPosts();
-	}, []);  
+	}, [refresh]);  
 
   // 오른쪽바 데이터 입력 ------------------------------------------------------------------------------------------------------
   const [test, setTest] = useState('');
 
   
+
+  // 수정 모달 ---------------------------------------------------------
+  const [isViewReserveModal, setIsViewReserveModal] = useState<boolean>(false);
+  const divAreaRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (divAreaRef.current) {
+      const copy = divAreaRef.current.offsetHeight
+      setHeight(copy);
+    }
+  }, [isViewReserveModal]);
+
+
   return (
     (userInfo.length > 0 
       && (reserveInfo !== undefined && reserveInfo !== null) 
@@ -90,6 +102,7 @@ export default function ReserveDetail (props : any) {
       && (etcState !== undefined && etcState !== null)
       && (depositCostList.length > 0)
       && (refundCost !== undefined && refundCost !== null)
+      && (cashBillInfo !== undefined && cashBillInfo !== null)
     )
     ?
     <div className='reservedetail'>
@@ -123,10 +136,18 @@ export default function ReserveDetail (props : any) {
           </div>
           
           <div className='btn-box'>
-            <div className="btn" style={{backgroundColor: '#BDBDBD'}}>
+            <div className="btn" style={{backgroundColor: '#BDBDBD'}}
+              onClick={()=>{
+                navigate('/reserve');
+              }}
+            >
               <p>목록</p>
             </div>
-            <div className="btn" style={{backgroundColor: '#b8d257'}}>
+            <div className="btn" style={{backgroundColor: '#b8d257'}}
+              onClick={()=>{
+                setIsViewReserveModal(true);
+              }}
+            >
               <p>수정</p>
             </div>
             <div className="btn" style={{backgroundColor: '#5fb7ef'}}>
@@ -134,10 +155,10 @@ export default function ReserveDetail (props : any) {
             </div>
           </div>
 
-          <div className="search-box">
+          {/* <div className="search-box">
             <input className="inputdefault" type="text" style={{width:'80%'}} 
                 value={''} onChange={(e)=>{}}/>
-          </div>
+          </div> */}
 
         </div>
       </div>
@@ -509,8 +530,12 @@ export default function ReserveDetail (props : any) {
             <div className="coverbox">
               <div className="coverrow hole">
                 <TitleBox width="100px" text='현금영수증'/>
-                <TextBoxPL10 width="30%" text={reserveInfo.isCashBill}/>
-                <TextBoxPL10 width="30%" text={reserveInfo.cashBillInfo}/>
+                <TextBoxPL10 width="30%" text={reserveInfo.isCashBill === 'undefined' ? '' : reserveInfo.isCashBill}/>
+                <div style={{width:'50%', display:'flex', alignItems:'center'}}>
+                  <TextBox width='30%' text={cashBillInfo.type}/>
+                  <TextBox width='30%' text={cashBillInfo.AuthNum}/>
+                  <TextBox width='30%' text={cashBillInfo.date}/>
+                </div>
               </div>
             </div>
           </section>
@@ -670,6 +695,38 @@ export default function ReserveDetail (props : any) {
         </div>
 
       </div>
+
+        {/* 예약등록 모달창 */}
+            {
+        isViewReserveModal &&
+        <div className='Modal'>
+          <div className='modal-backcover' style={{height : height + 100}}></div>
+          <div className='modal-maincover' ref={divAreaRef}>
+             <ModalReserve
+              serialNum={serialNum}
+              setIsViewModal={setIsViewReserveModal}
+              refresh={refresh}
+              setRefresh={setRefresh}
+              modalSort='revise'
+              // 공통
+              reserveInfo={reserveInfo}
+              // tab1
+              userInfo={userInfo}
+              // tab2
+              productCost={productCost}
+              airportState={airportState}
+              ticketingState={ticketingState}
+              hotelReserveState={hotelReserveState}
+              etcState={etcState}
+              // tab3
+              depositCostList={depositCostList}
+              refundCost={refundCost}
+              // tab4
+              deliveryList={deliveryList}
+             />
+          </div>
+        </div>
+      }
 
     </div>
     :

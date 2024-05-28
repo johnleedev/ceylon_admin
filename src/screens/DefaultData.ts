@@ -42,6 +42,7 @@ export const DropDownTime = [
 ]
 
 export const DropDowncharger = [
+  { value: "선택", label: "선택" },
   { value: '조동희', label: '조동희' },
   { value: '김철수', label: '김철수' },
   { value: '조수환', label: '조수환' },
@@ -64,6 +65,7 @@ export const DropDownVisitPath = [
 ]
 
 export const DropDownTourLocation = [
+  { value: "여행지선택", label: "여행지선택" },
   { value: '코사무이', label: '코사무이' },
   { value: '푸켓', label: '푸켓' },
   { value: '카오락', label: '카오락' },
@@ -109,6 +111,7 @@ export const DropDownTourLocation = [
 ]
 
 export const DropDownAirline = [
+  { value: "항공사선택", label: "항공사선택" },
   { value: '5J', label: '5J 세부퍼시픽 항공' },
   { value: '5M', label: '5M 메가몰디브' },
   { value: '7C', label: '7C 제주항공' },
@@ -145,7 +148,7 @@ export const DropDownAirline = [
 ]
 
 export const DropDownLandCompany = [
-  { value: "선택", label: "선택" },
+  { value: "랜드사선택", label: "랜드사선택" },
   { value: "007", label: "007" },
   { value: "A.U.M", label: "A.U.M" },
   { value: "FT타이", label: "FT타이" },
@@ -253,13 +256,4 @@ export const DropDownDeliveryType = [
   { value: '카톡', label: '카톡' },
   { value: '전화', label: '전화' }
 ]
-
-export const DropDownSearchSelect = [
-  { value: '계약일', label: '계약일' },
-  { value: '출발일', label: '출발일' },
-  { value: '도착일', label: '도착일' },
-  { value: '작성일', label: '작성일' },
-  { value: '수정일', label: '수정일' }
-]
-
 

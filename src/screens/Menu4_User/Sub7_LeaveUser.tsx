@@ -38,7 +38,9 @@ export default function Sub7_LeaveUser (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>탈퇴회원</h1>
+					<div className='title-box'>
+						<h1>탈퇴회원</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

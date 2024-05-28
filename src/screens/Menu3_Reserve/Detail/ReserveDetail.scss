@@ -256,6 +256,32 @@
       }
     }
   }
+
+  .Modal {
+
+    .modal-backcover {
+      position: absolute;
+      width: 100vw;
+      min-height: 420vh;
+      top: 0;
+      left: 0;
+      z-index: 8;
+      opacity: 0.8;
+      background-color: #242d3f;
+    }
+    .modal-maincover {
+      position: absolute;
+      width: 100vw;
+      min-height: 50vh;
+      top: 0;
+      left: 0;
+      z-index: 9;
+      display: flex;
+      justify-content: center;
+      padding-top: 50px;
+    }
+  
+  }
 }
 
 @media screen and (max-width : 600px) { 

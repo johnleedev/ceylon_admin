@@ -38,7 +38,9 @@ export default function Sub6_VvipUser (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>VVIP회원</h1>
+					<div className='title-box'>
+						<h1>VVIP회원</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

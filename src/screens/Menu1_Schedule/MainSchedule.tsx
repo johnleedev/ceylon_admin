@@ -3,7 +3,7 @@ import './MainSchedule.scss'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction';
-import ModalReserve from './ModalReserve/ModalReserve';
+import ModalReserve from '../ModalReserve/ModalReserve';
 import ModalCheckCounsel from './ModalCheck/ModalCheckCounsel';
 import ModalInputCounsel from './ModalInputCounsel';
 import axios from 'axios';
@@ -24,7 +24,8 @@ export default function MainSchdule() {
   const [sort, setSort] = useState('H');
   const [serialNum, setSerialNum] = useState('');
   const [events, setEvents] = useState<EventsProps[]>([]);
- 
+  const [modalSort, setModalSort] = useState('new')
+
   interface SelectBoxProps {
     num: number;
     text: string;
@@ -129,7 +130,7 @@ export default function MainSchdule() {
     )
   }
 
-  // 날짜 선택
+  // 날짜 선택 --------------------------------------------------------------
   const [selectDate, setSelectDate] = useState('');
   const handleSelectDate = (e:any) => {
     const year = e.date.getFullYear();
@@ -139,7 +140,7 @@ export default function MainSchdule() {
     setSelectDate(result);
   }
 
-  // 예약 등록 함수 ---------------------------------------------------------
+  // 예약 등록 함수 --------------------------------------------------------------------------------------------
   // alert
   const isReserve = async () => {
     if (selectDate === '') {
@@ -214,8 +215,8 @@ export default function MainSchdule() {
           <SelectBox num={1} text='온라인문의'/>
           <SelectBox num={2} text='상담스케줄'/>
           <SelectBox num={3} text='예약건'/>
-          <SelectBox num={4} text='출발건'/>
-          <SelectBox num={5} text='취소일'/>
+          {/* <SelectBox num={4} text='출발건'/>
+          <SelectBox num={5} text='취소일'/> */}
           <SelectBox num={6} text='회사일정'/>
         </div>
         {
@@ -332,6 +333,7 @@ export default function MainSchdule() {
               setIsViewModal={setIsViewReserveModal}
               refresh={refresh}
               setRefresh={setRefresh}
+              modalSort={modalSort}
              />
           </div>
         </div>

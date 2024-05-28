@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { TitleBox } from '../../../boxs/TitleBox';
-import { DropdownBox } from '../../../boxs/DropdownBox';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
-import { DropDownAirline, DropDownLandCompany, DropDownNum, DropDownTourLocation } from '../../DefaultData';
+import { TitleBox } from '../../boxs/TitleBox';
+import { DropdownBox } from '../../boxs/DropdownBox';
+import { DateBoxNum } from '../../boxs/DateBoxNum';
+import { DropDownAirline, DropDownLandCompany, DropDownNum, DropDownTourLocation } from '../DefaultData';
 import { useRecoilValue } from 'recoil';
-import { recoilExchangeRate } from '../../../RecoilStore';
+import { recoilExchangeRate } from '../../RecoilStore';
 import axios from 'axios';
-import MainURL from '../../../MainURL';
+import MainURL from '../../MainURL';
 
 
 export default function ModalReserveTab2(props:any) {
@@ -14,14 +14,14 @@ export default function ModalReserveTab2(props:any) {
   const recoilExchangeRateCopy = useRecoilValue(recoilExchangeRate);
 
   // product 예약상품 ----------------------------------------------------------------------------
-  const [productName, setProductName] = useState('');
-  const [tourLocation, setTourLocation] = useState(DropDownTourLocation[0].value);
-  const [tourLocationDetail, setTourLocationDetail] = useState('');
-  const [airline, setAirline] = useState(DropDownAirline[0].value);
-  const [tourStartAirport, setTourStartAirport] = useState('');
-  const [tourStartPeriod, setTourStartPeriod] = useState('');
-  const [tourEndAirport, setTourEndAirport] = useState('');
-  const [tourEndPeriod, setTourEndPeriod] = useState('');
+  const [productName, setProductName] = useState(props.modalSort === 'revise' ? props.reserveInfo.productName : '');
+  const [tourLocation, setTourLocation] = useState(props.modalSort === 'revise' ? props.reserveInfo.tourLocation :DropDownTourLocation[0].value);
+  const [tourLocationDetail, setTourLocationDetail] = useState(props.modalSort === 'revise' ? props.reserveInfo.tourLocationDetail :'');
+  const [airline, setAirline] = useState(props.modalSort === 'revise' ? props.reserveInfo.airline :DropDownAirline[0].value);
+  const [tourStartAirport, setTourStartAirport] = useState(props.modalSort === 'revise' ? props.reserveInfo.tourStartAirport :'');
+  const [tourStartPeriod, setTourStartPeriod] = useState(props.modalSort === 'revise' ? props.reserveInfo.tourStartPeriod :'');
+  const [tourEndAirport, setTourEndAirport] = useState(props.modalSort === 'revise' ? props.reserveInfo.tourEndAirport :'');
+  const [tourEndPeriod, setTourEndPeriod] = useState(props.modalSort === 'revise' ? props.reserveInfo.tourEndPeriod :'');
 
  
   // product Cost 여행상품가 ----------------------------------------------------------------------------
@@ -38,8 +38,9 @@ export default function ModalReserveTab2(props:any) {
     isClientCheck: boolean;
   }
   const [productCost, setProductCost] = useState<ProductCostProps>(
-    {
-      costAdult: '',
+    props.modalSort === 'revise' 
+    ? props.productCost
+    : { costAdult: '',
       costAdultNum: 1,
       costChild: '',
       costChildNum : 1,
@@ -48,8 +49,7 @@ export default function ModalReserveTab2(props:any) {
       costAll: '',
       reserveExchangeRate : recoilExchangeRateCopy[0].KRW,
       isNotice: false,
-      isClientCheck: false
-    }
+      isClientCheck: false }
   )
 
   // 입력된숫자 금액으로 변경
@@ -103,9 +103,11 @@ export default function ModalReserveTab2(props:any) {
     timeArrive : string;
     state : string;
   }
-  const [airportState, setAirportState] = useState<AirportStateProps[]>([
-    { date: '', section : '', airport : '', timeDepart : '', timeArrive : '', state: '' }
-  ])
+  const [airportState, setAirportState] = useState<AirportStateProps[]>(
+    props.modalSort === 'revise' 
+    ? props.airportState
+    : [{ date: '', section : '', airport : '', timeDepart : '', timeArrive : '', state: '' }]
+  )
 
   const handleAirportDateChange = (e:any, index:any) => {
     const inputs = [...airportState];
@@ -120,9 +122,11 @@ export default function ModalReserveTab2(props:any) {
     date : string;
     state : string;
   }
-  const [ticketingState, setTicketingState] = useState<TicketingStateProps[]>([
-    { company: '', ticketBooth: '', date: '', state: '' }
-  ])
+  const [ticketingState, setTicketingState] = useState<TicketingStateProps[]>(
+    props.modalSort === 'revise' 
+    ? props.ticketingState
+    : [{ company: '', ticketBooth: '', date: '', state: '' }]
+  )
 
   const handleTicketingDateChange = (e:any, index:any) => {
     const inputs = [...ticketingState];
@@ -139,9 +143,11 @@ export default function ModalReserveTab2(props:any) {
     roomType : string;
     days: string;
   }
-  const [hotelReserveState, setHotelReserveState] = useState<HotelReserveStateProps[]>([
-    { date1 : '', date2 : '', location : '', hotelName: '', roomType : '', days: '' }
-  ])
+  const [hotelReserveState, setHotelReserveState] = useState<HotelReserveStateProps[]>(
+    props.modalSort === 'revise' 
+    ? props.hotelReserveState
+    : [{ date1 : '', date2 : '', location : '', hotelName: '', roomType : '', days: '' }]
+  )
 
   const handleHotelReserveDate1Change = (e:any, index:any) => {
     const inputs = [...hotelReserveState];
@@ -159,9 +165,11 @@ export default function ModalReserveTab2(props:any) {
     companyName: string;
     notice : string;
   }
-  const [landCompany, setLandCompany] = useState<LandCompanyProps[]>([
-    { companyName:'', notice:'' },
-  ])
+  const [landCompany, setLandCompany] = useState<LandCompanyProps[]>(
+    props.modalSort === 'revise' 
+    ? JSON.parse(props.reserveInfo.landCompany)
+    : [{ companyName:'', notice:'' }]
+  )
 
   // etc State 포함/불포함 사항  ----------------------------------------------------------------------------
   interface EtcStateProps {
@@ -172,19 +180,19 @@ export default function ModalReserveTab2(props:any) {
     insuranceCost : string;
   }
   const [etcState, setEtcState] = useState<EtcStateProps>(
-    {
-      includes : '',
+    props.modalSort === 'revise' 
+    ? props.etcState
+    : { includes : '',
       notIncludes : '',
       travelInsurance : '',
       insuranceCompany : '',
-      insuranceCost : '',
-    }
+      insuranceCost : '' }
   )
 
   // 수정저장 함수 ----------------------------------------------------------------------------
   const handleReserveSaveTab2 = async () => {
-    await axios
-    .post(`${MainURL}/adminreserve/saveproductinfo`, {
+
+    const data = {
       serialNum : props.serialNum,
       productName : productName,
       tourLocation : tourLocation,
@@ -200,16 +208,36 @@ export default function ModalReserveTab2(props:any) {
       hotelReserveState : JSON.stringify(hotelReserveState),
       landCompany : JSON.stringify(landCompany),
       etcState : JSON.stringify(etcState)
-    })
-    .then((res)=>{
-      if (res.data) {
-        alert('저장되었습니다.');
-        props.setInputState('save');
-      }
-    })
-    .catch((err)=>{
-      alert('다시 시도해주세요.')
-    })
+    }
+
+    if (props.modalSort === 'revise') { 
+      await axios
+      .post(`${MainURL}/adminreserve/reviseproductinfo`, data)
+      .then((res)=>{
+        if (res.data) {
+          alert('수정되었습니다.');
+          props.setRefresh(!props.refresh);
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      })
+    } else {
+      await axios
+      .post(`${MainURL}/adminreserve/saveproductinfo`, data)
+      .then((res)=>{
+        if (res.data) {
+          alert('저장되었습니다.');
+          props.setInputState('save');
+          props.reserveCheck();
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      })
+    }
+
+    
   };
   
 
@@ -528,13 +556,13 @@ export default function ModalReserveTab2(props:any) {
       <section>
         <h1>9. 현지여행사</h1>
         <div className="bottombar"></div>
-        <div className="coverbox">
-          <div className="coverrow hole">
-            <TitleBox width="120px" text='랜드사'/>
-            <div style={{width:'90%'}}>
-              {
-                landCompany.map((item:any, index:any)=>{
-                  return (
+        {
+          landCompany.map((item:any, index:any)=>{
+            return (
+              <div className="coverbox">
+                <div className="coverrow hole">
+                  <TitleBox width="120px" text={`랜드사${index+1}`}/>
+                  <div style={{width:'90%'}}>
                     <div key={index} style={{display:'flex', alignItems:'center', minHeight:'50px'}}>
                       <DropdownBox
                         widthmain='30%' height='35px' selectedValue={item.companyName}
@@ -545,12 +573,12 @@ export default function ModalReserveTab2(props:any) {
                         value={item.notice} className="inputdefault" type="text" 
                         onChange={(e) => {const inputs = [...landCompany]; inputs[index].notice = e.target.value; setLandCompany(inputs);}}/>
                     </div>
-                  )
-                })
-              }
-            </div>
-          </div>
-        </div>
+                    </div>
+                </div>
+              </div>
+            )
+          })
+        }
         <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
           <div className='btn-row' style={{marginRight:'5px'}}
             onClick={()=>{

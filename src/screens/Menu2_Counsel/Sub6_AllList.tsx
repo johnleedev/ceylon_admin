@@ -14,7 +14,9 @@ export default function Sub6_AllList (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>전체리스트</h1>
+					<div className='title-box'>
+						<h1>전체리스트</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

@@ -59,7 +59,9 @@ export default function Sub4_Notification (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>공지사항 발송</h1>
+					<div className='title-box'>
+						<h1>공지사항 발송</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

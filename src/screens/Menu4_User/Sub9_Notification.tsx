@@ -38,7 +38,9 @@ export default function Sub9_Notification (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>공지사항발송</h1>
+					<div className='title-box'>
+						<h1>공지사항발송</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

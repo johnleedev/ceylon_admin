@@ -80,7 +80,9 @@ export default function Sub3_MoneyState (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>입출금현황</h1>
+					<div className='title-box'>
+						<h1>입출금현황</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

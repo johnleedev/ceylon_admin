@@ -19,8 +19,10 @@ export default function Sub1_Online (props:any) {
 	const [dateSelect, setDateSelect] = useState('');
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
-	const [searchSort, setSearchSort] = useState('');
+	const [searchSelect, setSearchSelect] = useState('');
 	const [word, setWord] = useState('');
+	const [searchSort, setSearchSort] = useState('기간');
+
 
 	interface CheckBoxProps {
     title: string;
@@ -30,9 +32,9 @@ export default function Sub1_Online (props:any) {
     <div className='checkInputCover'>
       <div className='checkInput'>
         <input className="input" type="checkbox"
-          checked={searchSort === title}
+          checked={searchSelect === title}
           onChange={()=>{
-            setSearchSort(title);
+            setSearchSelect(title);
           }}
         />
       </div>
@@ -63,6 +65,7 @@ export default function Sub1_Online (props:any) {
 	const [list, setList] = useState<ListProps[]>([]);
 	const [viewList, setViewList] = useState<ListProps[]>([]);
 	const [isVewListZero, setIsViewListZero] = useState<boolean>(false);
+	const [arrangeWord, setArrangeWord] = useState('');
 
 	const fetchPosts = async () => {
 		const res = await axios.get(`${MainURL}/adminschedule/getonlinelist/stay`);
@@ -76,8 +79,8 @@ export default function Sub1_Online (props:any) {
 		fetchPosts();
 	}, []);  
 
-	// 날짜검색 ------------------------------------------------------
-	const handleDateSearching = async (dateNum:number) => {
+	// 검색날짜셋팅 ------------------------------------------------------
+	const handleDateSelect = async (dateNum:number) => {
 		const date = new Date();
 		const today = formatDate(date, 'yyyy-MM-dd');
 		const preDate = subDays(today, dateNum);
@@ -87,35 +90,41 @@ export default function Sub1_Online (props:any) {
 	};
 
 	// 날짜 검색 ------------------------------------------------------
-	
+	const handleDateSearching = async () => {
+  	if (startDate !== '' && endDate !== '') {
+			if (dateSort === '예약일') {
+				const copy = list.filter(e => new Date(e.date) >= new Date(startDate) && new Date(e.date) <= new Date(endDate));
+				setViewList(copy);
+				if (copy.length === 0) {
+					setIsViewListZero(true);
+				} 
+			} else if (dateSort === '방문일') {
+				const copy = list.filter(e => new Date(e.visitDate) >= new Date(startDate) && new Date(e.visitDate) <= new Date(endDate));
+				setViewList(copy);
+				if (copy.length === 0) {
+					setIsViewListZero(true);
+				} 
+			}
+		} 
+	};
 
 	// 글자 검색 ------------------------------------------------------
-	const filterByDate = (list: any[], dateField: string, startDate: string, endDate: string) => {
-    return list.filter(e => new Date(e[dateField]) >= new Date(startDate) && new Date(e[dateField]) <= new Date(endDate));
-	};
-	const filterByWord = (list: any[], searchField: string, word: string) => {
-			return list.filter(e => e[searchField].includes(word));
-	};
-	const handleSearching = async () => {
-			let filteredList = list;
-			if (dateSort !== '' && endDate !== '') {
-					if (dateSort === '문의일') {
-							filteredList = filterByDate(list, 'date', startDate, endDate);
-					} else if (dateSort === '방문일') {
-							filteredList = filterByDate(list, 'visitDate', startDate, endDate);
-					}
+	const handleWordSearching = async () => {
+		if (searchSelect !== '') {
+			if (searchSelect === '예약자명') {
+				const copy =list.filter(e => e.name.includes(word));
+				setViewList(copy);
+				if (copy.length === 0) {
+					setIsViewListZero(true);
+				} 
+			} else if (searchSelect === '전화번호') {
+				const copy =list.filter(e => e.phone.includes(word));
+				setViewList(copy);
+				if (copy.length === 0) {
+					setIsViewListZero(true);
+				} 
 			}
-			if (searchSort !== '') {
-					if (searchSort === '예약자명') {
-							filteredList = filterByWord(filteredList, 'name', word);
-					} else if (searchSort === '전화번호') {
-							filteredList = filterByWord(filteredList, 'phone', word);
-					}
-			}
-			if (filteredList.length === 0) {
-				setIsViewListZero(true);
-			} 
-			setViewList(filteredList);
+		}
 	};
 
 	return ( 
@@ -138,20 +147,20 @@ export default function Sub1_Online (props:any) {
                 handleChange={(e)=>{setDateSort(e.target.value)}}
               />
 						<div className="btn-row">
-							{
-								selectDays.map((item:any, index:any)=>{
-									return (
-										<div className='btnbox' key={index} style={{backgroundColor:dateSelect === item.name ? '#EAEAEA' : "#fff"}}
-											onClick={()=>{
-												setDateSelect(item.name);
-												handleDateSearching(item.period);
-											}}
-										>
-											<p>{item.name}</p>
-										</div>
-									)
-								})
-							}
+						{
+							selectDays.map((item:any, index:any)=>{
+								return (
+									<div className='btnbox' key={index} style={{backgroundColor:dateSelect === item.name ? '#EAEAEA' : "#fff"}}
+										onClick={()=>{
+											setDateSelect(item.name);
+											handleDateSelect(item.period);
+										}}
+									>
+										<p>{item.name}</p>
+									</div>
+								)
+							})
+						}
 						</div>
 						<DateBoxNum width='150px' subWidth='130px' right={15} setSelectDate={setStartDate} date={startDate} marginLeft={1}/>
 						<p>~</p>
@@ -169,16 +178,28 @@ export default function Sub1_Online (props:any) {
 						<CheckBox title='아이디'/> */}
 						<input className="inputdefault" type="text" style={{width:'20%', textAlign:'left'}} 
               value={word} onChange={(e)=>{setWord(e.target.value)}}/>
-						<div className="buttons" style={{margin:'20px 0'}}>
-							<div className="btn searching"
-								onClick={handleSearching}
-							>
-								<p>검색</p>
-							</div>
-						</div>
 					</div>
 				</div>
 				<div className="buttons" style={{margin:'20px 0'}}>
+					<DropdownBox
+						widthmain='80px'
+						height='35px'
+						selectedValue={searchSort}
+						options={[
+							{ value: '기간', label: '기간' },
+							{ value: '검색어', label: '검색어' }
+						]}
+						handleChange={(e)=>{setSearchSort(e.target.value)}}
+					/>
+					<div className="buttons" style={{margin:'20px 0'}}>
+						<div className="btn searching"
+							onClick={()=>{
+								searchSort === '기간' ? handleDateSearching() : handleWordSearching();
+							}}
+						>
+							<p>검색</p>
+						</div>
+					</div>
 					<div className="btn reset"
 						onClick={()=>{
 							setDateSort('문의일');
@@ -186,7 +207,7 @@ export default function Sub1_Online (props:any) {
 							setDateSelect('');
 							setStartDate('');
 							setEndDate('');
-							setSearchSort('');
+							setSearchSelect('');
 							setWord('');
 						}}
 					>
@@ -199,11 +220,11 @@ export default function Sub1_Online (props:any) {
 
 				<div className="main-title">
 					<div className='title-box'>
-					<h1>온라인 문의</h1>
-					<DropdownBox
+						<h1>온라인 문의</h1>
+						<DropdownBox
 							widthmain='100px'
 							height='35px'
-							selectedValue={searchSort}
+							selectedValue={arrangeWord}
 							options={[
 								{ value: '선택', label: '선택' },
 								{ value: '상담', label: '상담' },
@@ -211,7 +232,7 @@ export default function Sub1_Online (props:any) {
 							]}
 							handleChange={(text:any)=>{
 								const textCopy = text.target.value;
-								setSearchSort(textCopy);
+								setArrangeWord(textCopy);
 								if (textCopy === '선택') {
 									setViewList(list);
 								} else {

@@ -15,7 +15,9 @@ export default function Sub3_EstimateList (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>견적리스트</h1>
+					<div className='title-box'>
+						<h1>견적리스트</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">
@@ -39,7 +41,8 @@ export default function Sub3_EstimateList (props:any) {
 							return (
 								<div className="rowbox"
 									onClick={()=>{
-										
+										navigate('/counsel/estimatedetail');
+										window.scrollTo(0, 0);
 									}}
 								>
 									<TextBox width="8%" text={index+1} fontSize={15}/>

@@ -79,7 +79,9 @@ export default function Sub5_CancelRefund (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>취소환불현황</h1>
+					<div className='title-box'>
+						<h1>취소환불현황</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

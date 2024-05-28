@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './Document.scss';
-import logo from '../../images/logobk.png';
-import { DropdownBox } from '../../boxs/DropdownBox';
-import { DropDownAirline } from '../DefaultData';
+import logo from '../../../images/logobk.png';
+import { DropdownBox } from '../../../boxs/DropdownBox';
+import { DropDownAirline } from '../../DefaultData';
 
 export default function DocumentReserve() {
 

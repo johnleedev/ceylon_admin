@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { TitleBox } from '../../../boxs/TitleBox';
-import { DropdownBox } from '../../../boxs/DropdownBox';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
-import { DropDownDeliveryType, DropDownDepositType, DropDowncharger } from '../../DefaultData';
+import { TitleBox } from '../../boxs/TitleBox';
+import { DropdownBox } from '../../boxs/DropdownBox';
+import { DateBoxNum } from '../../boxs/DateBoxNum';
+import { DropDownDeliveryType, DropDownDepositType, DropDowncharger } from '../DefaultData';
 import axios from 'axios';
-import MainURL from '../../../MainURL';
+import MainURL from '../../MainURL';
 
 export default function ModalReserveTab4(props:any) {
 
@@ -16,15 +16,19 @@ export default function ModalReserveTab4(props:any) {
     charger : string;
   }
 
-  const [delivery, setDelivery] = useState<DeliveryProps[]>([
-    {name:'e-Ticket', requestDate:'', completeDate:'', deliveryType:'', charger:''},
-    {name:'Visa/ESTA', requestDate:'', completeDate:'', deliveryType:'', charger:''},
-    {name:'확정서', requestDate:'', completeDate:'', deliveryType:'', charger:''},
-    {name:'여행준비물', requestDate:'', completeDate:'', deliveryType:'', charger:''},
-    {name:'캐리어사은품', requestDate:'', completeDate:'', deliveryType:'', charger:''},
-    {name:'해피콜', requestDate:'', completeDate:'', deliveryType:'', charger:''},
-    {name:'환불/과입금', requestDate:'', completeDate:'', deliveryType:'', charger:''}
-  ]);
+  const [delivery, setDelivery] = useState<DeliveryProps[]>(
+    props.modalSort === 'revise' 
+    ? props.deliveryList
+    : [
+      {name:'e-Ticket', requestDate:'', completeDate:'', deliveryType:'', charger:''},
+      {name:'Visa/ESTA', requestDate:'', completeDate:'', deliveryType:'', charger:''},
+      {name:'확정서', requestDate:'', completeDate:'', deliveryType:'', charger:''},
+      {name:'여행준비물', requestDate:'', completeDate:'', deliveryType:'', charger:''},
+      {name:'캐리어사은품', requestDate:'', completeDate:'', deliveryType:'', charger:''},
+      {name:'해피콜', requestDate:'', completeDate:'', deliveryType:'', charger:''},
+      {name:'환불/과입금', requestDate:'', completeDate:'', deliveryType:'', charger:''}
+    ]
+  );
 
   // Request 날짜 변경
   const handleRequestDateChange = (e:any, index:any) => {
@@ -56,8 +60,7 @@ export default function ModalReserveTab4(props:any) {
 
   // 수정저장 함수 ----------------------------------------------------------------------------
   const handleReserveSaveTab4 = async () => {
-    await axios
-    .post(`${MainURL}/adminreserve/savedeliveryinfo`, {
+    const data = {
       serialNum : props.serialNum,
       eTicket : JSON.stringify(delivery[0]),
       visaEsta : JSON.stringify(delivery[1]),
@@ -66,16 +69,35 @@ export default function ModalReserveTab4(props:any) {
       freeGift : JSON.stringify(delivery[4]),
       happyCall : JSON.stringify(delivery[5]),
       refund : JSON.stringify(delivery[6])
-    })
-    .then((res)=>{
-      if (res.data) {
-        alert('저장되었습니다.');
-        props.setInputState('save');
-      }
-    })
-    .catch((err)=>{
-      alert('다시 시도해주세요.')
-    })
+    }
+
+    if (props.modalSort === 'revise') {   
+      await axios
+      .post(`${MainURL}/adminreserve/revisedeliveryinfo`, data)
+      .then((res)=>{
+        if (res.data) {
+          alert('수정되었습니다.');
+          props.setRefresh(!props.refresh);
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      })
+    } else {
+      await axios
+      .post(`${MainURL}/adminreserve/savedeliveryinfo`, data)
+      .then((res)=>{
+        if (res.data) {
+          alert('저장되었습니다.');
+          props.reserveCheck();
+          props.setInputState('save');
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      })
+    }
+    
   };
   
   return (

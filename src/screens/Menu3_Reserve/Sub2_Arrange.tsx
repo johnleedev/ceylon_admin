@@ -59,7 +59,9 @@ export default function Sub2_Arrange (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>수배현황</h1>
+					<div className='title-box'>
+						<h1>수배현황</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">

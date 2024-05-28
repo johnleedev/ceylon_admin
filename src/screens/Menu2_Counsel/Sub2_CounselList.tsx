@@ -49,7 +49,9 @@ export default function Sub2_CounselList (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>상담리스트</h1>
+					<div className='title-box'>
+						<h1>상담리스트</h1>	
+					</div>
 				</div>
 
 				<div className="main-list-cover">

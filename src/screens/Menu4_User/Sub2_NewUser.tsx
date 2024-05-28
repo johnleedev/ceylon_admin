@@ -38,7 +38,9 @@ export default function Sub2_NewUser (props:any) {
 			<div className="seachlist">
 
 				<div className="main-title">
-					<h1>신규회원</h1>
+					<div className='title-box'>
+						<h1>신규회원</h1>
+					</div>
 				</div>
 
 				<div className="main-list-cover">
