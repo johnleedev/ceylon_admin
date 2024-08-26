@@ -1,0 +1,183 @@
+@mixin middle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+};
+
+.footer {
+  width: 100vw;
+  min-height: 150px;
+  border-top: 1px solid #EAEAEA;
+  background-color: #333;
+  color: #fff;
+
+  .inner {
+    padding: 20px;
+    
+    .footer__top-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+
+      .footer__divider {
+        width: 1px;
+        height: 15px;
+        margin: 0 20px;
+        background-color: #EAEAEA;
+      }
+
+      li.footer__link {
+        height: 35px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+      }
+      li.footer__link:hover {
+        opacity: 0.8;
+      }
+    }
+    .footer__bottom-box {
+      display: flex;
+
+      .footer__imagebox {
+        @include middle();
+        img {
+          width: 274px;
+        }
+      }
+      .footer__textbox {
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
+
+        ul {
+          display: flex;
+          justify-content: flex-start;
+          margin: 5px 0;
+
+          li {
+            margin: 0 5px;
+          }
+        }
+      }
+    }
+
+
+  }
+
+}
+
+
+@media screen and (max-width : 1000px) {
+   
+  .footer {
+
+    .inner {
+     
+      
+      .footer__top-box {
+       
+  
+        .footer__divider {
+          margin: 0 10px;
+        }
+  
+        li.footer__link {
+         
+        }
+        li.footer__link:hover {
+          
+        }
+      }
+      .footer__bottom-box {
+        margin: 20px;
+        flex-direction: column;
+        
+
+        .footer__imagebox {
+         
+          img {
+            
+          }
+        }
+        .footer__textbox {
+  
+          ul {
+            justify-content: center;  
+  
+            li {
+             
+            }
+          }
+          .footer__vertical {
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+  
+            li {
+              margin: 5px 5px;
+            }
+          }
+        }
+      }
+  
+  
+    }
+    
+  }
+}
+
+
+@media screen and (max-width : 600px) {
+   
+  .footer {
+
+    .inner {
+     
+      
+      .footer__top-box {
+       
+  
+        .footer__divider {
+        
+        }
+  
+        li.footer__link {
+         
+        }
+        li.footer__link:hover {
+          
+        }
+      }
+      .footer__bottom-box {
+        margin: 20px;
+        flex-direction: column;
+        
+
+        .footer__imagebox {
+         
+          img {
+            
+          }
+        }
+        .footer__textbox {
+  
+          ul {
+            justify-content: center;
+            text-align: center;
+  
+            li {
+              margin: 5px 5px;
+            }
+          }
+
+          
+        }
+      }
+  
+  
+    }
+    
+  }
+}

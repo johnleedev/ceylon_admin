@@ -3,7 +3,7 @@ import  "react-datepicker/dist/react-datepicker.css" ;
 import {ko} from "date-fns/locale";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import './Boxs.scss'
-import { format } from "date-fns";
+
 
 interface DateBoxNumProps {
   date: any;

@@ -1,0 +1,73 @@
+@mixin middle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+};
+
+.topbar {
+  width: inherit;
+  height: 80px;
+  background-color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ddd;
+
+  .exchange-rate {
+    width: 450px;
+    height: 60px;
+    @include middle;
+    
+    .exchange-rate-box {
+      width: 400px;
+      height: 45px;
+      border: 1px solid #BDBDBD;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+    .exchange-rate-box:hover {
+      border: 1px solid #5f5f5f;
+      cursor: pointer;
+    }
+    p {
+      font-size: 14px;
+    }
+  }
+  .menubtn-box {
+    width: 50%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 30px;
+
+    .menubtn {
+      display: flex;
+      align-items: center;
+
+      .divider {
+        width: 2px;
+        height: 15px;
+        background-color: #BDBDBD;
+        margin: 0 15px;
+      }
+      p {
+        color: #717171;
+      }
+      p:hover {
+        color: #3a3a3a;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+@media screen and (max-width : 600px) { 
+  
+}
+

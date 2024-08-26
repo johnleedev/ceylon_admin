@@ -1,0 +1,214 @@
+@mixin middle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+};
+
+.Menu1 {
+  height: auto;
+  padding: 30px;
+  background-color: #f6f6f6;
+  
+  .top-row {
+    height: 70px;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+
+    .noticebox {
+      width: 33%;
+      height: 40px;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 10px;
+      border: 1px solid #ddd;
+      padding: 5px;
+
+      .text {
+        width: 200px;
+        height: 40px;
+        @include middle();
+        font-weight: 600;
+      }
+      .divider {
+        width: 1px;
+        height: 25px;
+        background-color: #EAEAEA;
+      }
+      .blue {
+        color: #3a9fe5;
+      }
+    }
+    .noticebox:first-child {
+      margin-left: 10px;
+    }
+    .noticebox:last-child {
+      margin-right: 10px;
+    }
+
+    .rowbox {
+      display: flex;
+      align-items: center;
+      padding-left: 5px;
+
+      .select-box {
+        width: 100px;
+        height: 40px;
+        background-color: #242d3f;
+        color: #fff;
+        margin: 0 3px;
+        border: 1px solid #EAEAEA;
+        border-radius: 5px;
+        @include middle;
+      }
+      .select-box:hover {
+        cursor: pointer;
+        border: 1px solid #8C8C8C;
+      }
+    }
+   
+  }
+
+
+  .calendar{
+    position: relative;
+    background-color: #fff;
+    --fc-event-bg-color : #fff;
+    --fc-event-border-color: #fff;
+    margin: 20px;
+    box-sizing: border-box;
+
+    .fc-header-toolbar.fc-toolbar {
+      height: 100px;
+      padding: 20px;
+      background-color: #fff;
+
+      .fc-toolbar-chunk {
+        .fc-toolbar-title {
+          font-size: 40px;
+          font-weight: 600;
+        }
+
+        button {
+          background-color: #fff;
+          border: none;
+          color: #333;
+        }
+        button:hover {
+          background-color: #f1f1f1;
+        }
+      }
+      
+    }
+
+    .fc-event-main {
+      
+      .dayBox {
+        display: flex;
+        padding: 2px;
+        box-sizing: border-box;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        background-color: #fff;
+
+        h2 {
+          color: #fff;
+          background-color: #3a9fe5;
+          padding: 3px 5px;
+          font-size: 14px;
+          border-radius: 5px;
+          margin-right: 2px;
+        }
+        p {
+          color: #333;
+          font-size: 14px;
+        }
+        h3 {
+         
+        }
+       
+      }
+      .dayBox:hover {
+        cursor: pointer;
+        background-color: #f4f4f4;
+      }
+      
+    }
+    /* 일요일 날짜: 빨간색 */
+    .fc-day-sun a {
+      color: #c33338;
+    }
+      
+    /* 토요일 날짜: 파란색 */
+    .fc-day-sat a {
+        color: #3a9fe5;
+    }
+    .fc-daygrid-day-top {
+      flex-direction: row;
+      
+    }
+
+    .modalcheck-cover {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 8;
+      @include middle();
+
+      .modalcheck-backcover {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 8;
+        opacity: 0.5;
+        background-color: #EAEAEA;
+      }
+    }
+  }
+
+  .Modal {
+
+    .modal-backcover {
+      position: absolute;
+      width: 100vw;
+      min-height: 200vh;
+      top: 0;
+      left: 0;
+      z-index: 8;
+      opacity: 0.8;
+      background-color: #242d3f;
+    }
+    .modal-maincover {
+      position: absolute;
+      width: 100vw;
+      min-height: 50vh;
+      top: 0;
+      left: 0;
+      z-index: 9;
+      display: flex;
+      justify-content: center;
+      padding-top: 50px;
+    }
+  
+  }
+  
+ 
+}
+
+
+@media screen and (max-width : 600px) { 
+  
+  
+}
+
+  
+
+  

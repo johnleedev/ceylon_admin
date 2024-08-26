@@ -1,44 +1,59 @@
 import './App.scss';
 import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import MenuBar from './components/MenuBar';
-import TopBar from './components/TopBar';
-import MainAdmin from './screens/MainAdmin';
-import MainSchdule from './screens/Menu1_Schedule/MainSchedule';
-import MainCounsel from './screens/Menu2_Counsel/MainCounsel';
-import ManinReserve from './screens/Menu3_Reserve/MainReserve';
-import MainUser from './screens/Menu4_User/MainUser';
-import MainProducts from './screens/Menu5_Products/MainProducts';
-import MainMenual from './screens/Menu6_Menual/MainMenual';
-import MainState from './screens/Menu7_State/MainState';
-import MainSystem from './screens/Menu8_System/MainSystem';
+import AdminMenuBar from './screen/admin/components/AdminMenuBar';
+import AdminTopBar from './screen/admin/components/AdminTopBar';
+import MainAdmin from './screen/admin/MainAdmin';
+import MainSchdule from './screen/admin/Menu1_Schedule/MainSchedule';
+import MainCounsel from './screen/admin/Menu2_Counsel/MainCounsel';
+import ManinReserve from './screen/admin/Menu3_Reserve/MainReserve';
+import MainUser from './screen/admin/Menu4_User/MainUser';
+import MainProducts from './screen/admin/Menu5_Products/MainProducts';
+import MainMenual from './screen/admin/Menu6_Menual/MainMenual';
+import MainState from './screen/admin/Menu7_State/MainState';
+import MainSystem from './screen/admin/Menu8_System/MainSystem';
+import Main from './screen/home/main/Main';
+import Header from './screen/home/component/Header';
+import Footer from './screen/home/component/Footer';
 
 function App() {
 
   return (
     <div className="App">
-      
-      <div className='menu'>
-        <MenuBar/>
-      </div>
-      <div className='main'>
-        <TopBar />
-        <div className='mainarea'>
-          <Routes>
-            <Route path="/" element={<MainAdmin/>}/>
-            <Route path="/schedule/*" element={<MainSchdule/>}/>
-            <Route path="/counsel/*" element={<MainCounsel/>}/>
-            <Route path="/reserve/*" element={<ManinReserve/>}/>
-            <Route path="/user/*" element={<MainUser/>}/>
-            <Route path="/products/*" element={<MainProducts/>}/>
-            <Route path="/menual/*" element={<MainMenual/>}/>
-            <Route path="/state/*" element={<MainState/>}/>
-            <Route path="/system/*" element={<MainSystem/>}/>
-          </Routes>
+      <Routes>
+      <Route path="/*" element={
+        <>
+        <Routes>
+          <Route path="/" element={<Main/>}/>
+        </Routes>
+        <Footer/>
+        </>
+      }/>
+
+      <Route path="/admin/*" element={
+        <div className='adminCover'>
+          <div className='adminmenu'>
+            <AdminMenuBar/>
+          </div>
+          <div className='adminmain'>
+            <AdminTopBar />
+            <div className='adminmainarea'>
+              <Routes>
+                <Route path="/" element={<MainAdmin/>}/>
+                <Route path="/schedule/*" element={<MainSchdule/>}/>
+                <Route path="/counsel/*" element={<MainCounsel/>}/>
+                <Route path="/reserve/*" element={<ManinReserve/>}/>
+                <Route path="/user/*" element={<MainUser/>}/>
+                <Route path="/products/*" element={<MainProducts/>}/>
+                <Route path="/menual/*" element={<MainMenual/>}/>
+                <Route path="/state/*" element={<MainState/>}/>
+                <Route path="/system/*" element={<MainSystem/>}/>
+              </Routes>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      
+      }/>
+      </Routes>
     </div>
   );
 }

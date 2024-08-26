@@ -4,23 +4,25 @@
   font-weight: 500;
   line-height: 1.4;
   font-size: 16px;
-  display: flex;
   width: 100vw;
   min-height: 100vh;
   
 
-  .menu {
-    width: 245px;
-    height: 100%;
-    
-  }
-  .main {
-    width: calc(100vw - 260px);
-    height: 100%;
-    background-color: #f0f0f0;
+  .adminCover {
+    display: flex;
 
-    .mainarea {
-      
+    .adminmenu {
+      width: 245px;
+      height: 100%;
+    }
+    .adminmain {
+      width: calc(100vw - 260px);
+      height: 100%;
+      background-color: #fff;
+  
+      .adminmainarea {
+        
+      }
     }
   }
 }
@@ -39,4 +41,11 @@ input {
   background-color: #fff;
 }
 
+.inner {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+
+
+}
 
