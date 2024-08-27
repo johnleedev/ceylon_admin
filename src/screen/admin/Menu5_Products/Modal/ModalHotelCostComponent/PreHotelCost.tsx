@@ -14,7 +14,7 @@ export default function PreHotelCost (props : any) {
   const hotelInfoData = props.hotelInfoData;
   const hotelCostData = props.hotelCostData;
 
-  interface inputCostProps {
+  interface InputCostProps {
     reservePeriod : {start:string, end:string};
     default : {
       seasonName: string;
@@ -54,28 +54,28 @@ export default function PreHotelCost (props : any) {
   const [notesDetail, setNotesDetail] = useState(hotelCostData?.notesDetail ?? '');
   const [landBenefit, setLandBenefit] = useState(hotelCostData?.landBenefit ?? '');
   const [productType, setProductType] = useState(hotelCostData?.productType ?? '');
-  const [applyCurrency, setApplyCurrency] = useState(hotelCostData?.applyCurrency ?? 'won');
+  const [applyCurrency, setApplyCurrency] = useState(hotelCostData?.applyCurrency ?? '₩');
   const [commission, setCommission] = useState(hotelCostData?.commissionSelect ?? [{title:"수수료(1인)", select:"select", charge: "0"}]);
   const [openSaleContent, setOpenSaleContent] = useState<boolean>(hotelCostData?.inputState === 'true' ? true : false);
 
-  const defaultInputCostData: inputCostProps = 
+  const defaultInputCostData : InputCostProps = 
     { reservePeriod: {start:"", end:""}, 
-      default : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : "₩", dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
-      season : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : "₩", 
+      default : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
+      season : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
                 addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-              {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : "₩", 
+              {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : '₩', 
               addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-              {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : "₩", 
+              {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
               addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}],
-      saleCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : "₩", dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}]
+      saleCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}]
     }
-  const [inputCost, setInputCost] = useState<inputCostProps[]>(hotelCostData?.inputCost ? JSON.parse(hotelCostData?.inputCost) : [defaultInputCostData]);
-  const [saleCost, setSaleCost] = useState<inputCostProps[]>(hotelCostData?.saleCost ? JSON.parse(hotelCostData.saleCost) : []);
+  const [inputCost, setInputCost] = useState<InputCostProps[]>(hotelCostData?.inputCost ? JSON.parse(hotelCostData?.inputCost) : [defaultInputCostData]);
+  const [saleCost, setSaleCost] = useState<InputCostProps[]>(hotelCostData?.saleCost ? JSON.parse(hotelCostData.saleCost) : []);
 
   // apply 입력된 숫자 금액으로 변경
   const handleinputDefaultCostChange = (
     e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
-    currentState: inputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<inputCostProps[]>>
+    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
   ) => {
     const text = e.target.value;
     const copy = [...currentState];
@@ -97,7 +97,7 @@ export default function PreHotelCost (props : any) {
   // season 입력된 숫자 금액으로 변경
   const handleinputSeasonCostChange = (
     e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
-    currentState: inputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<inputCostProps[]>>
+    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
   ) => {
     const text = e.target.value;
     const copy = [...currentState];
@@ -115,88 +115,59 @@ export default function PreHotelCost (props : any) {
     (copy[sectionIndex].season[index] as any)[name] = formattedNumber; 
     setCurrentState(copy);
   };
-  
-  // 화폐 적용 함수
-  const handleApplyCurrency = (currency : string) => {
-    setApplyCurrency(currency);
-    let symbol = "";
-    if (currency === 'won') {
-      symbol = "₩";
-    } else if (currency === 'dollar') {
-      symbol = "$";
-    }
-    const updatedinputCost = inputCost.map(cost => ({
-      ...cost, 
-      default: cost.default.map(def => ({...def, currency: symbol})),
-      season: cost.season.map(seasonItem => ({...seasonItem, currency: symbol}))
-    }));
-    const updatedSaleCost = inputCost.map(cost => ({
-      ...cost, 
-      default: cost.default.map(def => ({...def, currency: symbol})),
-      season: cost.season.map(seasonItem => ({...seasonItem, currency: symbol}))
-    }));
-    setInputCost(updatedinputCost);
-    setSaleCost(updatedSaleCost);
-  };
 
-    
+  
   // 입금가 판매가 적용
   const handleApplySaleCost = () => {
     setOpenSaleContent(true);
     const chargeNumber = Number(commission[0]?.charge?.replace(/[,|%]/g, '')) || 0;
     const updatedinputCost = inputCost.map((cost: any) => {
-      const defaultCostCopy = cost.default.map((def: any) => {
-          const dayChangeCostNumber = Number(def.dayChangeCost?.replace(/,/g, '')) || 0;
-          const updatedDayChangeCost = (dayChangeCostNumber + chargeNumber).toLocaleString();
-          const dayAddCostNumber = Number(def.dayAddCost?.replace(/,/g, '')) || 0;
-          const updatedDayAddCost = (dayAddCostNumber + chargeNumber).toLocaleString();
-          return {
-              ...def,
-              dayChangeCost: updatedDayChangeCost,
-              dayAddCost: updatedDayAddCost,
-          };
-      });
-      const saleCostCopy = cost.season.flatMap((season: any) => {
-        const seasonNameCopy = season.seasonName;
-        const addCostPersonNumber = Number(season.addCostPerson?.replace(/,/g, '')) || 0;
-        const galaDinnerNumber = Number(season.galaDinner?.replace(/,/g, '')) || 0;
-        const totalSeasonCost = addCostPersonNumber + galaDinnerNumber;
-        return defaultCostCopy.map((def: any) => {
+        const defaultCostCopy = cost.default.map((def: any) => {
             const dayChangeCostNumber = Number(def.dayChangeCost?.replace(/,/g, '')) || 0;
-            const updatedDayChangeCost = (dayChangeCostNumber + totalSeasonCost).toLocaleString();
+            const updatedDayChangeCost = (dayChangeCostNumber + chargeNumber).toLocaleString();
             const dayAddCostNumber = Number(def.dayAddCost?.replace(/,/g, '')) || 0;
-            const updatedDayAddCost = (dayAddCostNumber + totalSeasonCost).toLocaleString();
+            const updatedDayAddCost = (dayAddCostNumber + chargeNumber).toLocaleString();
             return {
                 ...def,
-                seasonName : seasonNameCopy,
                 dayChangeCost: updatedDayChangeCost,
                 dayAddCost: updatedDayAddCost,
             };
         });
-      });
-      return {
-          ...cost,
-          default: defaultCostCopy,
-          saleCost: saleCostCopy.sort((a:any,b:any)=> (a.roomType.localeCompare(b.roomType))) // 각 시즌별로 생성된 saleCostCopy 배열
-      };
+        let saleCost = defaultCostCopy.flatMap((def: any) => {
+            return cost.season.map((season: any) => {
+                const addCostPersonNumber = Number(season.addCostPerson?.replace(/,/g, '')) || 0;
+                const galaDinnerNumber = Number(season.galaDinner?.replace(/,/g, '')) || 0;
+                const resultA = addCostPersonNumber + galaDinnerNumber;
+                const resultB = (Number(def.dayChangeCost?.replace(/,/g, '')) + resultA).toLocaleString();
+                const resultC = (Number(def.dayAddCost?.replace(/,/g, '')) + resultA).toLocaleString();
+                return {
+                    seasonName: season.seasonName,
+                    period: season.period,
+                    roomType: def.roomType,
+                    currency: def.currency,
+                    dayChangeCost: resultB,
+                    dayAddCost: resultC,
+                    minimumDay: season.minimumDay,
+                    notice: "",
+                };
+            });
+        });
+        saleCost = saleCost.sort((a: any, b: any) => {
+            if (a.roomType < b.roomType) return -1;
+            if (a.roomType > b.roomType) return 1;
+            return 0;
+        });
+        return {
+            ...cost,
+            default: defaultCostCopy,
+            saleCost: saleCost
+        };
     });
     setSaleCost(updatedinputCost);
   };
 
-  // 초기화 알림
-  const handleResetAlert = () => {
-		const costConfirmed = window.confirm(`적용 화폐를 변경하시면, 입력값이 초기화 됩니다. 정말 변경하시겠습니까?`);
-			if (costConfirmed) {
-        if (applyCurrency === 'won') {
-          handleApplyCurrency('dollar')
-        } else if (applyCurrency === 'dollar'){
-          handleApplyCurrency('won')
-        }
-				handleApplySaleCostReset();
-		} else {
-			return
-		}
-	};
+
+
 
   // 입금가 판매가 초기화
   const handleApplySaleCostReset = () => {
@@ -204,6 +175,18 @@ export default function PreHotelCost (props : any) {
     setSaleCost([]);
     setCommission([{title:"수수료(1인)", select:"select", charge: "0"}])
     setOpenSaleContent(false);
+  };
+
+  // 화폐 적용 함수
+  const handleApplyCurrency = (symbol : string) => {
+    setApplyCurrency(symbol);
+    const copy = [...inputCost]
+    const updatedinputCost = copy.map(cost => ({
+      ...cost, 
+      default: cost.default.map(def => ({...def, currency: symbol})),
+      season: cost.season.map(seasonItem => ({...seasonItem, currency: symbol}))
+    }));
+    setInputCost(updatedinputCost);
   };
 
    // 저장 함수 ----------------------------------------------
@@ -388,15 +371,15 @@ export default function PreHotelCost (props : any) {
             <div className='checkInputCover'>
               <div className='checkInput'>
                 <input className="input" type="checkbox"
-                  checked={applyCurrency === 'won'}
-                  onChange={handleResetAlert}
+                  checked={applyCurrency === '₩'}
+                  onChange={()=>{handleApplyCurrency('₩')}}
                 />
               </div>
               <p>₩(원)</p>
               <div className='checkInput'>
                 <input className="input" type="checkbox"
-                  checked={applyCurrency === 'dollar'}
-                  onChange={handleResetAlert}
+                  checked={applyCurrency === '$'}
+                  onChange={()=>{handleApplyCurrency('$')}}
                 />
               </div>
               <p>$(달러)</p>
@@ -529,7 +512,16 @@ export default function PreHotelCost (props : any) {
                     <div className="dayBox">
                       <div className="dayBtn"
                         onClick={()=>{
-                          const copy = [...inputCost, defaultInputCostData];
+                          const copy = [...inputCost, { reservePeriod: {start:"", end:""}, 
+                            default : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
+                            season : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
+                                      addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+                                    {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : '₩', 
+                                    addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+                                    {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
+                                    addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}],
+                            saleCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}]
+                          }];
                           setInputCost(copy);
                         }}
                       >
@@ -686,7 +678,7 @@ export default function PreHotelCost (props : any) {
                               onClick={()=>{
                                 const copy = [...inputCost];
                                 copy[sectionIndex].default = [...copy[sectionIndex].default, 
-                                  {seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : "₩", dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}
+                                  {seasonName: `default${index+2}`, period: [{start:"", end:""}], roomType: "", currency : "₩", dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}
                                 ]
                                 setInputCost(copy);
                               }}

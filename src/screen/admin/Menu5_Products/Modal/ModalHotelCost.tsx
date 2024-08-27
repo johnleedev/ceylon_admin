@@ -172,22 +172,23 @@ export default function ModalHotelCost (props : any) {
       </section>
 
       <div style={{height:50}}></div>
-
-      <PreHotelCost locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType} hotelCostData={hotelCostData}
-          hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh}
-        />
-      {/* {
-        ( selectCostType === '선투숙') 
-        ?
-        <PreHotelCost locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType} hotelCostData={hotelCostData}
-          hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh}
-        />
-        :
-        <FullVillaCost locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType} hotelCostData={hotelCostData}
-          hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh}
-        />
-      } */}
-      
+      {
+        selectCostType !== '' &&
+        <>
+          {
+            ( selectCostType === '선투숙') 
+            ?
+            <PreHotelCost locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType} hotelCostData={hotelCostData}
+              hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh}
+            />
+            :
+            <FullVillaCost locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType} hotelCostData={hotelCostData}
+              hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh}
+            />
+          }
+        </>
+      }
+            
     </div>     
   )
 }

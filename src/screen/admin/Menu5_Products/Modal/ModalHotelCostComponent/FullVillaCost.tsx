@@ -16,36 +16,42 @@ export default function FullVillaCost (props : any) {
   const hotelInfoData = props.hotelInfoData;
   const hotelCostData = props.hotelCostData;
 
-  interface applyCostProps {
-    seasonName: string;
-    period : {start:string, end:string}[];
-    preStay : string;
-    roomType: string[];
-    oneDayCost : string;
-    twoTwoDayCost : string;
-    oneThreeDayCost : string;
-    threeDayCost : string;
-    fourDayCost : string;
-    notice : string;
-  }
-
-  interface seasonCostProps {
-    seasonName: string;
-    period : {start:string, end:string}[];
-    preStay : string;
-    roomType: string[];
-    oneDayCost : string;
-    twoTwoDayCost : string;
-    oneThreeDayCost : string;
-    threeDayCost : string;
-    fourDayCost : string;
-    notice : string;
-    minimumDay : string;
-    currency : string;
-    addCost : string;
-    addCostAll : string;
-    addCostPerson : string;
-    galaDinner : string;
+  interface InputCostProps {
+    reservePeriod : {start:string, end:string};
+    default : {
+      seasonName: string;
+      period : {start:string, end:string}[];
+      preStay : string;
+      roomType: string[];
+      oneDayCost : string;
+      twoTwoDayCost : string;
+      oneThreeDayCost : string;
+      threeDayCost : string;
+      fourDayCost : string;
+      notice : string;
+    }[]
+    season : {
+      seasonName: string;
+      period : {start:string, end:string}[];
+      minimumDay : string;
+      currency : string;
+      addCost : string;
+      addCostAll : string;
+      addCostPerson : string;
+      galaDinner : string;
+    }[]
+    saleCost : {
+      seasonName: string;
+      period : {start:string, end:string}[];
+      preStay : string;
+      roomType: string[];
+      oneDayCost : string;
+      twoTwoDayCost : string;
+      oneThreeDayCost : string;
+      threeDayCost : string;
+      fourDayCost : string;
+      notice : string;
+    }[]
   }   
 
 
@@ -54,7 +60,7 @@ export default function FullVillaCost (props : any) {
   const [notesDetail, setNotesDetail] = useState(hotelCostData?.notesDetail ?? '');
   const [landBenefit, setLandBenefit] = useState(hotelCostData?.landBenefit ?? '');
   const [productType, setProductType] = useState(hotelCostData?.productType ?? '');
-  const [applyCurrency, setApplyCurrency] = useState(hotelCostData?.applyCurrency ?? 'won');
+  const [applyCurrency, setApplyCurrency] = useState(hotelCostData?.applyCurrency ?? '₩');
   const [commission, setCommission] = useState(
     hotelCostData?.commission
     ? JSON.parse(hotelCostData?.commission)
@@ -62,170 +68,153 @@ export default function FullVillaCost (props : any) {
   );
   const [openSaleContent, setOpenSaleContent] = useState<boolean>(hotelCostData?.inputState === 'true' ? true : false);
 
-  const [applyCost, setApplyCost] = useState<applyCostProps[]>(
-    hotelCostData?.applyCost
-    ? JSON.parse(hotelCostData?.applyCost)
-    : [{seasonName: "default1", period: [{start:"", end:""}], preStay:"false", roomType: [""], 
-       oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}]
-  );
-  const [seasonCost, setSeasonCost] = useState<seasonCostProps[]>(
-    hotelCostData?.seasonCost
-    ? JSON.parse(hotelCostData?.seasonCost)
-    : [ {seasonName :"하이시즌", period: [{start:"", end:""}],  preStay:"false", roomType: [""], 
-          oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : "",
-          minimumDay : "1", currency : "₩", addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-        {seasonName :"픽시즌", period: [{start:"", end:""}],  preStay:"false", roomType: [""], 
-          oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : "",
-          minimumDay : "1", currency : "₩", addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-        {seasonName :"블랙아웃", period: [{start:"", end:""}],  preStay:"false", roomType: [""], 
-          oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : "",
-          minimumDay : "1", currency : "₩", addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"} ]
-  );
-  const [saleApplyCost, setSaleApplyCost] = useState<applyCostProps[]>(hotelCostData?.saleApplyCost ? JSON.parse(hotelCostData.saleApplyCost) : []);
-  const [saleSeasonCost, setSaleSeasonCost] = useState<applyCostProps[]>(hotelCostData?.saleSeasonCost ? JSON.parse(hotelCostData.saleSeasonCost) : []);
-
+  const defaultInputCostData: InputCostProps = 
+    { reservePeriod: {start:"", end:""}, 
+      default : [{seasonName: "default1", period: [{start:"", end:""}], preStay:"false", roomType: [""], 
+                  oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}],
+      season : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : "₩", 
+                  addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+                {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : "₩", 
+                  addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+                {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : "₩", 
+                  addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}],
+      saleCost : [{seasonName: "default1", period: [{start:"", end:""}], preStay:"false", roomType: [""], 
+                  oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}]
+    }
+  const [inputCost, setInputCost] = useState<InputCostProps[]>(hotelCostData?.inputCost ? JSON.parse(hotelCostData?.inputCost) : [defaultInputCostData]);
+  const [saleCost, setSaleCost] = useState<InputCostProps[]>(hotelCostData?.saleCost ? JSON.parse(hotelCostData.saleCost) : []);
+  
 
   // apply 입력된 숫자 금액으로 변경
-  const handleApplyCostChange = (
-    e: React.ChangeEvent<HTMLInputElement>, index: number, name: keyof applyCostProps,
-    currentState: applyCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<applyCostProps[]>>
+  const handleinputDefaultCostChange = (
+    e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
+    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
   ) => {
     const text = e.target.value;
     const copy = [...currentState];
-    if (name === 'period' || name === 'roomType') {
+    if (name === 'period') {
       return;
     }
     if (text === '') {
-      copy[index][name] = ''; 
+      (copy[sectionIndex].default[index] as any)[name] = ''; 
       setCurrentState(copy);
       return;
     }
     const inputNumber = parseInt(text.replace(/,/g, ''), 10);
     if (isNaN(inputNumber)) {return;}
     const formattedNumber = inputNumber.toLocaleString('en-US');
-    copy[index][name] = formattedNumber; 
+    (copy[sectionIndex].default[index] as any)[name] = formattedNumber; 
     setCurrentState(copy);
   };
   
   // season 입력된 숫자 금액으로 변경
-  const handleSeasonCostChange = (
-    e: React.ChangeEvent<HTMLInputElement>, index: number, name: keyof seasonCostProps,
-    currentState: seasonCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<seasonCostProps[]>>
+  const handleinputSeasonCostChange = (
+    e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
+    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
   ) => {
     const text = e.target.value;
     const copy = [...currentState];
-    if (name === 'period'|| name === 'roomType') {
+    if (name === 'period') {
       return;
     }
     if (text === '') {
-      copy[index][name] = ''; 
+      (copy[sectionIndex].season[index] as any)[name] = ''; 
       setCurrentState(copy);
       return;
     }
     const inputNumber = parseInt(text.replace(/,/g, ''), 10);
     if (isNaN(inputNumber)) {return;}
     const formattedNumber = inputNumber.toLocaleString('en-US');
-    copy[index][name] = formattedNumber; 
+    (copy[sectionIndex].season[index] as any)[name] = formattedNumber; 
     setCurrentState(copy);
   };
   
   // 화폐 적용 함수
-  const handleApplyCurrency = (currency : string) => {
-    setApplyCurrency(currency);
-    let symbol = "";
-    if (currency === 'won') {
-      symbol = "₩";
-    } else if (currency === 'dollar') {
-      symbol = "$";
-    }
-    const updatedApplyCost = applyCost.map(cost => ({...cost, currency: symbol}));
-    const updatedSeasonCost = seasonCost.map(cost => ({...cost, currency: symbol}));
-    const updatedSaleApplyCost = saleApplyCost.map(cost => ({...cost, currency: symbol}));
-    const updatedSaleSeasonCost = saleSeasonCost.map(cost => ({...cost, currency: symbol}));
-    setApplyCost(updatedApplyCost);
-    setSeasonCost(updatedSeasonCost);
-    setSaleApplyCost(updatedSaleApplyCost);
-    setSaleSeasonCost(updatedSaleSeasonCost);
+  const handleApplyCurrency = (symbol : string) => {
+    setApplyCurrency(symbol);
+    const copy = [...inputCost]
+    const updatedinputCost = copy.map(cost => ({
+      ...cost, 
+      default: cost.default.map(def => ({...def, currency: symbol})),
+      season: cost.season.map(seasonItem => ({...seasonItem, currency: symbol}))
+    }));
+    setInputCost(updatedinputCost);
   };
 
     
   // 입금가 판매가 적용
   const handleApplySaleCost = () => {
     setOpenSaleContent(true);
-    const inputNumber1 = Number(commission[0].charge.replace(/,/g, ''));
-    const inputNumber2 = Number(commission[1].charge.replace(/,/g, ''));
-    const inputNumber3 = Number(commission[2].charge.replace(/,/g, ''));
-    const chargeNumber = Number(inputNumber1 + inputNumber2 + inputNumber3);
-    const updatedApplyCost = applyCost.map((cost:any) => {
-      const oneDayCostNumber = Number(cost.oneDayCost.replace(/,/g, '')) || 0;
-      const updatedOneDayCost = (oneDayCostNumber + chargeNumber).toLocaleString();
-      const twoDayCostNumber = Number(cost.twoTwoDayCost.replace(/,/g, '')) || 0;
-      const updatedTwoDayCost = (twoDayCostNumber + chargeNumber).toLocaleString();
-      const oneThreeDayCostNumber = Number(cost.oneThreeDayCost.replace(/,/g, '')) || 0;
-      const updatedOneThreeDayCost = (oneThreeDayCostNumber + chargeNumber).toLocaleString();
-      const threeDayCostNumber = Number(cost.threeDayCost.replace(/,/g, '')) || 0;
-      const updatedThreeDayCost = (threeDayCostNumber + chargeNumber).toLocaleString();
-      const fourDayCostNumber = Number(cost.fourDayCost.replace(/,/g, '')) || 0;
-      const updatedFourDayCost = (fourDayCostNumber + chargeNumber).toLocaleString();
-      return {...cost, oneDayCost : updatedOneDayCost, twoTwoDayCost : updatedTwoDayCost, 
-              oneThreeDayCost : updatedOneThreeDayCost, threeDayCost : updatedThreeDayCost, fourDayCost : updatedFourDayCost};
+    const chargeNumber = [0, 1, 2].reduce((sum, index) => {
+        return sum + (Number(commission[index]?.charge.replace(/,/g, '')) || 0);
+    }, 0);
+    const updateCostValues = (cost: any, additionalCost: number) => {
+        const oneDayCostNumber = Number(cost.oneDayCost?.replace(/,/g, '')) || 0;
+        const updatedOneDayCost = (oneDayCostNumber + additionalCost).toLocaleString();
+        const twoTwoDayCostNumber = Number(cost.twoTwoDayCost?.replace(/,/g, '')) || 0;
+        const updatedTwoTwoDayCost = (twoTwoDayCostNumber + additionalCost).toLocaleString();
+        const oneThreeDayCostNumber = Number(cost.oneThreeDayCost?.replace(/,/g, '')) || 0;
+        const updatedOneThreeDayCost = (oneThreeDayCostNumber + additionalCost).toLocaleString();
+        const threeDayCostNumber = Number(cost.threeDayCost?.replace(/,/g, '')) || 0;
+        const updatedThreeDayCost = (threeDayCostNumber + additionalCost).toLocaleString();
+        const fourDayCostNumber = Number(cost.fourDayCost?.replace(/,/g, '')) || 0;
+        const updatedFourDayCost = (fourDayCostNumber + additionalCost).toLocaleString();
+        return {
+            ...cost,
+            oneDayCost: updatedOneDayCost,
+            twoTwoDayCost: updatedTwoTwoDayCost,
+            oneThreeDayCost: updatedOneThreeDayCost,
+            threeDayCost: updatedThreeDayCost,
+            fourDayCost: updatedFourDayCost
+        };
+    };
+    const updatedInputCost = inputCost.map((cost: any) => {
+        const defaultCostCopy = cost.default.map((def: any) => updateCostValues(def, chargeNumber));
+        let saleCostCopy = defaultCostCopy.flatMap((def: any) => {
+            return cost.season.map((season: any) => {
+                const addCostPersonNumber = Number(season.addCostPerson?.replace(/,/g, '')) || 0;
+                const galaDinnerNumber = Number(season.galaDinner?.replace(/,/g, '')) || 0;
+                const resultA = addCostPersonNumber + galaDinnerNumber;
+                const resultB = (Number(def.oneDayCost?.replace(/,/g, '')) + resultA).toLocaleString();
+                const resultC = (Number(def.twoTwoDayCost?.replace(/,/g, '')) + resultA).toLocaleString();
+                const resultD = (Number(def.oneThreeDayCost?.replace(/,/g, '')) + resultA).toLocaleString();
+                const resultE = (Number(def.threeDayCost?.replace(/,/g, '')) + resultA).toLocaleString();
+                const resultF = (Number(def.fourDayCost?.replace(/,/g, '')) + resultA).toLocaleString();
+                return {
+                    seasonName: season.seasonName,
+                    period: season.period,
+                    roomType: def.roomType,
+                    currency: def.currency,
+                    oneDayCost: resultB,
+                    twoTwoDayCost: resultC,
+                    oneThreeDayCost: resultD,
+                    threeDayCost: resultE,
+                    fourDayCost: resultF,
+                    minimumDay: season.minimumDay,
+                    notice: "",
+                };
+            });
+        });
+        saleCostCopy = saleCostCopy.sort((a: any, b: any) => {
+            if (a.roomType < b.roomType) return -1;
+            if (a.roomType > b.roomType) return 1;
+            return 0;
+        });
+        return {
+            ...cost,
+            default: defaultCostCopy,
+            saleCost: saleCostCopy
+        };
     });
-    setSaleApplyCost(updatedApplyCost);
-    const updatedSeasonCost = seasonCost.map((cost: any) => {
-      const addCostPersonNumber = Number(cost.addCostPerson.replace(/,/g, '')) || 0;
-      const galaDinnerNumber = Number(cost.galaDinner.replace(/,/g, '')) || 0;
-      const oneDayCostNumber = Number(cost.oneDayCost.replace(/,/g, '')) || 0;
-      const updatedOneDayCost = (oneDayCostNumber + addCostPersonNumber + galaDinnerNumber).toLocaleString();
-      const twoDayCostNumber = Number(cost.twoTwoDayCost.replace(/,/g, '')) || 0;
-      const updatedTwoDayCost = (twoDayCostNumber + addCostPersonNumber + galaDinnerNumber).toLocaleString();
-      const oneThreeDayCostNumber = Number(cost.oneThreeDayCost.replace(/,/g, '')) || 0;
-      const updatedOneThreeDayCost = (oneThreeDayCostNumber + addCostPersonNumber + galaDinnerNumber).toLocaleString();
-      const threeDayCostNumber = Number(cost.threeDayCost.replace(/,/g, '')) || 0;
-      const updatedThreeDayCost = (threeDayCostNumber + addCostPersonNumber + galaDinnerNumber).toLocaleString();
-      const fourDayCostNumber = Number(cost.fourDayCost.replace(/,/g, '')) || 0;
-      const updatedFourDayCost = (fourDayCostNumber + addCostPersonNumber + galaDinnerNumber).toLocaleString();
-      return {...cost, oneDayCost : updatedOneDayCost, twoTwoDayCost : updatedTwoDayCost, 
-              oneThreeDayCost : updatedOneThreeDayCost, threeDayCost : updatedThreeDayCost, fourDayCost : updatedFourDayCost};
-    });
-    setSaleSeasonCost(updatedSeasonCost);
-    
+    setSaleCost(updatedInputCost);
   };
 
-  // 초기화 알림
-  const handleResetAlert = () => {
-    const costConfirmed = window.confirm(`적용 화폐를 변경하시면, 입력값이 초기화 됩니다. 정말 변경하시겠습니까?`);
-      if (costConfirmed) {
-        if (applyCurrency === 'won') {
-          handleApplyCurrency('dollar')
-        } else if (applyCurrency === 'dollar'){
-          handleApplyCurrency('won')
-        }
-        handleApplySaleCostReset();
-    } else {
-      return
-    }
-  };
+
 
   // 입금가 판매가 초기화
   const handleApplySaleCostReset = () => {
-    setApplyCost(
-      [{seasonName: "default1", period: [{start:"", end:""}], preStay:"false", roomType: [""], 
-       oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}]
-    );
-    setSeasonCost([  {seasonName :"하이시즌", period: [{start:"", end:""}],  preStay:"false", roomType: [""], 
-      oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : "",
-      minimumDay : "1", currency : "₩", addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-    {seasonName :"픽시즌", period: [{start:"", end:""}],  preStay:"false", roomType: [""], 
-      oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : "",
-      minimumDay : "1", currency : "₩", addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-    {seasonName :"블랙아웃", period: [{start:"", end:""}],  preStay:"false", roomType: [""], 
-      oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : "",
-      minimumDay : "1", currency : "₩", addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}]);
-    setSaleApplyCost(
-      [{seasonName: "default1", period: [{start:"", end:""}], preStay:"false", roomType: [""], 
-       oneDayCost : "", twoTwoDayCost : "", oneThreeDayCost : "", threeDayCost : "", fourDayCost : "", notice : ""}]
-    );
-    setSaleSeasonCost([]);
+    setInputCost([defaultInputCostData]);
+    setSaleCost([]);
     setOpenSaleContent(false);
     setCommission([
       {title:"표준수수료", select:"select", charge: "0"},
@@ -251,10 +240,8 @@ export default function FullVillaCost (props : any) {
       productType : productType,
       applyCurrency : applyCurrency,
       commission : JSON.stringify(commission),
-      applyCost: JSON.stringify(applyCost),
-      seasonCost: JSON.stringify(seasonCost),
-      saleApplyCost: JSON.stringify(saleApplyCost),
-      saleSeasonCost: JSON.stringify(saleSeasonCost),
+      inputCost: JSON.stringify(inputCost),
+      saleCost: JSON.stringify(saleCost),
     }
 
     axios
@@ -414,15 +401,15 @@ export default function FullVillaCost (props : any) {
             <div className='checkInputCover'>
               <div className='checkInput'>
                 <input className="input" type="checkbox"
-                  checked={applyCurrency === 'won'}
-                  onChange={handleResetAlert}
+                  checked={applyCurrency === '₩'}
+                  onChange={()=>{handleApplyCurrency('₩')}}
                 />
               </div>
               <p>₩(원)</p>
               <div className='checkInput'>
                 <input className="input" type="checkbox"
-                  checked={applyCurrency === 'dollar'}
-                  onChange={handleResetAlert}
+                  checked={applyCurrency === '$'}
+                  onChange={()=>{handleApplyCurrency('$')}}
                 />
               </div>
               <p>$(달러)</p>
@@ -526,317 +513,395 @@ export default function FullVillaCost (props : any) {
         <p>(1인 기준)</p>
       </div>
 
-      <section>
-        <div className="bottombar"></div>
-        <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-          <div className='chartbox' style={{width:'25%'}} ><p>기간</p></div>
-          <div className="chart-divider"></div>
-          <div className='chartbox' style={{width:'5%'}} ><p>선투숙</p></div>
-          <div className="chart-divider"></div>
-          <div className='chartbox' style={{width:'12%'}} ><p>룸타입</p></div>
-          <div className="chart-divider"></div>
-          <div style={{width:'45%'}}>
-            <div className='chartbox' style={{borderBottom: '1px solid #D3D3D3'}}>  
-              <p>리조트+풀빌라요금</p>
-            </div>
-            <div style={{display:'flex'}}  className='chartbox'>
-              <p className='charttext'>1박</p>
-              <div className="chart-textdivider"></div>
-              <p className='charttext'>2+2</p>
-              <div className="chart-textdivider"></div>
-              <p className='charttext'>1+3</p>
-              <div className="chart-textdivider"></div>
-              <p className='charttext'>3</p>
-              <div className="chart-textdivider"></div>
-              <p className='charttext'>4</p>
-            </div>
-          </div>
-          <div className="chart-divider"></div>
-          <div className='chartbox' style={{width:'10%'}} ><p>포함사항/특전</p></div>
-          <div className='chartbox' style={{width:'3%'}} ></div>
-        </div>
-        {
-          applyCost.map((item:any, index:any)=>{
-            return (
-              <div className="coverbox">
-                <div className="coverrow hole" style={{minHeight:'60px'}} >
-                  <div style={{width:'25%'}} >
-                    {
-                      item.period.map((subItem:any, subIndex:any)=>{
-                        return (
-                          <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
-                            <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
-                            setSelectDate={(e:any)=>{ 
-                              const inputs = [...applyCost];
-                              inputs[index].period[subIndex].start = e;
-                              inputs[index].period[subIndex].end = e;
-                              setApplyCost(inputs);
-                            }} 
-                            />
-                            <p style={{marginLeft:'5px'}}>~</p>
-                            <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
-                              setSelectDate={(e:any)=>{ 
-                                const inputs = [...applyCost];
-                                inputs[index].period[subIndex].end = e;
-                                setApplyCost(inputs);
-                              }} 
-                              />
-                              <div className="dayBox">
-                                <div className="dayBtn"
-                                  onClick={()=>{
-                                    const copy = [...applyCost];
-                                    copy[index].period = [...copy[index].period, {start:"", end:""}];
-                                    setApplyCost(copy);
-                                  }}
-                                >
-                                  <p>+</p>
-                                </div>
-                              </div>  
-                              <div className="dayBox">
-                                <div className="dayBtn"
-                                  onClick={()=>{
-                                    const copy = [...applyCost];
-                                    copy[index].period.splice(subIndex, 1);
-                                    setApplyCost(copy);
-                                  }}
-                                >
-                                  <p>-</p>
-                                </div>
-                              </div>  
-                          </div>
-                        )
-                      })
-                    }
-                  </div>
-                  <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:"center"}}>
-                    <div className='checkInputCover'>
-                      <div className='checkInput'>
-                        <input className="input" type="checkbox"
-                          checked={item.preStay === 'true'}
-                          onChange={()=>{
-                            const copy = [...applyCost]; 
-                            copy[index].preStay = item.preStay === 'true' ? 'false' : 'true'; 
-                            setApplyCost(copy);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{width:'12%', alignItems:'center',}}>
-                    {
-                      item.roomType.map((subItem:any, subIndex:any)=>{
-                        return (
-                          <div key={index} style={{display:'flex'}}>
-                            <input className="inputdefault" type="text" style={{width:'80%', marginLeft:'5px'}} 
-                              value={subItem} onChange={(e)=>{const copy = [...applyCost]; copy[index].roomType[subIndex] = e.target.value; setApplyCost(copy);}}/>
-                            {
-                              (item.roomType.length > 1 && item.roomType.length === subIndex + 1)
-                              ?
-                              <div className="dayBox">
-                                <div className="dayBtn"
-                                  onClick={()=>{
-                                    const copy = [...applyCost];
-                                    copy[index].roomType.splice(subIndex, 1);
-                                    setApplyCost(copy);
-                                  }}
-                                >
-                                  <p>-</p>
-                                </div>
-                              </div>  
-                              :
-                              <div className="dayBox">
-                                <div className="dayBtn"
-                                  onClick={()=>{
-                                    const copy = [...applyCost];
-                                    copy[index].roomType = [...copy[index].roomType, ""];
-                                    setApplyCost(copy);
-                                  }}
-                                >
-                                  <p>+</p>
-                                </div>
-                              </div>  
-                            } 
-                          </div>
-                        )
-                      })
-                    }
-                  </div>
-                  <div style={{width:'45%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                    <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                      value={item.oneDayCost} onChange={(e)=>{
-                        handleApplyCostChange(e, index, 'oneDayCost', applyCost, setApplyCost)
-                      }}/>
-                    <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                      value={item.twoTwoDayCost} onChange={(e)=>{
-                        handleApplyCostChange(e, index, 'twoTwoDayCost', applyCost, setApplyCost)
-                      }}/>
-                    <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                      value={item.oneThreeDayCost} onChange={(e)=>{
-                        handleApplyCostChange(e, index, 'oneThreeDayCost', applyCost, setApplyCost)
-                      }}/>
-                    <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                    value={item.threeDayCost} onChange={(e)=>{
-                      handleApplyCostChange(e, index, 'threeDayCost', applyCost, setApplyCost)
-                    }}/>
-                    <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                    value={item.fourDayCost} onChange={(e)=>{
-                      handleApplyCostChange(e, index, 'fourDayCost', applyCost, setApplyCost)
-                    }}/>
-                  </div>
-                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
-                  <div style={{width:'10%', display:'flex'}} >
-                    <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
-                        value={item.notice} onChange={(e)=>{const copy = [...applyCost]; copy[index].notice = e.target.value; setApplyCost(copy);}}/>
-                  </div>
-                  <div style={{width:'3%', display:'flex'}} >
-                  <div className="dayBox">
-                    <div className="dayBtn"
-                      onClick={()=>{
-                        const copy = [...applyCost, 
-                          {seasonName: `default${index+1}`, period: [{start:"", end:""}], preStay:"false", roomType: [""], 
-                          oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}
-                        ];
-                        setApplyCost(copy);
-                      }}
-                    >
-                      <p>+</p>
-                    </div>
-                  </div>  
-                  </div>
-                </div>
-              </div>
-            )
-          })
-        }
-        
-        <div style={{height:'1px', backgroundColor:'#BDBDBD', marginTop:'20px'}}></div>
-        <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-          <div className='chartbox' style={{width:'10%'}} ><p>성수기정책</p></div>
-          <div className="chart-divider"></div>
-          <div className='chartbox' style={{width:'25%'}} ><p>기간</p></div>
-          <div className="chart-divider"></div>
-          <div className='chartbox' style={{width:'7%'}} ><p>미니멈/박</p></div>
-          <div className="chart-divider"></div>
-          <div className='chartbox' style={{width:'7%'}}><p>화폐</p></div>
-          <div className="chart-divider"></div>
-          <div style={{width:'50%'}} >
-            <div className='chartbox' style={{borderBottom: '1px solid #D3D3D3'}}>  
-              <p className='charttext'>요금</p>
-            </div>
-            <div style={{display:'flex'}}  className='chartbox'>
-              <p className='charttext'>추가(룸/박)</p>
-              <div className="chart-textdivider"></div>
-              <p className='charttext'>합계</p>
-              <div className="chart-textdivider"></div>
-              <p className='charttext'>1인</p>
-              <div className="chart-textdivider"></div>
-              <p className='charttext'>갈라디너</p>
-            </div>
-          </div>
-        </div>
-        {
-          seasonCost.map((item:any, index:any)=>{
-            return (
-              <div className="coverbox">
-                <div className="coverrow hole" style={{minHeight:'60px'}} >
-                  <div style={{width:'10%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                    <p style={{margin:'0'}}>{item.seasonName}</p>
-                  </div>
-                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
-                  <div style={{width:'25%'}} >
-                    {
-                      item.period.map((subItem:any, subIndex:any)=>{
-                        return (
-                          <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
-                            <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
-                            setSelectDate={(e:any)=>{ 
-                                const inputs = [...seasonCost];
-                                inputs[index].period[subIndex].start = e;
-                                inputs[index].period[subIndex].end = e;
-                                setSeasonCost(inputs);
-                            }} 
-                            />
-                            <p style={{marginLeft:'5px'}}>~</p>
-                            <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
-                              setSelectDate={(e:any)=>{ 
-                                const inputs = [...seasonCost];
-                                inputs[index].period[subIndex].end = e;
-                                setSeasonCost(inputs);
-                              }} 
-                              />
-                            <div className="dayBox">
-                              <div className="dayBtn"
-                                onClick={()=>{
-                                  const copy = [...seasonCost];
-                                  copy[index].period = [...copy[index].period, {start:"", end:""}];
-                                  setSeasonCost(copy);
-                                }}
-                              >
-                                <p>+</p>
-                              </div>
-                            </div>  
-                            <div className="dayBox">
-                              <div className="dayBtn"
-                                onClick={()=>{
-                                  const copy = [...seasonCost];
-                                  copy[index].period.splice(subIndex, 1);
-                                  setSeasonCost(copy);
-                                }}
-                              >
-                                <p>-</p>
-                              </div>
-                            </div>  
-                          </div>
-                        )
-                      })
-                    }
-                  </div>
-                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
-                  <div style={{width:'7%'}} >
-                    <DropdownBox
-                      widthmain='90%'
-                      height='35px'
-                      selectedValue={item.minimumDay}
-                      options={[
-                        { value: '1박', label: '1박' },
-                        { value: '2박', label: '2박' },
-                        { value: '3박', label: '3박' },
-                        { value: '4박', label: '4박' },
-                        { value: '5박', label: '5박' }
-                      ]}    
-                      handleChange={(e)=>{const copy = [...seasonCost]; copy[index].minimumDay = e.target.value; setSeasonCost(copy);}}
-                    />
-                  </div>
-                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
-                  <div style={{width:'7%', display:'flex'}} >
-                    <DropdownBox
-                      widthmain='100%'
-                      height='35px'
-                      selectedValue={item.currency}
-                      options={[
-                        { value: '$', label: '$' },
-                        { value: '₩', label: '₩' }
-                      ]}    
-                      handleChange={(e)=>{const copy = [...seasonCost]; copy[index].currency = e.target.value; setSeasonCost(copy);}}
-                    />
-                  </div>
-                  <div style={{width:'50%', display:'flex'}} >
-                    <input className="inputdefault" type="text" style={{width:'48%', marginRight:'5px', textAlign:'right', paddingRight:'5px'}} 
-                      value={item.addCost} onChange={(e)=>{handleSeasonCostChange(e, index, 'addCost', seasonCost, setSeasonCost)}}/>
-                    <input className="inputdefault" type="text" style={{width:'48%', marginRight:'5px', textAlign:'right', paddingRight:'5px'}} 
-                      value={item.addCostAll} onChange={(e)=>{handleSeasonCostChange(e, index, 'addCostAll', seasonCost, setSeasonCost)}}/>
-                    <input className="inputdefault" type="text" style={{width:'48%', marginRight:'5px', textAlign:'right', paddingRight:'5px'}} 
-                      value={item.addCostPerson} onChange={(e)=>{handleSeasonCostChange(e, index, 'addCostPerson', seasonCost, setSeasonCost)}}/>
-                    <input className="inputdefault" type="text" style={{width:'48%', textAlign:'right', paddingRight:'5px'}} 
-                      value={item.galaDinner} onChange={(e)=>{handleSeasonCostChange(e, index, 'galaDinner', seasonCost, setSeasonCost)}}/>
-                  </div>
-                </div>
-              </div>
-            )
-          })
-        }
+      {
+        inputCost.map((section:any, sectionIndex:any)=>{
+          return (
+            <div key={sectionIndex}>
 
-      </section>
+              <div className="coverbox">
+                <div className="coverrow hole" style={{minHeight:'60px'}} >
+                  <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                    <p style={{marginRight:'10px', marginLeft:'5px', fontWeight:'600'}}>예약기간:</p>
+                    <DateBoxNum width='120px' subWidth='120px' right={5} date={section.reservePeriod.start}
+                      setSelectDate={(e:any)=>{ 
+                        const inputs = [...inputCost];
+                        inputs[sectionIndex].reservePeriod.start = e;
+                        inputs[sectionIndex].reservePeriod.end = e;
+                        setInputCost(inputs);
+                        console.log('section.reservePeriod.start', section);
+                      }} 
+                    />
+                    <p style={{marginLeft:'5px'}}>~</p>
+                    <DateBoxNum width='120px' subWidth='120px' right={5} date={section.reservePeriod.end}
+                      setSelectDate={(e:any)=>{ 
+                        const inputs = [...inputCost];
+                        inputs[sectionIndex].reservePeriod.end = e;
+                        setInputCost(inputs);
+                      }} 
+                      />
+                    <div className="dayBox">
+                      <div className="dayBtn"
+                        onClick={()=>{
+                          const copy = [...inputCost, { reservePeriod: {start:"", end:""}, 
+                            default : [{seasonName: "default1", period: [{start:"", end:""}], preStay:"false", roomType: [""], 
+                                        oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}],
+                            season : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : "₩", 
+                                        addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+                                      {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : "₩", 
+                                        addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+                                      {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : "₩", 
+                                        addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}],
+                            saleCost : [{seasonName: "default1", period: [{start:"", end:""}], preStay:"false", roomType: [""], 
+                                        oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}]
+                          }];
+                          setInputCost(copy);
+                        }}
+                      >
+                        <p>+</p>
+                      </div>
+                    </div>  
+                    <div className="dayBox">
+                      <div className="dayBtn"
+                        onClick={()=>{
+                          const copy = [...inputCost];
+                          copy.splice(sectionIndex, 1);
+                          setInputCost(copy);
+                        }}
+                      >
+                        <p>-</p>
+                      </div>
+                    </div>  
+                  </div>
+                </div>
+              </div>
+
+              <section>
+                <div className="bottombar"></div>
+                <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+                  <div className='chartbox' style={{width:'25%'}} ><p>기간</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'5%'}} ><p>선투숙</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'12%'}} ><p>룸타입</p></div>
+                  <div className="chart-divider"></div>
+                  <div style={{width:'45%'}}>
+                    <div className='chartbox' style={{borderBottom: '1px solid #D3D3D3'}}>  
+                      <p>리조트+풀빌라요금</p>
+                    </div>
+                    <div style={{display:'flex'}}  className='chartbox'>
+                      <p className='charttext'>1박</p>
+                      <div className="chart-textdivider"></div>
+                      <p className='charttext'>2+2</p>
+                      <div className="chart-textdivider"></div>
+                      <p className='charttext'>1+3</p>
+                      <div className="chart-textdivider"></div>
+                      <p className='charttext'>3</p>
+                      <div className="chart-textdivider"></div>
+                      <p className='charttext'>4</p>
+                    </div>
+                  </div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'10%'}} ><p>포함사항/특전</p></div>
+                  <div className='chartbox' style={{width:'3%'}} ></div>
+                </div>
+                {
+                  section.default.map((item:any, index:any)=>{
+                    return (
+                      <div className="coverbox">
+                        <div className="coverrow hole" style={{minHeight:'60px'}} >
+                          <div style={{width:'25%'}} >
+                            {
+                              item.period.map((subItem:any, subIndex:any)=>{
+                                return (
+                                  <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                                    <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
+                                    setSelectDate={(e:any)=>{ 
+                                      const inputs = [...inputCost];
+                                      inputs[sectionIndex].default[index].period[subIndex].start = e;
+                                      inputs[sectionIndex].default[index].period[subIndex].end = e;
+                                      setInputCost(inputs);
+                                    }} 
+                                    />
+                                    <p style={{marginLeft:'5px'}}>~</p>
+                                    <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
+                                      setSelectDate={(e:any)=>{ 
+                                        const inputs = [...inputCost];
+                                        inputs[sectionIndex].default[index].period[subIndex].end = e;
+                                        setInputCost(inputs);
+                                      }} 
+                                      />
+                                      <div className="dayBox">
+                                        <div className="dayBtn"
+                                          onClick={()=>{
+                                            const copy = [...inputCost];
+                                            copy[sectionIndex].default[index].period = [...copy[sectionIndex].default[index].period, {start:"", end:""}];
+                                            setInputCost(copy);
+                                          }}
+                                        >
+                                          <p>+</p>
+                                        </div>
+                                      </div>  
+                                      <div className="dayBox">
+                                        <div className="dayBtn"
+                                          onClick={()=>{
+                                            const copy = [...inputCost];
+                                            copy[sectionIndex].default[index].period.splice(subIndex, 1);
+                                            setInputCost(copy);
+                                          }}
+                                        >
+                                          <p>-</p>
+                                        </div>
+                                      </div>  
+                                  </div>
+                                )
+                              })
+                            }
+                          </div>
+                          <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:"center"}}>
+                            <div className='checkInputCover'>
+                              <div className='checkInput'>
+                                <input className="input" type="checkbox"
+                                  checked={item.preStay === 'true'}
+                                  onChange={()=>{
+                                    const copy = [...inputCost]; 
+                                    copy[sectionIndex].default[index].preStay = item.preStay === 'true' ? 'false' : 'true'; 
+                                    setInputCost(copy);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{width:'12%', alignItems:'center',}}>
+                            {
+                              item.roomType.map((subItem:any, subIndex:any)=>{
+                                return (
+                                  <div key={index} style={{display:'flex'}}>
+                                    <input className="inputdefault" type="text" style={{width:'80%', marginLeft:'5px'}} 
+                                      value={subItem} onChange={(e)=>{
+                                        const copy = [...inputCost]; 
+                                        copy[sectionIndex].default[index].roomType[subIndex] = e.target.value; 
+                                        setInputCost(copy);}}/>
+                                    {
+                                      (item.roomType.length > 1 && item.roomType.length === subIndex + 1)
+                                      ?
+                                      <div className="dayBox">
+                                        <div className="dayBtn"
+                                          onClick={()=>{
+                                            const copy = [...inputCost];
+                                            copy[sectionIndex].default[index].roomType.splice(subIndex, 1);
+                                            setInputCost(copy);
+                                          }}
+                                        >
+                                          <p>-</p>
+                                        </div>
+                                      </div>  
+                                      :
+                                      <div className="dayBox">
+                                        <div className="dayBtn"
+                                          onClick={()=>{
+                                            const copy = [...inputCost];
+                                            copy[sectionIndex].default[index].roomType = [...copy[sectionIndex].default[index].roomType, ""];
+                                            setInputCost(copy);
+                                          }}
+                                        >
+                                          <p>+</p>
+                                        </div>
+                                      </div>  
+                                    } 
+                                  </div>
+                                )
+                              })
+                            }
+                          </div>
+                          <div style={{width:'45%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                            <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                              value={item.oneDayCost} onChange={(e)=>{
+                                handleinputDefaultCostChange(e, sectionIndex, index, 'oneDayCost', inputCost, setInputCost)
+                              }}/>
+                            <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                              value={item.twoTwoDayCost} onChange={(e)=>{
+                                handleinputDefaultCostChange(e, sectionIndex, index, 'twoTwoDayCost', inputCost, setInputCost)
+                              }}/>
+                            <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                              value={item.oneThreeDayCost} onChange={(e)=>{
+                                handleinputDefaultCostChange(e, sectionIndex, index, 'oneThreeDayCost', inputCost, setInputCost)
+                              }}/>
+                            <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                            value={item.threeDayCost} onChange={(e)=>{
+                                handleinputDefaultCostChange(e, sectionIndex, index, 'threeDayCost', inputCost, setInputCost)
+                            }}/>
+                            <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                            value={item.fourDayCost} onChange={(e)=>{
+                                handleinputDefaultCostChange(e, sectionIndex, index, 'fourDayCost', inputCost, setInputCost)
+                            }}/>
+                          </div>
+                          <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                          <div style={{width:'10%', display:'flex'}} >
+                            <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
+                                value={item.notice} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].default[index].notice = e.target.value; setInputCost(copy);}}/>
+                          </div>
+                          <div style={{width:'3%', display:'flex'}} >
+                          <div className="dayBox">
+                            <div className="dayBtn"
+                              onClick={()=>{
+                                const copy = [...inputCost]
+                                copy[sectionIndex].default = [...copy[sectionIndex].default, 
+                                {seasonName: `default${index+2}`, period: [{start:"", end:""}], preStay:"false", roomType: [""], 
+                                  oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}]
+                                setInputCost(copy);
+                              }}
+                            >
+                              <p>+</p>
+                            </div>
+                            <div className="dayBtn"
+                              onClick={()=>{
+                                const copy = [...inputCost];
+                                copy[sectionIndex].default.splice(index, 1);
+                                setInputCost(copy);
+                              }}
+                            >
+                              <p>-</p>
+                            </div>
+                          </div>  
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })
+                }
+                
+                <div style={{height:'1px', backgroundColor:'#BDBDBD', marginTop:'20px'}}></div>
+                <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+                  <div className='chartbox' style={{width:'10%'}} ><p>성수기정책</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'25%'}} ><p>기간</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'7%'}} ><p>미니멈/박</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'7%'}}><p>화폐</p></div>
+                  <div className="chart-divider"></div>
+                  <div style={{width:'50%'}} >
+                    <div className='chartbox' style={{borderBottom: '1px solid #D3D3D3'}}>  
+                      <p className='charttext'>요금</p>
+                    </div>
+                    <div style={{display:'flex'}}  className='chartbox'>
+                      <p className='charttext'>추가(룸/박)</p>
+                      <div className="chart-textdivider"></div>
+                      <p className='charttext'>합계</p>
+                      <div className="chart-textdivider"></div>
+                      <p className='charttext'>1인</p>
+                      <div className="chart-textdivider"></div>
+                      <p className='charttext'>갈라디너</p>
+                    </div>
+                  </div>
+                </div>
+                {
+                  section.season.map((item:any, index:any)=>{
+                    return (
+                      <div className="coverbox">
+                        <div className="coverrow hole" style={{minHeight:'60px'}} >
+                          <div style={{width:'10%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                            <p style={{margin:'0'}}>{item.seasonName}</p>
+                          </div>
+                          <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                          <div style={{width:'25%'}} >
+                            {
+                              item.period.map((subItem:any, subIndex:any)=>{
+                                return (
+                                  <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                                    <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
+                                    setSelectDate={(e:any)=>{ 
+                                        const inputs = [...inputCost];
+                                        inputs[sectionIndex].season[index].period[subIndex].start = e;
+                                        inputs[sectionIndex].season[index].period[subIndex].end = e;
+                                        setInputCost(inputs);
+                                    }} 
+                                    />
+                                    <p style={{marginLeft:'5px'}}>~</p>
+                                    <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
+                                      setSelectDate={(e:any)=>{ 
+                                        const inputs = [...inputCost];
+                                        inputs[sectionIndex].season[index].period[subIndex].end = e;
+                                        setInputCost(inputs);
+                                      }} 
+                                      />
+                                    <div className="dayBox">
+                                      <div className="dayBtn"
+                                        onClick={()=>{
+                                          const copy = [...inputCost];
+                                          copy[sectionIndex].season[index].period = [...copy[sectionIndex].season[index].period, {start:"", end:""}];
+                                          setInputCost(copy);
+                                        }}
+                                      >
+                                        <p>+</p>
+                                      </div>
+                                    </div>  
+                                    <div className="dayBox">
+                                      <div className="dayBtn"
+                                        onClick={()=>{
+                                          const copy = [...inputCost];
+                                          copy[sectionIndex].season[index].period.splice(subIndex, 1);
+                                          setInputCost(copy);
+                                        }}
+                                      >
+                                        <p>-</p>
+                                      </div>
+                                    </div>  
+                                  </div>
+                                )
+                              })
+                            }
+                          </div>
+                          <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                          <div style={{width:'7%'}} >
+                            <DropdownBox
+                              widthmain='90%'
+                              height='35px'
+                              selectedValue={item.minimumDay}
+                              options={[
+                                { value: '1박', label: '1박' },
+                                { value: '2박', label: '2박' },
+                                { value: '3박', label: '3박' },
+                                { value: '4박', label: '4박' },
+                                { value: '5박', label: '5박' }
+                              ]}    
+                              handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].season[index].minimumDay = e.target.value; setInputCost(copy);}}
+                            />
+                          </div>
+                          <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                          <div style={{width:'7%', display:'flex'}} >
+                            <DropdownBox
+                              widthmain='100%'
+                              height='35px'
+                              selectedValue={item.currency}
+                              options={[
+                                { value: '$', label: '$' },
+                                { value: '₩', label: '₩' }
+                              ]}    
+                              handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].season[index].currency = e.target.value; setInputCost(copy);}}
+                            />
+                          </div>
+                          <div style={{width:'50%', display:'flex'}} >
+                            <input className="inputdefault" type="text" style={{width:'48%', marginRight:'5px', textAlign:'right', paddingRight:'5px'}} 
+                              value={item.addCost} onChange={(e)=>{handleinputSeasonCostChange(e, sectionIndex, index, 'addCost', inputCost, setInputCost)}}/>
+                            <input className="inputdefault" type="text" style={{width:'48%', marginRight:'5px', textAlign:'right', paddingRight:'5px'}} 
+                              value={item.addCostAll} onChange={(e)=>{handleinputSeasonCostChange(e, sectionIndex, index, 'addCostAll', inputCost, setInputCost)}}/>
+                            <input className="inputdefault" type="text" style={{width:'48%', marginRight:'5px', textAlign:'right', paddingRight:'5px'}} 
+                              value={item.addCostPerson} onChange={(e)=>{handleinputSeasonCostChange(e, sectionIndex, index, 'addCostPerson', inputCost, setInputCost)}}/>
+                            <input className="inputdefault" type="text" style={{width:'48%', textAlign:'right', paddingRight:'5px'}} 
+                              value={item.galaDinner} onChange={(e)=>{handleinputSeasonCostChange(e, sectionIndex, index, 'galaDinner', inputCost, setInputCost)}}/>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })
+                }
+
+              </section>
+            </div>
+          )
+        })
+      }
 
       {/* 판매가 ------------------------------------------------------------------------------------------------------------------------ */}
       
@@ -847,345 +912,399 @@ export default function FullVillaCost (props : any) {
             <p>(1인 기준)</p>
           </div>
 
-          <section>
-            <div className="bottombar"></div>
-            <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-              <div className='chartbox' style={{width:'25%'}} ><p>기간</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'5%'}} ><p>선투숙</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>룸타입</p></div>
-              <div className="chart-divider"></div>
-              <div style={{width:'45%'}}>
-                <div className='chartbox' style={{borderBottom: '1px solid #D3D3D3'}}>  
-                  <p>리조트+풀빌라요금</p>
-                </div>
-                <div style={{display:'flex'}}  className='chartbox'>
-                  <p className='charttext'>1박</p>
-                  <div className="chart-textdivider"></div>
-                  <p className='charttext'>2+2</p>
-                  <div className="chart-textdivider"></div>
-                  <p className='charttext'>1+3</p>
-                  <div className="chart-textdivider"></div>
-                  <p className='charttext'>3</p>
-                  <div className="chart-textdivider"></div>
-                  <p className='charttext'>4</p>
-                </div>
-              </div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'10%'}} ><p>포함사항/특전</p></div>
-              <div className='chartbox' style={{width:'3%'}} ></div>
-            </div>
-            {
-              saleApplyCost.map((item:any, index:any)=>{
-                return (
-                  <div className="coverbox">
-                    <div className="coverrow hole" style={{minHeight:'60px'}} >
-                      <div style={{width:'25%'}} >
-                        {
-                          item.period.map((subItem:any, subIndex:any)=>{
-                            return (
-                              <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
-                                <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
-                                  setSelectDate={(e:any)=>{ 
-                                    const inputs = [...saleApplyCost];
-                                    inputs[index].period[subIndex].start = e;
-                                    inputs[index].period[subIndex].end = e;
-                                    setSaleApplyCost(inputs);
-                                  }} 
-                                />
-                                <p style={{marginLeft:'5px'}}>~</p>
-                                <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
-                                  setSelectDate={(e:any)=>{ 
-                                    const inputs = [...saleApplyCost];
-                                    inputs[index].period[subIndex].end = e;
-                                    setSaleApplyCost(inputs);
-                                  }} 
-                                  />
-                                <div className="dayBox">
-                                  <div className="dayBtn"
-                                    onClick={()=>{
-                                      const copy = [...saleApplyCost];
-                                      copy[index].period = [...copy[index].period, {start:"", end:""}];
-                                      setSaleApplyCost(copy);
-                                    }}
-                                  >
-                                    <p>+</p>
-                                  </div>
-                                </div>  
-                                <div className="dayBox">
-                                  <div className="dayBtn"
-                                    onClick={()=>{
-                                      const copy = [...saleApplyCost];
-                                      copy[index].period.splice(subIndex, 1);
-                                      setSaleApplyCost(copy);
-                                    }}
-                                  >
-                                    <p>-</p>
-                                  </div>
-                                </div>  
-                              </div>
-                            )
-                          })
-                        }
-                      </div>
-                      <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:"center"}}>
-                        <div className='checkInputCover'>
-                          <div className='checkInput'>
-                            <input className="input" type="checkbox"
-                              checked={item.preStay === 'true'}
-                              onChange={()=>{
-                                const copy = [...applyCost]; 
-                                copy[index].preStay = item.preStay === 'true' ? 'false' : 'true'; 
-                                setApplyCost(copy);
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{width:'12%', alignItems:'center',}}>
-                        {
-                          item.roomType.map((subItem:any, subIndex:any)=>{
-                            return (
-                              <div key={index} style={{display:'flex'}}>
-                                <input className="inputdefault" type="text" style={{width:'80%', marginLeft:'5px'}} 
-                                  value={subItem} onChange={(e)=>{const copy = [...saleApplyCost]; copy[index].roomType[subIndex] = e.target.value; setApplyCost(copy);}}/>
-                                {
-                                  (item.roomType.length > 1 && item.roomType.length === subIndex + 1)
-                                  ?
-                                  <div className="dayBox">
-                                    <div className="dayBtn"
-                                      onClick={()=>{
-                                        const copy = [...saleApplyCost];
-                                        copy[index].roomType.splice(subIndex, 1);
-                                        setApplyCost(copy);
-                                      }}
-                                    >
-                                      <p>-</p>
-                                    </div>
-                                  </div>  
-                                  :
-                                  <div className="dayBox">
-                                    <div className="dayBtn"
-                                      onClick={()=>{
-                                        const copy = [...saleApplyCost];
-                                        copy[index].roomType = [...copy[index].roomType, ""];
-                                        setApplyCost(copy);
-                                      }}
-                                    >
-                                      <p>+</p>
-                                    </div>
-                                  </div>  
-                                } 
-                              </div>
-                            )
-                          })
-                        }
-                      </div>
-                      <div style={{width:'45%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.oneDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'oneDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.twoTwoDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'twoTwoDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.oneThreeDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'oneThreeDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.threeDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'threeDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.fourDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'fourDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                      </div>
-                      <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
-                      <div style={{width:'10%', display:'flex'}} >
-                        <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
-                            value={item.notice} onChange={(e)=>{const copy = [...saleApplyCost]; copy[index].notice = e.target.value; setSaleApplyCost(copy);}}/>
-                      </div>
-                      <div style={{width:'3%', display:'flex'}} >
-                      <div className="dayBox">
-                        <div className="dayBtn"
-                          onClick={()=>{
-                            const copy = [...saleApplyCost, 
-                              {seasonName: `default${index+1}`, period: [{start:"", end:""}], preStay:"false", roomType: [""], 
-                              oneDayCost : "", twoTwoDayCost : "", oneThreeDayCost : "", threeDayCost : "", fourDayCost : "",  notice : ""}
-                            ];
-                            setSaleApplyCost(copy);
-                          }}
-                        >
-                          <p>+</p>
-                        </div>
-                      </div>  
-                      </div>
-                    </div>
-                  </div>
-                )
-              })
-            }
-            
-            <div style={{height:'1px', backgroundColor:'#BDBDBD', marginTop:'20px'}}></div>
-            {
-              saleSeasonCost.map((item:any, index:any)=>{
-                return (
-                  <div className="coverbox">
-                    <div className="coverrow hole" style={{minHeight:'60px'}} >
-                      <div style={{width:'25%'}} >
-                       {
-                          item.period.map((subItem:any, subIndex:any)=>{
-                            return (
-                              <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
-                                <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
-                                  setSelectDate={(e:any)=>{ 
-                                    const inputs = [...saleApplyCost];
-                                    inputs[index].period[subIndex].start = e;
-                                    inputs[index].period[subIndex].end = e;
-                                    setSaleApplyCost(inputs);
-                                  }} 
-                                />
-                                <p style={{marginLeft:'5px'}}>~</p>
-                                <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
-                                  setSelectDate={(e:any)=>{ 
-                                    const inputs = [...saleApplyCost];
-                                    inputs[index].period[subIndex].end = e;
-                                    setSaleApplyCost(inputs);
-                                  }} 
-                                  />
-                                <div className="dayBox">
-                                  <div className="dayBtn"
-                                    onClick={()=>{
-                                      const copy = [...saleApplyCost];
-                                      copy[index].period = [...copy[index].period, {start:"", end:""}];
-                                      setSaleApplyCost(copy);
-                                    }}
-                                  >
-                                    <p>+</p>
-                                  </div>
-                                </div>  
-                                <div className="dayBox">
-                                  <div className="dayBtn"
-                                    onClick={()=>{
-                                      const copy = [...saleApplyCost];
-                                      copy[index].period.splice(subIndex, 1);
-                                      setSaleApplyCost(copy);
-                                    }}
-                                  >
-                                    <p>-</p>
-                                  </div>
-                                </div>  
-                              </div>
-                            )
-                          })
-                        }
-                      </div>
-                      <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:"center"}}>
-                        <div className='checkInputCover'>
-                          <div className='checkInput'>
-                            <input className="input" type="checkbox"
-                              checked={item.preStay === 'true'}
-                              onChange={()=>{
-                                const copy = [...applyCost]; 
-                                copy[index].preStay = item.preStay === 'true' ? 'false' : 'true'; 
-                                setApplyCost(copy);
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{width:'12%', alignItems:'center',}}>
-                        {
-                          item.roomType.map((subItem:any, subIndex:any)=>{
-                            return (
-                              <div key={index} style={{display:'flex'}}>
-                                <input className="inputdefault" type="text" style={{width:'80%', marginLeft:'5px'}} 
-                                  value={subItem} onChange={(e)=>{const copy = [...saleApplyCost]; copy[index].roomType[subIndex] = e.target.value; setApplyCost(copy);}}/>
-                                {
-                                  (item.roomType.length > 1 && item.roomType.length === subIndex + 1)
-                                  ?
-                                  <div className="dayBox">
-                                    <div className="dayBtn"
-                                      onClick={()=>{
-                                        const copy = [...saleApplyCost];
-                                        copy[index].roomType.splice(subIndex, 1);
-                                        setApplyCost(copy);
-                                      }}
-                                    >
-                                      <p>-</p>
-                                    </div>
-                                  </div>  
-                                  :
-                                  <div className="dayBox">
-                                    <div className="dayBtn"
-                                      onClick={()=>{
-                                        const copy = [...saleApplyCost];
-                                        copy[index].roomType = [...copy[index].roomType, ""];
-                                        setApplyCost(copy);
-                                      }}
-                                    >
-                                      <p>+</p>
-                                    </div>
-                                  </div>  
-                                } 
-                              </div>
-                            )
-                          })
-                        }
-                      </div>
-                      <div style={{width:'45%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.oneDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'oneDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.twoTwoDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'twoTwoDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.oneThreeDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'oneThreeDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.threeDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'threeDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                        <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
-                          value={item.fourDayCost} onChange={(e)=>{
-                            handleApplyCostChange(e, index, 'fourDayCost', saleApplyCost, setSaleApplyCost)
-                          }}/>
-                      </div>
-                      <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
-                      <div style={{width:'10%', display:'flex'}} >
-                        <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
-                            value={item.notice} onChange={(e)=>{const copy = [...saleApplyCost]; copy[index].notice = e.target.value; setSaleApplyCost(copy);}}/>
-                      </div>
-                      <div style={{width:'3%', display:'flex'}} >
-                      <div className="dayBox">
-                        <div className="dayBtn"
-                          onClick={()=>{
-                            const copy = [...saleApplyCost, 
-                              {seasonName: `default${index+1}`, period: [{start:"", end:""}], preStay:"false", roomType: [""], 
-                              oneDayCost : "", twoTwoDayCost : "", oneThreeDayCost : "", threeDayCost : "", fourDayCost : "",  notice : ""}
-                            ];
-                            setSaleApplyCost(copy);
-                          }}
-                        >
-                          <p>+</p>
-                        </div>
-                      </div>  
-                      </div>
-                    </div>
-                  </div>
-                )
-              })
-            }
+          {
+            saleCost.map((section:any, sectionIndex:any)=>{
+              return (
+                <div key={sectionIndex}>
 
-          </section>
+                  <div className="coverbox">
+                    <div className="coverrow hole" style={{minHeight:'60px'}} >
+                      <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                        <p style={{marginRight:'10px', marginLeft:'5px', fontWeight:'600'}}>예약기간:</p>
+                        <DateBoxNum width='120px' subWidth='120px' right={5} date={section.reservePeriod.start}
+                          setSelectDate={(e:any)=>{ 
+                            const inputs = [...inputCost];
+                            inputs[sectionIndex].reservePeriod.start = e;
+                            inputs[sectionIndex].reservePeriod.end = e;
+                            setInputCost(inputs);
+                          }} 
+                        />
+                        <p style={{marginLeft:'5px'}}>~</p>
+                        <DateBoxNum width='120px' subWidth='120px' right={5} date={section.reservePeriod.end}
+                          setSelectDate={(e:any)=>{ 
+                            const inputs = [...inputCost];
+                            inputs[sectionIndex].reservePeriod.end = e;
+                            setInputCost(inputs);
+                          }} 
+                          />
+                        <div className="dayBox">
+                          <div className="dayBtn"
+                            onClick={()=>{
+                              const copy = [...inputCost, defaultInputCostData];
+                              setInputCost(copy);
+                            }}
+                          >
+                            <p>+</p>
+                          </div>
+                        </div>  
+                        <div className="dayBox">
+                          <div className="dayBtn"
+                            onClick={()=>{
+                              const copy = [...inputCost];
+                              copy.splice(sectionIndex, 1);
+                              setInputCost(copy);
+                            }}
+                          >
+                            <p>-</p>
+                          </div>
+                        </div>  
+                      </div>
+                    </div>
+                  </div>
+
+                  <section>
+                    <div className="bottombar"></div>
+                    <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+                      <div className='chartbox' style={{width:'25%'}} ><p>기간</p></div>
+                      <div className="chart-divider"></div>
+                      <div className='chartbox' style={{width:'5%'}} ><p>선투숙</p></div>
+                      <div className="chart-divider"></div>
+                      <div className='chartbox' style={{width:'12%'}} ><p>룸타입</p></div>
+                      <div className="chart-divider"></div>
+                      <div style={{width:'45%'}}>
+                        <div className='chartbox' style={{borderBottom: '1px solid #D3D3D3'}}>  
+                          <p>리조트+풀빌라요금</p>
+                        </div>
+                        <div style={{display:'flex'}}  className='chartbox'>
+                          <p className='charttext'>1박</p>
+                          <div className="chart-textdivider"></div>
+                          <p className='charttext'>2+2</p>
+                          <div className="chart-textdivider"></div>
+                          <p className='charttext'>1+3</p>
+                          <div className="chart-textdivider"></div>
+                          <p className='charttext'>3</p>
+                          <div className="chart-textdivider"></div>
+                          <p className='charttext'>4</p>
+                        </div>
+                      </div>
+                      <div className="chart-divider"></div>
+                      <div className='chartbox' style={{width:'10%'}} ><p>포함사항/특전</p></div>
+                      <div className='chartbox' style={{width:'3%'}} ></div>
+                    </div>
+                    {
+                       section.default.map((item:any, index:any)=>{
+                        return (
+                          <div className="coverbox">
+                            <div className="coverrow hole" style={{minHeight:'60px'}} >
+                              <div style={{width:'25%'}} >
+                                {
+                                  item.period.map((subItem:any, subIndex:any)=>{
+                                    return (
+                                      <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                                        <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
+                                          setSelectDate={(e:any)=>{ 
+                                            const inputs = [...saleCost];
+                                            inputs[sectionIndex].default[index].period[subIndex].start = e;
+                                            inputs[sectionIndex].default[index].period[subIndex].end = e;
+                                            setSaleCost(inputs);
+                                          }} 
+                                        />
+                                        <p style={{marginLeft:'5px'}}>~</p>
+                                        <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
+                                          setSelectDate={(e:any)=>{ 
+                                            const inputs = [...saleCost];
+                                            inputs[sectionIndex].default[index].period[subIndex].end = e;
+                                            setSaleCost(inputs);
+                                          }} 
+                                          />
+                                        <div className="dayBox">
+                                          <div className="dayBtn"
+                                            onClick={()=>{
+                                              const copy = [...saleCost];
+                                              copy[sectionIndex].default[index].period = [...copy[sectionIndex].default[index].period, {start:"", end:""}];
+                                              setSaleCost(copy);
+                                            }}
+                                          >
+                                            <p>+</p>
+                                          </div>
+                                        </div>  
+                                        <div className="dayBox">
+                                          <div className="dayBtn"
+                                            onClick={()=>{
+                                              const copy = [...saleCost];
+                                              copy[sectionIndex].default[index].period.splice(subIndex, 1);
+                                              setSaleCost(copy);
+                                            }}
+                                          >
+                                            <p>-</p>
+                                          </div>
+                                        </div>  
+                                      </div>
+                                    )
+                                  })
+                                }
+                              </div>
+                              <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:"center"}}>
+                                <div className='checkInputCover'>
+                                  <div className='checkInput'>
+                                    <input className="input" type="checkbox"
+                                      checked={item.preStay === 'true'}
+                                      onChange={()=>{
+                                        const copy = [...inputCost]; 
+                                        copy[sectionIndex].default[index].preStay = item.preStay === 'true' ? 'false' : 'true'; 
+                                        setInputCost(copy);
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                              <div style={{width:'12%', alignItems:'center',}}>
+                                {
+                                  item.roomType.map((subItem:any, subIndex:any)=>{
+                                    return (
+                                      <div key={index} style={{display:'flex'}}>
+                                        <input className="inputdefault" type="text" style={{width:'80%', marginLeft:'5px'}} 
+                                          value={subItem} onChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].default[index].roomType[subIndex] = e.target.value; setInputCost(copy);}}/>
+                                        {
+                                          (item.roomType.length > 1 && item.roomType.length === subIndex + 1)
+                                          ?
+                                          <div className="dayBox">
+                                            <div className="dayBtn"
+                                              onClick={()=>{
+                                                const copy = [...saleCost];
+                                                copy[sectionIndex].default[index].roomType.splice(subIndex, 1);
+                                                setInputCost(copy);
+                                              }}
+                                            >
+                                              <p>-</p>
+                                            </div>
+                                          </div>  
+                                          :
+                                          <div className="dayBox">
+                                            <div className="dayBtn"
+                                              onClick={()=>{
+                                                const copy = [...saleCost];
+                                                copy[sectionIndex].default[index].roomType = [...copy[sectionIndex].default[index].roomType, ""];
+                                                setInputCost(copy);
+                                              }}
+                                            >
+                                              <p>+</p>
+                                            </div>
+                                          </div>  
+                                        } 
+                                      </div>
+                                    )
+                                  })
+                                }
+                              </div>
+                              <div style={{width:'45%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.oneDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'oneDayCost', saleCost, setSaleCost)
+                                  }}/>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.twoTwoDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'twoTwoDayCost', saleCost, setSaleCost)
+                                  }}/>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.oneThreeDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'oneThreeDayCost', saleCost, setSaleCost)
+                                  }}/>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.threeDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'threeDayCost', saleCost, setSaleCost)
+                                  }}/>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.fourDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'fourDayCost', saleCost, setSaleCost)
+                                  }}/>
+                              </div>
+                              <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                              <div style={{width:'10%', display:'flex'}} >
+                                <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
+                                    value={item.notice} onChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].default[index].notice = e.target.value; setSaleCost(copy);}}/>
+                              </div>
+                              <div style={{width:'3%', display:'flex'}} >
+                              <div className="dayBox">
+                                <div className="dayBtn"
+                                  onClick={()=>{
+                                    const copy = [...inputCost]
+                                    copy[sectionIndex].default = [...copy[sectionIndex].default, 
+                                    {seasonName: `default${index+2}`, period: [{start:"", end:""}], preStay:"false", roomType: [""], 
+                                      oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}]
+                                    setInputCost(copy);
+                                  }}
+                                >
+                                  <p>+</p>
+                                </div>
+                              </div>  
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })
+                    }
+                    
+                    <div style={{height:'1px', backgroundColor:'#BDBDBD', marginTop:'20px'}}></div>
+                    {
+                      section.saleCost.map((item:any, index:any)=>{
+                        return (
+                          <div className="coverbox">
+                            <div className="coverrow hole" style={{minHeight:'60px'}} >
+                              <div style={{width:'25%'}} >
+                              {
+                                  item.period.map((subItem:any, subIndex:any)=>{
+                                    return (
+                                      <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                                        <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
+                                          setSelectDate={(e:any)=>{ 
+                                            const inputs = [...saleCost];
+                                            inputs[sectionIndex].saleCost[index].period[subIndex].start = e;
+                                            inputs[sectionIndex].saleCost[index].period[subIndex].end = e;
+                                            setSaleCost(inputs);
+                                          }} 
+                                        />
+                                        <p style={{marginLeft:'5px'}}>~</p>
+                                        <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
+                                          setSelectDate={(e:any)=>{ 
+                                            const inputs = [...saleCost];
+                                            inputs[sectionIndex].saleCost[index].period[subIndex].end = e;
+                                            setSaleCost(inputs);
+                                          }} 
+                                          />
+                                        <div className="dayBox">
+                                          <div className="dayBtn"
+                                            onClick={()=>{
+                                              const copy = [...saleCost];
+                                              copy[sectionIndex].saleCost[index].period = [...copy[sectionIndex].saleCost[index].period, {start:"", end:""}];
+                                              setSaleCost(copy);
+                                            }}
+                                          >
+                                            <p>+</p>
+                                          </div>
+                                        </div>  
+                                        <div className="dayBox">
+                                          <div className="dayBtn"
+                                            onClick={()=>{
+                                              const copy = [...saleCost];
+                                              copy[sectionIndex].saleCost[index].period.splice(subIndex, 1);
+                                              setSaleCost(copy);
+                                            }}
+                                          >
+                                            <p>-</p>
+                                          </div>
+                                        </div>  
+                                      </div>
+                                    )
+                                  })
+                                }
+                              </div>
+                              <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:"center"}}>
+                                <div className='checkInputCover'>
+                                  <div className='checkInput'>
+                                    <input className="input" type="checkbox"
+                                      checked={item.preStay === 'true'}
+                                      onChange={()=>{
+                                        const copy = [...inputCost]; 
+                                        copy[sectionIndex].saleCost[index].preStay = item.preStay === 'true' ? 'false' : 'true'; 
+                                        setInputCost(copy);
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                              <div style={{width:'12%', alignItems:'center',}}>
+                                {
+                                  item.roomType.map((subItem:any, subIndex:any)=>{
+                                    return (
+                                      <div key={index} style={{display:'flex'}}>
+                                        <input className="inputdefault" type="text" style={{width:'80%', marginLeft:'5px'}} 
+                                          value={subItem} onChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].saleCost[index].roomType[subIndex] = e.target.value; setInputCost(copy);}}/>
+                                        {
+                                          (item.roomType.length > 1 && item.roomType.length === subIndex + 1)
+                                          ?
+                                          <div className="dayBox">
+                                            <div className="dayBtn"
+                                              onClick={()=>{
+                                                const copy = [...saleCost];
+                                                copy[sectionIndex].saleCost[index].roomType.splice(subIndex, 1);
+                                                setInputCost(copy);
+                                              }}
+                                            >
+                                              <p>-</p>
+                                            </div>
+                                          </div>  
+                                          :
+                                          <div className="dayBox">
+                                            <div className="dayBtn"
+                                              onClick={()=>{
+                                                const copy = [...saleCost];
+                                                copy[sectionIndex].saleCost[index].roomType = [...copy[sectionIndex].saleCost[index].roomType, ""];
+                                                setInputCost(copy);
+                                              }}
+                                            >
+                                              <p>+</p>
+                                            </div>
+                                          </div>  
+                                        } 
+                                      </div>
+                                    )
+                                  })
+                                }
+                              </div>
+                              <div style={{width:'45%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.oneDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'oneDayCost', saleCost, setSaleCost)
+                                  }}/>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.twoTwoDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'twoTwoDayCost', saleCost, setSaleCost)
+                                  }}/>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.oneThreeDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'oneThreeDayCost', saleCost, setSaleCost)
+                                  }}/>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.threeDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'threeDayCost', saleCost, setSaleCost)
+                                  }}/>
+                                <input className="inputdefault" type="text" style={{width:'24%', textAlign:'right'}} 
+                                  value={item.fourDayCost} onChange={(e)=>{
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'fourDayCost', saleCost, setSaleCost)
+                                  }}/>
+                              </div>
+                              <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                              <div style={{width:'10%', display:'flex'}} >
+                                <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
+                                    value={item.notice} onChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].saleCost[index].notice = e.target.value; setSaleCost(copy);}}/>
+                              </div>
+                              <div style={{width:'3%', display:'flex'}} >
+                              <div className="dayBox">
+                                <div className="dayBtn"
+                                  onClick={()=>{
+                                    const copy = [...inputCost]
+                                    copy[sectionIndex].default = [...copy[sectionIndex].default, 
+                                    {seasonName: `default${index+2}`, period: [{start:"", end:""}], preStay:"false", roomType: [""], 
+                                      oneDayCost : "0", twoTwoDayCost : "0", oneThreeDayCost : "0", threeDayCost : "0", fourDayCost : "0", notice : ""}]
+                                    setInputCost(copy);
+                                  }}
+                                >
+                                  <p>+</p>
+                                </div>
+                              </div>  
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })
+                    }
+
+                  </section>
+                </div>
+              )
+            })
+          }
 
           <div className='btn-box'>
             <div className="btn" 
