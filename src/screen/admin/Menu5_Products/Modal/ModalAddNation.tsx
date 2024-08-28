@@ -22,8 +22,8 @@ export default function ModalAddNation (props : any) {
   let navigate = useNavigate();
   const userId = sessionStorage.getItem('userId');
   const nationData = props.isAddOrRevise === 'revise' ? props.nationData : '';
-  
-  
+  const nationList = props.nationList ? props.nationList : '';
+        
   const [isView, setIsView] = useState<boolean>(props.isAddOrRevise === 'revise' ? nationData.isView : true);
   const [sort, setSort] = useState(props.isAddOrRevise === 'revise' ? nationData.sort : '');
   const [continent, setContinent] = useState(props.isAddOrRevise === 'revise' ? nationData.continent : '');
@@ -119,43 +119,47 @@ export default function ModalAddNation (props : any) {
   // 사진 등록 함수 ----------------------------------------------
   const registerNation = async () => {
 
-    const formData = new FormData();
-    imageFiles.forEach((file, index) => {
-      formData.append('img', file);
-    });
-    const getParams = {
-      isView : isView,
-      sort : sort,
-      continent : continent,
-      nationKo : nationKo,
-      nationEn : nationEn,
-      visa : visa,
-      timeDiff : timeDiff,
-      language : language,
-      currency : currency,
-      voltage : voltage,
-      plugType : plugType,
-      caution : caution,
-      taxFreeLimit : taxFreeLimit,
-      inputImage : inputImage
+    if (nationList.includes(nationKo)) {
+      alert(`${nationKo}는(은) 이미 입력된 나라입니다.`)
+    } else {
+      const formData = new FormData();
+      imageFiles.forEach((file, index) => {
+        formData.append('img', file);
+      });
+      const getParams = {
+        isView : isView,
+        sort : sort,
+        continent : continent,
+        nationKo : nationKo,
+        nationEn : nationEn,
+        visa : visa,
+        timeDiff : timeDiff,
+        language : language,
+        currency : currency,
+        voltage : voltage,
+        plugType : plugType,
+        caution : caution,
+        taxFreeLimit : taxFreeLimit,
+        inputImage : inputImage
+      }
+      axios 
+        .post(`${MainURL}/nationcity/registernation`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          params: getParams,
+        })
+        .then((res) => {
+          if (res.data) {
+            alert('등록되었습니다.');
+            props.setRefresh(!props.refresh);
+            props.setIsViewAddNationModal(false);
+          }
+        })
+        .catch(() => {
+          console.log('실패함')
+        })
     }
-    axios 
-      .post(`${MainURL}/nationcity/registernation`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        params: getParams,
-      })
-      .then((res) => {
-        if (res.data) {
-          alert('등록되었습니다.');
-          props.setRefresh(!props.refresh);
-          props.setIsViewAddNationModal(false);
-        }
-      })
-      .catch(() => {
-        console.log('실패함')
-      })
   };
 
   // 수정 ----------------------------------------------
@@ -297,7 +301,12 @@ export default function ModalAddNation (props : any) {
           <div className="coverrow half">
             <TitleBox width="120px" text='국가(한글)'/>
             <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
-              value={nationKo} onChange={(e)=>{setNationKo(e.target.value)}}/>
+              value={nationKo} onChange={(e)=>{
+                if (nationList.includes(e.target.value)) {
+                  alert ('이미 입력된 나라입니다.')
+                }
+                setNationKo(e.target.value)
+                }}/>
           </div>
           <div className="coverrow half">
             <TitleBox width="120px" text='국가(영문)'/>

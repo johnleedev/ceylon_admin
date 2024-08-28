@@ -23,7 +23,9 @@ export default function ModalAddCity (props : any) {
   const userId = sessionStorage.getItem('userId');
   const isAddOrRevise = props.isAddOrRevise;
   const cityData = isAddOrRevise === 'revise' ? props.cityData : null;
-
+  const cityList = props.nationData ? props.nationData.cities : '';
+  const cityListCopy = props.nationData ? cityList.map((e:any)=>e.cityKo) : '';
+   
   const [isView, setIsView] = useState<boolean>(isAddOrRevise === 'revise' ? cityData.isView : true);
   const [sort, setSort] = useState(props.nationData.sort);
   const [continent, setContinent] = useState(props.nationData.continent);
@@ -163,40 +165,44 @@ export default function ModalAddCity (props : any) {
 
   // 저장 함수 ------------------------------------------------------------------------------------------------------------------------------------------
   const registerCity = async () => {
-    const formData = new FormData();
-    imageFiles.forEach((file, index) => {
-      formData.append('img', file);
-    });
-    const getParams = {
-      isView : isView,
-      sort : sort,
-      continent : continent,
-      nation : nation,
-      cityKo : cityKo,
-      cityEn : cityEn,
-      weather : weather,
-      tourNotice : tourNotice,
-      inputImage : inputImage,
-      directAirline : JSON.stringify(directAirline),
-      viaAirline : JSON.stringify(viaAirline),
+    if (cityListCopy.includes(cityKo)) {
+      alert(`${cityKo}는(은) 이미 입력된 도시입니다.`)
+    } else {
+      const formData = new FormData();
+      imageFiles.forEach((file, index) => {
+        formData.append('img', file);
+      });
+      const getParams = {
+        isView : isView,
+        sort : sort,
+        continent : continent,
+        nation : nation,
+        cityKo : cityKo,
+        cityEn : cityEn,
+        weather : weather,
+        tourNotice : tourNotice,
+        inputImage : inputImage,
+        directAirline : JSON.stringify(directAirline),
+        viaAirline : JSON.stringify(viaAirline),
+      }
+      axios 
+        .post(`${MainURL}/nationcity/registercities`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          params: getParams,
+        })
+        .then((res) => {
+          if (res.data) {
+            alert('등록되었습니다.');
+            props.setRefresh(!props.refresh);
+            props.setIsViewAddCityModal(false);
+          }
+        })
+        .catch(() => {
+          console.log('실패함')
+        })
     }
-    axios 
-      .post(`${MainURL}/nationcity/registercities`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        params: getParams,
-      })
-      .then((res) => {
-        if (res.data) {
-          alert('등록되었습니다.');
-          props.setRefresh(!props.refresh);
-          props.setIsViewAddCityModal(false);
-        }
-      })
-      .catch(() => {
-        console.log('실패함')
-      })
   };
 
   // 수정 함수 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -249,7 +255,7 @@ export default function ModalAddCity (props : any) {
       {/* 도시 생성 --------------------------------------------------------------------------------------------------------------- */}
       
       <div className="modal-header">
-        <h1>도시 생성</h1>
+        <h1>도시 {isAddOrRevise === 'revise' ? '수정' : '생성'}</h1>
       </div>
 
       <section>
@@ -289,7 +295,12 @@ export default function ModalAddCity (props : any) {
           <div className="coverrow half">
             <TitleBox width="120px" text='도시명(한글)'/>
             <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
-              value={cityKo} onChange={(e)=>{setCityKo(e.target.value)}}/>
+              value={cityKo} onChange={(e)=>{
+                  if (cityListCopy.includes(e.target.value)) {
+                    alert(`이미 입력된 도시입니다.`)
+                  }
+                  setCityKo(e.target.value)}
+                }/>
           </div>
           <div className="coverrow half">
             <TitleBox width="120px" text='도시명(영문)'/>

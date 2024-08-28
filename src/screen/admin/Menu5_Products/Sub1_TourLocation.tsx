@@ -34,6 +34,7 @@ export default function Sub1_TourLocation (props:any) {
 	const [selectContinent, setSelectContinent] = useState("전체");
 	const [nationData, setNationData] = useState();
 	const [cityData, setCityData] = useState();
+	
 
 	// 리스트 가져오기 ------------------------------------------------------
 	interface ListProps {
@@ -68,7 +69,15 @@ export default function Sub1_TourLocation (props:any) {
 		})
     if (res.data !== false) {
 			const copy = [...res.data];
-      setList(copy);
+			let result = [];
+			if (currentTab === 2) {
+				result = copy.filter((e:any)=>e.sort === '휴양지')
+			} else if (currentTab === 3) {
+				result = copy.filter((e:any)=>e.sort === '관광지')
+			} else {
+				result = copy;
+			}
+      setList(result);
     } else {
 			setList([])
 		}
@@ -76,7 +85,7 @@ export default function Sub1_TourLocation (props:any) {
 
 	useEffect(() => {
 		fetchPosts();
-	}, [refresh, selectContinent]);  
+	}, [refresh, selectContinent, currentTab]);  
 
 
 	// 모달 ---------------------------------------------------------
@@ -147,6 +156,7 @@ export default function Sub1_TourLocation (props:any) {
 								isAddOrRevise={isAddOrRevise}
 								setRefresh={setRefresh}
 								nationData={nationData}
+								nationList={list.map((e:any)=> e.nationKo)}
 								setIsViewAddNationModal={setIsViewAddNationModal}
 						 />
           </div>
@@ -184,6 +194,7 @@ export default function Sub1_TourLocation (props:any) {
 										</div>
 										<div className="nation__title_addBtn"
 											onClick={()=>{
+												window.scrollTo(0, 0);
 												setIsAddOrRevise('add');
 												setNationData(item);
 												setIsViewAddCityModal(true);
@@ -194,6 +205,7 @@ export default function Sub1_TourLocation (props:any) {
 									</div>
 									<div className="nation__title_rightbox"
 											onClick={()=>{
+												window.scrollTo(0, 0);
 												setIsAddOrRevise('revise');
 												setNationData(item);
 												setIsViewAddNationModal(true);
@@ -219,6 +231,7 @@ export default function Sub1_TourLocation (props:any) {
 												<div className='reviseBtn'
 												  style={{display:'flex', alignItems:'center'}}>
 													<p onClick={()=>{
+														window.scrollTo(0, 0);
 														setIsAddOrRevise('revise');
 														setNationData(item);
 														setCityData(subItem);
