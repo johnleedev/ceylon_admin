@@ -16,19 +16,25 @@ export default function ModalHotelCost (props : any) {
   const userId = sessionStorage.getItem('userId');
   const hotelInfoData = props.hotelInfo;
 
-  const [locationDetail, setLocationDetail] = useState('');
-  const [landCompany, setLandCompany] = useState('');
-  const [selectCostType, setSelectCostType] = useState('');
+  const [locationDetail, setLocationDetail] = useState(hotelInfoData.locationDetail);
+  const [landCompany, setLandCompany] = useState(hotelInfoData.landCompany);
+  const [selectCostType, setSelectCostType] = useState(hotelInfoData.selectCostType);
   const [hotelCostData, setHotelCostData] = useState();
 
   const fetchPost = async () => {
     const res = await axios.get(`${MainURL}/producthotel/gethotelcost/${hotelInfoData.id}`)
     if (res.data !== false) {
-      const copy = res.data[0];
-      setLocationDetail(copy.locationDetail);
-      setLandCompany(copy.landCompany);
-      setSelectCostType(copy.selectCostType);
-      setHotelCostData(copy);
+      const copy = res.data;
+      const result = copy.map((item: any) => {
+        return {
+         reservePeriod : JSON.parse(item.reservePeriod),
+         inputDefault : JSON.parse(item.inputDefault),
+         inputSeason : JSON.parse(item.inputSeason),
+         saleDefaultCost: JSON.parse(item.saleDefaultCost),
+         saleSeasonCost: JSON.parse(item.saleSeasonCost)
+        };
+      });
+      setHotelCostData(result);
     }
   };
 
@@ -43,7 +49,7 @@ export default function ModalHotelCost (props : any) {
     const res = await axios.get(`${MainURL}/producthotel/getcostinputstate/${hotelInfoData.id}`)
     if (res.data !== false) {
       const copy = res.data[0];
-      if (copy.inputState === 'false' || copy.inputState === '' ) {
+      if (copy.isCostInput === 'false' || copy.isCostInput === '' ) {
         handleSaveAlert();
       } else {
         props.setRefresh(!props.refresh);
@@ -68,7 +74,6 @@ export default function ModalHotelCost (props : any) {
       })
       .then((res) => {
         if (res.data) {
-          alert('취소되었습니다.')
           props.setRefresh(!props.refresh);
           props.setIsViewHotelCostModal(false);
         }
@@ -77,12 +82,8 @@ export default function ModalHotelCost (props : any) {
         console.log('실패함')
       })
   };
-
+  
   return (
-    hotelCostData === undefined && hotelInfoData.isCostInput === 'true'
-    ?
-    <Loading />
-    :
     <div className='modal-addinput'>
 
       <div className='close'>
@@ -173,16 +174,16 @@ export default function ModalHotelCost (props : any) {
 
       <div style={{height:50}}></div>
       {
-        selectCostType !== '' &&
+        (selectCostType !== '' && selectCostType !== null) &&
         <>
           {
             ( selectCostType === '선투숙') 
             ?
-            <PreHotelCost locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType} hotelCostData={hotelCostData}
+            <PreHotelCost hotelCostData={hotelCostData} handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
               hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh}
             />
             :
-            <FullVillaCost locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType} hotelCostData={hotelCostData}
+            <FullVillaCost hotelCostData={hotelCostData} handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
               hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh}
             />
           }
@@ -192,3 +193,4 @@ export default function ModalHotelCost (props : any) {
     </div>     
   )
 }
+

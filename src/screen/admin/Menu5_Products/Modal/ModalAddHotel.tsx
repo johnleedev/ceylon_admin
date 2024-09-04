@@ -481,7 +481,7 @@ export default function ModalAddHotel (props : any) {
       </div>
       
       <div className="modal-header">
-        <h1>호텔생성</h1>
+        <h1>호텔 {isAddOrRevise === 'revise' ? '수정' : '생성'}</h1>
       </div>
 
       <section>

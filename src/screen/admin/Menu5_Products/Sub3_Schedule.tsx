@@ -43,7 +43,6 @@ export default function Sub3_Schedule (props:any) {
     const res = await axios.get(`${MainURL}/productschedule/getproductschedule`)
     if (res) {
       setList(res.data);
-			console.log(res.data);
     }
   };
 

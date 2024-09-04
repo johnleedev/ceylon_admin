@@ -12,208 +12,33 @@ export default function PreHotelCost (props : any) {
   let navigate = useNavigate();
   const userId = sessionStorage.getItem('userId');
   const hotelInfoData = props.hotelInfoData;
-  const hotelCostData = props.hotelCostData;
 
-  interface InputCostProps {
-    reservePeriod : {start:string, end:string};
-    default : {
-      seasonName: string;
-      period : {start:string, end:string}[];
-      roomType: string;
-      currency : string;
-      dayChangeCost : string;
-      dayAddCost : string;
-      minimumDay : string;
-      notice : string;
-    }[]
-    season : {
-      seasonName: string;
-      period : {start:string, end:string}[];
-      currency : string;
-      minimumDay : string;
-      addCost : string;
-      addCostAll : string;
-      addCostPerson : string;
-      galaDinner : string;
-    }[]
-    saleCost : {
-      seasonName: string;
-      period : {start:string, end:string}[];
-      roomType: string;
-      currency : string;
-      dayChangeCost : string;
-      dayAddCost : string;
-      minimumDay : string;
-      notice : string;
-    }[]
-  }
-
-
-  const [isViewSaleCost, setIsViewSaleCost] = useState(hotelCostData?.isViewSaleCost ?? '');
-  const [notes, setNotes] = useState(hotelCostData?.notes ?? '');
-  const [notesDetail, setNotesDetail] = useState(hotelCostData?.notesDetail ?? '');
-  const [landBenefit, setLandBenefit] = useState(hotelCostData?.landBenefit ?? '');
-  const [productType, setProductType] = useState(hotelCostData?.productType ?? '');
-  const [applyCurrency, setApplyCurrency] = useState(hotelCostData?.applyCurrency ?? '₩');
-  const [commission, setCommission] = useState(hotelCostData?.commissionSelect ?? [{title:"수수료(1인)", select:"select", charge: "0"}]);
-  const [openSaleContent, setOpenSaleContent] = useState<boolean>(hotelCostData?.inputState === 'true' ? true : false);
-
-  const defaultInputCostData : InputCostProps = 
-    { reservePeriod: {start:"", end:""}, 
-      default : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
-      season : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
-                addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-              {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : '₩', 
-              addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-              {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
-              addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}],
-      saleCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}]
-    }
-  const [inputCost, setInputCost] = useState<InputCostProps[]>(hotelCostData?.inputCost ? JSON.parse(hotelCostData?.inputCost) : [defaultInputCostData]);
-  const [saleCost, setSaleCost] = useState<InputCostProps[]>(hotelCostData?.saleCost ? JSON.parse(hotelCostData.saleCost) : []);
-
-  // apply 입력된 숫자 금액으로 변경
-  const handleinputDefaultCostChange = (
-    e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
-    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
-  ) => {
-    const text = e.target.value;
-    const copy = [...currentState];
-    if (name === 'period') {
-      return;
-    }
-    if (text === '') {
-      (copy[sectionIndex].default[index] as any)[name] = ''; 
-      setCurrentState(copy);
-      return;
-    }
-    const inputNumber = parseInt(text.replace(/,/g, ''), 10);
-    if (isNaN(inputNumber)) {return;}
-    const formattedNumber = inputNumber.toLocaleString('en-US');
-    (copy[sectionIndex].default[index] as any)[name] = formattedNumber; 
-    setCurrentState(copy);
-  };
+  const [isViewSaleCost, setIsViewSaleCost] = useState(hotelInfoData?.isViewSaleCost ?? '');
+  const [notes, setNotes] = useState(hotelInfoData?.notes ?? '');
+  const [notesDetail, setNotesDetail] = useState(hotelInfoData?.notesDetail ?? '');
+  const [landBenefit, setLandBenefit] = useState(hotelInfoData?.landBenefit ?? '');
+  const [productType, setProductType] = useState(hotelInfoData?.productType ?? '');
+  const [applyCurrency, setApplyCurrency] = useState(hotelInfoData?.applyCurrency ?? '₩');
+  const [commission, setCommission] = useState(hotelInfoData?.commissionSelect ?? [{title:"수수료(1인)", select:"select", charge: "0"}]);
   
-  // season 입력된 숫자 금액으로 변경
-  const handleinputSeasonCostChange = (
-    e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
-    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
-  ) => {
-    const text = e.target.value;
-    const copy = [...currentState];
-    if (name === 'period') {
-      return;
-    }
-    if (text === '') {
-      (copy[sectionIndex].season[index] as any)[name] = ''; 
-      setCurrentState(copy);
-      return;
-    }
-    const inputNumber = parseInt(text.replace(/,/g, ''), 10);
-    if (isNaN(inputNumber)) {return;}
-    const formattedNumber = inputNumber.toLocaleString('en-US');
-    (copy[sectionIndex].season[index] as any)[name] = formattedNumber; 
-    setCurrentState(copy);
-  };
 
-  
-  // 입금가 판매가 적용
-  const handleApplySaleCost = () => {
-    setOpenSaleContent(true);
-    const chargeNumber = Number(commission[0]?.charge?.replace(/[,|%]/g, '')) || 0;
-    const updatedinputCost = inputCost.map((cost: any) => {
-        const defaultCostCopy = cost.default.map((def: any) => {
-            const dayChangeCostNumber = Number(def.dayChangeCost?.replace(/,/g, '')) || 0;
-            const updatedDayChangeCost = (dayChangeCostNumber + chargeNumber).toLocaleString();
-            const dayAddCostNumber = Number(def.dayAddCost?.replace(/,/g, '')) || 0;
-            const updatedDayAddCost = (dayAddCostNumber + chargeNumber).toLocaleString();
-            return {
-                ...def,
-                dayChangeCost: updatedDayChangeCost,
-                dayAddCost: updatedDayAddCost,
-            };
-        });
-        let saleCost = defaultCostCopy.flatMap((def: any) => {
-            return cost.season.map((season: any) => {
-                const addCostPersonNumber = Number(season.addCostPerson?.replace(/,/g, '')) || 0;
-                const galaDinnerNumber = Number(season.galaDinner?.replace(/,/g, '')) || 0;
-                const resultA = addCostPersonNumber + galaDinnerNumber;
-                const resultB = (Number(def.dayChangeCost?.replace(/,/g, '')) + resultA).toLocaleString();
-                const resultC = (Number(def.dayAddCost?.replace(/,/g, '')) + resultA).toLocaleString();
-                return {
-                    seasonName: season.seasonName,
-                    period: season.period,
-                    roomType: def.roomType,
-                    currency: def.currency,
-                    dayChangeCost: resultB,
-                    dayAddCost: resultC,
-                    minimumDay: season.minimumDay,
-                    notice: "",
-                };
-            });
-        });
-        saleCost = saleCost.sort((a: any, b: any) => {
-            if (a.roomType < b.roomType) return -1;
-            if (a.roomType > b.roomType) return 1;
-            return 0;
-        });
-        return {
-            ...cost,
-            default: defaultCostCopy,
-            saleCost: saleCost
-        };
-    });
-    setSaleCost(updatedinputCost);
-  };
-
-
-
-
-  // 입금가 판매가 초기화
-  const handleApplySaleCostReset = () => {
-    setInputCost([defaultInputCostData]);
-    setSaleCost([]);
-    setCommission([{title:"수수료(1인)", select:"select", charge: "0"}])
-    setOpenSaleContent(false);
-  };
-
-  // 화폐 적용 함수
-  const handleApplyCurrency = (symbol : string) => {
-    setApplyCurrency(symbol);
-    const copy = [...inputCost]
-    const updatedinputCost = copy.map(cost => ({
-      ...cost, 
-      default: cost.default.map(def => ({...def, currency: symbol})),
-      season: cost.season.map(seasonItem => ({...seasonItem, currency: symbol}))
-    }));
-    setInputCost(updatedinputCost);
-  };
-
-   // 저장 함수 ----------------------------------------------
-  const registerPost = async () => {
- 
+  // 요금표 정보 저장 함수 ----------------------------------------------
+  const registerInfoPost = async () => {
     const getParams = {
-      // postId :  hotelInfoData.id, 
-      // selectCostType : props.selectCostType,
-      // locationDetail : props.locationDetail,
-      // landCompany : props.landCompany,
-      // isViewSaleCost : isViewSaleCost,
-      // hotelNameKo: hotelInfoData.hotelNameKo, 
-      // hotelNameEn : hotelInfoData.hotelNameEn,
-      // notes : notes,
-      // notesDetail: notesDetail,
-      // landBenefit : landBenefit,
-      // productType : productType,
-      // applyCurrency : applyCurrency,
-      // commission : JSON.stringify(commission),
-      // inputCost: JSON.stringify(inputCost),
-      // seasonCost: JSON.stringify(seasonCost),
-      // saleCost: JSON.stringify(saleCost),
-      // saleSeasonCost: JSON.stringify(saleSeasonCost),
+      postId :  hotelInfoData.id, 
+      selectCostType : props.selectCostType,
+      locationDetail : props.locationDetail,
+      landCompany : props.landCompany,
+      isViewSaleCost : isViewSaleCost,
+      notes : notes,
+      notesDetail: notesDetail,
+      landBenefit : landBenefit,
+      productType : productType,
+      applyCurrency : applyCurrency,
+      commission : JSON.stringify(commission),
     }
-
     axios
-      .post(`${MainURL}/producthotel/registerhotelcost`, getParams)
+      .post(`${MainURL}/producthotel/registerhotelcostinfo`, getParams)
       .then((res) => {
         if (res.data) {
          alert('저장되었습니다.');
@@ -223,7 +48,7 @@ export default function PreHotelCost (props : any) {
         console.log('실패함')
       })
   };
-
+  
   const wonOption = [
     { value: '선택', label: '선택' },
     { value: '50,000', label: '50,000' },
@@ -243,7 +68,233 @@ export default function PreHotelCost (props : any) {
     { value: '25', label: '25' },
     { value: '30', label: '30' }
   ]
+
+  // 화폐 적용 함수
+  const handleApplyCurrency = (symbol : string) => {
+    setApplyCurrency(symbol);
+    const copy = [...inputCost]
+    const updatedinputCost = copy.map(cost => ({
+      ...cost, 
+      default: cost.inputDefault.map(def => ({...def, currency: symbol})),
+      season: cost.inputSeason.map(seasonItem => ({...seasonItem, currency: symbol}))
+    }));
+    setInputCost(updatedinputCost);
+  };
   
+  
+  // 입금가 & 판ㅐ가 ---------------------------------------------------------------------------------------------------------------------------------------------------
+  
+  interface InputCostProps {
+    reservePeriod : {start:string, end:string};
+    inputDefault : {
+      seasonName: string;
+      period : {start:string, end:string}[];
+      roomType: string;
+      currency : string;
+      dayChangeCost : string;
+      dayAddCost : string;
+      minimumDay : string;
+      notice : string;
+    }[]
+    inputSeason : {
+      seasonName: string;
+      period : {start:string, end:string}[];
+      currency : string;
+      minimumDay : string;
+      addCost : string;
+      addCostAll : string;
+      addCostPerson : string;
+      galaDinner : string;
+    }[]
+    saleDefaultCost : {
+      seasonName: string;
+      period : {start:string, end:string}[];
+      roomType: string;
+      currency : string;
+      dayChangeCost : string;
+      dayAddCost : string;
+      minimumDay : string;
+      notice : string;
+    }[]
+    saleSeasonCost : {
+      seasonName: string;
+      period : {start:string, end:string}[];
+      roomType: string;
+      currency : string;
+      dayChangeCost : string;
+      dayAddCost : string;
+      minimumDay : string;
+      notice : string;
+    }[]
+  }
+  
+  const [openSaleContent, setOpenSaleContent] = useState<boolean>(hotelInfoData?.isCostInput === 'true' ? true : false);
+  const defaultInputCostData : InputCostProps = 
+    { reservePeriod: {start:"", end:""}, 
+      inputDefault : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
+      inputSeason : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
+                addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+              {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : '₩', 
+              addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+              {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
+              addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}],
+      saleDefaultCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
+      saleSeasonCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}]
+    }
+  const [inputCost, setInputCost] = useState<InputCostProps[]>(props.hotelCostData ? props.hotelCostData : [defaultInputCostData]);
+
+  // apply 입력된 숫자 금액으로 변경
+  const handleinputDefaultCostChange = (
+    e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
+    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
+  ) => {
+    const text = e.target.value;
+    const copy = [...currentState];
+    if (name === 'period') {
+      return;
+    }
+    if (text === '') {
+      (copy[sectionIndex].inputDefault[index] as any)[name] = ''; 
+      setCurrentState(copy);
+      return;
+    }
+    const inputNumber = parseInt(text.replace(/,/g, ''), 10);
+    if (isNaN(inputNumber)) {return;}
+    const formattedNumber = inputNumber.toLocaleString('en-US');
+    (copy[sectionIndex].inputDefault[index] as any)[name] = formattedNumber; 
+    setCurrentState(copy);
+  };
+  
+  // season 입력된 숫자 금액으로 변경
+  const handleinputSeasonCostChange = (
+    e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
+    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
+  ) => {
+    const text = e.target.value;
+    const copy = [...currentState];
+    if (name === 'period') {
+      return;
+    }
+    if (text === '') {
+      (copy[sectionIndex].inputSeason[index] as any)[name] = ''; 
+      setCurrentState(copy);
+      return;
+    }
+    const inputNumber = parseInt(text.replace(/,/g, ''), 10);
+    if (isNaN(inputNumber)) {return;}
+    const formattedNumber = inputNumber.toLocaleString('en-US');
+    (copy[sectionIndex].inputSeason[index] as any)[name] = formattedNumber; 
+    setCurrentState(copy);
+  };
+
+  // season 박수 x 추가요금을 합계에 입력
+  const handleAddCostMultiplyDay = (
+    e: string, sectionIndex:number, index: number
+  ) => {
+    const text = e;
+    const copy = [...inputCost]; 
+    copy[sectionIndex].inputSeason[index].minimumDay = text;
+    const inputTextNumberOnly = parseInt(text.replace(/[^0-9]/g, ''), 10);
+    const addCostCopy = copy[sectionIndex].inputSeason[index].addCost;
+    const addCosttNumberOnly = parseInt(addCostCopy.replace(/[^0-9]/g, ''), 10);
+    const multiplyCost = inputTextNumberOnly * addCosttNumberOnly;
+    const dividePersonCost = (inputTextNumberOnly * addCosttNumberOnly) / 2;
+    const formattedMultiplyCost = multiplyCost.toLocaleString('en-US');
+    const formattedDividePersonCost = Math.floor(dividePersonCost).toLocaleString('en-US');
+    copy[sectionIndex].inputSeason[index].addCostAll = formattedMultiplyCost;
+    copy[sectionIndex].inputSeason[index].addCostPerson = formattedDividePersonCost;
+    setInputCost(copy);
+  };
+  
+  // 입금가 판매가 적용
+  const handleApplySaleCost = () => {
+    setOpenSaleContent(true);
+    const chargeNumber = Number(commission[0]?.charge?.replace(/[,|%]/g, '')) || 0;
+    const updatedinputCost = inputCost.map((cost: any) => {
+        const defaultCostCopy = cost.inputDefault.map((def: any) => {
+            const dayChangeCostNumber = Number(def.dayChangeCost?.replace(/,/g, '')) || 0;
+            const updatedDayChangeCost = dayChangeCostNumber === 0 ? '0' : (dayChangeCostNumber + chargeNumber).toLocaleString();
+            const dayAddCostNumber = Number(def.dayAddCost?.replace(/,/g, '')) || 0;
+            const updatedDayAddCost = dayAddCostNumber === 0 ? '0' : (dayAddCostNumber + chargeNumber).toLocaleString();
+            return {
+                ...def,
+                dayChangeCost: updatedDayChangeCost,
+                dayAddCost: updatedDayAddCost,
+            };
+        });
+        let saleCost = defaultCostCopy.flatMap((def: any) => {
+            return cost.inputSeason.map((season: any) => {
+                const addCostPersonNumber = Number(season.addCostPerson?.replace(/,/g, '')) || 0;
+                const galaDinnerNumber = Number(season.galaDinner?.replace(/,/g, '')) || 0;
+                const resultA = addCostPersonNumber + galaDinnerNumber;
+
+                const resultB = Number(resultA) === 0 ? 0 : (Number(def.dayChangeCost?.replace(/,/g, '')) + resultA);
+                const resultBFormatted = resultB.toLocaleString();
+
+                const resultC = Number(resultA) === 0 ? 0 : (Number(def.dayAddCost?.replace(/,/g, '')) + resultA);
+                const resultCFormatted = resultC.toLocaleString();
+
+                return {
+                    seasonName: season.seasonName,
+                    period: season.period,
+                    roomType: def.roomType,
+                    currency: def.currency,
+                    dayChangeCost: resultBFormatted,
+                    dayAddCost: resultCFormatted,
+                    minimumDay: season.minimumDay,
+                    notice: "",
+                };
+            });
+        });
+        saleCost = saleCost.sort((a: any, b: any) => {
+            if (a.roomType < b.roomType) return -1;
+            if (a.roomType > b.roomType) return 1;
+            return 0;
+        });
+
+        return {
+            ...cost,
+            saleDefaultCost: defaultCostCopy,
+            saleSeasonCost: saleCost
+        };
+    });
+    console.log(updatedinputCost);
+    setInputCost(updatedinputCost);
+};
+
+
+  // 입금가 판매가 초기화
+  const handleApplySaleCostReset = () => {
+    setInputCost([defaultInputCostData]);
+    setOpenSaleContent(false);
+  };
+
+
+   // 요금표 정보 저장 함수 ----------------------------------------------
+   const registerCostPost = async () => {
+
+    const inputCostCopy = [...inputCost];
+    for (let index = 0; index < inputCostCopy.length; index++) {
+      const item = inputCostCopy[index];
+      try {
+        const response = await axios.post(`${MainURL}/producthotel/registerhotelcost`, {
+          postId : hotelInfoData.id, 
+          costIndex: index,
+          hotelNameKo: hotelInfoData.hotelNameKo,
+          hotelNameEn: hotelInfoData.hotelNameEn, 
+          reservePeriod : JSON.stringify(item.reservePeriod),
+          inputDefault :  JSON.stringify(item.inputDefault),
+          inputSeason : JSON.stringify(item.inputSeason),
+          saleDefaultCost : JSON.stringify(item.saleDefaultCost),
+          saleSeasonCost : JSON.stringify(item.saleSeasonCost)
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error(`에러 발생 - 단어: ${item}`, error);
+      }
+    }
+    alert('저장되었습니다.')
+  };
 
   return (
     <div>
@@ -417,7 +468,7 @@ export default function PreHotelCost (props : any) {
                     widthmain='20%'
                     height='35px'
                     selectedValue={item.charge}
-                    options={applyCurrency === 'won' ? wonOption : dollarOption} 
+                    options={applyCurrency === '₩' ? wonOption : dollarOption} 
                     handleChange={(e)=>{
                       const copy = [...commission];
                       copy[index].select = 'select';
@@ -463,14 +514,14 @@ export default function PreHotelCost (props : any) {
 
       <div className='btn-box'>
         <div className="btn" 
-          onClick={handleApplySaleCostReset}
+          onClick={props.handleClose}
         >
-          <p style={{color:'#333'}}>초기화</p>
+          <p style={{color:'#333'}}>취소</p>
         </div>
-        <div className="btn" 
-          onClick={handleApplySaleCost}
-        >
-          <p style={{color:'#333'}}>수수료 적용</p>
+        <div className="btn" style={{backgroundColor:'#5fb7ef'}}
+            onClick={registerInfoPost}
+          >
+          <p>저장</p>
         </div>
       </div>
 
@@ -512,16 +563,18 @@ export default function PreHotelCost (props : any) {
                     <div className="dayBox">
                       <div className="dayBtn"
                         onClick={()=>{
-                          const copy = [...inputCost, { reservePeriod: {start:"", end:""}, 
-                            default : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
-                            season : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
+                          const copy = [...inputCost, 
+                            { reservePeriod: {start:"", end:""}, 
+                              inputDefault : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
+                              inputSeason : [{seasonName :"하이시즌", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
+                                        addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
+                                      {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : '₩', 
                                       addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-                                    {seasonName :"픽시즌", period: [{start:"", end:""}],   minimumDay : "1", currency : '₩', 
-                                    addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"},
-                                    {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
-                                    addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}],
-                            saleCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}]
-                          }];
+                                      {seasonName :"블랙아웃", period: [{start:"", end:""}],  minimumDay : "1", currency : '₩', 
+                                      addCost : "0", addCostAll : "0", addCostPerson : "0", galaDinner : "0"}],
+                              saleDefaultCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}],
+                              saleSeasonCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}]
+                            }];
                           setInputCost(copy);
                         }}
                       >
@@ -570,7 +623,7 @@ export default function PreHotelCost (props : any) {
                 </div>
         
                 {
-                  section.default.map((item:any, index:any)=>{
+                  section.inputDefault.map((item:any, index:any)=>{
                     return (
                       <div className="coverbox">
                         <div className="coverrow hole" style={{minHeight:'60px'}} >
@@ -582,8 +635,8 @@ export default function PreHotelCost (props : any) {
                                     <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
                                       setSelectDate={(e:any)=>{ 
                                         const inputs = [...inputCost];
-                                        inputs[sectionIndex].default[index].period[subIndex].start = e;
-                                        inputs[sectionIndex].default[index].period[subIndex].end = e;
+                                        inputs[sectionIndex].inputDefault[index].period[subIndex].start = e;
+                                        inputs[sectionIndex].inputDefault[index].period[subIndex].end = e;
                                         setInputCost(inputs);
                                       }} 
                                     />
@@ -591,7 +644,7 @@ export default function PreHotelCost (props : any) {
                                     <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
                                       setSelectDate={(e:any)=>{ 
                                         const inputs = [...inputCost];
-                                        inputs[sectionIndex].default[index].period[subIndex].end = e;
+                                        inputs[sectionIndex].inputDefault[index].period[subIndex].end = e;
                                         setInputCost(inputs);
                                       }} 
                                       />
@@ -599,7 +652,7 @@ export default function PreHotelCost (props : any) {
                                       <div className="dayBtn"
                                         onClick={()=>{
                                           const copy = [...inputCost];
-                                          copy[sectionIndex].default[index].period = [...copy[sectionIndex].default[index].period, {start:"", end:""}];
+                                          copy[sectionIndex].inputDefault[index].period = [...copy[sectionIndex].inputDefault[index].period, {start:"", end:""}];
                                           setInputCost(copy);
                                         }}
                                       >
@@ -610,7 +663,7 @@ export default function PreHotelCost (props : any) {
                                       <div className="dayBtn"
                                         onClick={()=>{
                                           const copy = [...inputCost];
-                                          copy[sectionIndex].default[index].period.splice(subIndex, 1);
+                                          copy[sectionIndex].inputDefault[index].period.splice(subIndex, 1);
                                           setInputCost(copy);
                                         }}
                                       >
@@ -626,7 +679,7 @@ export default function PreHotelCost (props : any) {
                             <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
                               value={item.roomType} onChange={(e)=>{
                                 const copy = [...inputCost]; 
-                                copy[sectionIndex].default[index].roomType = e.target.value; setInputCost(copy);
+                                copy[sectionIndex].inputDefault[index].roomType = e.target.value; setInputCost(copy);
                                 }}/>
                           </div>
                           <div style={{width:'7%', display:'flex', alignItems:'center',}}>
@@ -641,7 +694,7 @@ export default function PreHotelCost (props : any) {
                                 { value: '4박', label: '4박' },
                                 { value: '5박', label: '5박' }
                               ]}    
-                              handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].default[index].minimumDay = e.target.value; setInputCost(copy);}}
+                              handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].inputDefault[index].minimumDay = e.target.value; setInputCost(copy);}}
                             />
                           </div>
                           <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
@@ -654,7 +707,7 @@ export default function PreHotelCost (props : any) {
                                   { value: '$', label: '$' },
                                   { value: '₩', label: '₩' }
                                 ]}    
-                                handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].default[index].currency = e.target.value; setInputCost(copy);}}
+                                handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].inputDefault[index].currency = e.target.value; setInputCost(copy);}}
                               />
                           </div>
                           <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
@@ -670,14 +723,14 @@ export default function PreHotelCost (props : any) {
                           <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
                           <div style={{width:'27%', display:'flex'}} >
                             <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
-                                value={item.notice} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].default[index].notice = e.target.value; setInputCost(copy);}}/>
+                                value={item.notice} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].inputDefault[index].notice = e.target.value; setInputCost(copy);}}/>
                           </div>
                           <div style={{width:'3%', display:'flex'}} >
                           <div className="dayBox">
                             <div className="dayBtn"
                               onClick={()=>{
                                 const copy = [...inputCost];
-                                copy[sectionIndex].default = [...copy[sectionIndex].default, 
+                                copy[sectionIndex].inputDefault = [...copy[sectionIndex].inputDefault, 
                                   {seasonName: `default${index+2}`, period: [{start:"", end:""}], roomType: "", currency : "₩", dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}
                                 ]
                                 setInputCost(copy);
@@ -688,7 +741,7 @@ export default function PreHotelCost (props : any) {
                             <div className="dayBtn"
                               onClick={()=>{
                                 const copy = [...inputCost];
-                                copy[sectionIndex].default.splice(index, 1);
+                                copy[sectionIndex].inputDefault.splice(index, 1);
                                 setInputCost(copy);
                               }}
                             >
@@ -728,7 +781,7 @@ export default function PreHotelCost (props : any) {
                   </div>
                 </div>
                 {
-                  section.season.map((item:any, index:any)=>{
+                  section.inputSeason.map((item:any, index:any)=>{
                     return (
                       <div className="coverbox">
                         <div className="coverrow hole" style={{minHeight:'60px'}} >
@@ -744,8 +797,8 @@ export default function PreHotelCost (props : any) {
                                     <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
                                       setSelectDate={(e:any)=>{ 
                                         const inputs = [...inputCost];
-                                        inputs[sectionIndex].season[index].period[subIndex].start = e;
-                                        inputs[sectionIndex].season[index].period[subIndex].end = e;
+                                        inputs[sectionIndex].inputSeason[index].period[subIndex].start = e;
+                                        inputs[sectionIndex].inputSeason[index].period[subIndex].end = e;
                                         setInputCost(inputs);
                                       }} 
                                     />
@@ -753,7 +806,7 @@ export default function PreHotelCost (props : any) {
                                     <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
                                       setSelectDate={(e:any)=>{ 
                                         const inputs = [...inputCost];
-                                        inputs[sectionIndex].season[index].period[subIndex].end = e;
+                                        inputs[sectionIndex].inputSeason[index].period[subIndex].end = e;
                                         setInputCost(inputs);
                                       }} 
                                       />
@@ -761,7 +814,7 @@ export default function PreHotelCost (props : any) {
                                       <div className="dayBtn"
                                         onClick={()=>{
                                           const copy = [...inputCost];
-                                          copy[sectionIndex].season[index].period = [...copy[sectionIndex].season[index].period, {start:"", end:""}];
+                                          copy[sectionIndex].inputSeason[index].period = [...copy[sectionIndex].inputSeason[index].period, {start:"", end:""}];
                                           setInputCost(copy);
                                         }}
                                       >
@@ -772,7 +825,7 @@ export default function PreHotelCost (props : any) {
                                       <div className="dayBtn"
                                         onClick={()=>{
                                           const copy = [...inputCost];
-                                          copy[sectionIndex].season[index].period.splice(subIndex, 1);
+                                          copy[sectionIndex].inputSeason[index].period.splice(subIndex, 1);
                                           setInputCost(copy);
                                         }}
                                       >
@@ -798,7 +851,7 @@ export default function PreHotelCost (props : any) {
                                 { value: '5박', label: '5박' }
                               ]}    
                               handleChange={(e)=>{
-                                const copy = [...inputCost]; copy[sectionIndex].season[index].minimumDay = e.target.value; setInputCost(copy);
+                                handleAddCostMultiplyDay(e.target.value, sectionIndex, index);
                               }}
                             />
                           </div>
@@ -813,7 +866,7 @@ export default function PreHotelCost (props : any) {
                                 { value: '₩', label: '₩' }
                               ]}    
                               handleChange={(e)=>{
-                                const copy = [...inputCost]; copy[sectionIndex].season[index].currency = e.target.value; setInputCost(copy);
+                                const copy = [...inputCost]; copy[sectionIndex].inputSeason[index].currency = e.target.value; setInputCost(copy);
                               }}
                             />
                           </div>
@@ -848,6 +901,19 @@ export default function PreHotelCost (props : any) {
         })
       }
 
+      <div className='btn-box'>
+        <div className="btn" 
+          onClick={handleApplySaleCostReset}
+        >
+          <p style={{color:'#333'}}>초기화</p>
+        </div>
+        <div className="btn" 
+          onClick={handleApplySaleCost}
+        >
+          <p style={{color:'#333'}}>수수료 적용</p>
+        </div>
+      </div>
+
       {/* 판매가 ------------------------------------------------------------------------------------------------------------------------ */}
       
       { openSaleContent &&
@@ -858,7 +924,7 @@ export default function PreHotelCost (props : any) {
           </div>
 
           {
-            saleCost.map((section:any, sectionIndex:any)=>{
+            inputCost.map((section:any, sectionIndex:any)=>{
               return (
                 <div key={sectionIndex}>
                   
@@ -932,7 +998,7 @@ export default function PreHotelCost (props : any) {
                       <div className='chartbox' style={{width:'3%'}} ></div>
                     </div>
                     {
-                      section.default.map((item:any, index:any)=>{
+                      section.saleDefaultCost.map((item:any, index:any)=>{
                         return (
                           <div className="coverbox">
                             <div className="coverrow hole" style={{minHeight:'60px'}} >
@@ -943,26 +1009,26 @@ export default function PreHotelCost (props : any) {
                                       <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
                                         <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
                                           setSelectDate={(e:any)=>{ 
-                                            const inputs = [...saleCost];
-                                            inputs[sectionIndex].default[index].period[subIndex].start = e;
-                                            inputs[sectionIndex].default[index].period[subIndex].end = e;
-                                            setSaleCost(inputs);
+                                            const inputs = [...inputCost];
+                                            inputs[sectionIndex].saleDefaultCost[index].period[subIndex].start = e;
+                                            inputs[sectionIndex].saleDefaultCost[index].period[subIndex].end = e;
+                                            setInputCost(inputs);
                                           }} 
                                         />
                                         <p style={{marginLeft:'5px'}}>~</p>
                                         <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
                                           setSelectDate={(e:any)=>{ 
-                                            const inputs = [...saleCost];
-                                            inputs[sectionIndex].default[index].period[subIndex].end = e;
-                                            setSaleCost(inputs);
+                                            const inputs = [...inputCost];
+                                            inputs[sectionIndex].saleDefaultCost[index].period[subIndex].end = e;
+                                            setInputCost(inputs);
                                           }} 
                                           />
                                         <div className="dayBox">
                                           <div className="dayBtn"
                                             onClick={()=>{
-                                              const copy = [...saleCost];
-                                              copy[sectionIndex].default[index].period = [...copy[sectionIndex].default[index].period, {start:"", end:""}];
-                                              setSaleCost(copy);
+                                              const copy = [...inputCost];
+                                              copy[sectionIndex].saleDefaultCost[index].period = [...copy[sectionIndex].saleDefaultCost[index].period, {start:"", end:""}];
+                                              setInputCost(copy);
                                             }}
                                           >
                                             <p>+</p>
@@ -971,9 +1037,9 @@ export default function PreHotelCost (props : any) {
                                         <div className="dayBox">
                                           <div className="dayBtn"
                                             onClick={()=>{
-                                              const copy = [...saleCost];
-                                              copy[sectionIndex].default[index].period.splice(subIndex, 1);
-                                              setSaleCost(copy);
+                                              const copy = [...inputCost];
+                                              copy[sectionIndex].saleDefaultCost[index].period.splice(subIndex, 1);
+                                              setInputCost(copy);
                                             }}
                                           >
                                             <p>-</p>
@@ -986,7 +1052,7 @@ export default function PreHotelCost (props : any) {
                               </div>
                               <div style={{width:'10%', display:'flex', alignItems:'center',}}>
                                 <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
-                                  value={item.roomType} onChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].default[index].roomType = e.target.value; setSaleCost(copy);}}/>
+                                  value={item.roomType} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleDefaultCost[index].roomType = e.target.value; setInputCost(copy);}}/>
                               </div>
                               <div style={{width:'7%', display:'flex', alignItems:'center',}}>
                                 <DropdownBox
@@ -1000,7 +1066,7 @@ export default function PreHotelCost (props : any) {
                                     { value: '4박', label: '4박' },
                                     { value: '5박', label: '5박' }
                                   ]}    
-                                  handleChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].default[index].minimumDay = e.target.value; setSaleCost(copy);}}
+                                  handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleDefaultCost[index].minimumDay = e.target.value; setInputCost(copy);}}
                                 />
                               </div>
                               <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
@@ -1013,42 +1079,42 @@ export default function PreHotelCost (props : any) {
                                       { value: '$', label: '$' },
                                       { value: '₩', label: '₩' }
                                     ]}    
-                                    handleChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].default[index].currency = e.target.value; setSaleCost(copy);}}
+                                    handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleDefaultCost[index].currency = e.target.value; setInputCost(copy);}}
                                   />
                               </div>
                               <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
                                 <input className="inputdefault" type="text" style={{width:'48%', textAlign:'right'}} 
                                   value={item.dayChangeCost} onChange={(e)=>{
-                                    handleinputDefaultCostChange(e, sectionIndex, index, 'dayChangeCost', saleCost, setSaleCost)
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'dayChangeCost', inputCost, setInputCost)
                                   }}/>
                                 <input className="inputdefault" type="text" style={{width:'48%', textAlign:'right'}} 
                                   value={item.dayAddCost} onChange={(e)=>{
-                                    handleinputDefaultCostChange(e, sectionIndex, index, 'dayAddCost', saleCost, setSaleCost)
+                                    handleinputDefaultCostChange(e, sectionIndex, index, 'dayAddCost', inputCost, setInputCost)
                                   }}/>
                               </div>
                               <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
                               <div style={{width:'27%', display:'flex'}} >
                                 <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
-                                    value={item.notice} onChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].default[index].notice = e.target.value; setSaleCost(copy);}}/>
+                                    value={item.notice} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleDefaultCost[index].notice = e.target.value; setInputCost(copy);}}/>
                               </div>
                               <div style={{width:'3%', display:'flex'}} >
                               <div className="dayBox">
                                 <div className="dayBtn"
                                   onClick={()=>{
-                                    const copy = [...saleCost];
-                                    copy[sectionIndex].default = [...copy[sectionIndex].default, 
+                                    const copy = [...inputCost];
+                                    copy[sectionIndex].saleDefaultCost = [...copy[sectionIndex].saleDefaultCost, 
                                       {seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : "₩", dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}
                                     ]
-                                    setSaleCost(copy);
+                                    setInputCost(copy);
                                   }}
                                 >
                                   <p>+</p>
                                 </div>
                                 <div className="dayBtn"
                                   onClick={()=>{
-                                    const copy = [...saleCost];
-                                    copy[sectionIndex].default.splice(index, 1);
-                                    setSaleCost(copy);
+                                    const copy = [...inputCost];
+                                    copy[sectionIndex].saleDefaultCost.splice(index, 1);
+                                    setInputCost(copy);
                                   }}
                                 >
                                   <p>-</p>
@@ -1064,7 +1130,7 @@ export default function PreHotelCost (props : any) {
                     <div style={{height:'1px', backgroundColor:'#BDBDBD', marginTop:'20px'}}></div>
 
                     {
-                      section.saleCost.map((item:any, index:any)=>{
+                      section.saleSeasonCost.map((item:any, index:any)=>{
                         return (
                           <div className="coverbox">
                             <div className="coverrow hole" style={{minHeight:'60px'}} >
@@ -1075,26 +1141,26 @@ export default function PreHotelCost (props : any) {
                                       <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
                                         <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
                                           setSelectDate={(e:any)=>{ 
-                                            const inputs = [...saleCost];
-                                            inputs[sectionIndex].saleCost[index].period[subIndex].start = e;
-                                            inputs[sectionIndex].saleCost[index].period[subIndex].end = e;
-                                            setSaleCost(inputs);
+                                            const inputs = [...inputCost];
+                                            inputs[sectionIndex].saleSeasonCost[index].period[subIndex].start = e;
+                                            inputs[sectionIndex].saleSeasonCost[index].period[subIndex].end = e;
+                                            setInputCost(inputs);
                                           }} 
                                         />
                                         <p style={{marginLeft:'5px'}}>~</p>
                                         <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
                                           setSelectDate={(e:any)=>{ 
-                                            const inputs = [...saleCost];
-                                            inputs[sectionIndex].saleCost[index].period[subIndex].end = e;
-                                            setSaleCost(inputs);
+                                            const inputs = [...inputCost];
+                                            inputs[sectionIndex].saleSeasonCost[index].period[subIndex].end = e;
+                                            setInputCost(inputs);
                                           }} 
                                           />
                                         <div className="dayBox">
                                           <div className="dayBtn"
                                             onClick={()=>{
-                                              const copy = [...saleCost];
-                                              copy[sectionIndex].saleCost[index].period = [...copy[sectionIndex].saleCost[index].period, {start:"", end:""}];
-                                              setSaleCost(copy);
+                                              const copy = [...inputCost];
+                                              copy[sectionIndex].saleSeasonCost[index].period = [...copy[sectionIndex].saleSeasonCost[index].period, {start:"", end:""}];
+                                              setInputCost(copy);
                                             }}
                                           >
                                             <p>+</p>
@@ -1103,9 +1169,9 @@ export default function PreHotelCost (props : any) {
                                         <div className="dayBox">
                                           <div className="dayBtn"
                                             onClick={()=>{
-                                              const copy = [...saleCost];
-                                              copy[sectionIndex].default[index].period.splice(subIndex, 1);
-                                              setSaleCost(copy);
+                                              const copy = [...inputCost];
+                                              copy[sectionIndex].saleSeasonCost[index].period.splice(subIndex, 1);
+                                              setInputCost(copy);
                                             }}
                                           >
                                             <p>-</p>
@@ -1118,7 +1184,7 @@ export default function PreHotelCost (props : any) {
                               </div>
                               <div style={{width:'10%', display:'flex', alignItems:'center',}}>
                                 <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
-                                  value={item.roomType} onChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].saleCost[index].roomType = e.target.value; setSaleCost(copy);}}/>
+                                  value={item.roomType} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleSeasonCost[index].roomType = e.target.value; setInputCost(copy);}}/>
                               </div>
                               <div style={{width:'7%', display:'flex', alignItems:'center',}}>
                                 <DropdownBox
@@ -1132,7 +1198,7 @@ export default function PreHotelCost (props : any) {
                                     { value: '4박', label: '4박' },
                                     { value: '5박', label: '5박' }
                                   ]}    
-                                  handleChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].saleCost[index].minimumDay = e.target.value; setSaleCost(copy);}}
+                                  handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleSeasonCost[index].minimumDay = e.target.value; setInputCost(copy);}}
                                 />
                               </div>
                               <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
@@ -1145,32 +1211,32 @@ export default function PreHotelCost (props : any) {
                                       { value: '$', label: '$' },
                                       { value: '₩', label: '₩' }
                                     ]}    
-                                    handleChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].saleCost[index].currency = e.target.value; setSaleCost(copy);}}
+                                    handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleSeasonCost[index].currency = e.target.value; setInputCost(copy);}}
                                   />
                               </div>
                               <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
                                 <input className="inputdefault" type="text" style={{width:'48%', textAlign:'right'}} 
                                   value={item.dayChangeCost} onChange={(e)=>{
-                                    handleinputSeasonCostChange(e, sectionIndex, index, 'dayChangeCost', saleCost, setSaleCost)
+                                    handleinputSeasonCostChange(e, sectionIndex, index, 'dayChangeCost', inputCost, setInputCost)
                                   }}/>
                                 <input className="inputdefault" type="text" style={{width:'48%', textAlign:'right'}} 
                                   value={item.dayAddCost} onChange={(e)=>{
-                                    handleinputSeasonCostChange(e, sectionIndex, index, 'dayAddCost', saleCost, setSaleCost)
+                                    handleinputSeasonCostChange(e, sectionIndex, index, 'dayAddCost', inputCost, setInputCost)
                                   }}/>
                               </div>
                               <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
                               <div style={{width:'27%', display:'flex'}} >
                                 <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
-                                    value={item.notice} onChange={(e)=>{const copy = [...saleCost]; copy[sectionIndex].saleCost[index].notice = e.target.value; setSaleCost(copy);}}/>
+                                    value={item.notice} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleSeasonCost[index].notice = e.target.value; setInputCost(copy);}}/>
                               </div>
                               <div style={{width:'3%', display:'flex'}} >
                               <div className="dayBox">
                                 <div className="dayBtn"
                                   onClick={()=>{
-                                    const copy = [...saleCost,
+                                    const copy = [...inputCost,
                                       {seasonName: `default${index+1}`, period: [{start:"", end:""}], roomType: "", currency : "", dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}
                                     ];
-                                    // setSaleCost(copy);
+                                    // setInputCost(copy);
                                   }}
                                 >
                                   <p>+</p>
@@ -1192,15 +1258,12 @@ export default function PreHotelCost (props : any) {
 
           <div className='btn-box'>
             <div className="btn" 
-              onClick={()=>{
-                props.setRefresh(!props.refresh);
-                props.setIsViewHotelCostModal(false);
-              }}
+              onClick={props.handleClose}
             >
               <p style={{color:'#333'}}>취소</p>
             </div>
             <div className="btn" style={{backgroundColor:'#5fb7ef'}}
-                onClick={registerPost}
+                onClick={registerCostPost}
               >
               <p>저장</p>
             </div>

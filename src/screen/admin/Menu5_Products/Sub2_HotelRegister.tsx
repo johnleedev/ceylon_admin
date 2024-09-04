@@ -88,10 +88,12 @@ export default function Sub2_CounselList (props:any) {
 	// 요금표 ------------------------------------------------------
 
 	// 요금표 생성
-	const handleHotelCostCreat = async (postId : any) => {
+	const handleHotelCostCreat = async (item : any) => {
     axios 
       .post(`${MainURL}/producthotel/hotelcostcreat`, {
-        postId : postId
+        postId : item.id,
+				hotelNameKo : item.hotelNameKo, 
+      	hotelNameEn : item.hotelNameEn
       })
       .then((res) => {
         if (res.data) {
@@ -217,7 +219,7 @@ export default function Sub2_CounselList (props:any) {
 											onClick={()=>{
 												setHotelInfo(item);
 												if (item.isCostInput === 'false') {
-													handleHotelCostCreat(item.id);
+													handleHotelCostCreat(item);
 												} else {
 													setIsViewHotelCostModal(true);
 												}
