@@ -5,15 +5,13 @@ import {ko} from "date-fns/locale";
 import { format, formatDate } from "date-fns";
 import { TitleBox } from '../../../../boxs/TitleBox';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { DropDownAirline, DropDownNum, DropDownTime, DropDownVisitPath, DropDowncharger } from '../../../DefaultData';
-import { DateBoxNum } from '../../../../boxs/DateBoxNum';
+import {  DropDownTime } from '../../../DefaultData';
 import { DropdownBox } from '../../../../boxs/DropdownBox';
 import axios from 'axios';
 import MainURL from '../../../../MainURL';
 import { useDropzone } from 'react-dropzone'
 import imageCompression from "browser-image-compression";
 import Loading from '../../components/Loading';
-import { CiCircleMinus } from "react-icons/ci";
 import { IoClose } from "react-icons/io5";
 import { TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 
@@ -41,8 +39,8 @@ export default function ModalAddHotel (props : any) {
   const [hotelNotice, setHotelNotice] = useState(isAddOrRevise === 'revise' ? hotelData.hotelNotice : '');
   const [hotelConvenience, setHotelConvenience] = useState<string[]>(isAddOrRevise === 'revise' ? JSON.parse(hotelData.hotelConvenience) : []);
 
-  const [hotelCheckIn, setHotelCheckIn] = useState(isAddOrRevise === 'revise' ? hotelData.hotelCheckIn : '');
-  const [hotelCheckOut, setHotelCheckOut] = useState(isAddOrRevise === 'revise' ? hotelData.hotelCheckOut : '');
+  const [hotelCheckIn, setHotelCheckIn] = useState(isAddOrRevise === 'revise' ? hotelData.hotelCheckIn : 'PM 3:00');
+  const [hotelCheckOut, setHotelCheckOut] = useState(isAddOrRevise === 'revise' ? hotelData.hotelCheckOut : 'AM 11:00');
   const [hotelAllowPet, setHotelAllowPet] = useState(isAddOrRevise === 'revise' ? hotelData.hotelAllowPet : '가능');
   const [hotelParking, setHotelParking] = useState(isAddOrRevise === 'revise' ? hotelData.hotelParking : '무료');
 
@@ -56,14 +54,19 @@ export default function ModalAddHotel (props : any) {
     notice: string;
   }
 
-  const [imagesAllViewSort, setImagesAllViewSort] = useState(isAddOrRevise === 'revise' ? 'revise' : 'add');
-  const [imageNamesAllView, setImageNamesAllView] = useState<ImageNoticeProps[]>(isAddOrRevise === 'revise' ? JSON.parse(hotelData.imageNamesAllView) : []);
+  const [lastImageNamesAllView, setLastImageNamesAllView] = useState<ImageNoticeProps[]>((
+      isAddOrRevise === 'revise' && (hotelData.imageNamesAllView !== null && hotelData.imageNamesAllView !== '')) ? JSON.parse(hotelData.imageNamesAllView) : []);
+  const [imageNamesAllView, setImageNamesAllView] = useState<ImageNoticeProps[]>([]);
   const [imagesAllView, setImagesAllView] = useState<File[]>([]);
-  const [imagesRoomViewSort, setImagesRoomViewSort] = useState(isAddOrRevise === 'revise' ? 'revise' : 'add');
-  const [imageNamesRoomView, setImageNamesRoomView] = useState<ImageNoticeProps[]>(isAddOrRevise === 'revise' ? JSON.parse(hotelData.imageNamesRoomView) : []);
+
+  const [lastImageNamesRoomView, setLastImageNamesRoomView] = useState<ImageNoticeProps[]>((
+      isAddOrRevise === 'revise' && (hotelData.imageNamesRoomView !== null && hotelData.imageNamesRoomView !== '')) ? JSON.parse(hotelData.imageNamesRoomView) : []);
+  const [imageNamesRoomView, setImageNamesRoomView] = useState<ImageNoticeProps[]>([]);
   const [imagesRoomView, setImagesRoomView] = useState<File[]>([]);
-  const [imagesEtcViewSort, setImagesEtcViewSort] = useState(isAddOrRevise === 'revise' ? 'revise' : 'add');
-  const [imageNamesEtcView, setImageNamesEtcView] = useState<ImageNoticeProps[]>(isAddOrRevise === 'revise' ? JSON.parse(hotelData.imageNamesEtcView) : []);
+
+  const [lastImageNamesEtcView, setLastImageNamesEtcView] = useState<ImageNoticeProps[]>((
+      isAddOrRevise === 'revise' && (hotelData.imageNamesEtcView !== null && hotelData.imageNamesEtcView !== '')) ? JSON.parse(hotelData.imageNamesEtcView) : []);
+  const [imageNamesEtcView, setImageNamesEtcView] = useState<ImageNoticeProps[]>([]);
   const [imagesEtcView, setImagesEtcView] = useState<File[]>([]);
 
   // selectbox ----------------------------------------------
@@ -111,7 +114,7 @@ export default function ModalAddHotel (props : any) {
 
   // 이미지 첨부 함수 ----------------------------------------------
   const currentDate = new Date();
-  const date = format(currentDate, 'yyyy-MM-dd');
+  const date = format(currentDate, 'MMddHHmmss');
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   
   // 전경 이미지 첨부  --------------------------------------------------------------------------------------------
@@ -131,24 +134,25 @@ export default function ModalAddHotel (props : any) {
         );
         
         const regexCopy = /[^a-zA-Z0-9!@#$%^&*()\-_=+\[\]{}|;:'",.<>]/g;
-  
+        const userIdCopy = userId?.slice(0,5);
         const fileCopies = resizedFiles.map((resizedFile, index) => {
           const regex = resizedFile.name.replace(regexCopy, '');
-          const regexSlice = regex.slice(-10);
-          return new File([resizedFile], `${date}_${userId}_${regexSlice}`, {
+          const regexSlice = regex.slice(-15);
+          return new File([resizedFile], `${date}${userIdCopy}_${regexSlice}`, {
             type: acceptedFiles[index].type,
           });
         });
         setImagesAllView(fileCopies);
         const imageNames = acceptedFiles.map((file, index) => {
           const regex = file.name.replace(regexCopy, '');
-          const regexSlice = regex.slice(-10);
-          return `${date}_${userId}_${regexSlice}`;
+          const regexSlice = regex.slice(-15);
+          return `${date}${userIdCopy}_${regexSlice}`;
         });
         const updatedImageNames = imageNames.map((imageName) => ({
           imageName, title: '', notice: ''
         }));
-        setImageNamesAllView(updatedImageNames);
+        const updatedImageNamesCopy = isAddOrRevise === 'revise' ? [...lastImageNamesAllView, ...updatedImageNames] : updatedImageNames
+        setImageNamesAllView(updatedImageNamesCopy);
         setImageLoading(false);
       } catch (error) {
         console.error('이미지 리사이징 중 오류 발생:', error);
@@ -183,24 +187,25 @@ export default function ModalAddHotel (props : any) {
         );
         
         const regexCopy = /[^a-zA-Z0-9!@#$%^&*()\-_=+\[\]{}|;:'",.<>]/g;
-  
+        const userIdCopy = userId?.slice(0,5);
         const fileCopies = resizedFiles.map((resizedFile, index) => {
           const regex = resizedFile.name.replace(regexCopy, '');
-          const regexSlice = regex.slice(-10);
-          return new File([resizedFile], `${date}_${userId}_${regexSlice}`, {
+          const regexSlice = regex.slice(-15);
+          return new File([resizedFile], `${date}${userIdCopy}_${regexSlice}`, {
             type: acceptedFiles[index].type,
           });
         });
         setImagesRoomView(fileCopies);
         const imageNames = acceptedFiles.map((file, index) => {
           const regex = file.name.replace(regexCopy, '');
-          const regexSlice = regex.slice(-10);
-          return `${date}_${userId}_${regexSlice}`;
+          const regexSlice = regex.slice(-15);
+          return `${date}${userIdCopy}_${regexSlice}`;
         });
         const updatedImageNames = imageNames.map((imageName) => ({
           imageName, title: '', notice: ''
         }));
-        setImageNamesRoomView(updatedImageNames);
+        const updatedImageNamesCopy = isAddOrRevise === 'revise' ? [...lastImageNamesRoomView, ...updatedImageNames] : updatedImageNames
+        setImageNamesRoomView(updatedImageNamesCopy);
         setImageLoading(false);
       } catch (error) {
         console.error('이미지 리사이징 중 오류 발생:', error);
@@ -235,24 +240,25 @@ export default function ModalAddHotel (props : any) {
         );
         
         const regexCopy = /[^a-zA-Z0-9!@#$%^&*()\-_=+\[\]{}|;:'",.<>]/g;
-  
+        const userIdCopy = userId?.slice(0,5);
         const fileCopies = resizedFiles.map((resizedFile, index) => {
           const regex = resizedFile.name.replace(regexCopy, '');
-          const regexSlice = regex.slice(-10);
-          return new File([resizedFile], `${date}_${userId}_${regexSlice}`, {
+          const regexSlice = regex.slice(-15);
+          return new File([resizedFile], `${date}${userIdCopy}_${regexSlice}`, {
             type: acceptedFiles[index].type,
           });
         });
         setImagesEtcView(fileCopies);
         const imageNames = acceptedFiles.map((file, index) => {
           const regex = file.name.replace(regexCopy, '');
-          const regexSlice = regex.slice(-10);
-          return `${date}_${userId}_${regexSlice}`;
+          const regexSlice = regex.slice(-15);
+          return `${date}${userIdCopy}_${regexSlice}`;
         });
         const updatedImageNames = imageNames.map((imageName) => ({
           imageName, title: '', notice: ''
         }));
-        setImageNamesEtcView(updatedImageNames);
+        const updatedImageNamesCopy = isAddOrRevise === 'revise' ? [...lastImageNamesEtcView, ...updatedImageNames] : updatedImageNames
+        setImageNamesEtcView(updatedImageNamesCopy);
         setImageLoading(false);
       } catch (error) {
         console.error('이미지 리사이징 중 오류 발생:', error);
@@ -376,10 +382,48 @@ export default function ModalAddHotel (props : any) {
       })
   };
 
+  // 기존 이미지 삭제 ----------------------------------------------
+  const deleteInputLastImage = async (imageNameCopy:string, useState1:any, setUseState1:any, useState2:any, setUseState2:any, sortCopy:string) => {
+    const lastImagesCopy = [...useState1]
+    const lastImagesNewItems = lastImagesCopy.filter((item, index) => item.imageName !== imageNameCopy);
+    const inputImagesCopy = [...useState2]
+    const inputImagesNewItems = inputImagesCopy.filter((item, index) => item.imageName !== imageNameCopy);
+
+    axios 
+      .post(`${MainURL}/producthotel/deletehotelimage`, {
+        postId : hotelData.id,
+        imageName : imageNameCopy,
+        sort : sortCopy,
+        inputImage : JSON.stringify(lastImagesNewItems)
+      })
+      .then((res) => {
+        if (res.data) {
+          alert(res.data);
+          setUseState1(lastImagesNewItems);
+          setUseState2(inputImagesNewItems);
+        }
+      })
+      .catch(() => {
+        console.log('실패함')
+      })
+  };
+
   // 호텔 수정 함수 ----------------------------------------------
   const reviseHotel = async () => {
+    console.log('last', lastImageNamesAllView)
+    console.log(imageNamesAllView)
     const currentdate = new Date();
 		const revisetoday = formatDate(currentdate, 'yyyy-MM-dd');
+    const formData = new FormData();
+    imagesAllView.forEach((file, index) => {
+      formData.append('img', file);
+    });
+    imagesRoomView.forEach((file, index) => {
+      formData.append('img', file);
+    });
+    imagesEtcView.forEach((file, index) => {
+      formData.append('img', file);
+    });
     const getParams = {
       postId: hotelData.id,
       isView : isView,
@@ -401,10 +445,18 @@ export default function ModalAddHotel (props : any) {
       googleLocation: googleLocation,
       keywordHashtag : keywordHashtag,
       customerScore: customerScore,
+      imageNamesAllView : imageNamesAllView.length === 0 ? JSON.stringify(lastImageNamesAllView) : JSON.stringify(imageNamesAllView),
+      imageNamesRoomView : imageNamesRoomView.length === 0 ? JSON.stringify(lastImageNamesRoomView) : JSON.stringify(imageNamesRoomView),
+      imageNamesEtcView : imageNamesEtcView.length === 0 ? JSON.stringify(lastImageNamesEtcView) : JSON.stringify(imageNamesEtcView),
       reviseDate : revisetoday
     }
     axios 
-      .post(`${MainURL}/producthotel/revisehotel`, getParams)
+      .post(`${MainURL}/producthotel/revisehotel`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: getParams,
+      })
       .then((res) => {
         if (res.data) {
           alert('수정되었습니다.');
@@ -417,46 +469,7 @@ export default function ModalAddHotel (props : any) {
       })
   };
 
-  // 기존 이미지 전부 삭제 ----------------------------------------------
-
-  const handleDeleteAlert = (sortInput:string) => {
-		const costConfirmed = window.confirm(`기존의 사진을 변경하려면, 모두 삭제후 다시 첨부해야 합니다. 정말 삭제하시겠습니까?`);
-			if (costConfirmed) {
-				deleteImageView(sortInput);
-		} else {
-			return
-		}
-	};
-
-  const deleteImageView = async (sortInput:string) => {
-    const sortCopy = sortInput;
-    let hotelImagesCopy = [{}];
-    if (sortCopy === 'all') {
-      hotelImagesCopy = imageNamesAllView
-    } else if (sortCopy === 'room') {
-      hotelImagesCopy = imageNamesRoomView
-    } else if (sortCopy === 'etc') {
-      hotelImagesCopy = imageNamesEtcView
-    };
-    axios 
-    .post(`${MainURL}/producthotel/deletehotelimages`, {
-      sort : sortCopy,
-      postId : hotelData.id,
-      hotelImages : hotelImagesCopy
-    })
-    .then((res) => {
-      if (res.data) {
-        alert('삭제되었습니다.');
-        props.setRefresh(!props.refresh);
-        if (sortCopy === 'all') {setImagesAllViewSort('add');}
-        if (sortCopy === 'room') {setImagesRoomViewSort('add');}
-        if (sortCopy === 'etc') {setImagesEtcViewSort('add');}
-      }
-    })
-    .catch(() => {
-      console.log('실패함')
-    })
-  };
+  
 
   // 글자수 제한
   const renderPreview = (content : string) => {
@@ -718,10 +731,43 @@ export default function ModalAddHotel (props : any) {
         <div className="bottombar"></div>
         <div className="coverrow hole bigHeight">
           <TitleBox width="120px" text='전경'/>
-          {
-            (imagesAllViewSort === 'add' || imageNamesAllView.length === 0)
-            ?
-            <div className="imageInputBox">
+          <div className="lastImageInputCover" style={{flexDirection:'column'}}>
+            { lastImageNamesAllView.length > 0 &&
+              lastImageNamesAllView.map((item:any, index:any)=>{
+                return (
+                  <div key={index} className='lastImage-box-column'
+                    style={{width:'100%', display:'flex', justifyContent:'space-between'}}
+                  >
+                    <div style={{display:'flex', alignItems:'center'}}>
+                      <img style={{width:'100px'}}
+                          src={`${MainURL}/images/hotelimages/${item.imageName}`}
+                        />
+                    </div>
+                    <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
+                      value={item.title} placeholder='제목' onChange={(e)=>{
+                          const copy = [...lastImageNamesAllView];
+                          copy[index].title = e.target.value;
+                          setLastImageNamesAllView(copy);
+                        }}/>
+                    <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
+                      value={item.notice} placeholder='설명' onChange={(e)=>{
+                          const copy = [...lastImageNamesAllView];
+                          copy[index].notice = e.target.value;
+                          setLastImageNamesAllView(copy);
+                        }}/>
+                    <div className='lastImage-box-column-delete'
+                      onClick={()=>{
+                        deleteInputLastImage(item.imageName, lastImageNamesAllView, setLastImageNamesAllView, imageNamesAllView, setImageNamesAllView, 'imageNamesAllView')
+                      }}
+                    >
+                      <p><IoClose color='#FF0000' size={20}/></p>
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
+          <div className="imageInputBox">
             {
               imageLoading ?
               <div style={{width:'100%', height:'100%', position:'absolute'}}>
@@ -803,80 +849,7 @@ export default function ModalAddHotel (props : any) {
                 )
               })
             }
-            </div>
-            :
-            <div className="imageInputBox">
-            {
-              imageLoading ?
-              <div style={{width:'100%', height:'100%', position:'absolute'}}>
-                <Loading/>
-              </div>
-              :
-              <div className='imageDropzoneCover'>
-                <div className="imageDropzoneStyle"
-                  onClick={()=>{
-                    handleDeleteAlert('all');
-                  }}
-                >
-                  <div className='imageplus'>+ 사진 다시 첨부하기</div>
-                </div>
-              </div>
-            }
-            {
-              imageNamesAllView.length > 0 &&
-              imageNamesAllView.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='imagebox'>
-                    <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
-                      <p>{index+1}.</p>
-                      <img 
-                        src={`${MainURL}/images/hotelimages/${item.imageName}`}
-                      />
-                      <p>{renderPreview(item.imageName)}</p>
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{deleteInputImageAllView(index);}}
-                        >
-                          <p><IoClose color='#FF0000'/></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageNamesListUp(imageNamesAllView, setImageNamesAllView, item.imageName);
-                          }}
-                        >
-                          <p><TiArrowSortedUp /></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageNamesListDown(imageNamesAllView, setImageNamesAllView, item.imageName);
-                          }}
-                        >
-                          <p><TiArrowSortedDown /></p>
-                        </div>
-                      </div>
-                    </div>
-                    <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
-                      value={item.title} placeholder='제목' onChange={(e)=>{
-                          const copy = [...imageNamesAllView];
-                          copy[index].title = e.target.value;
-                          setImageNamesAllView(copy);
-                        }}/>
-                    <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
-                      value={item.notice} placeholder='설명' onChange={(e)=>{
-                          const copy = [...imageNamesAllView];
-                          copy[index].notice = e.target.value;
-                          setImageNamesAllView(copy);
-                        }}/>
-                  </div>
-                )
-              })
-            }
-            </div>
-          }
+          </div>
         </div>
 
         <div style={{height:'100px'}}></div>
@@ -886,10 +859,43 @@ export default function ModalAddHotel (props : any) {
         <div className="bottombar"></div>
         <div className="coverrow hole bigHeight">
           <TitleBox width="120px" text='객실'/>
-          {
-            (imagesRoomViewSort === 'add' || imageNamesRoomView.length === 0)
-            ?
-            <div className="imageInputBox">
+          <div className="lastImageInputCover" style={{flexDirection:'column'}}>
+            { lastImageNamesRoomView.length > 0 &&
+              lastImageNamesRoomView.map((item:any, index:any)=>{
+                return (
+                  <div key={index} className='lastImage-box-column'
+                    style={{width:'100%', display:'flex', justifyContent:'space-between'}}
+                  >
+                    <div style={{display:'flex', alignItems:'center'}}>
+                      <img style={{width:'100px'}}
+                          src={`${MainURL}/images/hotelimages/${item.imageName}`}
+                        />
+                    </div>
+                    <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
+                      value={item.title} placeholder='제목' onChange={(e)=>{
+                          const copy = [...lastImageNamesRoomView];
+                          copy[index].title = e.target.value;
+                          setLastImageNamesRoomView(copy);
+                        }}/>
+                    <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
+                      value={item.notice} placeholder='설명' onChange={(e)=>{
+                          const copy = [...lastImageNamesRoomView];
+                          copy[index].notice = e.target.value;
+                          setLastImageNamesRoomView(copy);
+                        }}/>
+                    <div className='lastImage-box-column-delete'
+                      onClick={()=>{
+                        deleteInputLastImage(item.imageName, lastImageNamesRoomView, setLastImageNamesRoomView, imageNamesRoomView, setImageNamesRoomView, 'imageNamesRoomView')
+                      }}
+                    >
+                      <p><IoClose color='#FF0000' size={20}/></p>
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
+          <div className="imageInputBox">
             {
               imageLoading ?
               <div style={{width:'100%', height:'100%', position:'absolute'}}>
@@ -971,81 +977,7 @@ export default function ModalAddHotel (props : any) {
                 )
               })
             }
-            </div>
-            :
-            <div className="imageInputBox">
-            {
-              imageLoading ?
-              <div style={{width:'100%', height:'100%', position:'absolute'}}>
-                <Loading/>
-              </div>
-              :
-              <div className='imageDropzoneCover'>
-                <div className="imageDropzoneStyle"
-                  onClick={()=>{
-                    handleDeleteAlert('room');
-                  }}
-                >
-                  <div className='imageplus'>+ 사진 다시 첨부하기</div>
-                </div>
-              </div>
-            }
-            {
-              imageNamesRoomView.length > 0 &&
-              imageNamesRoomView.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='imagebox'>
-                    <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
-                      <p>{index+1}.</p>
-                      <img 
-                        src={`${MainURL}/images/hotelimages/${item.imageName}`}
-                      />
-                      <p>{renderPreview(item.imageName)}</p>
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{deleteInputImageRoomView(index);}}
-                        >
-                          <p><IoClose color='#FF0000'/></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageNamesListUp(imageNamesRoomView, setImageNamesRoomView, item.imageName);
-                          }}
-                        >
-                          <p><TiArrowSortedUp /></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageNamesListDown(imageNamesRoomView, setImageNamesRoomView, item.imageName);
-                          }}
-                        >
-                          <p><TiArrowSortedDown /></p>
-                        </div>
-                      </div>  
-                    </div>
-                    <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
-                      value={item.title} placeholder='제목' onChange={(e)=>{
-                          const copy = [...imageNamesRoomView];
-                          copy[index].title = e.target.value;
-                          setImageNamesRoomView(copy);
-                        }}/>
-                    <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
-                      value={item.notice} placeholder='설명' onChange={(e)=>{
-                          const copy = [...imageNamesRoomView];
-                          copy[index].notice = e.target.value;
-                          setImageNamesRoomView(copy);
-                        }}/>
-                  </div>
-                )
-              })
-            }
-            </div>
-          }
-          
+          </div>
         </div>
 
         <div style={{height:'100px'}}></div>
@@ -1055,10 +987,43 @@ export default function ModalAddHotel (props : any) {
         <div className="bottombar"></div>
         <div className="coverrow hole bigHeight">
           <TitleBox width="120px" text='부대시설'/>
-          {
-            (imagesEtcViewSort === 'add' || imageNamesEtcView.length === 0)
-            ?
-            <div className="imageInputBox">
+          <div className="lastImageInputCover" style={{flexDirection:'column'}}>
+            { lastImageNamesEtcView.length > 0 &&
+              lastImageNamesEtcView.map((item:any, index:any)=>{
+                return (
+                  <div key={index} className='lastImage-box-column'
+                    style={{width:'100%', display:'flex', justifyContent:'space-between'}}
+                  >
+                    <div style={{display:'flex', alignItems:'center'}}>
+                      <img style={{width:'100px'}}
+                          src={`${MainURL}/images/hotelimages/${item.imageName}`}
+                        />
+                    </div>
+                    <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
+                      value={item.title} placeholder='제목' onChange={(e)=>{
+                          const copy = [...lastImageNamesEtcView];
+                          copy[index].title = e.target.value;
+                          setLastImageNamesEtcView(copy);
+                        }}/>
+                    <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
+                      value={item.notice} placeholder='설명' onChange={(e)=>{
+                          const copy = [...lastImageNamesEtcView];
+                          copy[index].notice = e.target.value;
+                          setLastImageNamesEtcView(copy);
+                        }}/>
+                    <div className='lastImage-box-column-delete'
+                      onClick={()=>{
+                        deleteInputLastImage(item.imageName, lastImageNamesEtcView, setLastImageNamesEtcView, imageNamesEtcView, setImageNamesEtcView, 'imageNamesEtcView')
+                      }}
+                    >
+                      <p><IoClose color='#FF0000' size={20}/></p>
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
+          <div className="imageInputBox">
             {
               imageLoading ?
               <div style={{width:'100%', height:'100%', position:'absolute'}}>
@@ -1140,80 +1105,7 @@ export default function ModalAddHotel (props : any) {
                 )
               })
             }
-            </div>
-          :
-          <div className="imageInputBox">
-          {
-            imageLoading ?
-            <div style={{width:'100%', height:'100%', position:'absolute'}}>
-              <Loading/>
-            </div>
-            :
-            <div className='imageDropzoneCover'>
-                <div className="imageDropzoneStyle"
-                  onClick={()=>{
-                    handleDeleteAlert('etc');
-                  }}
-                >
-                  <div className='imageplus'>+ 사진 다시 첨부하기</div>
-                </div>
-              </div>
-          }
-          {
-            imageNamesEtcView.length > 0 &&
-            imageNamesEtcView.map((item:any, index:any)=>{
-              return (
-                <div key={index} className='imagebox'>
-                  <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
-                    <p>{index+1}.</p>
-                    <img 
-                      src={`${MainURL}/images/hotelimages/${item.imageName}`}
-                    />
-                    <p>{renderPreview(item.imageName)}</p>
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{deleteInputImageEtcView(index);}}
-                      >
-                        <p><IoClose color='#FF0000'/></p>
-                      </div>
-                    </div>  
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{
-                          handleImageNamesListUp(imageNamesEtcView, setImageNamesEtcView, item.imageName);
-                        }}
-                      >
-                        <p><TiArrowSortedUp /></p>
-                      </div>
-                    </div>  
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{
-                          handleImageNamesListDown(imageNamesEtcView, setImageNamesEtcView, item.imageName);
-                        }}
-                      >
-                        <p><TiArrowSortedDown /></p>
-                      </div>
-                    </div>  
-                  </div>
-                  <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
-                    value={item.title} placeholder='제목' onChange={(e)=>{
-                        const copy = [...imageNamesEtcView];
-                        copy[index].title = e.target.value;
-                        setImageNamesEtcView(copy);
-                      }}/>
-                  <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
-                    value={item.notice} placeholder='설명' onChange={(e)=>{
-                        const copy = [...imageNamesEtcView];
-                        copy[index].notice = e.target.value;
-                        setImageNamesEtcView(copy);
-                      }}/>
-                </div>
-              )
-            })
-          }
           </div>
-        } 
         </div>
       </section>
       

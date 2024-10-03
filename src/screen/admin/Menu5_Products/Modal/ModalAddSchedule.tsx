@@ -3,7 +3,7 @@ import './ModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
 import { TitleBox } from '../../../../boxs/TitleBox';
 import { useNavigate } from 'react-router-dom';
-import { DropDownAirline } from '../../../DefaultData';
+import { DropDownAirline, DropDownTourPeriodNightType, DropDownTourPeriodDayType } from '../../../DefaultData';
 import { DropdownBox } from '../../../../boxs/DropdownBox';
 import axios from 'axios';
 import MainURL from '../../../../MainURL';
@@ -20,6 +20,8 @@ export default function ModalAddSchedule (props : any) {
   const scheduleData = isAddOrRevise === 'revise' ? props.scheduleInfo : null;
 
   const [isView, setIsView] = useState<boolean>(isAddOrRevise === 'revise' ? scheduleData.isView : true);
+  const [tourLocation, setTourLocation] = useState(isAddOrRevise === 'revise' ? scheduleData.tourLocation : '');
+  const [landCompany, setLandCompany] = useState(isAddOrRevise === 'revise' ? scheduleData.landCompany : '');
   const [productType, setProductType] = useState(isAddOrRevise === 'revise' ? scheduleData.productType : '');
   const [tourPeriodNight, setTourPeriodNight] = useState(isAddOrRevise === 'revise' ? scheduleData.tourPeriodNight : '');
   const [tourPeriodDay, setTourPeriodDay] = useState(isAddOrRevise === 'revise' ? scheduleData.tourPeriodDay : '');
@@ -27,23 +29,33 @@ export default function ModalAddSchedule (props : any) {
   const [departFlight, setDepartFlight] = useState(isAddOrRevise === 'revise' ? scheduleData.departFlight : '');
   const [selectedSchedule, setSelectedSchedule] = useState(isAddOrRevise === 'revise' ? scheduleData.selectedSchedule : '');
   const [cautionNote, setCautionNote] = useState(isAddOrRevise === 'revise' ? scheduleData.cautionNote : '');
-  const [includeNote, setIncludeNote] = useState(isAddOrRevise === 'revise' ? scheduleData.includeNote : '');
+  const [includeNote, setIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.includeNote) : '');
   const [includeNoteText, setIncludeNoteText] = useState(isAddOrRevise === 'revise' ? scheduleData.includeNoteText : '');
-  const [notIncludeNote, setNotIncludeNote] = useState(isAddOrRevise === 'revise' ? scheduleData.notIncludeNote : '');
+  const [notIncludeNote, setNotIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.notIncludeNote) : '');
   const [notIncludeNoteText, setNotIncludeNoteText] = useState(isAddOrRevise === 'revise' ? scheduleData.notIncludeNoteText : '');
 
   const [scheduleList, setScheduleList] = useState(
     isAddOrRevise === 'revise' 
     ? JSON.parse(scheduleData.scheduleList)
     : [
-      { day : 1, breakfast :'', lunch:'', dinner :'', hotel:'', score:'', schedule: [{ text1:'', text2:'', text3:''}]}
+      { day : '1', breakfast :'', lunch:'', dinner :'', hotel:'', score:'', schedule: [{ location:'', title:'', notice:''}]}
       ]
   );
 
   // 데이 추가
   const handleDayAdd = async () => {
-    const copy = [...scheduleList, { day : scheduleList.length+1, breakfast :'', lunch:'', dinner :'', hotel:'', score:'', schedule: [{ text1:'', text2:'', text3:''}]}];
-    setScheduleList(copy);
+    const lastItem = scheduleList[scheduleList.length - 1]; 
+    const newDay = parseInt(lastItem.day) + 1;
+    const newItem = {
+      day: newDay.toString(),
+      breakfast: lastItem.breakfast,
+      lunch: lastItem.lunch,
+      dinner: lastItem.dinner,
+      hotel: lastItem.hotel,
+      score: lastItem.score,
+      schedule: [{ location:'', title:'', notice:''}]
+    };
+    setScheduleList([...scheduleList, newItem]);
   };
 
   // 데이 삭제
@@ -56,7 +68,7 @@ export default function ModalAddSchedule (props : any) {
   // 스케줄 추가
   const handleScheduleAdd = async (Idx:any) => {
     const copy = [...scheduleList];
-    copy[Idx].schedule = [...copy[Idx].schedule, { text1:'', text2:'', text3:''  }]
+    copy[Idx].schedule = [...copy[Idx].schedule, { location:'', title:'', notice:''  }]
     setScheduleList(copy);
   };
 
@@ -117,16 +129,18 @@ export default function ModalAddSchedule (props : any) {
   const registerPost = async () => {
     const getParams = {
       isView : isView,
+      tourLocation: tourLocation,
+      landCompany: landCompany,
       productType : productType,
       tourPeriodNight : tourPeriodNight,
-      tourPeriodDay: tourPeriodDay,
+      tourPeriodDay : tourPeriodDay,
       departAirport: departAirport,
       departFlight: departFlight,
       selectedSchedule: selectedSchedule,
       cautionNote: cautionNote,
-      includeNote: includeNote,
+      includeNote: JSON.stringify(includeNote),
       includeNoteText: includeNoteText,
-      notIncludeNote: notIncludeNote,
+      notIncludeNote: JSON.stringify(notIncludeNote),
       notIncludeNoteText: notIncludeNoteText,
       scheduleList: JSON.stringify(scheduleList)
     }
@@ -151,16 +165,18 @@ export default function ModalAddSchedule (props : any) {
     const getParams = {
       postId : scheduleData.id,
       isView : isView,
+      tourLocation: tourLocation,
+      landCompany: landCompany,
       productType : productType,
       tourPeriodNight : tourPeriodNight,
-      tourPeriodDay: tourPeriodDay,
+      tourPeriodDay : tourPeriodDay,
       departAirport: departAirport,
       departFlight: departFlight,
       selectedSchedule: selectedSchedule,
       cautionNote: cautionNote,
-      includeNote: includeNote,
+      includeNote: JSON.stringify(includeNote),
       includeNoteText: includeNoteText,
-      notIncludeNote: notIncludeNote,
+      notIncludeNote: JSON.stringify(notIncludeNote),
       notIncludeNoteText: notIncludeNoteText,
       scheduleList: JSON.stringify(scheduleList),
       reviseDate : revisetoday
@@ -178,6 +194,18 @@ export default function ModalAddSchedule (props : any) {
         console.log('실패함')
       })
   };
+
+  const datmealOptions = [
+    { value: '선택', label: '선택' },
+    { value: '기내식', label: '기내식' },
+    { value: '선택식', label: '선택식' },
+    { value: '외부식', label: '외부식' },
+    { value: '리조트', label: '리조트' },
+    { value: '자유식', label: '자유식' },
+    { value: '현지식', label: '현지식' },
+    { value: '포함', label: '포함' },
+    { value: '불포함', label: '불포함' }
+  ]
 
   return (
     <div className='modal-addinput'>
@@ -223,6 +251,20 @@ export default function ModalAddSchedule (props : any) {
        
         <div className="coverbox">
           <div className="coverrow hole">
+            <TitleBox width="120px" text='여행지'/>
+            <input className="inputdefault" type="text" style={{width:'50%', marginLeft:'5px'}} 
+              value={tourLocation} onChange={(e)=>{setTourLocation(e.target.value)}}/>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='랜드사'/>
+            <input className="inputdefault" type="text" style={{width:'50%', marginLeft:'5px'}} 
+              value={landCompany} onChange={(e)=>{setLandCompany(e.target.value)}}/>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
             <TitleBox width="120px" text='상품타입'/>
             <div className='checkInputCover'>
               <SelectBox text='선투숙+풀빌라'/>
@@ -238,38 +280,14 @@ export default function ModalAddSchedule (props : any) {
               widthmain='20%'
               height='35px'
               selectedValue={tourPeriodNight}
-              options={[
-                { value: '선택', label: '선택' },
-                { value: '1박', label: '1박' },
-                { value: '2박', label: '2박' },
-                { value: '3박', label: '3박' },
-                { value: '4박', label: '4박' },
-                { value: '5박', label: '5박' },
-                { value: '6박', label: '6박' },
-                { value: '7박', label: '7박' },
-                { value: '8박', label: '8박' },
-                { value: '9박', label: '9박' },
-                { value: '10박', label: '10박' }
-              ]}    
+              options={DropDownTourPeriodNightType}    
               handleChange={(e)=>{setTourPeriodNight(e.target.value)}}
             />
             <DropdownBox
               widthmain='20%'
               height='35px'
               selectedValue={tourPeriodDay}
-              options={[
-                { value: '선택', label: '선택' },
-                { value: '1일', label: '1일' },
-                { value: '2일', label: '2일' },
-                { value: '3일', label: '3일' },
-                { value: '4일', label: '4일' },
-                { value: '5일', label: '5일' },
-                { value: '6일', label: '6일' },
-                { value: '7일', label: '7일' },
-                { value: '8일', label: '8일' },
-                { value: '9일', label: '9일' },
-                { value: '10일', label: '10일' }
-              ]}    
+              options={DropDownTourPeriodDayType}    
               handleChange={(e)=>{setTourPeriodDay(e.target.value)}}
             />
           </div>
@@ -371,26 +389,41 @@ export default function ModalAddSchedule (props : any) {
                 </div>
                 <div className="daymeal">
                   <p>조식</p>
-                  <input style={{width:'15%'}} value={item.breakfast} className="inputdefault" type="text" 
-                      onChange={(e) => {
-                        const copy = [...scheduleList];
-                        copy[index].breakfast = e.target.value;
-                        setScheduleList(copy);
-                      }}/>
+                  <DropdownBox
+                    widthmain='15%'
+                    height='35px'
+                    selectedValue={item.breakfast}
+                    options={datmealOptions}    
+                    handleChange={(e)=>{
+                      const copy = [...scheduleList];
+                      copy[index].breakfast = e.target.value;
+                      setScheduleList(copy);
+                    }}
+                  />
                   <p>중식</p>
-                  <input style={{width:'15%'}} value={item.lunch} className="inputdefault" type="text" 
-                      onChange={(e) => {
-                        const copy = [...scheduleList];
-                        copy[index].lunch = e.target.value;
-                        setScheduleList(copy);
-                      }}/>
+                  <DropdownBox
+                    widthmain='15%'
+                    height='35px'
+                    selectedValue={item.lunch}
+                    options={datmealOptions}    
+                    handleChange={(e)=>{
+                      const copy = [...scheduleList];
+                      copy[index].lunch = e.target.value;
+                      setScheduleList(copy);
+                    }}
+                  />
                   <p>석식</p>
-                  <input style={{width:'15%'}} value={item.dinner} className="inputdefault" type="text" 
-                      onChange={(e) => {
-                        const copy = [...scheduleList];
-                        copy[index].dinner = e.target.value;
-                        setScheduleList(copy);
-                      }}/>
+                  <DropdownBox
+                    widthmain='15%'
+                    height='35px'
+                    selectedValue={item.dinner}
+                    options={datmealOptions}    
+                    handleChange={(e)=>{
+                      const copy = [...scheduleList];
+                      copy[index].dinner = e.target.value;
+                      setScheduleList(copy);
+                    }}
+                  />
                   <p>호텔</p>
                   <input style={{width:'15%'}} value={item.hotel} className="inputdefault" type="text" 
                       onChange={(e) => {
@@ -403,11 +436,12 @@ export default function ModalAddSchedule (props : any) {
                     height='35px'
                     selectedValue={item.score}
                     options={[
-                      { value: '★★★★★', label: '★★★★★' },
-                      { value: '★★★★', label: '★★★★' },
-                      { value: '★★★', label: '★★★' },
-                      { value: '★★', label: '★★' },
-                      { value: '★', label: '★' },
+                      { value: '선택', label: '선택' },
+                      { value: '5', label: '5' },
+                      { value: '4', label: '4' },
+                      { value: '3', label: '3' },
+                      { value: '2', label: '2' },
+                      { value: '1', label: '1' },
                     ]}    
                     handleChange={(e)=>{
                       const copy = [...scheduleList];
@@ -424,31 +458,31 @@ export default function ModalAddSchedule (props : any) {
                     return (
                       <div className='day-area'>
                         <div className='left-area'>
-                          <input style={{width:'95%'}} value={subItem.text1} className="inputdefault" type="text" 
+                          <ImLocation color='#5fb7ef' size={20}/>                    
+                          <input style={{width:'95%'}} value={subItem.location} className="inputdefault" type="text" 
                               onChange={(e) => {
                                 const copy = [...scheduleList];
-                                copy[index].schedule[subIndex].text1 = e.target.value;
+                                copy[index].schedule[subIndex].location = e.target.value;
                                 setScheduleList(copy);
                               }}/>
                         </div>
                         <div className='input-area'>
                           <div className="cover" key={subIndex}>
                             <div className='rowbox'>
-                              <ImLocation color='#5fb7ef' size={20}/>                    
-                              <input style={{width:'95%'}} value={subItem.text2} className="inputdefault" type="text" 
+                              <input style={{width:'95%'}} value={subItem.title} className="inputdefault" type="text" 
                                 onChange={(e) => {
                                   const copy = [...scheduleList];
-                                  copy[index].schedule[subIndex].text2 = e.target.value;
+                                  copy[index].schedule[subIndex].title = e.target.value;
                                   setScheduleList(copy);
                                 }}/>
                             </div>
                             <div className='rowbox'>
                               <textarea 
-                                className="textarea"
-                                value={subItem.text3}
+                                className="textarea" style={{minHeight:'120px'}}
+                                value={subItem.notice}
                                 onChange={(e)=>{
                                   const copy = [...scheduleList];
-                                  copy[index].schedule[subIndex].text3 = e.target.value;
+                                  copy[index].schedule[subIndex].notice = e.target.value;
                                   setScheduleList(copy);
                                 }}
                               />

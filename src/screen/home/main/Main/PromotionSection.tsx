@@ -1,11 +1,11 @@
 import PromotionHeader from "./promotion-section/PromotionHeader";
 import PromotionCard from "./promotion-section/PromotionCard";
-import MobileCardWrapper from "../common/MobileCardWrapper";
+import MobileCardWrapper from "../../common/MobileCardWrapper";
 import RecommendCard from "./recommend-section/RecommendCard";
-import promotionBgImage from "./images/promotion_bg.jpg";
-import hotel1 from "./images/resort/hotel_14.png";
-import hotel2 from "./images/resort/hotel_13.png";
-import hotel3 from "./images/resort/hotel_12.png";
+import promotionBgImage from "../../images/promotion_bg.jpg";
+import hotel1 from "../../images/resort/hotel_14.png";
+import hotel2 from "../../images/resort/hotel_13.png";
+import hotel3 from "../../images/resort/hotel_12.png";
 
 export default function PromotionSection() {
   const promotionObjs = [
@@ -17,9 +17,10 @@ export default function PromotionSection() {
       priceDesc: "1인 요금",
       dueDate: "2024-12-31",
       imagePath: hotel1,
-      location: "태국/푸켓",
+      location: "푸켓",
       rating: 4.72,
       resort: "반얀트리",
+      tourId: 3,
     },
     {
       id: 1,
@@ -29,9 +30,10 @@ export default function PromotionSection() {
       priceDesc: "1인 요금",
       dueDate: "2024-12-31",
       imagePath: hotel2,
-      location: "태국/푸켓",
+      location: "푸켓",
       rating: 4.72,
       resort: "반얀트리",
+      tourId: 3,
     },
     {
       id: 2,
@@ -41,9 +43,10 @@ export default function PromotionSection() {
       priceDesc: "1인 요금",
       dueDate: "2024-12-31",
       imagePath: hotel3,
-      location: "태국/푸켓",
+      location: "푸켓",
       rating: 4.72,
       resort: "반얀트리",
+      tourId: 3,
     },
   ];
   return (
@@ -64,7 +67,13 @@ export default function PromotionSection() {
       <MobileCardWrapper>
         {promotionObjs.map((obj) => (
           <div key={obj.id} className="promotion__mobile__card__wrapper">
-            <RecommendCard {...obj} />
+            <RecommendCard
+              location={obj.location}
+              rating={obj.rating}
+              imagePath={obj.imagePath}
+              tourId={obj.tourId}
+              title={obj.resort}
+            />
           </div>
         ))}
       </MobileCardWrapper>

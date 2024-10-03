@@ -133,11 +133,12 @@ export default function AdminMenuBar () {
           {
             currentTab === 5 &&
             <div className="sub-box">
-              <RowBox num={1} text='여행지등록' link="/admin/products"/>
+              <RowBox num={1} text='도시&항공편관리' link="/admin/products"/>
               <RowBox num={2} text='호텔관리' link="/admin/products/hotelregister"/>
               <RowBox num={3} text='일정관리' link="/admin/products/schedule"/>
-              <RowBox num={4} text='선택일정관리' link="/admin/products/selectschedule"/>
-              <RowBox num={5} text='랜드사관리' link="/admin/products/landcompany"/>
+              <RowBox num={4} text='여행지관리' link="/admin/products/tourlocation"/>
+              <RowBox num={5} text='선택일정관리' link="/admin/products/selectschedule"/>
+              <RowBox num={6} text='랜드사관리' link="/admin/products/landcompany"/>
             </div>
           }
 

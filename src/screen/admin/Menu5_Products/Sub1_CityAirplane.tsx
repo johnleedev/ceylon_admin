@@ -11,7 +11,7 @@ import MainURL from '../../../MainURL';
 import { FaCircle } from "react-icons/fa";
 import { IoCloseOutline, IoSettingsOutline  } from "react-icons/io5";
 
-export default function Sub1_TourLocation (props:any) {
+export default function Sub1_CityAirplane (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
 	const [currentTab, setCurrentTab] = useState(1);
@@ -77,6 +77,7 @@ export default function Sub1_TourLocation (props:any) {
 			} else {
 				result = copy;
 			}
+			result.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
       setList(result);
     } else {
 			setList([])
@@ -94,9 +95,10 @@ export default function Sub1_TourLocation (props:any) {
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
 	
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
-	const deleteCity = async (itemId:any) => {
+	const deleteCity = async (itemId:any, images:any) => {
 		const getParams = {
 			postId : itemId,
+			images : JSON.parse(images)
 		}
 		axios 
 			.post(`${MainURL}/nationcity/deletecity`, getParams)
@@ -113,7 +115,7 @@ export default function Sub1_TourLocation (props:any) {
 	const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.nation}(${item.sort}/${item.continent})의 도시 ${item.cityKo}를 정말 삭제하시겠습니까?`);
       if (costConfirmed) {
-        deleteCity(item.id);
+        deleteCity(item.id, item.inputImage);
     } else {
       return
     }

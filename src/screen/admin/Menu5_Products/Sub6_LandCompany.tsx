@@ -10,7 +10,7 @@ import MainURL from '../../../MainURL';
 import ModalLandCompanyInfo from './Modal/ModalLandComapanyInfo';
 
 
-export default function Sub5_LandCompany (props:any) {
+export default function Sub6_LandCompany (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
 	

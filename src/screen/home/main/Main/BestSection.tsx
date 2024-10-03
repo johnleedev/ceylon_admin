@@ -1,9 +1,9 @@
 import { useState } from "react";
 import SpotCard from "./best-section/SpotCard";
 import CategorySelector from "./best-section/CategorySelector";
-import MobileCardWrapper from "../common/MobileCardWrapper";
-import baliImge from "./images/img_bali.jpg";
-import franceImg from "./images/img_france.jpeg";
+import MobileCardWrapper from "../../common/MobileCardWrapper";
+import baliImge from "../../images/img_bali.jpg";
+import franceImg from "../../images/img_france.jpeg";
 
 export default function BestSection() {
   const categorysObj = {
@@ -37,7 +37,7 @@ export default function BestSection() {
   return (
     <section className="best__section__wrapper">
       <CategorySelector category={category} setCategory={setCategory} />
-      <div className="spot__cards__wrapper">
+      <div className="spot__cards__wrapper">    
         {spots.map((spot) => (
           <SpotCard key={spot.id} {...spot} />
         ))}

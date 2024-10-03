@@ -15,8 +15,12 @@ import MainSystem from './screen/admin/Menu8_System/MainSystem';
 import Main from './screen/home/main/Main';
 import Header from './screen/home/component/Header';
 import Footer from './screen/home/component/Footer';
+import MainProduct from './screen/home/Product/MainProduct';
+import HotelPage from './screen/home/Product/pages/HotelPage';
 
 function App() {
+
+
 
   return (
     <div className="App">
@@ -25,6 +29,7 @@ function App() {
         <>
         <Routes>
           <Route path="/" element={<Main/>}/>
+          <Route path="/products/*" element={<MainProduct/>}/>
         </Routes>
         <Footer/>
         </>

@@ -5,7 +5,7 @@ import {ko} from "date-fns/locale";
 import { format } from "date-fns";
 import { TitleBox } from '../../../../boxs/TitleBox';
 import { useNavigate } from 'react-router-dom';
-import { DropDownAirline } from '../../../DefaultData';
+import { DropDownAirline, DropDownTourPeriodDayType, DropDownTourPeriodNightType } from '../../../DefaultData';
 import { DropdownBox } from '../../../../boxs/DropdownBox';
 import axios from 'axios';
 import MainURL from '../../../../MainURL';
@@ -25,7 +25,8 @@ export default function ModalAddCity (props : any) {
   const cityData = isAddOrRevise === 'revise' ? props.cityData : null;
   const cityList = props.nationData ? props.nationData.cities : '';
   const cityListCopy = props.nationData ? cityList.map((e:any)=>e.cityKo) : '';
-   
+
+ 
   const [isView, setIsView] = useState<boolean>(isAddOrRevise === 'revise' ? cityData.isView : true);
   const [sort, setSort] = useState(props.nationData.sort);
   const [continent, setContinent] = useState(props.nationData.continent);
@@ -34,12 +35,15 @@ export default function ModalAddCity (props : any) {
   const [cityEn, setCityEn] = useState(isAddOrRevise === 'revise' ? cityData.cityEn : '');
   const [weather, setWeather] = useState(isAddOrRevise === 'revise' ? cityData.weather : '');
   const [tourNotice, setTourNotice] = useState(isAddOrRevise === 'revise' ? cityData.tourNotice : '');
-  const [inputImage, setInputImage] = useState(['']);
+  const [lastImages, setLastImages]  = 
+    useState((props.isAddOrRevise === 'revise' && (cityData.inputImage !== null && cityData.inputImage !== '')) ? JSON.parse(cityData.inputImage) : []);
+  const [inputImage, setInputImage] = 
+    useState((props.isAddOrRevise === 'revise' && (cityData.inputImage !== null && cityData.inputImage !== '')) ? JSON.parse(cityData.inputImage) : []);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
  
   // 이미지 첨부 함수 ----------------------------------------------
   const currentDate = new Date();
-  const date = format(currentDate, 'yyyy-MM-dd-HH-mm-ss');
+  const date = format(currentDate, 'MMddHHmmss');
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     try {
@@ -55,20 +59,22 @@ export default function ModalAddCity (props : any) {
         })
       );
       const regexCopy = /[^a-zA-Z0-9!@#$%^&*()\-_=+\[\]{}|;:'",.<>]/g;
+      const userIdCopy = userId?.slice(0,5);
       const fileCopies = resizedFiles.map((resizedFile, index) => {
         const regex = resizedFile.name.replace(regexCopy, '');
-        const regexSlice = regex.slice(-10);
-        return new File([resizedFile], `${date}_${userId}_${regexSlice}`, {
+        const regexSlice = regex.slice(-15);
+        return new File([resizedFile], `${date}${userIdCopy}_${regexSlice}`, {
           type: acceptedFiles[index].type,
         });
       });
       setImageFiles(fileCopies);
       const imageNames = acceptedFiles.map((file, index) => {
         const regex = file.name.replace(regexCopy, '');
-        const regexSlice = regex.slice(-10);
-        return `${date}_${userId}_${regexSlice}`;
+        const regexSlice = regex.slice(-15);
+        return `${date}${userIdCopy}_${regexSlice}`;
       });
-      setInputImage(imageNames);
+      const imageNamesCopy = props.isAddOrRevise === 'revise' ? [...inputImage, ...imageNames] : imageNames
+      setInputImage(imageNamesCopy);
       setImageLoading(false);
     } catch (error) {
       console.error('이미지 리사이징 중 오류 발생:', error);
@@ -123,19 +129,21 @@ export default function ModalAddCity (props : any) {
     arriveTime: string;
   }
   interface DirectProps {
-    tourPeriod: string;
+    tourPeriodNight: string;
+    tourPeriodDay: string;
     departAirportMain : string;
     airlineData: AirlineProps[];
   }   
   interface ViaProps {
-    tourPeriod: string;
+    tourPeriodNight: string;
+    tourPeriodDay: string;
     departAirportMain : string;
     airlineData: AirlineProps[];
   }   
   const [directAirline, setDirectAirline] = useState<DirectProps[]>(
     isAddOrRevise === 'revise' 
     ? JSON.parse(cityData.directAirline)
-    : [{tourPeriodDay: "", departAirportMain : "", 
+    : [{tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", 
         airlineData : [
           { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
           { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
@@ -145,7 +153,7 @@ export default function ModalAddCity (props : any) {
   const [viaAirline, setViaAirline] = useState<ViaProps[]>(
     isAddOrRevise === 'revise' 
     ? JSON.parse(cityData.viaAirline)
-    : [{tourPeriod: "", departAirportMain : "", 
+    : [{tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", 
         airlineData : [
           { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
           { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
@@ -159,7 +167,6 @@ export default function ModalAddCity (props : any) {
   const handleContentChange = (text:any, useState:any, setUseState:any, index:any, subIndex:any, name:any) => {
     const inputs = [...useState]
     inputs[index].airlineData[subIndex][name] = text;
-    console.log(inputs);
     setUseState(inputs);
   };
 
@@ -181,7 +188,7 @@ export default function ModalAddCity (props : any) {
         cityEn : cityEn,
         weather : weather,
         tourNotice : tourNotice,
-        inputImage : inputImage,
+        inputImage : JSON.stringify(inputImage),
         directAirline : JSON.stringify(directAirline),
         viaAirline : JSON.stringify(viaAirline),
       }
@@ -196,7 +203,6 @@ export default function ModalAddCity (props : any) {
           if (res.data) {
             alert('등록되었습니다.');
             props.setRefresh(!props.refresh);
-            props.setIsViewAddCityModal(false);
           }
         })
         .catch(() => {
@@ -205,8 +211,38 @@ export default function ModalAddCity (props : any) {
     }
   };
 
+
+  // 기존 이미지 삭제 ----------------------------------------------
+  const deleteInputLastImage = async (imageName:string) => {
+    const lastImagesCopy = [...lastImages]
+    const lastImagesNewItems = lastImagesCopy.filter((item, index) => item !== imageName);
+    const inputImagesCopy = [...inputImage]
+    const inputImagesNewItems = inputImagesCopy.filter((item, index) => item !== imageName);
+
+    axios 
+      .post(`${MainURL}/nationcity/deletecityimage`, {
+        postId : cityData.id,
+        imageName : imageName,
+        inputImage : JSON.stringify(lastImagesNewItems)
+      })
+      .then((res) => {
+        if (res.data) {
+          alert(res.data);
+          setLastImages(lastImagesNewItems);
+          setInputImage(inputImagesNewItems);
+        }
+      })
+      .catch(() => {
+        console.log('실패함')
+      })
+  };
+
   // 수정 함수 ------------------------------------------------------------------------------------------------------------------------------------------
   const reviseCity = async () => {
+    const formData = new FormData();
+      imageFiles.forEach((file, index) => {
+        formData.append('img', file);
+      });
     const getParams = {
       postId : cityData.id,
       isView : isView,
@@ -217,17 +253,21 @@ export default function ModalAddCity (props : any) {
       cityEn : cityEn,
       weather : weather,
       tourNotice : tourNotice,
-      inputImage : inputImage,
+      inputImage : JSON.stringify(inputImage),
       directAirline : JSON.stringify(directAirline),
       viaAirline : JSON.stringify(viaAirline),
     }
     axios 
-      .post(`${MainURL}/nationcity/revisecities`, getParams)
+      .post(`${MainURL}/nationcity/revisecities`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: getParams,
+      })
       .then((res) => {
         if (res.data) {
           alert('수정되었습니다.');
           props.setRefresh(!props.refresh);
-          props.setIsViewAddCityModal(false);
         }
       })
       .catch(() => {
@@ -326,71 +366,91 @@ export default function ModalAddCity (props : any) {
           </div>
         </div>
 
-        {
-          isAddOrRevise === 'add' &&
-          <div className="coverrow hole bigHeight">
-            <TitleBox width="120px" text='지도/이미지'/>
-            <div className="imageInputBox">
-            {
-              imageLoading ?
-              <div style={{width:'100%', height:'100%', position:'absolute'}}>
-                <Loading/>
-              </div>
-              :
-              <div className='imageDropzoneCover'>
-                <div {...getRootProps()} className="imageDropzoneStyle" >
-                  <input {...getInputProps()} />
-                  {
-                    imageFiles.length > 0 
-                    ? <div className='imageplus'>+ 다시첨부하기</div>
-                    : <div className='imageplus'>+ 사진첨부하기</div>
-                  }
-                </div>
-              </div>
-            }
-            {
-              imageFiles.length > 0 &&
-              imageFiles.map((item:any, index:any)=>{
+        <div className="coverrow hole bigHeight">
+          <TitleBox width="120px" text='지도/이미지'/>
+
+          <div className="lastImageInputCover">
+            { lastImages.length > 0 &&
+              lastImages.map((item:any, index:any)=>{
                 return (
-                  <div key={index} className='imagebox'>
-                    <img 
-                      src={URL.createObjectURL(item)}
-                    />
-                    <p>{item.name}</p>
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{deleteInputImage(index);}}
-                      >
-                        <p><IoClose color='#FF0000'/></p>
-                      </div>
-                    </div>  
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{
-                          handleImageListUp(imageFiles, setImageFiles, item);
-                          handleImageListUp(inputImage, setInputImage, item.name);
-                        }}
-                      >
-                        <p><TiArrowSortedUp /></p>
-                      </div>
-                    </div>  
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{
-                          handleImageListDown(imageFiles, setImageFiles, item);
-                          handleImageListDown(inputImage, setInputImage, item.name);
-                        }}
-                      >
-                        <p><TiArrowSortedDown /></p>
-                      </div>
-                    </div>  
+                  <div key={index} className='lastImage-box'
+                    onClick={()=>{deleteInputLastImage(item)}}
+                  >
+                    <div style={{display:'flex', alignItems:'center'}}>
+                      <img style={{width:'100px'}}
+                          src={`${MainURL}/images/cityimages/${item}`}
+                        />
+                    </div>
+                    <p style={{width:'10%'}}>{item.title}</p>
+                    <p style={{width:'70%'}}>{item.notice}</p>
+                    <div className='lastImage-delete'>
+                      <p><IoClose color='#FF0000'/></p>
+                    </div>
                   </div>
                 )
               })
             }
-            </div>
           </div>
-        }
+          <div className="imageInputBox">
+          {
+            imageLoading ?
+            <div style={{width:'100%', height:'100%', position:'absolute'}}>
+              <Loading/>
+            </div>
+            :
+            <div className='imageDropzoneCover'>
+              <div {...getRootProps()} className="imageDropzoneStyle" >
+                <input {...getInputProps()} />
+                {
+                  imageFiles.length > 0 
+                  ? <div className='imageplus'>+ 다시첨부하기</div>
+                  : <div className='imageplus'>+ 사진첨부하기</div>
+                }
+              </div>
+            </div>
+          }
+          {
+            imageFiles.length > 0 &&
+            imageFiles.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='imagebox'>
+                  <img 
+                    src={URL.createObjectURL(item)}
+                  />
+                  <p>{item.name}</p>
+                  <div className="updownBtnBox">
+                    <div className="updownBtnBtn"
+                      onClick={()=>{deleteInputImage(index);}}
+                    >
+                      <p><IoClose color='#FF0000'/></p>
+                    </div>
+                  </div>  
+                  <div className="updownBtnBox">
+                    <div className="updownBtnBtn"
+                      onClick={()=>{
+                        handleImageListUp(imageFiles, setImageFiles, item);
+                        handleImageListUp(inputImage, setInputImage, item.name);
+                      }}
+                    >
+                      <p><TiArrowSortedUp /></p>
+                    </div>
+                  </div>  
+                  <div className="updownBtnBox">
+                    <div className="updownBtnBtn"
+                      onClick={()=>{
+                        handleImageListDown(imageFiles, setImageFiles, item);
+                        handleImageListDown(inputImage, setInputImage, item.name);
+                      }}
+                    >
+                      <p><TiArrowSortedDown /></p>
+                    </div>
+                  </div>  
+                </div>
+              )
+            })
+          }
+          </div>
+        </div>
       </section>
 
       <div style={{height:'50px'}}></div>
@@ -415,7 +475,7 @@ export default function ModalAddCity (props : any) {
           onClick={()=>{
             if (airlineSelectInput === 'direct') {
               setDirectAirline([...directAirline, 
-                {tourPeriod: "", departAirportMain : "", 
+                {tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", 
                   airlineData : [
                     { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
                     { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
@@ -424,7 +484,7 @@ export default function ModalAddCity (props : any) {
               )
             } else if (airlineSelectInput === 'via') {
               setViaAirline([...viaAirline,
-                {tourPeriod: "", departAirportMain : "", 
+                {tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", 
                   airlineData : [
                     { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
                     { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
@@ -446,9 +506,9 @@ export default function ModalAddCity (props : any) {
         <section>
           <div className="bottombar"></div>
           <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-            <div className='chartbox' style={{width:'10%'}} ><p>기간</p></div>
+            <div className='chartbox' style={{width:'13%'}} ><p>기간</p></div>
             <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'10%'}} ><p>출발공항</p></div>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발공항</p></div>
             <div className="chart-divider"></div>
             <div style={{width:'80%', display:'flex'}}>
               <div className='chartbox' style={{width:'3%'}} ><p></p></div>
@@ -475,7 +535,7 @@ export default function ModalAddCity (props : any) {
                 <div className="coverbox">
                   <div className="coverrow hole">
                     
-                    <div style={{width:'10%', display:'flex', alignItems:'center'}} >
+                    <div style={{width:'13%', display:'flex', alignItems:'center'}} >
                       <div className='deleteRowBtn'
                         onClick={()=>{
                           const copy = [...directAirline];
@@ -484,23 +544,40 @@ export default function ModalAddCity (props : any) {
                         }}
                         ><FiMinusCircle  color='#FF0000'/>
                       </div>
-                      <input className="inputdefault" type="text" style={{width:'80%', marginLeft:'5px'}} 
-                          value={item.tourPeriod} placeholder='0박 0일'
-                          onChange={(e)=>{
-                            const copy = [...directAirline];
-                            copy[index].tourPeriod = e.target.value;
-                            setDirectAirline(copy);
-                          }}/>
+                      <DropdownBox
+                        widthmain='45%'
+                        height='35px'
+                        selectedValue={item.tourPeriodNight}
+                        options={DropDownTourPeriodNightType}    
+                        handleChange={(e)=>{
+                          const copy = [...directAirline];
+                          copy[index].tourPeriodNight = e.target.value;
+                          setDirectAirline(copy);
+                        }}
+                      />
+                      <DropdownBox
+                        widthmain='45%'
+                        height='35px'
+                        selectedValue={item.tourPeriodDay}
+                        options={DropDownTourPeriodDayType}    
+                        handleChange={(e)=>{
+                          const copy = [...directAirline];
+                          copy[index].tourPeriodDay = e.target.value;
+                          setDirectAirline(copy);
+                        }}
+                      />
                     </div>
                     <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'10%'}} >
+                    <div style={{width:'7%'}} >
                       <DropdownBox
                         widthmain='90%'
                         height='35px'
                         selectedValue={item.departAirportMain}
                         options={[
+                          { value: '선택', label: '선택' },
                           { value: '인천공항', label: '인천공항' },
-                          { value: '대구공항', label: '대구공항' }
+                          { value: '대구공항', label: '대구공항' },
+                          { value: '김해공항', label: '김해공항' }
                         ]}    
                         handleChange={(e)=>{
                           const copy = [...directAirline];
@@ -603,9 +680,9 @@ export default function ModalAddCity (props : any) {
         <section>
           <div className="bottombar"></div>
           <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-            <div className='chartbox' style={{width:'10%'}} ><p>기간</p></div>
+            <div className='chartbox' style={{width:'13%'}} ><p>기간</p></div>
             <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'10%'}} ><p>출발공항</p></div>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발공항</p></div>
             <div className="chart-divider"></div>
             <div style={{width:'80%', display:'flex'}}>
               <div className='chartbox' style={{width:'3%'}} ><p></p></div>
@@ -631,7 +708,7 @@ export default function ModalAddCity (props : any) {
               return (
                 <div className="coverbox">
                   <div className="coverrow hole">
-                    <div style={{width:'10%', display:'flex', alignItems:'center'}} >
+                    <div style={{width:'13%', display:'flex', alignItems:'center'}} >
                       <div className='deleteRowBtn'
                         onClick={()=>{
                           const copy = [...directAirline];
@@ -640,23 +717,40 @@ export default function ModalAddCity (props : any) {
                         }}
                         ><FiMinusCircle  color='#FF0000'/>
                       </div>
-                      <input className="inputdefault" type="text" style={{width:'80%', marginLeft:'5px'}} 
-                          value={item.tourPeriod} placeholder='0박 0일'
-                          onChange={(e)=>{
-                            const copy = [...viaAirline];
-                            copy[index].tourPeriod = e.target.value;
-                            setViaAirline(copy);
-                          }}/>
+                      <DropdownBox
+                        widthmain='45%'
+                        height='35px'
+                        selectedValue={item.tourPeriodNight}
+                        options={DropDownTourPeriodNightType}    
+                        handleChange={(e)=>{
+                          const copy = [...viaAirline];
+                          copy[index].tourPeriodNight = e.target.value;
+                          setDirectAirline(copy);
+                        }}
+                      />
+                      <DropdownBox
+                        widthmain='45%'
+                        height='35px'
+                        selectedValue={item.tourPeriodDay}
+                        options={DropDownTourPeriodDayType}    
+                        handleChange={(e)=>{
+                          const copy = [...viaAirline];
+                          copy[index].tourPeriodDay = e.target.value;
+                          setDirectAirline(copy);
+                        }}
+                      />
                     </div>
                     <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'10%'}} >
+                    <div style={{width:'7%'}} >
                       <DropdownBox
                         widthmain='90%'
                         height='35px'
                         selectedValue={item.departAirportMain}
                         options={[
+                          { value: '선택', label: '선택' },
                           { value: '인천공항', label: '인천공항' },
-                          { value: '대구공항', label: '대구공항' }
+                          { value: '대구공항', label: '대구공항' },
+                          { value: '김해공항', label: '김해공항' }
                         ]}    
                         handleChange={(e)=>{
                           const copy = [...viaAirline];

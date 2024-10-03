@@ -1,34 +1,38 @@
 import RecommendHeader from "./recommend-section/RecommendHeader";
 import RecommendCard from "./recommend-section/RecommendCard";
-import hotel1 from "./images/resort/hotel_12.png";
+import hotel1 from "../../images/resort/hotel_12.png";
 
 export default function RecommendSection() {
   const recommendObjs = [
     {
       id: 0,
-      resort: "반얀트리",
-      location: "태국/푸켓",
+      title: "반얀트리",
+      location: "푸켓",
+      tourId: 3,
       rating: 4.76,
       imagePath: hotel1,
     },
     {
       id: 1,
-      resort: "반얀트리",
-      location: "태국/푸켓",
+      title: "반얀트리",
+      location: "푸켓",
+      tourId: 3,
       rating: 3.24,
       imagePath: hotel1,
     },
     {
       id: 2,
-      resort: "반얀트리",
-      location: "태국/푸켓",
+      title: "반얀트리",
+      location: "푸켓",
+      tourId: 3,
       rating: 4.33,
       imagePath: hotel1,
     },
     {
       id: 3,
-      resort: "반얀트리",
-      location: "태국/푸켓",
+      title: "반얀트리",
+      location: "푸켓",
+      tourId: 3,
       rating: 2.51,
       imagePath: hotel1,
     },

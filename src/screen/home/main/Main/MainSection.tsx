@@ -4,7 +4,7 @@ import BgContents from "./main-section/BgContents";
 import SearchBar from "./main-section/SearchBar";
 import BgSelectBtns from "./main-section/BgSelectBtns";
 import MobileSearchBar from "./main-section/MobileSearchBar";
-import mainImg from "./images/main_img.jpg";
+import mainImg from "../../images/main_img.jpg";
 
 export default function MainSection() {
   const [selectId, setSelectId] = useState(0);

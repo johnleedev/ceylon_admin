@@ -7,9 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { PiPencilSimpleLineFill } from "react-icons/pi";
-import ModalAddHotel from './Modal/ModalAddHotel';
-import { CiCircleRemove, CiCircleCheck  } from "react-icons/ci";
-import ModalControlHotel from './Modal/ModalHotelInfo';
 import { SearchBox } from './SearchBox';
 import ModalAddSchedule from './Modal/ModalAddSchedule';
 import { FaCircle } from 'react-icons/fa';
@@ -24,9 +21,10 @@ export default function Sub3_Schedule (props:any) {
 	interface ListProps {
 		id: string;
 		isView : string;
+		tourLocation: string;
+		landCompany : string;
 		productType: string;
-		tourPeriodNight : string;
-		tourPeriodDay : string;
+		tourPeriod: string;
 		departAirport: string;
 		departFlight : string;
 		selectedSchedule : string;
@@ -135,10 +133,10 @@ export default function Sub3_Schedule (props:any) {
 											: <IoCloseOutline />
 										}
 									</div>
-									<TextBox width='10%' text={''} />
-									<TextBox width='10%' text={''} />
-									<TextBox width='10%' text={''} />
-									<TextBox width='10%' text={''} text2={`${item.tourPeriodNight} ${item.tourPeriodDay}`}/>
+									<TextBox width='10%' text={item.tourLocation} />
+									<TextBox width='10%' text={item.landCompany} />
+									<TextBox width='10%' text={item.productType} />
+									<TextBox width='10%' text={item.tourPeriod}/>
 									<TextBox width='10%' text={item.departFlight} />
 									<TextBox width='5%' text={''} />
 									<div className="text" style={{width:`15%`, height: '50px', textAlign:'center'}}>
@@ -201,8 +199,6 @@ export default function Sub3_Schedule (props:any) {
           </div>
         </div>
       }
-
-
 
 		</div>
 	);

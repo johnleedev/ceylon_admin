@@ -39,6 +39,7 @@ export default function Sub2_CounselList (props:any) {
 	interface ListProps {
 		id: string;
 		isView : string;
+		isInfoInput : string;
 		isCostInput : string;
 		selectCostType: string;
 		nation : string;
@@ -76,6 +77,7 @@ export default function Sub2_CounselList (props:any) {
 		})
     if (nationCityRes.data !== false) {
 			const copy = [...nationCityRes.data];
+			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
       setNationList(copy);
     }
   };
@@ -107,24 +109,43 @@ export default function Sub2_CounselList (props:any) {
       })
   };
 
+	// 요금표 가져오기
+	const fetchPostCost = async (id:string) => {
+    const res = await axios.get(`${MainURL}/producthotel/gethotelcost/${id}`)
+    if (res.data !== false) {
+      const copy = res.data;
+      const result = copy.map((item: any) => {
+        return {
+         reservePeriod : JSON.parse(item.reservePeriod),
+         inputDefault : JSON.parse(item.inputDefault),
+         inputPackage : JSON.parse(item.inputPackage),
+         saleDefaultCost: JSON.parse(item.saleDefaultCost)
+        //  saleSeasonCost: JSON.parse(item.saleSeasonCost)
+        };
+      });
+      setHotelCost(result);
+			setIsViewHotelCostModal(true);
+    }
+  };
 
-	// 모달 ---------------------------------------------------------
+ 	// 모달 ---------------------------------------------------------
 	const [isViewAddHotelModal, setIsViewAddHotelModal] = useState<boolean>(false);
 	const [isViewHotelInfoModal, setIsViewHotelInfoModal] = useState<boolean>(false);
 	const [hotelInfo, setHotelInfo] = useState<ListProps>();
+	const [hotelCost, setHotelCost] = useState();
 	const [isViewHotelCostModal, setIsViewHotelCostModal] = useState<boolean>(false);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
-	const deleteHotel = async (itemId:any) => {
+	const deleteHotel = async (itemId:any, images:any) => {
 		const getParams = {
 			postId : itemId,
+			images: images
 		}
 		axios 
 			.post(`${MainURL}/producthotel/deletehotel`, getParams)
 			.then((res) => {
 				if (res.data) {
-					alert('삭제되었습니다.');
 					setRefresh(!refresh);
 				}
 			})
@@ -134,8 +155,16 @@ export default function Sub2_CounselList (props:any) {
 	};
 	const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.hotelNameKo}(${item.hotelNameEn})를 정말 삭제하시겠습니까?`);
-			if (costConfirmed) {
-				deleteHotel(item.id);
+		if (costConfirmed) {
+			const imageNamesAllView = JSON.parse(item.imageNamesAllView);
+			const imageNamesRoomView = JSON.parse(item.imageNamesRoomView);
+			const imageNamesEtcView = JSON.parse(item.imageNamesEtcView);
+			const combinedImageNames = [
+					...imageNamesAllView.map((image:any) => image.imageName),
+					...imageNamesRoomView.map((image:any) => image.imageName),
+					...imageNamesEtcView.map((image:any) => image.imageName)
+			];
+			deleteHotel(item.id, combinedImageNames);
 		} else {
 			return
 		}
@@ -202,7 +231,7 @@ export default function Sub2_CounselList (props:any) {
 										<p>{item.hotelNameKo}</p>	
 										<p>{item.hotelNameEn}</p>	
 									</div>
-									<TextBox width='5%' text={item.isCostInput === 'false' ? '미입력' : item.selectCostType} />
+									<TextBox width='5%' text={item.isInfoInput === 'false' ? '미입력' : item.selectCostType} />
 									<div className="text" style={{width:`25%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn"
 											onClick={()=>{
@@ -221,7 +250,7 @@ export default function Sub2_CounselList (props:any) {
 												if (item.isCostInput === 'false') {
 													handleHotelCostCreat(item);
 												} else {
-													setIsViewHotelCostModal(true);
+													fetchPostCost(item.id);
 												}
 											}}
 										>
@@ -298,6 +327,7 @@ export default function Sub2_CounselList (props:any) {
 								refresh={refresh}
 								setRefresh={setRefresh}
 								hotelInfo={hotelInfo}
+								hotelCost={hotelCost}
 								setIsViewHotelCostModal={setIsViewHotelCostModal}
 						 />
           </div>

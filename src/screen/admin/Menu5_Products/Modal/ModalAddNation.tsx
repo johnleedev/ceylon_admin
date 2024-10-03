@@ -23,7 +23,7 @@ export default function ModalAddNation (props : any) {
   const userId = sessionStorage.getItem('userId');
   const nationData = props.isAddOrRevise === 'revise' ? props.nationData : '';
   const nationList = props.nationList ? props.nationList : '';
-        
+
   const [isView, setIsView] = useState<boolean>(props.isAddOrRevise === 'revise' ? nationData.isView : true);
   const [sort, setSort] = useState(props.isAddOrRevise === 'revise' ? nationData.sort : '');
   const [continent, setContinent] = useState(props.isAddOrRevise === 'revise' ? nationData.continent : '');
@@ -37,13 +37,15 @@ export default function ModalAddNation (props : any) {
   const [plugType, setPlugType] = useState(props.isAddOrRevise === 'revise' ? nationData.plugType : '');
   const [caution, setCaution] = useState(props.isAddOrRevise === 'revise' ? nationData.caution : '');
   const [taxFreeLimit, setTaxFreeLimit] = useState(props.isAddOrRevise === 'revise' ? nationData.taxFreeLimit : '');
-  const [inputImage, setInputImage] = useState(['']);
+  const [lastImages, setLastImages]  = 
+    useState((props.isAddOrRevise === 'revise' && (nationData.inputImage !== null && nationData.inputImage !== '')) ? JSON.parse(nationData.inputImage) : []);
+  const [inputImage, setInputImage] = 
+    useState((props.isAddOrRevise === 'revise' && (nationData.inputImage !== null && nationData.inputImage !== '')) ? JSON.parse(nationData.inputImage) : []);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-
 
   // 이미지 첨부 함수 ----------------------------------------------
   const currentDate = new Date();
-  const date = format(currentDate, 'yyyy-MM-dd-HH-mm-ss');
+  const date = format(currentDate, 'MMddHHmmss');
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     try {
@@ -60,21 +62,22 @@ export default function ModalAddNation (props : any) {
       );
       
       const regexCopy = /[^a-zA-Z0-9!@#$%^&*()\-_=+\[\]{}|;:'",.<>]/g;
-
+      const userIdCopy = userId?.slice(0,5);
       const fileCopies = resizedFiles.map((resizedFile, index) => {
         const regex = resizedFile.name.replace(regexCopy, '');
-        const regexSlice = regex.slice(-10);
-        return new File([resizedFile], `${date}_${userId}_${regexSlice}`, {
+        const regexSlice = regex.slice(-15);
+        return new File([resizedFile], `${date}${userIdCopy}_${regexSlice}`, {
           type: acceptedFiles[index].type,
         });
       });
       setImageFiles(fileCopies);
       const imageNames = acceptedFiles.map((file, index) => {
         const regex = file.name.replace(regexCopy, '');
-        const regexSlice = regex.slice(-10);
-        return `${date}_${userId}_${regexSlice}`;
+        const regexSlice = regex.slice(-15);
+        return `${date}${userIdCopy}_${regexSlice}`;
       });
-      setInputImage(imageNames);
+      const imageNamesCopy = props.isAddOrRevise === 'revise' ? [...inputImage, ...imageNames] : imageNames
+      setInputImage(imageNamesCopy);
       setImageLoading(false);
     } catch (error) {
       console.error('이미지 리사이징 중 오류 발생:', error);
@@ -83,11 +86,11 @@ export default function ModalAddNation (props : any) {
   const { getRootProps, getInputProps } = useDropzone({ onDrop }); 
 
   // 첨부 이미지 삭제 ----------------------------------------------
-   const deleteInputImage = async (Idx:number) => {
+   const deleteInputImage = async (name:string) => {
     const copy =  [...imageFiles]
-    const newItems = copy.filter((item, i) => i !== Idx);
+    const newItems = copy.filter((item, i) => item.name !== name);
     const nameCopy = [...inputImage]
-    const nameNewItems = nameCopy.filter((item, index) => index !== Idx);
+    const nameNewItems = nameCopy.filter((item, index) => item !== name);
     setImageFiles(newItems);
     setInputImage(nameNewItems);
   };
@@ -140,7 +143,7 @@ export default function ModalAddNation (props : any) {
         plugType : plugType,
         caution : caution,
         taxFreeLimit : taxFreeLimit,
-        inputImage : inputImage
+        inputImage : JSON.stringify(inputImage)
       }
       axios 
         .post(`${MainURL}/nationcity/registernation`, formData, {
@@ -162,8 +165,37 @@ export default function ModalAddNation (props : any) {
     }
   };
 
+  // 기존 이미지 삭제 ----------------------------------------------
+  const deleteInputLastImage = async (imageName:string) => {
+    const lastImagesCopy = [...lastImages]
+    const lastImagesNewItems = lastImagesCopy.filter((item, index) => item !== imageName);
+    const inputImagesCopy = [...inputImage]
+    const inputImagesNewItems = inputImagesCopy.filter((item, index) => item !== imageName);
+
+    axios 
+      .post(`${MainURL}/nationcity/deletenationimage`, {
+        postId : nationData.id,
+        imageName : imageName,
+        inputImage : JSON.stringify(lastImagesNewItems)
+      })
+      .then((res) => {
+        if (res.data) {
+          alert(res.data);
+          setLastImages(lastImagesNewItems);
+          setInputImage(inputImagesNewItems);
+        }
+      })
+      .catch(() => {
+        console.log('실패함')
+      })
+  };
+
   // 수정 ----------------------------------------------
   const reviseNation = async () => {
+    const formData = new FormData();
+      imageFiles.forEach((file, index) => {
+        formData.append('img', file);
+      });
     const getParams = {
       postId : nationData.id,
       isView : isView,
@@ -179,9 +211,15 @@ export default function ModalAddNation (props : any) {
       plugType : plugType,
       caution : caution,
       taxFreeLimit : taxFreeLimit,
+      inputImage : JSON.stringify(inputImage)
     }
     axios 
-      .post(`${MainURL}/nationcity/revisenation`, getParams)
+      .post(`${MainURL}/nationcity/revisenation`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: getParams,
+      })
       .then((res) => {
         if (res.data) {
           alert('수정되었습니다.');
@@ -194,9 +232,10 @@ export default function ModalAddNation (props : any) {
       })
   };
 
-  const deleteNation = async (itemId:any) => {
+  const deleteNation = async (itemId:any, images:any) => {
 		const getParams = {
-			postId : itemId
+			postId : itemId,
+      images: JSON.parse(images)
 		}
 		axios 
 			.post(`${MainURL}/nationcity/deletenation`, getParams)
@@ -214,7 +253,7 @@ export default function ModalAddNation (props : any) {
   const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.nationKo}(${item.nationEn})를 정말 삭제하시겠습니까?`);
 			if (costConfirmed) {
-				deleteNation(item.id);
+				deleteNation(item.id, item.inputImage);
 		} else {
 			return
 		}
@@ -368,71 +407,92 @@ export default function ModalAddNation (props : any) {
           </div>
         </div>
         
-        {
-          props.isAddOrRevise === 'add' &&
-          <div className="coverrow hole bigHeight">
-            <TitleBox width="120px" text='지도/이미지'/>
-            <div className="imageInputBox">
-            {
-              imageLoading ?
-              <div style={{width:'100%', height:'100%', position:'absolute'}}>
-                <Loading/>
-              </div>
-              :
-              <div className='imageDropzoneCover'>
-                <div {...getRootProps()} className="imageDropzoneStyle" >
-                  <input {...getInputProps()} />
-                  {
-                    imageFiles.length > 0 
-                    ? <div className='imageplus'>+ 다시첨부하기</div>
-                    : <div className='imageplus'>+ 사진첨부하기</div>
-                  }
-                </div>
-              </div>
-            }
-            {
-              imageFiles.length > 0 &&
-              imageFiles.map((item:any, index:any)=>{
+        <div className="coverrow hole bigHeight">
+          <TitleBox width="120px" text='지도/이미지'/>
+          <div className="lastImageInputCover">
+            { lastImages.length > 0 &&
+              lastImages.map((item:any, index:any)=>{
                 return (
-                  <div key={index} className='imagebox'>
-                    <img 
-                      src={URL.createObjectURL(item)}
-                    />
-                    <p>{item.name}</p>
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{deleteInputImage(index);}}
-                      >
-                        <p><IoClose color='#FF0000'/></p>
-                      </div>
-                    </div>  
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{
-                          handleImageListUp(imageFiles, setImageFiles, item);
-                          handleImageListUp(inputImage, setInputImage, item.name);
-                        }}
-                      >
-                        <p><TiArrowSortedUp /></p>
-                      </div>
-                    </div>  
-                    <div className="updownBtnBox">
-                      <div className="updownBtnBtn"
-                        onClick={()=>{
-                          handleImageListDown(imageFiles, setImageFiles, item);
-                          handleImageListDown(inputImage, setInputImage, item.name);
-                        }}
-                      >
-                        <p><TiArrowSortedDown /></p>
-                      </div>
-                    </div>  
+                  <div key={index} className='lastImage-box'
+                    onClick={()=>{deleteInputLastImage(item)}}
+                  >
+                    <div style={{display:'flex', alignItems:'center'}}>
+                      <img style={{width:'100px'}}
+                          src={`${MainURL}/images/nationimages/${item}`}
+                        />
+                    </div>
+                    <p style={{width:'10%'}}>{item.title}</p>
+                    <p style={{width:'70%'}}>{item.notice}</p>
+                    <div className='lastImage-delete'>
+                      <p><IoClose color='#FF0000'/></p>
+                    </div>
                   </div>
                 )
               })
             }
-            </div>
           </div>
-        }
+
+          <div className="imageInputBox">
+          {
+            imageLoading ?
+            <div style={{width:'100%', height:'100%', position:'absolute'}}>
+              <Loading/>
+            </div>
+            :
+            <div className='imageDropzoneCover'>
+              <div {...getRootProps()} className="imageDropzoneStyle" >
+                <input {...getInputProps()} />
+                {
+                  imageFiles.length > 0 
+                  ? <div className='imageplus'>+ 다시첨부하기</div>
+                  : <div className='imageplus'>+ 사진첨부하기</div>
+                }
+              </div>
+            </div>
+          }
+          {
+            imageFiles.length > 0 &&
+            imageFiles.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='imagebox'>
+                  <img 
+                    src={URL.createObjectURL(item)}
+                  />
+                  <p>{item.name}</p>
+                  <div className="updownBtnBox">
+                    <div className="updownBtnBtn"
+                      onClick={()=>{deleteInputImage(item.name);}}
+                    >
+                      <p><IoClose color='#FF0000'/></p>
+                    </div>
+                  </div>  
+                  <div className="updownBtnBox">
+                    <div className="updownBtnBtn"
+                      onClick={()=>{
+                        handleImageListUp(imageFiles, setImageFiles, item);
+                        handleImageListUp(inputImage, setInputImage, item.name);
+                      }}
+                    >
+                      <p><TiArrowSortedUp /></p>
+                    </div>
+                  </div>  
+                  <div className="updownBtnBox">
+                    <div className="updownBtnBtn"
+                      onClick={()=>{
+                        handleImageListDown(imageFiles, setImageFiles, item);
+                        handleImageListDown(inputImage, setInputImage, item.name);
+                      }}
+                    >
+                      <p><TiArrowSortedDown /></p>
+                    </div>
+                  </div>  
+                </div>
+              )
+            })
+          }
+          </div>
+        </div>
+        
       </section>
 
       <div className='btn-box'>

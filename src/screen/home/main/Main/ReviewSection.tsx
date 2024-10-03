@@ -1,6 +1,6 @@
 import ReviewHeader from "./review-section/ReviewHeader";
 import ReviewCard from "./review-section/ReviewCard";
-import reviewImg1 from "./images/review/pic_01.png";
+import reviewImg1 from "../../images/review/pic_01.png";
 
 export default function ReviewSection() {
   const reviewObjs = [

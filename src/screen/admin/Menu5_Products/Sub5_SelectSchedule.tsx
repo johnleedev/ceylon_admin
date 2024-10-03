@@ -10,7 +10,7 @@ import { CiCircleRemove, CiCircleCheck  } from "react-icons/ci";
 import { PiPencilSimpleLineFill } from 'react-icons/pi';
 
 
-export default function Sub4_SelectSchedule (props:any) {
+export default function Sub5_SelectSchedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
 	const [currentTab, setCurrentTab] = useState(1);

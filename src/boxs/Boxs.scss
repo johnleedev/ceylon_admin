@@ -34,7 +34,7 @@
   display: flex; 
   align-items: center;
 
-  .dateinput {
+  .calendar_dateinput {
     font-size: 15px;
     font-weight: normal;
     width: 100%;
@@ -43,6 +43,60 @@
     border: 1px solid #E9E9E9;
     border-radius: 5px;
     padding-left: 10px;
+  }
+
+  .calendar_customHeaderContainer {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid gray;
+    border-radius: 4px;
+    background-color: #fff;
+    box-sizing: border-box;
+    color: #333;
+    text-align: center;
+    padding: 0 14px;
+  
+    &:focus {
+      border: 2px solid orange;
+    }
+    .calendar_month {
+      color: #333;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .calendar_year,
+    .calendar_month {
+      background-color: #fff;
+      color: #333;
+      border: 1px solid #EAEAEA;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .calendar_buttonBox {
+      display: flex;
+
+      .calendar_monthButton {
+        width: 30px;
+        height: 30px;
+        padding: 5px;
+        background: none;
+        border: none;
+    
+        &:hover {
+          background-color: #fff;
+          cursor: pointer;
+        }
+        &:disabled {
+          cursor: default;
+        }
+      }
+    }
+    
   }
   .calender-icon {
     position: absolute;

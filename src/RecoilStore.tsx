@@ -10,3 +10,7 @@ export const recoilExchangeRate = atom({
 });
 
 
+export const recoilExchangeKey = atom({
+  key: "exchangeKey",
+  default: "iPohzAyaVzOgv6XTPqiBpJPFL4iVzjaf"
+});

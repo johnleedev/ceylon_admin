@@ -1,4 +1,4 @@
-import memberImg from "./images/member.jpg";
+import memberImg from "../../images/member.jpg";
 
 export default function JoinSection() {
   return (
