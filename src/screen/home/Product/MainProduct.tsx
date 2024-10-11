@@ -10,7 +10,6 @@ import HotelDetailPage from "./pages/HotelDetailPage";
 export default function MainProduct() {
 
 
-
   return (
     <div>
       <Header />

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SpotCard from "./best-section/SpotCard";
 import CategorySelector from "./best-section/CategorySelector";
-import MobileCardWrapper from "../../common/MobileCardWrapper";
+// import MobileCardWrapper from "../../common/MobileCardWrapper";
 import baliImge from "../../images/img_bali.jpg";
 import franceImg from "../../images/img_france.jpeg";
 
@@ -42,11 +42,11 @@ export default function BestSection() {
           <SpotCard key={spot.id} {...spot} />
         ))}
       </div>
-      <MobileCardWrapper>
+      {/* <MobileCardWrapper>
         {spots.map((spot) => (
           <SpotCard key={spot.id} {...spot} />
         ))}
-      </MobileCardWrapper>
+      </MobileCardWrapper> */}
     </section>
   );
 }

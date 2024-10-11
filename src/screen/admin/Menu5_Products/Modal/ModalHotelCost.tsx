@@ -28,6 +28,8 @@ export default function ModalHotelCost (props : any) {
     if (infores.data !== false && costres.data !== false) {
       const infocopy = infores.data[0];
       const costcopy = costres.data[0];
+      console.log(infocopy);
+      console.log(costcopy);
       if (infocopy.isInfoInput === 'false' || infocopy.isInfoInput === '' ) {
         handleSaveAlert('요금표정보');
       } else {

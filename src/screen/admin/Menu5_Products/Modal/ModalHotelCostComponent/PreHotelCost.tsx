@@ -87,6 +87,7 @@ export default function PreHotelCost (props : any) {
   // 입금가 & 판ㅐ가 ---------------------------------------------------------------------------------------------------------------------------------------------------
   
   interface InputCostProps {
+    reserveType: string;
     reservePeriod : {start:string, end:string};
     inputDefault : {
       seasonName: string;
@@ -103,6 +104,17 @@ export default function PreHotelCost (props : any) {
       personCost : string;
       content : string;
     }[]
+    inputSeason : {
+      seasonName: string;
+      periodStart:string, 
+      periodEnd:string;
+      minimumDay : string;
+      currency: string;
+      addCost : string;
+      addCostAll : string;
+      addCostPerson : string;
+      galaDinner: string;
+    }[]
     saleDefaultCost : {
       seasonName: string;
       period : {start:string, end:string}[];
@@ -113,25 +125,19 @@ export default function PreHotelCost (props : any) {
       minimumDay : string;
       notice : string;
     }[]
-    // saleSeasonCost : {
-    //   seasonName: string;
-    //   period : {start:string, end:string}[];
-    //   roomType: string;
-    //   currency : string;
-    //   dayChangeCost : string;
-    //   dayAddCost : string;
-    //   minimumDay : string;
-    //   notice : string;
-    // }[]
   }
   
   const [openSaleContent, setOpenSaleContent] = useState<boolean>(hotelInfoData?.isCostInput === 'true' ? true : false);
   const defaultInputCostData : InputCostProps = 
-    { reservePeriod: {start:"", end:""}, 
+    { 
+      reserveType: "default",
+      reservePeriod: {start:"", end:""}, 
       inputDefault : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "", dayAddCost : "", minimumDay : "1", notice : ""}],
       inputPackage : [{addtionName :"", personCost : "", content: ""}],
+      inputSeason : [{seasonName: "하이시즌", periodStart:"", periodEnd:"", minimumDay:"1박", currency: "", addCost : "", addCostAll : "", addCostPerson : "",  galaDinner:""},
+        {seasonName: "픽시즌", periodStart:"", periodEnd:"", minimumDay:"1박", currency: "", addCost : "", addCostAll : "", addCostPerson : "",  galaDinner:""},
+        {seasonName: "블랙아웃", periodStart:"", periodEnd:"", minimumDay:"1박", currency: "", addCost : "", addCostAll : "", addCostPerson : "",  galaDinner:""}],
       saleDefaultCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "", dayAddCost : "", minimumDay : "1", notice : ""}],
-      // saleSeasonCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}]
     }
   const [inputCost, setInputCost] = useState<InputCostProps[]>(hotelInfoData?.isCostInput === 'true' ? hotelCostData : [defaultInputCostData]);
   
@@ -157,7 +163,7 @@ export default function PreHotelCost (props : any) {
     setCurrentState(copy);
   };
   
-  // season 입력된 숫자 금액으로 변경
+  // package 입력된 숫자 금액으로 변경
   const handleinputPackageCostChange = (
     e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
     currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
@@ -179,24 +185,47 @@ export default function PreHotelCost (props : any) {
     setCurrentState(copy);
   };
 
-  // // season 박수 x 추가요금을 합계에 입력
-  // const handleAddCostMultiplyDay = (
-  //   e: string, sectionIndex:number, index: number
-  // ) => {
-  //   const text = e;
-  //   const copy = [...inputCost]; 
-  //   copy[sectionIndex].inputPackage[index].minimumDay = text;
-  //   const inputTextNumberOnly = parseInt(text.replace(/[^0-9]/g, ''), 10);
-  //   const addCostCopy = copy[sectionIndex].inputPackage[index].addCost;
-  //   const addCosttNumberOnly = parseInt(addCostCopy.replace(/[^0-9]/g, ''), 10);
-  //   const multiplyCost = inputTextNumberOnly * addCosttNumberOnly;
-  //   const dividePersonCost = (inputTextNumberOnly * addCosttNumberOnly) / 2;
-  //   const formattedMultiplyCost = multiplyCost.toLocaleString('en-US');
-  //   const formattedDividePersonCost = Math.floor(dividePersonCost).toLocaleString('en-US');
-  //   copy[sectionIndex].inputPackage[index].addCostAll = formattedMultiplyCost;
-  //   copy[sectionIndex].inputPackage[index].addCostPerson = formattedDividePersonCost;
-  //   setInputCost(copy);
-  // };
+  // season 입력된 숫자 금액으로 변경
+  const handleinputSeasonCostChange = (
+    e: React.ChangeEvent<HTMLInputElement>, sectionIndex:number, index: number, name: string,
+    currentState: InputCostProps[], setCurrentState: React.Dispatch<React.SetStateAction<InputCostProps[]>>
+  ) => {
+    const text = e.target.value;
+    const copy = [...currentState];
+    if (name === 'period') {
+      return;
+    }
+    if (text === '') {
+      (copy[sectionIndex].inputSeason[index] as any)[name] = ''; 
+      setCurrentState(copy);
+      return;
+    }
+    const inputNumber = parseInt(text.replace(/,/g, ''), 10);
+    if (isNaN(inputNumber)) {return;}
+    const formattedNumber = inputNumber.toLocaleString('en-US');
+    (copy[sectionIndex].inputSeason[index] as any)[name] = formattedNumber; 
+    setCurrentState(copy);
+  };
+
+
+  // season 박수 x 추가요금을 합계에 입력
+  const handleAddCostMultiplyDay = (
+    e: string, sectionIndex:number, index: number
+  ) => {
+    const text = e;
+    const copy = [...inputCost]; 
+    copy[sectionIndex].inputSeason[index].minimumDay = text;
+    const inputTextNumberOnly = parseInt(text.replace(/[^0-9]/g, ''), 10);
+    const addCostCopy = copy[sectionIndex].inputSeason[index].addCost;
+    const addCosttNumberOnly = parseInt(addCostCopy.replace(/[^0-9]/g, ''), 10);
+    const multiplyCost = inputTextNumberOnly * addCosttNumberOnly;
+    const dividePersonCost = (inputTextNumberOnly * addCosttNumberOnly) / 2;
+    const formattedMultiplyCost = multiplyCost.toLocaleString('en-US');
+    const formattedDividePersonCost = Math.floor(dividePersonCost).toLocaleString('en-US');
+    copy[sectionIndex].inputSeason[index].addCostAll = formattedMultiplyCost;
+    copy[sectionIndex].inputSeason[index].addCostPerson = formattedDividePersonCost;
+    setInputCost(copy);
+  };
   
   // 입금가 판매가 적용
   const handleApplySaleCost = () => {
@@ -274,11 +303,11 @@ export default function PreHotelCost (props : any) {
           costIndex: index,
           hotelNameKo: hotelInfoData.hotelNameKo,
           hotelNameEn: hotelInfoData.hotelNameEn, 
+          reserveType: item.reserveType,
           reservePeriod : JSON.stringify(item.reservePeriod),
           inputDefault :  JSON.stringify(item.inputDefault),
           inputPackage : JSON.stringify(item.inputPackage),
           saleDefaultCost : JSON.stringify(item.saleDefaultCost),
-          // saleSeasonCost : JSON.stringify(item.saleSeasonCost)
         });
         console.log(response.data);
       } catch (error) {
@@ -578,11 +607,15 @@ export default function PreHotelCost (props : any) {
                       <div className="dayBtn"
                         onClick={()=>{
                           const copy = [...inputCost, 
-                            { reservePeriod: {start:"", end:""}, 
+                            { 
+                              reserveType: "default",
+                              reservePeriod: {start:"", end:""}, 
                               inputDefault : [{seasonName: "default1", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "", dayAddCost : "", minimumDay : "1", notice : ""}],
                               inputPackage : [{addtionName :"", personCost : "", content: ""}],
+                              inputSeason : [{seasonName: "하이시즌", periodStart:"", periodEnd:"", minimumDay:"1박", currency: "", addCost : "", addCostAll : "", addCostPerson : "",  galaDinner:""},
+                                {seasonName: "픽시즌", periodStart:"", periodEnd:"", minimumDay:"1박", currency: "", addCost : "", addCostAll : "", addCostPerson : "",  galaDinner:""},
+                                {seasonName: "블랙아웃", periodStart:"", periodEnd:"", minimumDay:"1박", currency: "", addCost : "", addCostAll : "", addCostPerson : "",  galaDinner:""}],
                               saleDefaultCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "", dayAddCost : "", minimumDay : "1", notice : ""}],
-                              // saleSeasonCost : [{seasonName: "", period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "", dayAddCost : "", minimumDay : "1", notice : ""}]
                             }];
                           setInputCost(copy);
                         }}
@@ -628,7 +661,7 @@ export default function PreHotelCost (props : any) {
                   <div className='chartbox' style={{width:'27%'}} ><p>포함사항/특전(기간별)</p></div>
                   <div className='chartbox' style={{width:'3%'}} ></div>
                 </div>
-        
+               {/* 기본요금 ----------------------------------------------------------------------------------------------------------------- */}
                 {
                   section.inputDefault.map((item:any, index:any)=>{
                     return (
@@ -761,14 +794,14 @@ export default function PreHotelCost (props : any) {
                     )
                   })
                 }
-                      
+                {/* 패키지 ----------------------------------------------------------------------------------------------------------------- */}      
                 <div style={{height:'1px', backgroundColor:'#BDBDBD', marginTop:'20px'}}></div>
                 <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-                  <div className='chartbox' style={{width:'20%'}} ><p>추가사항</p></div>
+                  <div className='chartbox' style={{width:'19%'}} ><p>추가사항</p></div>
                   <div className="chart-divider"></div>
                   <div className='chartbox' style={{width:'10%'}} ><p>1인 요금</p></div>
                   <div className="chart-divider"></div>
-                  <div className='chartbox' style={{width:'70%'}} ><p>내용</p></div>
+                  <div className='chartbox' style={{width:'71%'}} ><p>내용</p></div>
                 </div>
                 {
                   section.inputPackage.map((item:any, index:any)=>{
@@ -819,6 +852,113 @@ export default function PreHotelCost (props : any) {
                               <p>-</p>
                             </div>
                           </div>  
+                        </div>
+                      </div>
+                    )
+                  })
+                }
+                {/* 시즌요금 ----------------------------------------------------------------------------------------------------------------- */}
+                <div style={{height:'1px', backgroundColor:'#BDBDBD', marginTop:'20px'}}></div>
+                <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+                  <div className='chartbox' style={{width:'8%'}} ><p>성수기 정책</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'20%'}} ><p>기간</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'6%'}} ><p>화폐</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'15%'}} ><p>추가</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'6%'}} ><p>미니멈</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'15%'}} ><p>총액</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'15%'}} ><p>1인</p></div>
+                  <div className="chart-divider"></div>
+                  <div className='chartbox' style={{width:'15%'}} ><p>갈라디너</p></div>
+                </div>
+                {
+                  section.inputSeason.map((item:any, index:any)=>{
+                    return (
+                      <div className="coverbox">
+                        <div className="coverrow hole" style={{minHeight:'60px'}} >
+                          <div style={{width:'8%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                            <p>{item.seasonName}</p>
+                          </div>
+                          <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                            <DateBoxNum width='120px' subWidth='120px' right={5} date={item.periodStart}
+                              setSelectDate={(e:any)=>{ 
+                                const inputs = [...inputCost];
+                                inputs[sectionIndex].inputSeason[index].periodStart = e;
+                                inputs[sectionIndex].inputSeason[index].periodEnd = e;
+                                setInputCost(inputs);
+                              }} 
+                            />
+                            <p style={{marginLeft:'5px'}}>~</p>
+                            <DateBoxNum width='120px' subWidth='120px' right={5} date={item.periodEnd}
+                              setSelectDate={(e:any)=>{ 
+                                const inputs = [...inputCost];
+                                inputs[sectionIndex].inputSeason[index].periodEnd = e;
+                                setInputCost(inputs);
+                              }} 
+                            />
+                          </div>
+                          <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                          <div style={{width:'6%', display:'flex'}} >
+                            <DropdownBox
+                              widthmain='95%'
+                              height='35px'
+                              selectedValue={item.currency}
+                              options={[
+                                { value: '선택', label: '선택' },
+                                { value: '$', label: '$' },
+                                { value: '₩', label: '₩' }
+                              ]}    
+                              handleChange={(e)=>{
+                                const copy = [...inputCost]; 
+                                copy[sectionIndex].inputSeason[index].currency = e.target.value; 
+                                setInputCost(copy);
+                              }}
+                            />  
+                          </div>
+                          <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                          <input className="inputdefault" style={{width:'15%', marginLeft:'5px', minHeight:'40px', outline:'none', textAlign:'right'}} 
+                            value={item.addCost} onChange={(e)=>{
+                                handleinputSeasonCostChange(e, sectionIndex, index, 'addCost', inputCost, setInputCost)
+                              }}/>
+                           <div style={{width:'6%', display:'flex'}} >
+                            <DropdownBox
+                              widthmain='95%'
+                              height='35px'
+                              selectedValue={item.minimumDay}
+                              options={[
+                                { value: '1박', label: '1박' },
+                                { value: '2박', label: '2박' },
+                                { value: '3박', label: '3박' },
+                                { value: '4박', label: '4박' },
+                                { value: '5박', label: '5박' },
+                                { value: '6박', label: '6박' },
+                                { value: '7박', label: '7박' },
+                                { value: '8박', label: '8박' },
+                                { value: '9박', label: '9박' },
+                                { value: '10박', label: '10박' }
+                              ]}    
+                              handleChange={(e)=>{
+                                handleAddCostMultiplyDay(e.target.value, sectionIndex, index);
+                              }}
+                            />  
+                          </div>    
+                          <input className="inputdefault" style={{width:'15%', marginLeft:'5px', minHeight:'40px', outline:'none', textAlign:'right'}} 
+                            value={item.addCostAll} onChange={(e)=>{
+                                handleinputSeasonCostChange(e, sectionIndex, index, 'addCostAll', inputCost, setInputCost)
+                              }}/>
+                          <input className="inputdefault" style={{width:'15%', marginLeft:'5px', minHeight:'40px', outline:'none', textAlign:'right'}} 
+                            value={item.addCostPerson} onChange={(e)=>{
+                                handleinputSeasonCostChange(e, sectionIndex, index, 'addCostPerson', inputCost, setInputCost)
+                              }}/>
+                          <input className="inputdefault" style={{width:'15%', marginLeft:'5px', minHeight:'40px', outline:'none', textAlign:'right'}} 
+                            value={item.galaDinner} onChange={(e)=>{
+                                handleinputSeasonCostChange(e, sectionIndex, index, 'galaDinner', inputCost, setInputCost)
+                              }}/>
                         </div>
                       </div>
                     )
@@ -1057,129 +1197,6 @@ export default function PreHotelCost (props : any) {
                         )
                       })
                     }
-                    
-                    <div style={{height:'1px', backgroundColor:'#BDBDBD', marginTop:'20px'}}></div>
-
-                    {/* {
-                      section.saleSeasonCost.map((item:any, index:any)=>{
-                        return (
-                          <div className="coverbox">
-                            <div className="coverrow hole" style={{minHeight:'60px'}} >
-                              <div style={{width:'25%'}} >
-                                {
-                                  item.period.map((subItem:any, subIndex:any)=>{
-                                    return (
-                                      <div style={{display:'flex', alignItems:'center', marginBottom:'5px'}}>
-                                        <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.start}
-                                          setSelectDate={(e:any)=>{ 
-                                            const inputs = [...inputCost];
-                                            inputs[sectionIndex].saleSeasonCost[index].period[subIndex].start = e;
-                                            inputs[sectionIndex].saleSeasonCost[index].period[subIndex].end = e;
-                                            setInputCost(inputs);
-                                          }} 
-                                        />
-                                        <p style={{marginLeft:'5px'}}>~</p>
-                                        <DateBoxNum width='120px' subWidth='120px' right={5} date={subItem.end}
-                                          setSelectDate={(e:any)=>{ 
-                                            const inputs = [...inputCost];
-                                            inputs[sectionIndex].saleSeasonCost[index].period[subIndex].end = e;
-                                            setInputCost(inputs);
-                                          }} 
-                                          />
-                                        <div className="dayBox">
-                                          <div className="dayBtn"
-                                            onClick={()=>{
-                                              const copy = [...inputCost];
-                                              copy[sectionIndex].saleSeasonCost[index].period = [...copy[sectionIndex].saleSeasonCost[index].period, {start:"", end:""}];
-                                              setInputCost(copy);
-                                            }}
-                                          >
-                                            <p>+</p>
-                                          </div>
-                                        </div>  
-                                        <div className="dayBox">
-                                          <div className="dayBtn"
-                                            onClick={()=>{
-                                              const copy = [...inputCost];
-                                              copy[sectionIndex].saleSeasonCost[index].period.splice(subIndex, 1);
-                                              setInputCost(copy);
-                                            }}
-                                          >
-                                            <p>-</p>
-                                          </div>
-                                        </div>  
-                                      </div>
-                                    )
-                                  })
-                                }
-                              </div>
-                              <div style={{width:'10%', display:'flex', alignItems:'center',}}>
-                                <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
-                                  value={item.roomType} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleSeasonCost[index].roomType = e.target.value; setInputCost(copy);}}/>
-                              </div>
-                              <div style={{width:'7%', display:'flex', alignItems:'center',}}>
-                                <DropdownBox
-                                  widthmain='95%'
-                                  height='35px'
-                                  selectedValue={item.minimumDay}
-                                  options={[
-                                    { value: '1박', label: '1박' },
-                                    { value: '2박', label: '2박' },
-                                    { value: '3박', label: '3박' },
-                                    { value: '4박', label: '4박' },
-                                    { value: '5박', label: '5박' }
-                                  ]}    
-                                  handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleSeasonCost[index].minimumDay = e.target.value; setInputCost(copy);}}
-                                />
-                              </div>
-                              <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
-                              <div style={{width:'7%', display:'flex', justifyContent:'center'}} >
-                                <DropdownBox
-                                    widthmain='95%'
-                                    height='35px'
-                                    selectedValue={item.currency}
-                                    options={[
-                                      { value: '$', label: '$' },
-                                      { value: '₩', label: '₩' }
-                                    ]}    
-                                    handleChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleSeasonCost[index].currency = e.target.value; setInputCost(copy);}}
-                                  />
-                              </div>
-                              <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                                <input className="inputdefault" type="text" style={{width:'48%', textAlign:'right'}} 
-                                  value={item.dayChangeCost} onChange={(e)=>{
-                                    handleinputPackageCostChange(e, sectionIndex, index, 'dayChangeCost', inputCost, setInputCost)
-                                  }}/>
-                                <input className="inputdefault" type="text" style={{width:'48%', textAlign:'right'}} 
-                                  value={item.dayAddCost} onChange={(e)=>{
-                                    handleinputPackageCostChange(e, sectionIndex, index, 'dayAddCost', inputCost, setInputCost)
-                                  }}/>
-                              </div>
-                              <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
-                              <div style={{width:'27%', display:'flex'}} >
-                                <textarea className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
-                                    value={item.notice} onChange={(e)=>{const copy = [...inputCost]; copy[sectionIndex].saleSeasonCost[index].notice = e.target.value; setInputCost(copy);}}/>
-                              </div>
-                              <div style={{width:'3%', display:'flex'}} >
-                              <div className="dayBox">
-                                <div className="dayBtn"
-                                  onClick={()=>{
-                                    const copy = [...inputCost,
-                                      {seasonName: `default${index+1}`, period: [{start:"", end:""}], roomType: "", currency : '₩', dayChangeCost : "0", dayAddCost : "0", minimumDay : "1", notice : ""}
-                                    ];
-                                    setInputCost(copy);
-                                  }}
-                                >
-                                  <p>+</p>
-                                </div>
-                              </div>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      })
-                    } */}
-
                   </section>
 
                 </div>

@@ -292,7 +292,7 @@ export default function ModalAddTourLocation (props : any) {
                         sort !== '선택' &&
                         <div className='rowbox'>
                           <textarea 
-                            className="textarea" style={{minHeight: sort === 1 ? '200px' : '100px' }}
+                            className="textarea" style={{minHeight: sort === '텍스트' ? '200px' : '100px' }}
                             value={locationContent}
                             onChange={(e)=>{
                               setLocationContent(e.target.value)

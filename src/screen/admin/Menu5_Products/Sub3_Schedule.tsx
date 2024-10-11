@@ -37,10 +37,19 @@ export default function Sub3_Schedule (props:any) {
 		reviseDate : string;
 	}
 	const [list, setList] = useState<ListProps[]>([]);
+	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
     const res = await axios.get(`${MainURL}/productschedule/getproductschedule`)
     if (res) {
       setList(res.data);
+    }
+		const nationCityRes = await axios.post(`${MainURL}/nationcity/getnationcity`, {
+      selectContinent : '전체'
+		})
+    if (nationCityRes.data !== false) {
+			const copy = [...nationCityRes.data];
+			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
+      setNationList(copy);
     }
   };
 
@@ -195,6 +204,7 @@ export default function Sub3_Schedule (props:any) {
 								setIsViewAddScheduleModal={setIsViewAddScheduleModal}
 								scheduleInfo={scheduleInfo}
 								isAddOrRevise={isAddOrRevise}
+								nationlist={nationlist}
 						 />
           </div>
         </div>

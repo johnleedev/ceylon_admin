@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './ModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
 import { TitleBox } from '../../../../boxs/TitleBox';
@@ -14,12 +14,36 @@ import { formatDate } from 'date-fns';
 
 export default function ModalAddSchedule (props : any) {
 	
+  interface ScheduleProps {
+    id: string;
+		day : string;
+    breakfast :string;
+    lunch:string;
+    dinner :string;
+    hotel:string;
+    score:string;
+    schedule: TourLocationListProps[]
+  }  
+
+  interface TourLocationListProps {
+    id: string;
+		sort : string;
+		location: string;
+		subLocation: string;
+		locationTitle: string;
+		locationContent: string;
+		locationContentDetail: {name:string; notice:string[]}[];
+		postImage : string;
+  }
+
   let navigate = useNavigate();
   const userId = sessionStorage.getItem('userId');
   const isAddOrRevise = props.isAddOrRevise;
   const scheduleData = isAddOrRevise === 'revise' ? props.scheduleInfo : null;
+  const [selectedNation, setSelectedNation] = useState<any>([]);
 
   const [isView, setIsView] = useState<boolean>(isAddOrRevise === 'revise' ? scheduleData.isView : true);
+  const [nation, setNation] = useState(isAddOrRevise === 'revise' ? scheduleData.nation : '');
   const [tourLocation, setTourLocation] = useState(isAddOrRevise === 'revise' ? scheduleData.tourLocation : '');
   const [landCompany, setLandCompany] = useState(isAddOrRevise === 'revise' ? scheduleData.landCompany : '');
   const [productType, setProductType] = useState(isAddOrRevise === 'revise' ? scheduleData.productType : '');
@@ -29,16 +53,27 @@ export default function ModalAddSchedule (props : any) {
   const [departFlight, setDepartFlight] = useState(isAddOrRevise === 'revise' ? scheduleData.departFlight : '');
   const [selectedSchedule, setSelectedSchedule] = useState(isAddOrRevise === 'revise' ? scheduleData.selectedSchedule : '');
   const [cautionNote, setCautionNote] = useState(isAddOrRevise === 'revise' ? scheduleData.cautionNote : '');
-  const [includeNote, setIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.includeNote) : '');
+  const [includeNote, setIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.includeNote) : [""]);
   const [includeNoteText, setIncludeNoteText] = useState(isAddOrRevise === 'revise' ? scheduleData.includeNoteText : '');
-  const [notIncludeNote, setNotIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.notIncludeNote) : '');
+  const [notIncludeNote, setNotIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.notIncludeNote) : [""]);
   const [notIncludeNoteText, setNotIncludeNoteText] = useState(isAddOrRevise === 'revise' ? scheduleData.notIncludeNoteText : '');
 
-  const [scheduleList, setScheduleList] = useState(
+  const [scheduleList, setScheduleList] = useState<ScheduleProps[]>(
     isAddOrRevise === 'revise' 
     ? JSON.parse(scheduleData.scheduleList)
     : [
-      { day : '1', breakfast :'', lunch:'', dinner :'', hotel:'', score:'', schedule: [{ location:'', title:'', notice:''}]}
+      { day : '1', breakfast :'', lunch:'', dinner :'', hotel:'', score:'', 
+        schedule: [
+          { id : '1',
+            sort : '',
+            location: '',
+            subLocation: '',
+            locationTitle: '',
+            locationContent: '',
+            locationContentDetail: [{name:"", notice:[""]}],
+            postImage : '',
+          }
+      ]}
       ]
   );
 
@@ -47,39 +82,40 @@ export default function ModalAddSchedule (props : any) {
     const lastItem = scheduleList[scheduleList.length - 1]; 
     const newDay = parseInt(lastItem.day) + 1;
     const newItem = {
+      id: `${newDay}`,
       day: newDay.toString(),
       breakfast: lastItem.breakfast,
       lunch: lastItem.lunch,
       dinner: lastItem.dinner,
       hotel: lastItem.hotel,
       score: lastItem.score,
-      schedule: [{ location:'', title:'', notice:''}]
+      schedule: [{ id: '',
+        sort: '',
+        location: '',
+        subLocation: '',
+        locationTitle: '',
+        locationContent: '',
+        locationContentDetail: [{ name: "", notice: [""] }],
+        postImage: '',
+      }]
     };
     setScheduleList([...scheduleList, newItem]);
+    setViewAutoCompleteTourLocation([
+      ...viewAutoCompleteTourLocation,
+      Array(newItem.schedule.length).fill(false)
+    ]);
   };
 
   // 데이 삭제
   const handleDayDelete = async () => {
-    const copy = [...scheduleList];
-    copy.pop();
-    setScheduleList(copy);
+    const copyScheduleList = [...scheduleList];
+    copyScheduleList.pop();
+    setScheduleList(copyScheduleList);
+    const copyViewAutoComplete = [...viewAutoCompleteTourLocation];
+    copyViewAutoComplete.pop();
+    setViewAutoCompleteTourLocation(copyViewAutoComplete);
   };
-
-  // 스케줄 추가
-  const handleScheduleAdd = async (Idx:any) => {
-    const copy = [...scheduleList];
-    copy[Idx].schedule = [...copy[Idx].schedule, { location:'', title:'', notice:''  }]
-    setScheduleList(copy);
-  };
-
-  // 스케줄 삭제
-  const handleScheduleDelete = async (Idx:any) => {
-    const copy = [...scheduleList];
-    const copy2 = [...copy[Idx].schedule];
-    copy2.pop(); // copy2 배열에서 마지막 요소를 삭제
-    copy[Idx].schedule = copy2;
-    setScheduleList(copy);
-  };
+  
 
   // selectbox ----------------------------------------------
   interface SelectBoxProps {
@@ -124,6 +160,22 @@ export default function ModalAddSchedule (props : any) {
       <p>{text}</p>
     </div>
   )
+
+  // 항공편 검색
+  const fetchAirplane = async (tourLocationSelected:string) => {
+    const res = await axios.get(`${MainURL}/product/getairplane/${tourLocationSelected}`)
+    if (res.data) {
+      const copy = res.data[0];
+      const directAirlineCopy = copy.directAirline ? JSON.parse(copy.directAirline) : [];
+      const viaAirlineCopy = copy.viaAirline ? JSON.parse(copy.viaAirline) : [];
+      console.log(directAirlineCopy);
+      console.log(viaAirlineCopy);
+      // setDirectAirline(directAirlineCopy);
+      // setViaAirline(viaAirlineCopy);
+    } 
+  };
+
+
    
   // 일정 등록 함수 ----------------------------------------------
   const registerPost = async () => {
@@ -207,6 +259,86 @@ export default function ModalAddSchedule (props : any) {
     { value: '불포함', label: '불포함' }
   ]
 
+  // 여행지 검색 & 자동완성기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+  const [tourLocationList, setTourLocationList] = useState<TourLocationListProps[]>([]);
+  // 리스트 가져오기
+  const fetchPosts = async () => {
+    let res = await axios.get(`${MainURL}/productschedule/gettourlocationforpost`);
+    if (res !== undefined ) {
+      let copy = res.data;
+      setTourLocationList(copy);
+    }
+  };
+
+  const [viewAutoCompleteTourLocation, setViewAutoCompleteTourLocation] = useState(scheduleList.map(item => Array(item.schedule.length).fill(false)));
+  const [dropDownListTourLocation, setDropDownListTourLocation] = useState<TourLocationListProps[]>([]);
+  const [dropDownItemIndexTourLocation, setDropDownItemIndexTourLocation] = useState(-1);
+  const [isComposingTourLocation, setIsComposingTourLocation] = useState(false);
+
+  // 스케줄 여행지 이름 변경 
+  const handleTourLocationChange = (index: number, text: string, subIndex: number ) => {
+    const inputs = [...scheduleList];
+    inputs[index].schedule[subIndex].location = text;
+    const viewAutoComplete = [...viewAutoCompleteTourLocation];
+    if (text.length > 2) {
+      fetchPosts();
+      viewAutoComplete[index][subIndex] = true;
+    }
+    setDropDownItemIndexTourLocation(-1);
+    handleAutoCompleteTourLocation(text);
+    setViewAutoCompleteTourLocation(viewAutoComplete);
+    setScheduleList(inputs);
+  };
+
+  // 자동필터  -----------------
+  const handleAutoCompleteTourLocation = (text : string ) => {
+    const copy = tourLocationList.filter((e: any) => e.location.includes(text) === true);
+    copy.sort((a, b) => (a.location > b.location) ? 1 : -1);
+    setDropDownListTourLocation(copy);
+  }
+
+  const handleDropDownKeyTourLocation = (event:any, index:number, subIndex: number) => {
+    if (isComposingTourLocation) return;
+    if (viewAutoCompleteTourLocation) {
+      if (event.key === 'ArrowDown' && dropDownItemIndexTourLocation === -1) {
+        setDropDownItemIndexTourLocation(0)
+      } else if (event.key === 'ArrowDown' && dropDownItemIndexTourLocation >= 0 && dropDownItemIndexTourLocation !== dropDownListTourLocation.length - 1) {
+        setDropDownItemIndexTourLocation(dropDownItemIndexTourLocation + 1)
+      } else if (event.key === 'ArrowDown' && dropDownItemIndexTourLocation === dropDownListTourLocation.length - 1) {
+        return
+      } else if (event.key === 'ArrowUp' && dropDownItemIndexTourLocation >= 0) {
+        setDropDownItemIndexTourLocation(dropDownItemIndexTourLocation - 1)
+      } else if (event.key === 'Enter' && dropDownItemIndexTourLocation >= 0) {
+        handleSelectedTourLocation(index, subIndex, dropDownListTourLocation[dropDownItemIndexTourLocation]);
+        const viewAutoComplete = [...viewAutoCompleteTourLocation];
+        viewAutoComplete[index][subIndex]= false;
+        setViewAutoCompleteTourLocation(viewAutoComplete);
+        setDropDownItemIndexTourLocation(-1)
+      } else if (event.key === 'Enter' && dropDownItemIndexTourLocation === -1) {
+        const viewAutoComplete = [...viewAutoCompleteTourLocation];
+        viewAutoComplete[index][subIndex]= false;
+        setViewAutoCompleteTourLocation(viewAutoComplete);
+      }
+    }
+  }
+
+  // 자동입력  -----------------
+  const handleSelectedTourLocation = (index:number, subIndex: number, item:any) => {
+    const inputs = [...scheduleList];
+    inputs[index].schedule[subIndex] = {
+      id: item.id,
+      sort : item.sort,
+      location: item.location,
+      subLocation: item.subLocation,
+      locationTitle: item.locationTitle,
+      locationContent: item.locationContent,
+      locationContentDetail: JSON.parse(item.locationContentDetail),
+      postImage : item.postImage,
+    }
+    setScheduleList(inputs);
+  }
+
   return (
     <div className='modal-addinput'>
 
@@ -251,9 +383,39 @@ export default function ModalAddSchedule (props : any) {
        
         <div className="coverbox">
           <div className="coverrow hole">
-            <TitleBox width="120px" text='여행지'/>
-            <input className="inputdefault" type="text" style={{width:'50%', marginLeft:'5px'}} 
-              value={tourLocation} onChange={(e)=>{setTourLocation(e.target.value)}}/>
+            <TitleBox width="120px" text='국가/도시'/>
+            <DropdownBox
+              widthmain='20%'
+              height='35px'
+              selectedValue={nation}
+              options={[
+                { value: '선택', label: '선택' },
+                ...props.nationlist.map((nation:any) => (
+                  { value: nation.nationKo, label: nation.nationKo }
+                ))
+              ]}    
+              handleChange={(e)=>{
+                setNation(e.target.value);
+                const copy = [...props.nationlist];
+                const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+                setSelectedNation(filtered[0].cities);
+              }}
+            />
+            <DropdownBox
+              widthmain='20%'
+              height='35px'
+              selectedValue={tourLocation}
+              options={[
+                { value: '선택', label: '선택' },
+                ...selectedNation.map((nation:any) => (
+                  { value: nation.cityKo, label: nation.cityKo }
+                ))
+              ]}    
+              handleChange={(e)=>{
+                setTourLocation(e.target.value)
+                fetchAirplane(e.target.value);
+              }}
+            />
           </div>
         </div>
         <div className="coverbox">
@@ -312,7 +474,9 @@ export default function ModalAddSchedule (props : any) {
               height='35px'
               selectedValue={departFlight}
               options={DropDownAirline}    
-              handleChange={(e)=>{setDepartFlight(e.target.value)}}
+              handleChange={(e)=>{
+                setDepartFlight(e.target.value)
+              }}
             />
           </div>
         </div>
@@ -455,49 +619,151 @@ export default function ModalAddSchedule (props : any) {
               <div className="bottom-content">
                 {
                   item.schedule.map((subItem:any, subIndex:any)=>{ 
+
+                    const postImages = subItem.postImage ? JSON.parse(subItem.postImage) : "";
+
                     return (
-                      <div className='day-area'>
+                      <div className='day-area' key={subIndex}>
                         <div className='left-area'>
-                          <ImLocation color='#5fb7ef' size={20}/>                    
-                          <input style={{width:'95%'}} value={subItem.location} className="inputdefault" type="text" 
-                              onChange={(e) => {
-                                const copy = [...scheduleList];
-                                copy[index].schedule[subIndex].location = e.target.value;
-                                setScheduleList(copy);
-                              }}/>
+                          <div className="left-areabox">
+                            <ImLocation color='#5fb7ef' size={20}/>                    
+                            <input style={{width:'95%'}} value={subItem.location} className="inputdefault" type="text" 
+                                onChange={(e) => {
+                                  handleTourLocationChange(index, e.target.value, subIndex)
+                                }}
+                                onKeyDown={(e)=>{handleDropDownKeyTourLocation(e, index, subIndex)}}
+                                onCompositionStart={() => setIsComposingTourLocation(true)}
+                                onCompositionEnd={() => setIsComposingTourLocation(false)}
+                            />
+                          </div>
+                          {
+                            (subItem.location !== '' && viewAutoCompleteTourLocation[index][subIndex]) &&
+                            <div className="autoComplete">
+                              { 
+                                dropDownListTourLocation.slice(0, 10).map((item:any, index:any)=>{
+                                  return(
+                                    <div key={index} className={dropDownItemIndexTourLocation === index ? 'dropDownList selected' : 'dropDownList'}>{item.location}</div>
+                                  )
+                                })
+                              }
+                            </div>  
+                          }
                         </div>
                         <div className='input-area'>
-                          <div className="cover" key={subIndex}>
+                          <div className="cover">
                             <div className='rowbox'>
-                              <input style={{width:'95%'}} value={subItem.title} className="inputdefault" type="text" 
+                              <input style={{width:'45%', marginBottom:'10px'}} value={subItem.subLocation} className="inputdefault" type="text" 
                                 onChange={(e) => {
-                                  const copy = [...scheduleList];
-                                  copy[index].schedule[subIndex].title = e.target.value;
-                                  setScheduleList(copy);
+                                  const inputs = [...scheduleList];
+                                  inputs[index].schedule[subIndex].subLocation = e.target.value;
+                                  setScheduleList(inputs);
                                 }}/>
                             </div>
                             <div className='rowbox'>
-                              <textarea 
-                                className="textarea" style={{minHeight:'120px'}}
-                                value={subItem.notice}
-                                onChange={(e)=>{
-                                  const copy = [...scheduleList];
-                                  copy[index].schedule[subIndex].notice = e.target.value;
-                                  setScheduleList(copy);
-                                }}
-                              />
+                              <input style={{width:'95%'}} value={subItem.locationTitle} className="inputdefault" type="text" 
+                                onChange={(e) => {
+                                  const inputs = [...scheduleList];
+                                  inputs[index].schedule[subIndex].locationTitle = e.target.value;
+                                  setScheduleList(inputs);
+                                }}/>
                             </div>
+                            {
+                              subItem.sort !== '선택' &&
+                              <div className='rowbox'>
+                                <textarea 
+                                  className="textarea" style={{minHeight: subItem.sort === '텍스트' ? '200px' : '100px' }}
+                                  value={subItem.locationContent}
+                                  onChange={(e)=>{
+                                    const inputs = [...scheduleList];
+                                    inputs[index].schedule[subIndex].locationContent = e.target.value;
+                                    setScheduleList(inputs);
+                                  }}
+                                />
+                              </div>
+                            }
+                            { (subItem.sort === '선택' || subItem.sort === '상세') &&
+                                subItem.locationContentDetail?.map((detailItem:any, detailIndex:any)=>{
+                                return (
+                                  <div style={{marginTop:'10px', border:'1px solid #EAEAEA'}} key={detailIndex}>
+                                    <div className='rowbox'>
+                                      <p style={{width:'5%', textAlign:'center'}}>{index+1}.</p>
+                                      <input style={{width:'95%'}} value={detailItem.name} className="inputdefault" type="text" 
+                                        onChange={(e) => {
+                                          const inputs = [...scheduleList];
+                                          inputs[index].schedule[subIndex].locationContentDetail[detailIndex].name = e.target.value;
+                                          setScheduleList(inputs);
+                                        }}/>
+                                    </div>
+                                    { subItem.sort === '선택' &&
+                                      detailItem.notice.map((noticeItem:any, noticeIndex:any)=>{
+                                        return (
+                                          <div className='rowbox' key={noticeIndex}>
+                                            <div className="btn"></div>
+                                            <div style={{width:'10%', display:'flex', justifyContent:'end', alignItems:'center'}}>
+                                              <p onClick={()=>{
+                                                 const inputs = [...scheduleList];
+                                                 inputs[index].schedule[subIndex].locationContentDetail[detailIndex].notice = [...inputs[index].schedule[subIndex].locationContentDetail[detailIndex].notice, ""]
+                                                 setScheduleList(inputs);
+                                                }}
+                                              ><CiCirclePlus color='#333' size={20}/></p>
+                                              <p onClick={()=>{
+                                                 const inputs = [...scheduleList];
+                                                 inputs[index].schedule[subIndex].locationContentDetail[detailIndex].notice.splice(noticeIndex, 1);
+                                                 setScheduleList(inputs);
+                                                }}
+                                              ><CiCircleMinus color='#FF0000' size={20}/></p>
+                                            </div>
+                                            <input style={{width:'90%'}} value={noticeItem} className="inputdefault" type="text" 
+                                              onChange={(e) => {
+                                                const inputs = [...scheduleList];
+                                                inputs[index].schedule[subIndex].locationContentDetail[detailIndex].notice[noticeIndex] = e.target.value;
+                                                setScheduleList(inputs);
+                                              }}/>
+                                          </div>
+                                        )
+                                      })
+                                    }
+                                    
+                                  </div>
+                                )
+                              })
+                            }
                           </div>
                           <div className="btnrow">
-                            <div className="btn" style={{backgroundColor:"#EAEAEA"}}
-                              onClick={()=>{handleScheduleAdd(index)}}>
+                            <div className="btn" style={{backgroundColor:"#EAEAEA", margin:'10px 0'}}
+                              onClick={()=>{
+                                const inputs = [...scheduleList];
+                                inputs[index].schedule = [...inputs[index].schedule, { id : '1',sort : '', location: '', subLocation: '',
+                                  locationTitle: '', locationContent: '', locationContentDetail: [{name:"", notice:[""]}], postImage : ''}];
+                                setScheduleList(inputs);
+                                const viewAutoCopy = [...viewAutoCompleteTourLocation];
+                                viewAutoCopy[index] = [...viewAutoCopy[index], false]
+                                setViewAutoCompleteTourLocation(viewAutoCopy)
+                              }}>
                               <p><CiCirclePlus />일정추가</p>
                             </div>
-                            <div className="btn" style={{backgroundColor:"#fff"}}
-                              onClick={()=>{handleScheduleDelete(index)}}>
+                            <div className="btn" style={{backgroundColor:"#fff", margin:'10px 0'}}
+                              onClick={()=>{
+                                const inputs = [...scheduleList];
+                                inputs[index].schedule.splice(subIndex, 1);
+                                setScheduleList(inputs);
+                                const viewAutoCopy = [...viewAutoCompleteTourLocation];
+                                viewAutoCopy[index].splice(subIndex, 1);
+                                setViewAutoCompleteTourLocation(viewAutoCopy)
+                              }}>
                               <p><CiCircleMinus/>일정삭제</p>
                             </div>
                           </div>
+                          {
+                            postImages.length > 0 &&
+                            postImages.map((images:any, imageIndex:any)=>{
+                              return (
+                                <div className='image-row' key={imageIndex}>
+                                  <img src={`${MainURL}/images/tourlocationimages/${images}`}/>
+                                </div>
+                              )
+                            })
+                          }
                         </div>
                       </div>
                     )

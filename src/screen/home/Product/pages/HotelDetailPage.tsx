@@ -1,14 +1,9 @@
 import "./HotelDetailPage.scss";
 import { useParams } from "react-router-dom";
 import { getHotelDataById, getPackageById } from "../../utilies";
-import HotelHeaderSection from "../section/common/HeaderSection";
-import SelectBtn from "../../common/SelectBtn";
-import SubCategorySelector from "../../common/SubCategorySelector";
 import { useEffect, useState } from "react";
 import KEAir from "../../images/airline/korea.jpg";
 import JAAir from "../../images/airline/garuda.jpg";
-import ScheduleElementHeader from "../section/HotelDetailPage/ScheduleElementHeader";
-import RatingBoard from "../section/common/RatingBoard";
 import axios from "axios";
 import MainURL from "../../../../MainURL";
 import hotelbuilding from "../../images/hotel/hotelbuilding.png"
@@ -178,7 +173,22 @@ export default function PackagePage() {
 
   return (
     <div>
-      <HotelHeaderSection {...hotelData} type="mini" />
+      <div
+        className={"mini hotel__header__section__wrapper"}
+      >
+        <img className="bg__image" src={hotelData.mainBgImage} alt="temp" />
+        <div className="header__info">
+          <span className="header__subtitle">{hotelData.subtitle}</span>
+          <span className="header__title">{hotelData.title}</span>
+          <div className="header__loc__rating">
+            <span className="header__location">{`${location}`}</span>
+            <div className="header__rating">
+              {/* <RatingBoard rating={rating} /> */}
+            </div>
+          </div>
+          <span className="header__desc">{hotelData.desc}</span>
+        </div>
+      </div>
       <div className="acommodation__selector__wrapper">
         <span className="sub__text">인천출발 / 발리 5박 7일</span>
         <div className="selected__item__wrapper">
@@ -328,7 +338,8 @@ export default function PackagePage() {
                 </div>
                 <span className="price__sub">항공료 불포함</span>
               </div>
-              <SelectBtn checked />
+              
+              
             </div>
           </div>
         </div>
@@ -376,15 +387,15 @@ export default function PackagePage() {
       <div className="schedule__byairline__wrapper">
         <div className="header__wrapper">
           <span className="header__main">항공사별 일정표</span>
-          <SubCategorySelector
-            type="sidebar"
-            categories={[
-              { idx: 0, title: "직항" },
-              { idx: 0, title: "경유" },
-            ]}
-            currentTitle={flightType}
-            setCurrentTitle={setFlightType}
-          />
+          <div className={"sidebar__wrapper"}
+          >
+            <span className={"selected__sidebar"}
+              onClick={() => {}}
+            >직항</span>
+            <span className={"selected__sidebar"}
+              onClick={() => {}}
+            >경유</span>
+          </div>
         </div>
         <div className="flight__items__wrapper">
           { flightType === '직항'
@@ -415,7 +426,7 @@ export default function PackagePage() {
 
                     }}
                   >
-                    <SelectBtn checked={true} />
+                    {/* <SelectBtn checked={true} /> */}
                   </div>
                 </div>
               )
@@ -447,7 +458,7 @@ export default function PackagePage() {
 
                     }}
                   >
-                    <SelectBtn checked={true} />
+                    {/* <SelectBtn checked={true} /> */}
                   </div>
                 </div>
               )
@@ -623,7 +634,7 @@ export default function PackagePage() {
                     <div className="hotel__info__wrapper">
                       <span>{item.hotel}</span>
                       <div>
-                        <RatingBoard rating={parseInt(item.score)} />
+                        {/* <RatingBoard rating={parseInt(item.score)} /> */}
                       </div>
                     </div>
                   </div>

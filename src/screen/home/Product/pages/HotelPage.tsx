@@ -1,13 +1,10 @@
 import "./HotelPage.scss";
 import { Outlet, useParams } from "react-router-dom";
 import { getHotelDataById, getPackageById } from "../../utilies";
-import HeaderSection from "../section/common/HeaderSection";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MainURL from "../../../../MainURL";
 import mockData from "../../mockData";
-import RatingBoard from "../section/common/RatingBoard";
-
 
 import hotelImagePath1 from "../../images/resort/hotel_01.png";
 import headerBgImage from "../../images/hotel/main-bg-0.jpg";
@@ -118,7 +115,22 @@ export default function HotelPage() {
 
   return (
     <div>
-      <HeaderSection {...hotelData} type="mini" />
+       <div
+        className={"mini hotel__header__section__wrapper"}
+      >
+        <img className="bg__image" src={hotelData.mainBgImage} alt="temp" />
+        <div className="header__info">
+          <span className="header__subtitle">{hotelData.subtitle}</span>
+          <span className="header__title">{hotelData.title}</span>
+          <div className="header__loc__rating">
+            <span className="header__location"></span>
+            <div className="header__rating">
+              {/* <RatingBoard rating={rating} /> */}
+            </div>
+          </div>
+          <span className="header__desc">{hotelData.desc}</span>
+        </div>
+      </div>
 
       <div className="category__selector__wrapper">
         <div

@@ -1,6 +1,5 @@
 import PromotionHeader from "./promotion-section/PromotionHeader";
 import PromotionCard from "./promotion-section/PromotionCard";
-import MobileCardWrapper from "../../common/MobileCardWrapper";
 import RecommendCard from "./recommend-section/RecommendCard";
 import promotionBgImage from "../../images/promotion_bg.jpg";
 import hotel1 from "../../images/resort/hotel_14.png";
@@ -64,7 +63,7 @@ export default function PromotionSection() {
           <PromotionCard key={obj.id} {...obj} />
         ))}
       </div>
-      <MobileCardWrapper>
+      {/* <MobileCardWrapper>
         {promotionObjs.map((obj) => (
           <div key={obj.id} className="promotion__mobile__card__wrapper">
             <RecommendCard
@@ -76,7 +75,7 @@ export default function PromotionSection() {
             />
           </div>
         ))}
-      </MobileCardWrapper>
+      </MobileCardWrapper> */}
     </section>
   );
 }

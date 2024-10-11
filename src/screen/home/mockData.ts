@@ -179,45 +179,54 @@ class Tour extends Operators<ITour> {
   }
 }
 
+const hotelCopy = {
+  id: 0,
+  tourId: 0,
+  title: "세인트 레지스 호텔",
+  subtitle: "Saint Regis Hotel Bali",
+  rating: 5,
+  headerBgImage: headerBgImage,
+  thumbnailImagePath: hotelImagePath1,
+  description:
+    "2017년 새롭게 단장을 마치고 모던 럭셔리를 지향하는 호텔로 거듭났습니다. 모든 객실에서 지쿠지와 개인용 풀장이 설치되어있는 것이 특징이며, 하얗고 깔끔한 인테리어는 산토리니만의 감성을 느끼기에 안성맞춤입니다.",
+  benefit: [
+    "매일 2~6인 조식",
+    "BBQ 1회 2인 씨푸드 디너뷔페(생맥주 무제한 제공)",
+    "투숙기간중 1회 치킨 & 생맥주 2잔",
+    "방콕시내 호텔간 왕복셔틀버스 제공",
+  ],
+  roomtype: ["클리프 오션뷰", "오션뷰", "오션뷰 풀빌라"],
+  hotelImages: [
+    { type: 1, imagePath: detailImagePath0 },
+    { type: 2, imagePath: detailImagePath1 },
+    { type: 3, imagePath: detailImagePath2 },
+    { type: 2, imagePath: detailImagePath3 },
+    { type: 3, imagePath: detailImagePath4 },
+  ],
+  hotelInfoImages: { webImagePath: "", mobileImagePath: mobileImagePath },
+  address: {
+    contury: "인도네시아",
+    state: "발리",
+    city: "쿠타",
+    detailAddress: "Sauthon Road",
+  },
+  nearby: [
+    { distance: "28km", name: "발리국제공항" },
+    { distance: "20km", name: "사원" },
+  ],
+}
+
 class Hotel extends Operators<IHotel> {
   constructor() {
     const data: IHotel[] = [
-      {
-        id: 0,
-        tourId: 0,
-        title: "세인트 레지스 호텔",
-        subtitle: "Saint Regis Hotel Bali",
-        rating: 5,
-        headerBgImage: headerBgImage,
-        thumbnailImagePath: hotelImagePath1,
-        description:
-          "2017년 새롭게 단장을 마치고 모던 럭셔리를 지향하는 호텔로 거듭났습니다. 모든 객실에서 지쿠지와 개인용 풀장이 설치되어있는 것이 특징이며, 하얗고 깔끔한 인테리어는 산토리니만의 감성을 느끼기에 안성맞춤입니다.",
-        benefit: [
-          "매일 2~6인 조식",
-          "BBQ 1회 2인 씨푸드 디너뷔페(생맥주 무제한 제공)",
-          "투숙기간중 1회 치킨 & 생맥주 2잔",
-          "방콕시내 호텔간 왕복셔틀버스 제공",
-        ],
-        roomtype: ["클리프 오션뷰", "오션뷰", "오션뷰 풀빌라"],
-        hotelImages: [
-          { type: 1, imagePath: detailImagePath0 },
-          { type: 2, imagePath: detailImagePath1 },
-          { type: 3, imagePath: detailImagePath2 },
-          { type: 2, imagePath: detailImagePath3 },
-          { type: 3, imagePath: detailImagePath4 },
-        ],
-        hotelInfoImages: { webImagePath: "", mobileImagePath: mobileImagePath },
-        address: {
-          contury: "인도네시아",
-          state: "발리",
-          city: "쿠타",
-          detailAddress: "Sauthon Road",
-        },
-        nearby: [
-          { distance: "28km", name: "발리국제공항" },
-          { distance: "20km", name: "사원" },
-        ],
-      },
+      hotelCopy,
+      hotelCopy,
+      hotelCopy,
+      hotelCopy,
+      hotelCopy,
+      hotelCopy,
+      hotelCopy,
+      hotelCopy
     ];
     super(data);
   }

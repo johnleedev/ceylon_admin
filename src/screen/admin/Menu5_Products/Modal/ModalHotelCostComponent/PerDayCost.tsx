@@ -86,6 +86,7 @@ export default function PerDayCost (props : any) {
   // 입금가 & 판ㅐ가 ---------------------------------------------------------------------------------------------------------------------------------------------------
   
   interface InputCostProps {
+    reserveType: string;
     reservePeriod : {start:string, end:string};
     inputDefault : {
       seasonName: string;
@@ -119,21 +120,13 @@ export default function PerDayCost (props : any) {
         notice : string;
       }[]
     }[]
-    // saleSeasonCost : {
-    //   seasonName: string;
-    //   period : {start:string, end:string}[];
-    //   roomType: string;
-    //   currency : string;
-    //   dayStayCost : string;
-    //   dayPersonCost : string;
-    //   minimumDay : string;
-    //   notice : string;
-    // }[]
   }
   
   const [openSaleContent, setOpenSaleContent] = useState<boolean>(hotelInfoData?.isCostInput === 'true' ? true : false);
   const defaultInputCostData : InputCostProps = 
-    { reservePeriod: {start:"", end:""}, 
+    { 
+      reserveType: "default",
+      reservePeriod: {start:"", end:""}, 
       inputDefault : [{seasonName: "default1", period: [{start:"", end:""}], 
                       costByRoomType: [{roomType: "", currency : '₩', dayStayCost : "", dayStayCostAll:"", dayPersonCost : "", minimumDay : "1", notice : ""}]}],
       inputPackage : [{addtionName :"", personCost : "", content: ""}],
@@ -256,18 +249,19 @@ export default function PerDayCost (props : any) {
           costIndex: index,
           hotelNameKo: hotelInfoData.hotelNameKo,
           hotelNameEn: hotelInfoData.hotelNameEn, 
+          reserveType: item.reserveType,
           reservePeriod : JSON.stringify(item.reservePeriod),
           inputDefault :  JSON.stringify(item.inputDefault),
           inputPackage : JSON.stringify(item.inputPackage),
           saleDefaultCost : JSON.stringify(item.saleDefaultCost),
-          // saleSeasonCost : JSON.stringify(item.saleSeasonCost)
         });
         console.log(response.data);
+        alert(response.data)
       } catch (error) {
         console.error(`에러 발생 - 단어: ${item}`, error);
       }
     }
-    alert('저장되었습니다.')
+    
   };
 
   // 요금표 예약기간 삭제 함수 ----------------------------------------------
@@ -563,12 +557,14 @@ export default function PerDayCost (props : any) {
                           const previousIndex = copy.length - 1;
                           const previousCost = copy[previousIndex];
                           const result = [...copy,
-                            { reservePeriod: {start:"", end:""}, 
-                            inputDefault : [{seasonName: "default1", period: [{start:"", end:""}], 
-                                            costByRoomType: [{roomType: "", currency : '₩', dayStayCost : "", dayStayCostAll:"", dayPersonCost : "", minimumDay : "1", notice : ""}]}],
-                            inputPackage : [{addtionName :"", personCost : "", content: ""}],
-                            saleDefaultCost : [{seasonName: "", addtionName:"", period: [{start:"", end:""}], 
-                                            costByRoomType: [{roomType: "", currency : '₩', dayStayCost : "", dayStayCostAll:"", dayPersonCost : "", minimumDay : "1", notice : ""}]}]
+                            { 
+                              reserveType: "default",
+                              reservePeriod: {start:"", end:""}, 
+                              inputDefault : [{seasonName: "default1", period: [{start:"", end:""}], 
+                                              costByRoomType: [{roomType: "", currency : '₩', dayStayCost : "", dayStayCostAll:"", dayPersonCost : "", minimumDay : "1", notice : ""}]}],
+                              inputPackage : [{addtionName :"", personCost : "", content: ""}],
+                              saleDefaultCost : [{seasonName: "", addtionName:"", period: [{start:"", end:""}], 
+                                              costByRoomType: [{roomType: "", currency : '₩', dayStayCost : "", dayStayCostAll:"", dayPersonCost : "", minimumDay : "1", notice : ""}]}]
                             }
                           ];    
                           setInputCost(result);
@@ -741,7 +737,11 @@ export default function PerDayCost (props : any) {
                                       <input className="inputdefault" type="text" style={{width:'33%', textAlign:'right'}} 
                                         value={subItem.dayStayCost} onChange={(e)=>{
                                           handleinputDefaultCostChange(e, sectionIndex, index, subIndex, 'dayStayCost', inputCost, setInputCost)
-                                        }}/>
+                                        }}
+                                        onKeyDown={(e)=>{
+                                          if (e.key === 'Enter') {handleAddCostMultiplyDay(`${subItem.minimumDay}박`, sectionIndex, index, subIndex);}
+                                        }}
+                                        />
                                       <input className="inputdefault" type="text" style={{width:'33%', textAlign:'right'}} 
                                         value={subItem.dayStayCostAll} onChange={(e)=>{
                                           handleinputDefaultCostChange(e, sectionIndex, index, subIndex, 'dayStayCostAll', inputCost, setInputCost)

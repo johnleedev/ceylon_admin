@@ -113,7 +113,7 @@ export default function Sub4_TourLocation (props:any) {
 				<div className="main-list-cover-hotel">
 					<div className="titlebox">
 						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='3%' text='종류'/>
+						<TitleBox width='10%' text='종류'/>
 						<TitleBox width='10%' text='국가'/>
 						<TitleBox width='10%' text='도시'/>
 						<TitleBox width='10%' text='여행지명'/>
@@ -131,7 +131,7 @@ export default function Sub4_TourLocation (props:any) {
 									}}
 								>
 									<TextBox width='3%' text={item.id} />
-									<TextBox width='3%' text={item.sort} />
+									<TextBox width='10%' text={item.sort} />
 									<TextBox width='10%' text={item.nation} />
 									<TextBox width='10%' text={item.city} />
 									<TextBox width='10%' text={item.location} />

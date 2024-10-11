@@ -1,0 +1,70 @@
+
+.resort__search__bar__wrapper {
+  width: 80%;
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-color: white;
+  border-radius: 11px;
+  padding: 0.8vw 1.5vw;
+  max-width: 1200px;
+  justify-content: space-between;
+  margin: 9vw auto 0 auto;
+  border: 0.5px solid rgba(99, 99, 99, 1);
+  color: rgba(0, 0, 0, 1);
+  div:nth-child(4) {
+    border: none;
+  }
+  .search__btn__wrapper {
+    padding: 0 1vw;
+  }
+}
+
+
+
+.tour__header__section__wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  color: #fff;
+  .bg__image {
+    width: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+  .header__info {
+    position: absolute;
+    width: 80%;
+    max-width: 1200px;
+    padding-top: 16vw;
+    display: flex;
+    flex-direction: column;
+    .header__title {
+      font-size: 3vw;
+      font-weight: 700;
+    }
+    .header__subtitle {
+      font-size: 1.5vw;
+    }
+  }
+}
+
+
+.resort__category__section__wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 5vw 0;
+  width: 100%;
+  .category__items__wrapper {
+    margin: 0 auto;
+    display: grid;
+    gap: 1vw;
+    grid-template-columns: repeat(4, 1fr);
+    width: 90%;
+  }
+}
