@@ -50,6 +50,7 @@
   }
 
   .coverbox {
+    position: relative;
     display: flex;
     align-items: center;
     border-bottom: 1px solid #e2e2e2;
@@ -84,6 +85,9 @@
         box-sizing: border-box;
         border-radius: 5px;
         padding-left: 5px;
+      }
+      .textdefault {
+        @include middle();
       }
       .imagebox {
         width: 100px;
@@ -181,7 +185,54 @@
       }
     }
 
-    
+    .autoComplete {
+      width: 200px;
+      position: absolute;
+      left: 30px;
+      top: 50px;
+      background-color: #FFF;
+      border: 1px solid #8C8C8C;
+      z-index: 9;
+      padding: 10px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .dropDownList {
+        height: 40px;
+        display: flex;
+        align-items: center;
+      }
+      .dropDownList.selected{
+        width: 100%;
+        background-color: #EAEAEA;
+      }
+    }
+    .scheduleAutoComplete {
+      width: 200px;
+      position: absolute;
+      left: 120px;
+      top: 50px;
+      background-color: #FFF;
+      border: 1px solid #8C8C8C;
+      z-index: 9;
+      padding: 10px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .dropDownList {
+        height: 40px;
+        display: flex;
+        align-items: center;
+      }
+      .dropDownList.selected{
+        width: 100%;
+        background-color: #EAEAEA;
+      }
+    }
   }
   .half {
     width: 50%;
@@ -562,6 +613,60 @@
     .selectExmapleRow:hover {
       cursor: pointer;
       border: 2px solid #BDBDBD;
+    }
+  }
+
+  .saleCost-Select-Cover {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+
+    .saleCost-Select-leftBox {
+      width: 90%;
+      display: flex;
+      align-items: center;
+
+      .saleCost-Select-Btn {
+        width: 100px;
+        height: 40px;
+        border-radius: 5px;
+        margin-right: 10px;
+        gap: 10px;
+        @include middle();
+      }    
+      .saleCost-Select-Btn:hover {
+        cursor: pointer;
+        border: 1px solid #333;
+      }
+      .saleCost-Select-vet_bar {
+        width: 1px;
+        height: 40px;
+        margin: 0 20px;
+        background-color: #d8d8d8;
+      }
+    }
+    .saleCost-Select-rightBox {
+      width: 10%;
+      display: flex;
+      align-items: center;
+      
+      .checkInput {
+        width: 30px;
+        height: 30px; 
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+        margin-right: 5px;
+
+        .input {
+          width: 20px;
+          height: 20px;
+        }
+      }
+      p {
+        font-size: 14px;
+      }
     }
   }
 }

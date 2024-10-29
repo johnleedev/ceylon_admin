@@ -104,7 +104,6 @@ export default function Sub1_CityAirplane (props:any) {
 			.post(`${MainURL}/nationcity/deletecity`, getParams)
 			.then((res) => {
 				if (res.data) {
-					alert('삭제되었습니다.');
 					setRefresh(!refresh);
 				}
 			})

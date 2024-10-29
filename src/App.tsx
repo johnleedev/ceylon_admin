@@ -20,8 +20,6 @@ import HotelPage from './screen/home/Product/pages/HotelPage';
 
 function App() {
 
-
-
   return (
     <div className="App">
       <Routes>

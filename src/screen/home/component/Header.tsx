@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './Header.scss';
 import { FaPlus } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
-import logo_white from './images/logo_white.png'
-import logo_blue from './images/logo_blue.png'
-import person from './images/person.png'
+import logo_white from '../images/logo_white.png'
+import logo_blue from '../images/logo_blue.png'
+import person from '../images/person.png'
 
 const Header: React.FC = () => {
   
@@ -14,7 +14,8 @@ const Header: React.FC = () => {
     { title: "휴양지", url:"/products", links: [] },
     { title: "유럽", url:"/products/tourdetail", links: [] },
     { title: "여행지 미리가기", url:"/products/hotelresort", links: [] },
-    { title: "여행후기", url:"/products/hotelresortdetail", links: [] }
+    { title: "여행후기", url:"/products", links: [] },
+    { title: "관리자", url:"/admin", links: [] }
   ];
 
   const [menuOpen, setMenuOpen] = useState<boolean>(false);

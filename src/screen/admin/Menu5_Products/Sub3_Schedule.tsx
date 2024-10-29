@@ -36,11 +36,23 @@ export default function Sub3_Schedule (props:any) {
 		scheduleList : string;
 		reviseDate : string;
 	}
+	interface DetailsProps {
+		id: string;
+		scheduleID : string;
+		day : string;
+		breakfast : string;
+		lunch : string;
+		dinner : string;
+		hotel : string;
+		score : string;
+		scheduleDetail : string;
+	}
+
 	const [list, setList] = useState<ListProps[]>([]);
 	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
     const res = await axios.get(`${MainURL}/productschedule/getproductschedule`)
-    if (res) {
+    if (res.data) {
       setList(res.data);
     }
 		const nationCityRes = await axios.post(`${MainURL}/nationcity/getnationcity`, {
@@ -57,10 +69,26 @@ export default function Sub3_Schedule (props:any) {
 		fetchPosts();
 	}, [refresh]);  
 
+
 	// 모달 ---------------------------------------------------------
 	const [isViewAddScheduleModal, setIsViewAddScheduleModal] = useState<boolean>(false);
 	const [scheduleInfo, setScheduleInfo] = useState<ListProps>();
+	const [scheduleDetails, setScheduleDetails] = useState<DetailsProps[]>([]);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
+
+	// 상세 스케줄 가져오기
+	const fetchPostCost = async (id:string) => {
+		const res = await axios.get(`${MainURL}/productschedule/getproductscheduledetails/${id}`)
+		if (res.data !== false) {
+			const copy = res.data;
+			const result = copy.map((item:any) => ({
+				...item,
+				scheduleDetail: JSON.parse(item.scheduleDetail)
+			}));
+			setScheduleDetails(result);
+		}
+		setIsViewAddScheduleModal(true);
+	};
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
 	const deleteHotel = async (itemId:any) => {
@@ -117,9 +145,9 @@ export default function Sub3_Schedule (props:any) {
 						<TitleBox width='3%' text='NO'/>
 						<TitleBox width='3%' text='노출'/>
 						<TitleBox width='10%' text='여행지'/>
+						<TitleBox width='10%' text='여행기간'/>
 						<TitleBox width='10%' text='랜드사'/>
 						<TitleBox width='10%' text='상품타입'/>
-						<TitleBox width='10%' text='여행기간'/>
 						<TitleBox width='10%' text='항공'/>
 						<TitleBox width='5%' text='경유숙박'/>
 						<TitleBox width='15%' text='일정관리'/>
@@ -143,17 +171,17 @@ export default function Sub3_Schedule (props:any) {
 										}
 									</div>
 									<TextBox width='10%' text={item.tourLocation} />
+									<TextBox width='10%' text={item.tourPeriod}/>
 									<TextBox width='10%' text={item.landCompany} />
 									<TextBox width='10%' text={item.productType} />
-									<TextBox width='10%' text={item.tourPeriod}/>
 									<TextBox width='10%' text={item.departFlight} />
 									<TextBox width='5%' text={''} />
 									<div className="text" style={{width:`15%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn"
 											onClick={()=>{
-												setIsAddOrRevise('revise');
+	  										setIsAddOrRevise('revise');
 												setScheduleInfo(item);
-												setIsViewAddScheduleModal(true);
+												fetchPostCost(item.id);
 											}}
 										>
 											<p>일정관리</p>
@@ -202,7 +230,9 @@ export default function Sub3_Schedule (props:any) {
 								refresh={refresh}
 								setRefresh={setRefresh}
 								setIsViewAddScheduleModal={setIsViewAddScheduleModal}
+								setScheduleDetails={setScheduleDetails}
 								scheduleInfo={scheduleInfo}
+								scheduleDetails={scheduleDetails}
 								isAddOrRevise={isAddOrRevise}
 								nationlist={nationlist}
 						 />

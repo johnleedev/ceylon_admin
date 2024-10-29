@@ -629,6 +629,14 @@ export default function ModalAddCity (props : any) {
                                     )
                                   })
                                 }
+                                <div className="dayBtn" 
+                                  style={{backgroundColor:'#ccc'}}
+                                  onClick={()=>{
+                                    const copy = [...directAirline]; 
+                                      copy[index].airlineData[subIndex].departDate = ['월', '화', '수', '목', '금', '토', '일'];
+                                      setDirectAirline(copy);
+                                  }}
+                                ><p>All</p></div>
                               </div>
                             </div>
                             <div style={verticalBar40}></div>
@@ -713,7 +721,7 @@ export default function ModalAddCity (props : any) {
                         onClick={()=>{
                           const copy = [...directAirline];
                           const filtered = copy.filter((e:any, copyindex:any)=> copyindex !== index);
-                          setDirectAirline(filtered);
+                          setViaAirline(filtered);
                         }}
                         ><FiMinusCircle  color='#FF0000'/>
                       </div>
@@ -725,7 +733,7 @@ export default function ModalAddCity (props : any) {
                         handleChange={(e)=>{
                           const copy = [...viaAirline];
                           copy[index].tourPeriodNight = e.target.value;
-                          setDirectAirline(copy);
+                          setViaAirline(copy);
                         }}
                       />
                       <DropdownBox
@@ -736,7 +744,7 @@ export default function ModalAddCity (props : any) {
                         handleChange={(e)=>{
                           const copy = [...viaAirline];
                           copy[index].tourPeriodDay = e.target.value;
-                          setDirectAirline(copy);
+                          setViaAirline(copy);
                         }}
                       />
                     </div>
@@ -804,6 +812,14 @@ export default function ModalAddCity (props : any) {
                                     )
                                   })
                                 }
+                                <div className="dayBtn" 
+                                  style={{backgroundColor:'#ccc'}}
+                                  onClick={()=>{
+                                    const copy = [...viaAirline]; 
+                                    copy[index].airlineData[subIndex].departDate = ['월', '화', '수', '목', '금', '토', '일'];
+                                    setViaAirline(copy);
+                                  }}
+                                ><p>All</p></div>
                               </div>
                             </div>
                             <div style={verticalBar40}></div>

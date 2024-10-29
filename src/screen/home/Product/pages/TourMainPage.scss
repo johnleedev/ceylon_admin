@@ -1,104 +1,152 @@
-
-.resort__search__bar__wrapper {
-  @media (max-width: 1000px) {
-    display: none;
-  }
-  width: 80%;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  z-index: 10;
-  background-color: white;
-  border-radius: 11px;
-  padding: 0.8vw 1.5vw;
-  max-width: 1200px;
-  justify-content: space-between;
-  margin: 9vw auto 0 auto;
-  border: 0.5px solid rgba(99, 99, 99, 1);
-  color: rgba(0, 0, 0, 1);
-  div:nth-child(4) {
-    border: none;
-  }
-  .search__btn__wrapper {
-    padding: 0 1vw;
-  }
-}
-
-
-.resort__main__section__wrapper {
-  width: 100%;
-  @media (max-width: 1000px) {
-    height: 100vh;
-    overflow: hidden;
-  }
-  aspect-ratio: 16/9;
-  position: relative;
+@mixin middle {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  .bg__image__wrapper {
+};
+
+.tour_main {
+  width: 100%;
+  min-height: 100vh;
+  
+  // 검색창 ------------------------------------------
+  .tour_main_search__bar___wrapper {
+    @media (max-width: 1000px) {
+      display: none;
+    }
+    position: absolute;
     width: 100%;
-    height: 100%;
-    @media (max-width: 1000px) {
-      width: 1240px;
-      height: 55vh;
-      top: -18px;
-    }
-    position: absolute;
-    background-size: cover;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: -1;
-  }
-  .contents__wrapper {
-    @media (max-width: 1000px) {
-      width: 90%;
-    }
-    position: absolute;
-    width: 80%;
-    height: 100%;
+    height: 80px;
+    top: 200px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+    background-color: #fff;
+    border-radius: 11px;
     max-width: 1200px;
-    .bg__contents__wrapper {
-      display: flex;
-      color: white;
-      margin-top: 22vw;
-      margin-left: 2.5vw;
-      .web__wrapper {
-        @media (max-width: 1000px) {
-          display: none;
-        }
-        display: flex;
-        flex-direction: column;
-        gap: 1vw;
-        .web__wrapper_title {
-          font-size: 3vw;
-          font-weight: 700;
-        }
-        .web__wrapper_subtitle {
-          font-size: 1.5vw;
-        }
+    color: rgba(0, 0, 0, 1);
+  
+    .tour_main_search__box { 
+      width: 20%;
+      @include middle();
+  
+      .tour_main_search__text{
+        width: 20%;
+        font-size: 22px;
       }
-      .mobile__wrapper {
-        display: none;
-        @media (max-width: 1000px) {
-          letter-spacing: -1px;
+      .tour_main_search__select {
+        width: 80%;
+        min-height: 50px;
+        border: none;
+        box-sizing: border-box;
+        color: #333;
+        font-size: 16px;
+        background-color: #fff;
+        outline: none;
+      }
+      .tour_main_search__btn {
+        width: 80%;
+        height: 40px;
+        border-radius: 10px;
+        background-color: #2FB4E2;
+        color: #fff;
+        @include middle();
+      }
+      .tour_main_search__btn:hover {
+        cursor: pointer;
+        border: 1px solid #1e82a4;
+      }
+    }
+    .tour_main_search__bar {
+      width: 1px;
+      height: 40px;
+      margin: 0 10px;
+      background-color: #dedede;
+    }
+  }
+  
+  // 상단 메인 섹션 ------------------------------------------
+  .tour_main_main__section__wrapper {
+    width: 100%;
+    @media (max-width: 1000px) {
+      height: 100vh;
+      overflow: hidden;
+    }
+    aspect-ratio: 16/9;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .bg__image__wrapper {
+      width: 100%;
+      height: 100%;
+      @media (max-width: 1000px) {
+        width: 1240px;
+        height: 55vh;
+        top: -18px;
+      }
+      position: absolute;
+      background-size: cover;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: -1;
+    }
+    .contents__wrapper {
+      @media (max-width: 1000px) {
+        width: 90%;
+      }
+      position: absolute;
+      width: 80%;
+      height: 100%;
+      max-width: 1200px;
+      .bg__contents__wrapper {
+        display: flex;
+        color: white;
+        margin-top: 22vw;
+        margin-left: 2.5vw;
+        .web__wrapper {
+          @media (max-width: 1000px) {
+            display: none;
+          }
           display: flex;
           flex-direction: column;
-          gap: 0.7em;
-          margin-top: 9em;
-          .mobile__title {
-            font-size: 2rem;
+          gap: 1vw;
+          .web__wrapper_title {
+            font-size: 3vw;
             font-weight: 700;
           }
-          .mobile__subtitle {
-            width: 75%;
-            font-size: 1rem;
-            line-height: 1.6;
+          .web__wrapper_subtitle {
+            font-size: 1.5vw;
+          }
+        }
+        .mobile__wrapper {
+          display: none;
+          @media (max-width: 1000px) {
+            letter-spacing: -1px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7em;
+            margin-top: 9em;
+            .mobile__title {
+              font-size: 2rem;
+              font-weight: 700;
+            }
+            .mobile__subtitle {
+              width: 75%;
+              font-size: 1rem;
+              line-height: 1.6;
+            }
           }
         }
       }
     }
     .bg__select__btns__wrapper {
+      width: 150px;
+      height: 40;
       @media (max-width: 1000px) {
         padding: none;
         bottom: 55vh;
@@ -106,25 +154,20 @@
         right: 0;
       }
       position: absolute;
-      bottom: 10vw;
-      left: 2.5vw;
+      bottom: 5vw;
+      left: 20vw;
       aspect-ratio: 4;
       color: #ffffff;
       display: flex;
       align-items: center;
-      border-radius: 2.5vw;
+      border-radius: 20px;
       justify-content: space-around;
-      padding: 0.5vw 2vw;
+      padding: 10px;
       background-color: rgba(2, 2, 2, 0.6);
-      gap: 1vw;
       .select__indicator {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 2vw;
-        span {
-          font-size: 1vw;
-        }
       }
       .select__btns {
         @media (max-width: 1000px) {
@@ -133,212 +176,300 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        div {
-          height: 1.2vw;
-          border-left: 1px solid rgba(117, 117, 117, 1);
+        .select__btns_ver_bar {
+          width: 1px;
+          height: 20px;
+          background-color: #ccc;
+          opacity: 0.5;
+          margin: 0 3px;
         }
-        svg {
-          height: 1.5vw;
-          width: 1.5vw;
-        }
+      }
+      .select__btns:hover {
+        cursor: pointer;
       }
     }
-  }
-  .bg__selector__wrapper {
-    @media (max-width: 1000px) {
-      display: none;
-    }
-    position: absolute;
-    bottom: 1.5vw;
-    right: 1.5vw;
-    display: flex;
-    gap: 1vw;
-    .image__wrapper {
-      width: 12vw;
-      aspect-ratio: 1.6;
-      border-radius: 5px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-      &.bg__select {
-        border: 2px solid #ffffff;
-      }
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-  }
-}
-
-
-
-.resort__tour__section__wrapper {
-  @media (max-width: 1000px) {
-    width: 100%;
-    position: relative;
-    height: 600px;
-    padding: 100px 0;
-  }
-  @media (min-width: 1000px) {
-    display: flex;
-    flex-direction: column;
-  }
-  margin: 0 auto;
-  width: 85%;
-  padding: 10vw 0;
-  .spot__cards {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1.5vw;
-    @media (max-width: 1000px) {
-      display: none;
-    }
-    .font__desc {
-      color: rgba(106, 106, 106, 1);
-      font-size: 1vw;
-      display: inline-block;
-      line-height: 1.6;
-      margin-top: 1vw;
-    }
-  }
-}
-
-.spot__card__wrapper {
-  background-size: cover;
-  border-radius: 7px;
-  background-color: transparent;
-  padding: 2vw;
-  color: white;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  aspect-ratio: 1;
-  @media (max-width: 1000px) {
-    flex: none;
-    width: 268px;
-    height: 279px;
-    margin-right: 20px;
-    padding: 20px;
-  }
-  span {
-    &.spot__title {
-      font-size: 2vw;
-      font-weight: 900;
+    .bg__selector__wrapper {
       @media (max-width: 1000px) {
-        font-size: 2rem;
+        display: none;
       }
-    }
-    &.spot__subtitle {
-      font-size: 1vw;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.7);
-      @media (max-width: 1000px) {
-        font-size: 1rem;
-      }
-    }
-  }
-}
-
-.resort__best__section__wrapper {
-  padding: 5vw 10vw;
-  background-color: rgba(248, 248, 248, 1);
-  @media (max-width: 1000px) {
-    padding: 60px 0;
-  }
-  .promotion__cards__wrapper {
-    @media (max-width: 1000px) {
-      display: none;
-    }
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5vw;
-    .recommend__card__wrapper {
-      width: 100%;
+      position: absolute;
+      bottom: 1.5vw;
+      right: 1.5vw;
       display: flex;
-      flex-direction: column;
-      gap: 0.5vw;
-      margin-bottom: 10px;
-      .recommend__image__wrapper {
-        width: 100%;
-        aspect-ratio: 1.1;
-        @media (max-width: 1000px) {
-          aspect-ratio: 1.05;
-        }
-        border-radius: 7px;
+      gap: 1vw;
+      .image__wrapper {
+        width: 12vw;
+        aspect-ratio: 1.6;
+        border-radius: 5px;
         overflow: hidden;
-        margin-bottom: 1.2vw;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        &.bg__select {
+          border: 2px solid #ffffff;
+        }
         img {
-          object-fit: cover;
           width: 100%;
           height: 100%;
+          object-fit: cover;
         }
       }
-      .recommend__card__title {
-        @media (max-width: 1000px) {
-          font-size: 20px;
+      .image__wrapper {
+        cursor: pointer;
+      }
+    }
+    
+  }
+  
+  
+  
+  .tour_main_tour__section__wrapper {
+    @media (max-width: 1000px) {
+      width: 100%;
+      position: relative;
+      height: 600px;
+      padding: 100px 0;
+    }
+    @media (min-width: 1000px) {
+      display: flex;
+      flex-direction: column;
+    }
+    margin: 0 auto;
+    width: 85%;
+    padding: 10vw 0;
+
+    .spot__cards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5vw;
+      @media (max-width: 1000px) {
+        display: none;
+      }
+      .spot__card__wrapper_box {
+
+        .spot__card__wrapper {
+          background-size: cover;
+          border-radius: 7px;
+          background-color: transparent;
+          padding: 20px;
+          color: white;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          aspect-ratio: 1;
+          @media (max-width: 1000px) {
+            flex: none;
+            width: 268px;
+            height: 279px;
+            margin-right: 20px;
+            padding: 20px;
+          }
+          span {
+            &.spot__title {
+              font-size: 33px;
+              font-weight: 900;
+              @media (max-width: 1000px) {
+                font-size: 2rem;
+              }
+            }
+            &.spot__subtitle {
+              font-size: 17px;
+              font-weight: 500;
+              color: rgba(255, 255, 255, 0.7);
+              @media (max-width: 1000px) {
+                font-size: 1rem;
+              }
+            }
+          }
         }
-        font-size: 2vw;
+        .spot__card__wrapper:hover {
+          cursor: pointer;
+        }
+        .font__desc {
+          color: rgba(106, 106, 106, 1);
+          font-size: 1vw;
+          display: inline-block;
+          line-height: 1.6;
+          margin-top: 1vw;
+        }
+      }
+      
+    }
+  }
+  
+  
+  
+  .tour_main_best__section__wrapper {
+    padding: 5vw 10vw;
+    background-color: rgba(248, 248, 248, 1);
+    @media (max-width: 1000px) {
+      padding: 60px 0;
+    }
+    @include middle();
+    flex-direction: column;
+
+    .section__header__wrapper {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2vw;
+      @media (max-width: 1000px) {
+        padding: 0 20px;
+      }
+      @media (max-width: 500px) {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 10px;
+      }
+      .section__title {
+        color: rgba(0, 0, 0, 1);
+        font-size: 50px;
         font-weight: 700;
-        color: rgba(51, 51, 51, 1);
-      }
-      .recommend__card__info {
         @media (max-width: 1000px) {
-          margin-top: 10px;
+          font-size: 2rem;
         }
+        .section__main__title {
+          @media (max-width: 1000px) {
+            display: none;
+          }
+          display: flex;
+          gap: 1vw;
+        }
+        .section__mobile__title {
+          @media (min-width: 1000px) {
+            display: none;
+          }
+          display: flex;
+          gap: 5px;
+        }
+      }
+      .section__desc {
         display: flex;
-        gap: 1vw;
-        span {
+        flex-direction: column;
+        align-items: flex-end;
+        line-height: 1.6;
+        margin-bottom: 5px;
+        font-size: 1.2vw;
+        letter-spacing: 0;
+        color: rgba(119, 119, 119, 1);
+        @media (max-width: 1000px) {
+          font-size: 1rem;
+        }
+        @media (max-width: 500px) {
+          align-items: flex-start;
+        }
+      }
+    }
+    .promotion__cards__wrapper {
+      max-width: 1200px;
+      @media (max-width: 1000px) {
+        display: none;
+      }
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5vw;
+      .recommend__card__wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5vw;
+        margin-bottom: 10px;
+        .recommend__image__wrapper {
+          width: 100%;
+          aspect-ratio: 1.1;
+          @media (max-width: 1000px) {
+            aspect-ratio: 1.05;
+          }
+          border-radius: 7px;
+          overflow: hidden;
+          margin-bottom: 1.2vw;
+          img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .recommend__card__title {
+          @media (max-width: 1000px) {
+            font-size: 20px;
+          }
+          font-size: 24px;
+          font-weight: 700;
+          color: rgba(51, 51, 51, 1);
+        }
+        .recommend__card__info {
+          display: flex;
+          span {
+            font-size: 14px;
+            color: #ccc;
+          }
+          .recommend__rating__wrapper {
+            margin-left: 10px;
+
+            .rating__board__wrapper {
+              width: 100%;
+              display: flex;
+          
+              .rating__icon {
+                @include middle();
+                .empty__star .filled__star {
+                  width: 100%;
+                  height: 100%;
+                }
+                .empty__star {
+                  fill: rgba(119, 119, 119, 1);
+                }
+                .filled__star {
+                  fill: rgba(252, 196, 0, 1);
+                  z-index: 2;
+                }
+              }
+            }
+          }
+        }
+        .promotion__duedate {
+          margin-top: 0.5vw;
           font-size: 1vw;
           @media (max-width: 1000px) {
             font-size: 14px;
           }
           color: rgba(119, 119, 119, 1);
         }
-        .recommend__rating__wrapper {
-          width: 5vw;
-          @media (max-width: 1000px) {
-            width: 60px;
-            padding-top: 3px;
-          }
-        }
-      }
-      .promotion__duedate {
-        margin-top: 0.5vw;
-        font-size: 1vw;
-        @media (max-width: 1000px) {
-          font-size: 14px;
-        }
-        color: rgba(119, 119, 119, 1);
       }
     }
+    // .promotion__mobile__card__wrapper {
+    //   max-width: 1200px;
+    //   margin-right: 20px;
+    //   flex: none;
+    //   width: 282px;
+    //   height: 350px;
+    //   .recommend__image__wrapper {
+    //     width: 282px;
+    //     height: 270px;
+    //   }
+    //   .recommend__card__title {
+    //     margin-top: 10px;
+    //     font-size: 20px;
+    //     color: rgba(255, 255, 255, 1);
+    //   }
+    //   .recommend__card__info {
+    //     margin-top: 15px;
+    //     span {
+    //       font-size: 14px;
+    //       color: rgba(255, 255, 255, 1);
+    //     }
+    //     .recommend__rating__wrapper {
+    //       margin-left: 10px;
+    //       width: 70px;
+    //       padding-top: 2px;
+    //     }
+    //   }
+    // }
   }
-  .promotion__mobile__card__wrapper {
-    margin-right: 20px;
-    flex: none;
-    width: 282px;
-    height: 350px;
-    .recommend__image__wrapper {
-      width: 282px;
-      height: 270px;
-    }
-    .recommend__card__title {
-      margin-top: 10px;
-      font-size: 20px;
-      color: rgba(255, 255, 255, 1);
-    }
-    .recommend__card__info {
-      margin-top: 15px;
-      span {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 1);
-      }
-      .recommend__rating__wrapper {
-        margin-left: 10px;
-        width: 70px;
-        padding-top: 2px;
-      }
-    }
-  }
+  
+
+  
 }
+

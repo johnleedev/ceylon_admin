@@ -1,42 +1,34 @@
 import "./HotelDetailPage.scss";
 import { useParams } from "react-router-dom";
-import { getHotelDataById, getPackageById } from "../../utilies";
 import { useEffect, useState } from "react";
-import KEAir from "../../images/airline/korea.jpg";
-import JAAir from "../../images/airline/garuda.jpg";
 import axios from "axios";
 import MainURL from "../../../../MainURL";
-import hotelbuilding from "../../images/hotel/hotelbuilding.png"
-import hotelplate from "../../images/hotel/hotelplate.png"
-import location from "../../images/hotel/location.png"
+import hotelbuilding from "../../images/tourPage/hotelbuilding.png"
+import hotelplate from "../../images/tourPage/hotelplate.png"
+import location from "../../images/tourPage/location.png"
+import hotelImagePath1 from "../../images/hotels/hotel_01.png";
+import headerBgImage from "../../images/tourPage/hotelPageMain.jpg";
+import mobileImagePath from "../../images/tourPage/mobile-info.jpg";
+import { FaStar, FaCheck } from "react-icons/fa";
+import AirlineData from "../../common/AirlineData";
+import RatingBoard from "../../common/RatingBoard";
+import TourImageData from "../../common/TourImageData";
+import { FaLocationDot } from "react-icons/fa6";
 
-import hotelImagePath1 from "../../images/resort/hotel_01.png";
-import headerBgImage from "../../images/hotel/main-bg-0.jpg";
-import detailImagePath0 from "../../images/hotel/detail-0.jpg";
-import detailImagePath1 from "../../images/hotel/detail-1.jpg";
-import detailImagePath2 from "../../images/hotel/detail-2.jpg";
-import detailImagePath3 from "../../images/hotel/detail-1.jpg";
-import detailImagePath4 from "../../images/hotel/detail-2.jpg";
-import mobileImagePath from "../../images/hotel/mobile-info.jpg";
 
 export default function PackagePage() {
-
-  const { packageId } = useParams();
-  const id = 1;
-  const packageData = getPackageById(id);
-  const hotelData = getHotelDataById(packageData.hotelId);
-
-  const [onModal, setOnModal] = useState(false);
-
-
+ 
+  const url = new URL(window.location.href);
+  const ID = url.searchParams.get("id");
+  
   const hotelDataSub = {
     id: 0,
     tourId: 0,
     title: "세인트 레지스 호텔",
     subtitle: "Saint Regis Hotel Bali",
     rating: 5,
-    headerBgImage: headerBgImage,
-    thumbnailImagePath: hotelImagePath1,
+    imagePath: TourImageData.hotelPageMain,
+    mainBgImage: TourImageData.hotelPageMain,
     description:
       "2017년 새롭게 단장을 마치고 모던 럭셔리를 지향하는 호텔로 거듭났습니다. 모든 객실에서 지쿠지와 개인용 풀장이 설치되어있는 것이 특징이며, 하얗고 깔끔한 인테리어는 산토리니만의 감성을 느끼기에 안성맞춤입니다.",
     benefit: [
@@ -47,13 +39,11 @@ export default function PackagePage() {
     ],
     roomtype: ["클리프 오션뷰", "오션뷰", "오션뷰 풀빌라"],
     hotelImages: [
-      { type: 1, imagePath: detailImagePath0 },
-      { type: 2, imagePath: detailImagePath1 },
-      { type: 3, imagePath: detailImagePath2 },
-      { type: 2, imagePath: detailImagePath3 },
-      { type: 3, imagePath: detailImagePath4 },
+      { type: 1, imagePath: TourImageData.hotelDetail1 },
+      { type: 2, imagePath: TourImageData.hotelDetail2 },
+      { type: 3, imagePath: TourImageData.hotelDetail3 },
+      { type: 2, imagePath: TourImageData.hotelDetail3 },
     ],
-    hotelInfoImages: { webImagePath: "", mobileImagePath: mobileImagePath },
     address: {
       contury: "인도네시아",
       state: "발리",
@@ -67,58 +57,7 @@ export default function PackagePage() {
   }
   
   // 이요한 작업 -------------------------------------------------------------------------------------------------------------------------------------
-
-  interface SelectScheduleListProps {
-    day: string;
-    breakfast: string;
-    lunch: string;
-    dinner: string;
-    hotel: string;
-    score: string;
-    schedule: {
-      text1: string;
-      text2: string;
-      text3: string;
-    }[]
-  }
-
-  interface SelectScheduleProps {
-    isView : string;
-    tourLocation : string;
-    landCompany : string;
-    productType : string;
-    tourPeriodNight : string;
-    tourPeriodDay : string;
-    departAirport : string;
-    departFlight : string;
-    selectedSchedule : string;
-    cautionNote : string;
-    includeNote : string;
-    includeNoteText : string;
-    notIncludeNote : string;
-    notIncludeNoteText : string;
-    scheduleList : SelectScheduleListProps[];
-    reviseDate : string;
-  }
-  
-  
-  const [scheduleAll, setScheduleAll] = useState([]);
-  const [tourLocationSelected, setTourLocationSelected] = useState('');
-  const [scheduleSelected, setScheduleSelected] = useState<SelectScheduleProps>();
-  const [flightType, setFlightType] = useState("직항");
-  const [periodSelected, setPeriodSelected] = useState('4박 6일');
-  
-  const fetchPosts = async () => {
-    const resschedule = await axios.get(`${MainURL}/product/getschedule`)
-    if (resschedule.data) {
-      setScheduleAll(resschedule.data);
-    } 
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);  
-
+ 
   interface AirlineSubProps {
     sort : string;
     airlineName: string;
@@ -134,34 +73,51 @@ export default function PackagePage() {
     departAirportMain : string;
     airlineData: AirlineSubProps[];
   }   
+  const [flightType, setFlightType] = useState("직항");
+  const [selectedAirlineIndex, setSelectedAirlineIndex] = useState(0);  
   const [directAirline, setDirectAirline] = useState<AirlineProps[]>([]);
   const [viaAirline, setViaAirline] = useState<AirlineProps[]>([]);
-  
-  const fetchAirplane = async () => {
-    const res = await axios.get(`${MainURL}/product/getairplane/${tourLocationSelected}`)
-    if (res.data) {
-      const copy = res.data[0];
-      const directAirlineCopy = copy.directAirline ? JSON.parse(copy.directAirline) : [];
-      const viaAirlineCopy = copy.viaAirline ? JSON.parse(copy.viaAirline) : [];
-      setDirectAirline(directAirlineCopy);
-      setViaAirline(viaAirlineCopy);
-    } 
-  };
 
-  useEffect(() => {
-    fetchAirplane();
-  }, [tourLocationSelected]);  
+  interface SelectScheduleListProps {
+    day : string;
+    breakfast :string;
+    lunch:string;
+    dinner :string;
+    hotel:string;
+    score:string;
+    scheduleDetail: ScheduleDetailProps[];
+  }
 
+   
+  interface ScheduleDetailProps {
+    id : string;
+    sort: string;
+    location: string;
+    subLocation : string;
+    locationTitle : string;
+    locationContent : string;
+    locationContentDetail : {name:string; notice:string[]}[];
+    postImage : string;
+  }
 
   const [isView, setIsView] = useState('');
   const [tourLocation, setTourLocation] = useState('');
-  const [landCompany, setLandCompany] = useState('');
-  const [productType, setProductType] = useState('');
+
   const [tourPeriodNight, setTourPeriodNight] = useState('');
   const [tourPeriodDay, setTourPeriodDay] = useState('');
+  const [airlineName, setAirlineName] = useState('');
   const [departAirport, setDepartAirport] = useState('');
-  const [departFlight, setDepartFlight] = useState('');
-  const [selectedSchedule, setSelectedSchedule] = useState('');
+  const [departTime, setDepartTime] = useState('');
+  const [arriveAirport, setArriveAirport] = useState('');
+  const [arriveTime, setArriveTime] = useState('');
+  const [airlineNameVia, setAirlineNameVia] = useState('');
+  const [departAirportVia, setDepartAirportVia] = useState('');
+  const [departTimeVia, setDepartTimeVia] = useState('');
+  const [arriveAirportVia, setArriveAirportVia] = useState('');
+  const [arriveTimeVia, setArriveTimeVia] = useState('');
+
+  const [landCompany, setLandCompany] = useState('');
+  const [productType, setProductType] = useState('');
   const [cautionNote, setCautionNote] = useState('');
   const [includeNote, setIncludeNote] = useState([]);
   const [includeNoteText, setIncludeNoteText] = useState('');
@@ -169,47 +125,90 @@ export default function PackagePage() {
   const [notIncludeNoteText, setNotIncludeNoteText] = useState('');
   const [scheduleList, setScheduleList] = useState<SelectScheduleListProps[]>([]);
   const [reviseDate, setReviseDate] = useState('');
-  
+
+  const fetchAirplane = async (location:string) => {
+    const res = await axios.get(`${MainURL}/product/getairplane/${location}`)
+    if (res.data) {
+      const copy = res.data[0];
+      const directAirlineCopy = copy.directAirline ? JSON.parse(copy.directAirline) : [];
+      const viaAirlineCopy = copy.viaAirline ? JSON.parse(copy.viaAirline) : [];
+      setDirectAirline(directAirlineCopy);
+      setViaAirline(viaAirlineCopy);
+      setTourPeriodNight(directAirlineCopy[0].tourPeriodNight);
+      setTourPeriodDay(directAirlineCopy[0].tourPeriodDay);
+      setAirlineName(directAirlineCopy[0].airlineData[0].airlineName);
+      setDepartAirport(directAirlineCopy[0].airlineData[0].departAirport);
+      setDepartTime(directAirlineCopy[0].airlineData[0].departTime);
+      setArriveAirport(directAirlineCopy[0].airlineData[0].arriveAirport);
+      setArriveTime(directAirlineCopy[0].airlineData[0].arriveTime);
+    } 
+  };
+
+  const fetchScheduleDetails = async (postId:any) => {
+    const res = await axios.get(`${MainURL}/productschedule/getproductscheduledetails/${postId}`)
+		if (res.data !== false) {
+			const copy = res.data;
+			const result = copy.map((item:any) => ({
+				...item,
+				scheduleDetail: JSON.parse(item.scheduleDetail)
+			}));
+      setScheduleList(result);
+		}
+  };
+
+  const fetchPosts = async () => {
+    const resschedule = await axios.post(`${MainURL}/product/getschedule`, {
+      id : ID
+    })
+    if (resschedule.data) {
+      const copy = resschedule.data[0];
+      fetchAirplane(copy.tourLocation);
+      fetchScheduleDetails(copy.id);
+      setFlightType('직항')
+      setIsView(copy.isView);
+      setTourLocation(copy.tourLocation);
+      setLandCompany(copy.landCompany);
+      setProductType(copy.productType);
+      setCautionNote(copy.cautionNote);
+      setIncludeNote(JSON.parse(copy.includeNote));
+      setIncludeNoteText(copy.includeNoteText);
+      setNotIncludeNote(JSON.parse(copy.notIncludeNote));
+      setNotIncludeNoteText(copy.notIncludeNoteText);
+      setReviseDate(copy.reviseDate);
+    } 
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);  
 
   return (
-    <div>
-      <div
-        className={"mini hotel__header__section__wrapper"}
-      >
-        <img className="bg__image" src={hotelData.mainBgImage} alt="temp" />
-        <div className="header__info">
-          <span className="header__subtitle">{hotelData.subtitle}</span>
-          <span className="header__title">{hotelData.title}</span>
-          <div className="header__loc__rating">
-            <span className="header__location">{`${location}`}</span>
+    <div className="hotel_detail">
+      
+      <div className="hotel_detail__header__section__wrapper">
+        <img className="hotel_detail_bg__image" src={hotelDataSub.mainBgImage} alt="temp" />
+        <div className="hotel_detail_header__info">
+          <span className="hotel_detail_header__subtitle">{hotelDataSub.subtitle}</span>
+          <span className="hotel_detail_header__title">{hotelDataSub.title}</span>
+          <div className="hotel_detail_header__loc__rating">
+            <span className="header__location">발리 {'>'} 꾸따</span>
             <div className="header__rating">
-              {/* <RatingBoard rating={rating} /> */}
+               <FaStar />
+               <FaStar />
+               <FaStar />
             </div>
           </div>
-          <span className="header__desc">{hotelData.desc}</span>
         </div>
       </div>
-      <div className="acommodation__selector__wrapper">
+
+
+      <div className="hotel_detail_acommodation__selector__wrapper">
         <span className="sub__text">인천출발 / 발리 5박 7일</span>
         <div className="selected__item__wrapper">
           <span className="selected__item">
             [꾸따] 포 포인츠 바이 쉐라톤 디럭스 라군 2박 + [누사두아]
             세인트레지스 풀빌라 2박
           </span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={3}
-            stroke="currentColor"
-            className="extension__btn"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m19.5 8.25-7.5 7.5-7.5-7.5"
-            />
-          </svg>
         </div>
         <div className="hotel__selector__wrapper">
           <span>포 포인츠 바이 쉐리톤</span>
@@ -217,7 +216,7 @@ export default function PackagePage() {
         </div>
       </div>
   
-      <div className="image__selector__wrapper">
+      <div className="hotel_detail_image__selector__wrapper">
         <div className="images__grid__wrapper">
           {
           hotelDataSub.hotelImages.slice(0, 4).map((image, idx) => (
@@ -226,7 +225,7 @@ export default function PackagePage() {
               {idx === 3 && (
                 <div
                   className="mobile__show__all__btn"
-                  onClick={() => setOnModal(true)}
+                  onClick={() => {}}
                 >
                   <span>사진 모두 보기</span>
                   <span>{`+${hotelDataSub.hotelImages.length}`}</span>
@@ -236,24 +235,9 @@ export default function PackagePage() {
           ))
           }
         </div>
-        <div className="show__all__btn" onClick={() => setOnModal(true)}>
-          <span>호텔 사진 모두 보기</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-6"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
       </div>
 
-      <div className="info__items__wrapper mx__section">
+      <div className="hotel_detail_info__items__wrapper hotel_detail_mx__section">
         <div className={"only-web"}>
           <span className="item__title">룸타입</span>
           <ul>
@@ -285,25 +269,14 @@ export default function PackagePage() {
               <li key={idx}>{`${distance} - ${name}`}</li>
             ))}
             <div className="map__view__btn">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="size-6"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <FaLocationDot size={16}/>
               <span>호텔 위치 보기</span>
             </div>
           </ul>
         </div>
       </div>
 
-      <div className="select__package__byroom__wrapper">
+      <div className="hotel_detail_select__package__byroom__wrapper">
         <div className="header__wrapper">
           <span className="header__main">룸타입별 선택상품</span>
           <span className="header__sub">
@@ -312,7 +285,7 @@ export default function PackagePage() {
         </div>
         <div className="package__item__wrapper">
           <div className="image__wrapper">
-            <img src={hotelData.info.images.roomImage[0].image} alt="temp" />
+            <img src={hotelDataSub.hotelImages[0].imagePath} alt="temp" />
           </div>
           <div className="padding__wrapper">
             <div className="package__info__wrapper">
@@ -345,55 +318,22 @@ export default function PackagePage() {
         </div>
       </div>
 
-      {/* selected TourLocation ------------------------------------------------------------------------------------------------------------------------- */}
-      <div className="selectedScheduleBox" style={{display:'flex', justifyContent:'center'}}>
-        {
-          scheduleAll?.map((item:any, index:any)=>{
-
-            return (
-              <div  className="selectedScheduleBtn" key={index}
-                    onClick={()=>{
-                      setFlightType('직항')
-                      setScheduleSelected(item); 
-                      setTourLocationSelected(item.tourLocation)
-                      setIsView(item.isView);
-                      setTourLocation(item.tourLocation);
-                      setLandCompany(item.landCompany);
-                      setProductType(item.productType);
-                      setTourPeriodNight(item.tourPeriodNight);
-                      setTourPeriodDay(item.tourPeriodDay);
-                      setDepartAirport(item.departAirport);
-                      setDepartFlight(item.departFlight);
-                      setSelectedSchedule(item.selectedSchedule);
-                      setCautionNote(item.cautionNote);
-                      setIncludeNote(JSON.parse(item.includeNote));
-                      setIncludeNoteText(item.includeNoteText);
-                      setNotIncludeNote(JSON.parse(item.notIncludeNote));
-                      setNotIncludeNoteText(item.notIncludeNoteText);
-                      setScheduleList(JSON.parse(item.scheduleList));
-                      setReviseDate(item.reviseDate);
-                    }}
-                    style={{width:'100px', height:'50px', border:'1px solid #333', display:'flex', alignItems:'center', justifyContent:'center',
-                            backgroundColor: tourLocationSelected ===  item.tourLocation ? '#333' : '#fff',
-                            color: tourLocationSelected ===  item.tourLocation ? '#fff' : '#333'}} >
-                {item.tourLocation}
-              </div>
-            )
-          })
-        }
-      </div>
-
-
-      <div className="schedule__byairline__wrapper">
+      <div className="hotel_detail_schedule__byairline__wrapper">
         <div className="header__wrapper">
           <span className="header__main">항공사별 일정표</span>
           <div className={"sidebar__wrapper"}
           >
-            <span className={"selected__sidebar"}
-              onClick={() => {}}
+            <span className={flightType === '직항' ? "selected__sidebar" : ""}
+              onClick={() => {
+                setFlightType('직항');
+                setSelectedAirlineIndex(0);
+              }}
             >직항</span>
-            <span className={"selected__sidebar"}
-              onClick={() => {}}
+            <span className={flightType === '경유' ? "selected__sidebar" : ""}
+              onClick={() => {
+                setFlightType('경유');
+                setSelectedAirlineIndex(0);
+              }}
             >경유</span>
           </div>
         </div>
@@ -401,16 +341,24 @@ export default function PackagePage() {
           { flightType === '직항'
             ?
             directAirline.map((item:any, index:any)=>{
+
+              const airlineWord = item.airlineData[0].airlineName.slice(0, 2); 
+              const airlineWordCopy = (airlineWord === '5J' || airlineWord === '7C') ?  `A${airlineWord}` : airlineWord;
+              const airlineImage = AirlineData[airlineWordCopy as keyof typeof AirlineData];
+
+
               return (
+                (item.tourPeriodNight !== '' && item.tourPeriodDay !== '')
+                ?
                 <div className="flight__item__wrapper" key={index}>
                   <div className="airline__wrapper">
-                    {/* <img src={''} alt="temp" /> */}
+                    <img src={airlineImage} alt="temp" />
                     <span>
                       {item.airlineData[0].airlineName}
                     </span>
                   </div>
                   <div className="flight__schedule__wrapper">
-                    <div className="flight__schedule">
+                    <div className="flight__schedule_row">
                       <span>{item.airlineData[0].departAirport}</span>
                       <span>출발</span>
                       <span>({item.airlineData[0].departTime})</span>
@@ -419,47 +367,98 @@ export default function PackagePage() {
                       <span>도착</span>
                       <span>({item.airlineData[0].arriveTime})</span>
                     </div>
-                    <span>{tourLocationSelected} {item.tourPeriod}</span>
+                    <span>{tourLocation} {item.tourPeriodNight} {item.tourPeriodDay}</span>
                   </div>
-                  <div className="flight__select__btn__wrapper"
+                  <div className="flight__select__btn__wrapper "
                     onClick={()=>{
-
+                      setSelectedAirlineIndex(index);
+                      setTourPeriodNight(item.tourPeriodNight);
+                      setTourPeriodDay(item.tourPeriodDay);
+                      setAirlineName(item.airlineData[0].airlineName);
+                      setDepartAirport(item.airlineData[0].departAirport);
+                      setDepartTime(item.airlineData[0].departTime);
+                      setArriveAirport(item.airlineData[0].arriveAirport);
+                      setArriveTime(item.airlineData[0].arriveTime);
                     }}
-                  >
-                    {/* <SelectBtn checked={true} /> */}
+                    >
+                    <div className={selectedAirlineIndex === index ? "select__btn__wrapper checked" : "select__btn__wrapper"}>
+                      <span>선택</span>
+                      <FaCheck />
+                    </div>
                   </div>
+                </div>
+                :
+                <div className="flight__item__wrapper" style={{width:'100%', display:'flex', justifyContent:'center'}}>
+                  <div style={{}}>직항 항공편이 없습니다.</div>
                 </div>
               )
             })
             :
             viaAirline.map((item:any, index:any)=>{
-              return (
+
+              const airlineWord = item.airlineData[0].airlineName.slice(0, 2); 
+              const airlineWordCopy = (airlineWord === '5J' || airlineWord === '7C') ?  `A${airlineWord}` : airlineWord;
+              const airlineImage = AirlineData[airlineWordCopy as keyof typeof AirlineData];
+              
+              return ( 
+                (item.tourPeriodNight !== '' && item.tourPeriodDay !== '')
+                ?
                 <div className="flight__item__wrapper" key={index}>
                   <div className="airline__wrapper">
-                    {/* <img src={''} alt="temp" /> */}
+                    <img src={airlineImage} alt="temp" />
                     <span>
                       {item.airlineData[0].airlineName}
                     </span>
                   </div>
                   <div className="flight__schedule__wrapper">
-                    <div className="flight__schedule">
-                      <span>{item.airlineData[0].departAirport}</span>
-                      <span>출발</span>
-                      <span>({item.airlineData[0].departTime})</span>
-                      <span>-</span>
-                      <span>{item.airlineData[0].arriveAirport}</span>
-                      <span>도착</span>
-                      <span>({item.airlineData[0].arriveTime})</span>
+                    <div className="flight__schedule_row">
+                      <div className="flight__schedule">
+                        <span>{item.airlineData[0].departAirport}</span>
+                        <span>출발</span>
+                        <span>({item.airlineData[0].departTime})</span>
+                        <span>-</span>
+                        <span>{item.airlineData[0].arriveAirport}</span>
+                        <span>도착</span>
+                        <span>({item.airlineData[0].arriveTime})</span>
+                      </div>
+                      <div className="flight__schedule">
+                        <span>{item.airlineData[1].departAirport}</span>
+                        <span>출발</span>
+                        <span>({item.airlineData[1].departTime})</span>
+                        <span>-</span>
+                        <span>{item.airlineData[1].arriveAirport}</span>
+                        <span>도착</span>
+                        <span>({item.airlineData[1].arriveTime})</span>
+                      </div>
                     </div>
-                    <span>{tourLocationSelected} {item.tourPeriod}</span>
+                    <span>{tourLocation} {item.tourPeriodNight} {item.tourPeriodDay}</span>
                   </div>
                   <div className="flight__select__btn__wrapper"
                     onClick={()=>{
-
+                      setSelectedAirlineIndex(index);
+                      setTourPeriodNight(item.tourPeriodNight);
+                      setTourPeriodDay(item.tourPeriodDay);
+                      setAirlineName(item.airlineData[0].airlineName);
+                      setDepartAirport(item.airlineData[0].departAirport);
+                      setDepartTime(item.airlineData[0].departTime);
+                      setArriveAirport(item.airlineData[0].arriveAirport);
+                      setArriveTime(item.airlineData[0].arriveTime);
+                      setAirlineNameVia(item.airlineData[1].airlineName);
+                      setDepartAirportVia(item.airlineData[1].departAirport);
+                      setDepartTimeVia(item.airlineData[1].departTime);
+                      setArriveAirportVia(item.airlineData[1].arriveAirport);
+                      setArriveTimeVia(item.airlineData[1].arriveTime);
                     }}
                   >
-                    {/* <SelectBtn checked={true} /> */}
+                    <div className={selectedAirlineIndex === index ? "select__btn__wrapper checked" : "select__btn__wrapper"}>
+                      <span>선택</span>
+                      <FaCheck />
+                    </div>
                   </div>
+                </div>
+                :
+                <div className="flight__item__wrapper" style={{width:'100%', display:'flex', justifyContent:'center'}}>
+                  <div style={{}}>경유지 항공편이 없습니다.</div>
                 </div>
               )
             })
@@ -467,7 +466,7 @@ export default function PackagePage() {
         </div>
       </div>
 
-      <div className="included__items__section__wrapper mx__section">
+      <div className="hotel_detail_included__items__section__wrapper hotel_detail_mx__section">
         <div className="single__header__main">포함/불포함</div>
         <div className="included__items__wrapper">
           <div className="index__title__wrapper">
@@ -478,7 +477,7 @@ export default function PackagePage() {
             {
               includeNote.map((item:any, index:any)=>{
                 return (
-                  <span key={index}>- {item}</span>
+                  <span key={index}>{item}</span>
                 )
               })
             }
@@ -492,7 +491,7 @@ export default function PackagePage() {
             {
               notIncludeNote.map((item:any, index:any)=>{
                 return (
-                  <span key={index}>- {item}</span>
+                  <span key={index}>{item}</span>
                 )
               })
             }
@@ -501,8 +500,17 @@ export default function PackagePage() {
         </div>
       </div>
 
+      {
+        (cautionNote !== '' && cautionNote !== null) &&
+        <div className="hotel_detail_must__read__section__wrapper hotel_detail_mx__section">
+          <div className="single__header__main">주의사항</div>
+          <div className="must__read__wrapper">
+            {cautionNote}
+          </div>
+        </div>
+      }
       
-      <div className="must__read__section__wrapper mx__section">
+      <div className="hotel_detail_must__read__section__wrapper hotel_detail_mx__section">
         <div className="single__header__main">필독사항</div>
         <div className="must__read__wrapper">
           <span>
@@ -528,11 +536,11 @@ export default function PackagePage() {
 
       {/* 일정표 ---------------------------------------------------------------------------------------------------------------- */}
 
-      <div className="mx__section">
+      <div className="hotel_detail_mx__section">
         <div className="header__wrapper">
           <span className="header__main">일정표</span>
           <span className="header__sub">
-            KE 대한항공 인천 오후 출발 (17:40) / 발리 5박 7일 (2024.10.16 ~
+            KE 대한항공 인천 오후 출발 (17:40) / {tourLocation} {tourPeriodNight} {tourPeriodDay} (2024.10.16 ~
             2024.10.23)
           </span>
         </div>
@@ -540,7 +548,6 @@ export default function PackagePage() {
         <div className="schedule__tables__wrapper">
           {
             scheduleList.map((item:any, index:any)=>{
-
 
               return (
                 <div className="schedule__table__wrapper" key={index}>
@@ -551,65 +558,239 @@ export default function PackagePage() {
                   <div className="schedule__main__wrapper">
                     {
                       index === 0 &&
-                      <div className="schedule__element__wrapper">
-                        <div className="flight__schedule__board__wrapper">
-                          <div className="flight__schedule__board">
-                            <div className="flight__info__wrapper">
-                              <img src={KEAir} alt="temp" />
-                              <span>대한항공 KE0188</span>
-                            </div>
-                            <div className="flight__time__wrapper">
-                              <span className="flight__time">07시간 30분</span>
-                              <div className="depart__info">
-                                <div />
-                                <span className="time__text">15:30</span>
-                                <span className="airport__text">인천(INC) 출발</span>
+                      <>
+                      { flightType === '직항'
+                        ?
+                        <div className="schedule__element__wrapper">
+                          <div className="flight__schedule__board__wrapper">
+                            <div className="flight__schedule__board">
+                              <div className="flight__info__wrapper">
+                                <img src={AirlineData.KE} alt="temp" />
+                                <span>{airlineName}</span>
                               </div>
-                              <div className="arrive__info">
-                                <div />
-                                <span className="time__text">19:50</span>
-                                <span className="airport__text">발리(BAL) 도착</span>
+                              <div className="flight__time__wrapper">
+                                <span className="flight__time">07시간 30분</span>
+                                <div className="depart__info">
+                                  <div />
+                                  <span className="time__text">{departTime}</span>
+                                  <span className="airport__text">{departAirport} 출발</span>
+                                </div>
+                                <div className="arrive__info">
+                                  <div />
+                                  <span className="time__text">{arriveTime}</span>
+                                  <span className="airport__text">{arriveAirport} 도착</span>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    }
-                    {
-                      item.schedule.map((subItem:any, subIndex:any)=>{
-                        
-                        return (
-                          <div className="schedule__element__wrapper" key={subIndex}>
-                            <div className="schedule__element__header__wrapper">
-                              {
-                                subItem.location &&
-                                <div className="schedule__location__wrapper">
-                                  <div className="location__absolute__wrapper">
-                                    <img src={location} style={{width:'46px'}}/>
-                                  </div>
-                                  <span className="location__text">{subItem.location}</span>
+                        :
+                        <div className="schedule__element__wrapper">
+                          <div className="flight__schedule__board__wrapper">
+                            <div className="flight__schedule__board" style={{marginBottom:'50px'}}>
+                              <div className="flight__info__wrapper">
+                                <img src={AirlineData.KE} alt="temp" />
+                                <span>{airlineName}</span>
+                              </div>
+                              <div className="flight__time__wrapper">
+                                <span className="flight__time">07시간 30분</span>
+                                <div className="depart__info">
+                                  <div />
+                                  <span className="time__text">{departTime}</span>
+                                  <span className="airport__text">{departAirport} 출발</span>
                                 </div>
-                              }
-                              <div className="schedule__element__header">
-                                <div className="absolute__wrapper">
-                                  <div className="dot__icon" />
-                                </div>
-                                <div className="schedule__text__wrapper">
-                                  <span>{subItem.title}</span>
+                                <div className="arrive__info">
+                                  <div />
+                                  <span className="time__text">{arriveTime}</span>
+                                  <span className="airport__text">{arriveAirport} 도착</span>
                                 </div>
                               </div>
                             </div>
-                            <div className="schedule__element__main__wrapper">
-                              <div className="table__wrapper">
-                                <div className="table__header">
-                                  <span>{subItem.notice}</span>
+                            <div className="flight__schedule__board">
+                              <div className="flight__info__wrapper">
+                                <img src={AirlineData.KE} alt="temp" />
+                                <span>{airlineNameVia}</span>
+                              </div>
+                              <div className="flight__time__wrapper">
+                                <span className="flight__time">07시간 30분</span>
+                                <div className="depart__info">
+                                  <div />
+                                  <span className="time__text">{departTimeVia}</span>
+                                  <span className="airport__text">{departAirportVia} 출발</span>
                                 </div>
-                                <div className="table__main">
-                                  <span></span>
+                                <div className="arrive__info">
+                                  <div />
+                                  <span className="time__text">{arriveTimeVia}</span>
+                                  <span className="airport__text">{arriveAirportVia} 도착</span>
                                 </div>
                               </div>
                             </div>
                           </div>
+                        </div>
+                      }
+                      </>
+                      
+                    }
+                    {
+                      item.scheduleDetail.map((subItem:any, subIndex:any)=>{
+
+                        return (
+                          <>
+                          {
+                            subItem.sort === '텍스트' &&
+                            <div className="schedule__element__wrapper" key={subIndex}>
+                              <div className="schedule__element__header__wrapper">
+                                {
+                                  subItem.location &&
+                                  <div className="schedule__location__wrapper">
+                                    <div className="location__absolute__wrapper">
+                                      <img src={location} style={{width:'46px'}}/>
+                                    </div>
+                                    <span className="location__text">{subItem.location}</span>
+                                  </div>
+                                }
+                                <div className="schedule__element__header">
+                                  <div className="absolute__wrapper">
+                                    <div className="dot__icon" />
+                                  </div>
+                                  <div className="schedule__text__wrapper">
+                                    <span>{subItem.subLocation}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="schedule__element__main__wrapper">
+                                <div className="table__wrapper">
+                                  <div className="table__header">
+                                    <span>{subItem.locationTitle}</span>
+                                  </div>
+                                  <div className="table__main">
+                                    <span></span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                          {
+                            subItem.sort === '선택' &&
+                            <div className="schedule__element__wrapper" key={subIndex}>
+                              <div className="schedule__element__header__wrapper">
+                                {
+                                  subItem.location &&
+                                  <div className="schedule__location__wrapper">
+                                    <div className="location__absolute__wrapper">
+                                      <img src={location} style={{width:'46px'}}/>
+                                    </div>
+                                    <span className="location__text">{subItem.location}</span>
+                                  </div>
+                                }
+                                <div className="schedule__element__header">
+                                  <div className="absolute__wrapper">
+                                    <div className="dot__icon" />
+                                  </div>
+                                  <div className="schedule__text__wrapper">
+                                    <span>{subItem.subLocation}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="schedule__element__main__wrapper">
+                                <div className="table__wrapper">
+                                  <div className="table__header">
+                                    <span>{subItem.locationTitle}</span>
+                                  </div>
+                                  <div className="table__main">
+                                    {
+                                      subItem.locationContentDetail.map((detailItem:any, detailIndex:any)=>{
+                                        return (
+                                          <div key={detailIndex} className="detailbox">
+                                            <p className="detailbox-name">{detailIndex+1}. {detailItem.name}</p>
+                                            <p className="detailbox-notice">{detailItem.notice}</p>
+                                          </div>
+                                        )
+                                      })
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                          {
+                            subItem.sort === '상세' &&
+                            <div className="schedule__element__wrapper" key={subIndex}>
+                              <div className="schedule__element__header__wrapper">
+                                {
+                                  subItem.location &&
+                                  <div className="schedule__location__wrapper">
+                                    <div className="location__absolute__wrapper">
+                                      <img src={location} style={{width:'46px'}}/>
+                                    </div>
+                                    <span className="location__text">{subItem.location}</span>
+                                  </div>
+                                }
+                                <div className="schedule__element__header">
+                                  <div className="absolute__wrapper">
+                                    <div className="dot__icon" />
+                                  </div>
+                                  <div className="schedule__text__wrapper">
+                                    <span>{subItem.subLocation}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="schedule__element__main__wrapper">
+                                <div className="table__wrapper">
+                                  <div className="table__header">
+                                    <span>{subItem.locationTitle}</span>
+                                  </div>
+                                  <div className="table__main">
+                                    {
+                                      subItem.locationContentDetail.map((detailItem:any, detailIndex:any)=>{
+                                        return (
+                                          <div key={detailIndex} className="detailbox">
+                                            <p className="detailbox-name"><span style={{marginRight:'10px'}}>&#183;</span>{detailItem.name}</p>
+                                            <p className="detailbox-notice">{detailItem.notice}</p>
+                                          </div>
+                                        )
+                                      })
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                          {
+                            subItem.sort === '' &&
+                            <div className="schedule__element__wrapper" key={subIndex}>
+                              <div className="schedule__element__header__wrapper">
+                                {
+                                  subItem.location &&
+                                  <div className="schedule__location__wrapper">
+                                    <div className="location__absolute__wrapper">
+                                      <img src={location} style={{width:'46px'}}/>
+                                    </div>
+                                    <span className="location__text">{subItem.location}</span>
+                                  </div>
+                                }
+                                <div className="schedule__element__header">
+                                  <div className="absolute__wrapper">
+                                    <div className="dot__icon" />
+                                  </div>
+                                  <div className="schedule__text__wrapper">
+                                    <span>{subItem.subLocation}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="schedule__element__main__wrapper">
+                                <div className="table__wrapper">
+                                  <div className="table__header">
+                                    <span>{subItem.locationTitle}</span>
+                                  </div>
+                                  <div className="table__main">
+                                    <span></span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                          </>
                         )
                       })
                     }
@@ -631,10 +812,10 @@ export default function PackagePage() {
                       <img src={hotelbuilding} style={{height:'24px'}}/>
                       <span>호텔</span>
                     </div>
-                    <div className="hotel__info__wrapper">
-                      <span>{item.hotel}</span>
-                      <div>
-                        {/* <RatingBoard rating={parseInt(item.score)} /> */}
+                    <div className="additional__info__wrapper">
+                      <p>{item.hotel}</p>
+                      <div className="additional__rating__wrapper">
+                        <RatingBoard rating={parseInt(item.score)} />
                       </div>
                     </div>
                   </div>

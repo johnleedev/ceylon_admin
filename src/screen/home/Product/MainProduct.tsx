@@ -13,12 +13,12 @@ export default function MainProduct() {
   return (
     <div>
       <Header />
-      <Routes>
-        <Route path="/" element={<TourMainPage />}/>
-        <Route path="/tourdetail" element={<TourDetailPage/>}/>
-        <Route path="/hotelresort" element={<HotelPage/>}/>
-        <Route path="/hotelresortdetail" element={<HotelDetailPage/>}/>
-      </Routes>
+      <Routes >
+          <Route path="/" element={<TourMainPage />}/>
+          <Route path="/tourdetail" element={<TourDetailPage/>}/>
+          <Route path="/hotelresort" element={<HotelPage/>}/>
+          <Route path="/hotelresortdetail" element={<HotelDetailPage/>}/>
+        </Routes>
     </div>
   );
   

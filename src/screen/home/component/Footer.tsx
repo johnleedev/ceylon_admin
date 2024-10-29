@@ -1,6 +1,6 @@
 import React from 'react';
 import './footer.scss'
-import logo_white from './images/logo_white.png'
+import logo_white from '../images/logo_white.png'
 import { useNavigate } from 'react-router-dom';
 
 export default function Footer (props:any) {

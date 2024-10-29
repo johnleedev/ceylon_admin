@@ -16,29 +16,23 @@ export default function ModalHotelCost (props : any) {
   let navigate = useNavigate();
   const userId = sessionStorage.getItem('userId');
   const hotelInfoData = props.hotelInfo;
-  const hotelCostData = props.hotelCost;
+  const hotelCostInfoData = props.hotelCostInfo;
+  const hotelCostInputDefaultData = props.hotelCostInputDefault;
+  const isAddOrRevise = props.isAddOrRevise;
 
-  const [locationDetail, setLocationDetail] = useState(hotelInfoData.locationDetail);
-  const [landCompany, setLandCompany] = useState(hotelInfoData.landCompany);
-  const [selectCostType, setSelectCostType] = useState(hotelInfoData.selectCostType);
-  
+  const [locationDetail, setLocationDetail] = useState(isAddOrRevise === 'revise' ? hotelCostInfoData.locationDetail : "");
+  const [landCompany, setLandCompany] = useState(isAddOrRevise === 'revise' ? hotelCostInfoData.landCompany : "");
+  const [selectCostType, setSelectCostType] = useState(isAddOrRevise === 'revise' ? hotelCostInfoData.selectCostType : "");
+
   const handleClose = async () => {
     const infores = await axios.get(`${MainURL}/producthotel/getinfoinputstate/${hotelInfoData.id}`)
-    const costres = await axios.get(`${MainURL}/producthotel/getcostinputstate/${hotelInfoData.id}`)
-    if (infores.data !== false && costres.data !== false) {
+    if (infores.data !== false) {
       const infocopy = infores.data[0];
-      const costcopy = costres.data[0];
-      console.log(infocopy);
-      console.log(costcopy);
       if (infocopy.isInfoInput === 'false' || infocopy.isInfoInput === '' ) {
         handleSaveAlert('요금표정보');
       } else {
-        if (costcopy.isCostInput === 'false' || costcopy.isCostInput === '' ) {
-          handleSaveAlert('입금가');
-        } else {
-          props.setRefresh(!props.refresh);
-          props.setIsViewHotelCostModal(false);
-        }
+        props.setRefresh(!props.refresh);
+        props.setIsViewHotelCostModal(false);
       }
     }
   };
@@ -104,9 +98,9 @@ export default function ModalHotelCost (props : any) {
           <div className="coverrow hole">
             <TitleBox width="120px" text='요금표선택'/>
             {
-              hotelInfoData.isCostInput === 'true' 
+              hotelInfoData.isInfoInput === 'true' 
               ?
-              <p>{hotelInfoData.selectCostType}</p>
+              <p>{hotelCostInfoData.selectCostType}</p>
               :
               <div className='checkInputCover'>
                 <div className='checkInput'>
@@ -169,17 +163,22 @@ export default function ModalHotelCost (props : any) {
         (selectCostType !== '' && selectCostType !== null) &&
         <>
           { selectCostType === '선투숙' &&
-            <PreHotelCost hotelCostData={hotelCostData} handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
-              hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}
+            <PreHotelCost isAddOrRevise={isAddOrRevise} 
+              hotelInfoData={hotelInfoData} hotelCostInfoData={hotelCostInfoData} hotelCostInputDefaultData={hotelCostInputDefaultData}
+              handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
+              setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}
           { selectCostType === '박당' &&
-            <PerDayCost hotelCostData={hotelCostData} handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
-              hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}
+            <PerDayCost isAddOrRevise={isAddOrRevise} 
+              hotelInfoData={hotelInfoData} hotelCostInfoData={hotelCostInfoData} hotelCostInputDefaultData={hotelCostInputDefaultData}
+              handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
+              setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}
           { (selectCostType !== '선투숙' && selectCostType !== '박당') &&
-            <FullVillaCost hotelCostData={hotelCostData} handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
-              hotelInfoData={hotelInfoData} setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}
+            <FullVillaCost isAddOrRevise={isAddOrRevise} 
+              hotelInfoData={hotelInfoData} hotelCostInfoData={hotelCostInfoData} hotelCostInputDefaultData={hotelCostInputDefaultData}
+              handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
+              setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}
         </>
       }
-            
     </div>     
   )
 }

@@ -1,70 +1,334 @@
-
-.resort__search__bar__wrapper {
-  width: 80%;
-  position: absolute;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  left: 0;
-  right: 0;
-  z-index: 10;
-  background-color: white;
-  border-radius: 11px;
-  padding: 0.8vw 1.5vw;
-  max-width: 1200px;
-  justify-content: space-between;
-  margin: 9vw auto 0 auto;
-  border: 0.5px solid rgba(99, 99, 99, 1);
-  color: rgba(0, 0, 0, 1);
-  div:nth-child(4) {
-    border: none;
-  }
-  .search__btn__wrapper {
-    padding: 0 1vw;
-  }
-}
-
-
-
-.tour__header__section__wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
+@mixin middle {
   display: flex;
   justify-content: center;
-  color: #fff;
-  .bg__image {
-    width: 100%;
-    object-fit: cover;
-    z-index: -1;
-  }
-  .header__info {
+  align-items: center;
+};
+
+.tour_detail_ {
+  width: 100%;
+  min-height: 100vh;
+
+  .tour_detail_search__bar___wrapper {
+    @media (max-width: 1000px) {
+      display: none;
+    }
     position: absolute;
-    width: 80%;
+    width: 100%;
+    height: 80px;
+    top: 150px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+    background-color: #fff;
+    border-radius: 11px;
     max-width: 1200px;
-    padding-top: 16vw;
+    color: rgba(0, 0, 0, 1);
+  
+    .tour_detail_search__box { 
+      width: 20%;
+      @include middle();
+  
+      .tour_detail_search__text{
+        width: 20%;
+        font-size: 22px;
+      }
+      .tour_detail_search__select {
+        width: 80%;
+        min-height: 50px;
+        border: none;
+        box-sizing: border-box;
+        color: #333;
+        font-size: 16px;
+        background-color: #fff;
+        outline: none;
+      }
+      .tour_detail_search__btn {
+        width: 80%;
+        height: 40px;
+        border-radius: 10px;
+        background-color: #2FB4E2;
+        color: #fff;
+        @include middle();
+      }
+      .tour_detail_search__btn:hover {
+        cursor: pointer;
+        border: 1px solid #1e82a4;
+      }
+    }
+    .tour_detail_search__bar {
+      width: 1px;
+      height: 40px;
+      margin: 0 10px;
+      background-color: #dedede;
+    }
+  }
+  
+
+
+
+  .tour__header__section__wrapper {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    color: #fff;
+    .bg__image {
+      width: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+    .header__info {
+      position: absolute;
+      width: 80%;
+      max-width: 1200px;
+      padding-top: 16vw;
+      display: flex;
+      flex-direction: column;
+      .header__title {
+        font-size: 3vw;
+        font-weight: 700;
+      }
+      .header__subtitle {
+        font-size: 1.5vw;
+      }
+    }
+  }
+
+
+  .tour_detail_category__section__wrapper {
     display: flex;
     flex-direction: column;
-    .header__title {
-      font-size: 3vw;
-      font-weight: 700;
+    padding: 5vw 0;
+    width: 100%;
+
+    .tour_detail_category__selector__box {
+      margin: 0 auto;
+      margin-bottom: 4vw;
+      @media (max-width: 1000px) {
+          margin-bottom: 50px;
+      }
+      width: 90%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: 33% 33% 33%;
+      grid-template-areas: 30px;
+      
+      .tour_detail_category__bar {
+        display: flex;
+        height: 50px;
+        justify-content: center;
+        color: rgba(228, 228, 228, 1);
+        border-bottom: 1px solid rgba(228, 228, 228, 1);
+        font-size: 21px;
+        font-weight: 700;
+        @media (max-width: 1000px) {
+        font-size: 1.5rem;
+        font-weight: 700;
+        }
+        line-height: 1.6;
+        position: relative;
+        overflow: hidden;
+  
+        &::after {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          width: 0;
+          height: 2px;
+          transform: translateX(-50%);
+          transition: width 0.4s ease;
+          background-color: #000;
+        }
+  
+        &:hover::after,
+        &.on::after {
+          width: 100%;
+        }
+        &:hover {
+          cursor: pointer;
+        }
+  
+        &.on {
+          color: #333;
+  
+          &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 100%;
+            height: 3px;
+            transform: translateX(-50%);
+            background-color: #333;
+          }
+        }
+      }
+     
     }
-    .header__subtitle {
-      font-size: 1.5vw;
+
+    .tour_detail_category__selectorBtn__box {
+      margin: 0 auto;
+      margin-bottom: 4vw;
+      @media (max-width: 1000px) {
+          margin-bottom: 50px;
+      }
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: 25% 25% 25% 25%;
+      grid-template-areas: 30px;
+      
+      .tour_detail_category__Btn {
+        height: 50px;
+        font-size: 18px;
+        background-color: #F3F3F3;
+        color: #939393;
+        @include middle();
+        @media (max-width: 1000px) {
+          font-weight: 700;
+        }
+       
+        &:hover {
+          cursor: pointer;
+        }
+  
+        &.on {
+          color: #fff;
+          background-color: #28ABE1;
+        }
+      }
+     
     }
-  }
-}
 
 
-.resort__category__section__wrapper {
-  display: flex;
-  flex-direction: column;
-  padding: 5vw 0;
-  width: 100%;
-  .category__items__wrapper {
-    margin: 0 auto;
-    display: grid;
-    gap: 1vw;
-    grid-template-columns: repeat(4, 1fr);
-    width: 90%;
+   
+    .tour_detail_hotel__list__wrapper {
+      margin: 0 auto;
+      width: 80%;
+
+      .tour_detail_pb-2 {
+        padding-bottom: 20px;
+
+        .tour_detail_sidebar__wrapper {
+          display: flex;
+          width: 100%;
+          justify-content: flex-end;
+          color: rgba(51, 51, 51, 1);
+          font-size: clamp(13px, 1vw, 19px);
+          span {
+            line-height: 1;
+            border-right: 1px solid rgba(148, 148, 148, 1);
+            padding: 0 1vw;
+            @media (max-width: 500px) {
+              padding: 1px 15px;
+            }
+            &.selected__sidebar {
+              font-weight: 700;
+              color: rgba(11, 11, 11, 1);
+            }
+            &:last-child {
+              padding-right: 0px;
+              border-right: none;
+            }
+          }
+          span:hover {
+            cursor: pointer;
+
+          }
+        }
+      }
+
+      .tour_detail_category__items__wrapper {
+        margin: 0 auto;
+        display: grid;
+        gap: 1vw;
+        grid-template-columns: repeat(4, 1fr);
+        width: 100%;
+
+        .tour_detail_card__wrapper {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5vw;
+          margin-bottom: 10px;
+          .tour_detail_image__wrapper {
+            width: 100%;
+            aspect-ratio: 1.1;
+            @media (max-width: 1000px) {
+              aspect-ratio: 1.05;
+            }
+            border-radius: 7px;
+            overflow: hidden;
+            margin-bottom: 1.2vw;
+            img {
+              object-fit: cover;
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .tour_detail_card__title {
+            @media (max-width: 1000px) {
+              font-size: 20px;
+            }
+            font-size: 25px;
+            font-weight: 700;
+            color: rgba(51, 51, 51, 1);
+          }
+          .tour_detail__card__info {
+            display: flex;
+            span {
+              font-size: 14px;
+              color: #ccc;
+            }
+            .tour_detail__rating__wrapper {
+              margin-left: 10px;
+  
+              .rating__board__wrapper {
+                width: 100%;
+                display: flex;
+            
+                .rating__icon {
+                  @include middle();
+                  .empty__star .filled__star {
+                    width: 100%;
+                    height: 100%;
+                  }
+                  .empty__star {
+                    fill: rgba(119, 119, 119, 1);
+                  }
+                  .filled__star {
+                    fill: rgba(252, 196, 0, 1);
+                    z-index: 2;
+                  }
+                }
+              }
+            }
+          }
+          .tour_detail_promotion__duedate {
+            margin-top: 0.5vw;
+            font-size: 15px;
+            @media (max-width: 1000px) {
+              font-size: 14px;
+            }
+            color: rgba(119, 119, 119, 1);
+          }
+        }
+        .tour_detail_card__wrapper:hover {
+          cursor: pointer;
+        }
+      }
+    }
+    
+    
+  
   }
+
 }

@@ -15,6 +15,57 @@ import ModalHotelCost from './Modal/ModalHotelCost';
 import { FaCircle } from 'react-icons/fa';
 import { IoCloseOutline } from 'react-icons/io5';
 
+interface ListProps {
+	id: string;
+	isView : string;
+	isInfoInput : string;
+	selectCostType: string;
+	nation : string;
+	city : string;
+	label : string;
+	hotelNameKo: string;
+	hotelNameEn: string;
+	hotelLevel : string;
+	hotelSort: string;
+	hotelPhone: string;
+	hotelAddress: string;
+	hotelNotice: string;
+	hotelConvenience: string;
+	hotelCheckIn: string;
+	hotelCheckOut: string;
+	hotelAllowPet: string;
+	hotelParking: string;
+	googleLocation: string;
+	keywordHashtag: string;
+	customerScore: string;
+	imageNamesAllView : string;
+	imageNamesRoomView : string;
+	imageNamesEtcView : string;
+	reviseDate : string;
+}
+
+
+
+interface HotelInfoProps {
+	id: string; 
+	hotelCostID: string;
+	hotelNameKo: string;
+	hotelNameEn: string;
+	selectCostType: string;
+	locationDetail: string;
+	landCompany: string;
+	isViewSaleCost: string;
+	notes: string;
+	notesDetail: string; 
+	landBenefit: string; 
+	productType: string; 
+	applyCurrency: string;
+	commission: string;
+	packageCost: string;
+	seasonCost: string; 
+	reviseDate: string;
+}
+
 export default function Sub2_CounselList (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
@@ -36,35 +87,7 @@ export default function Sub2_CounselList (props:any) {
   };
 
 	// 리스트 가져오기 ------------------------------------------------------
-	interface ListProps {
-		id: string;
-		isView : string;
-		isInfoInput : string;
-		isCostInput : string;
-		selectCostType: string;
-		nation : string;
-		city : string;
-		label : string;
-		hotelNameKo: string;
-		hotelNameEn: string;
-		hotelLevel : string;
-		hotelSort: string;
-		hotelPhone: string;
-		hotelAddress: string;
-		hotelNotice: string;
-		hotelConvenience: string;
-		hotelCheckIn: string;
-		hotelCheckOut: string;
-		hotelAllowPet: string;
-		hotelParking: string;
-		googleLocation: string;
-		keywordHashtag: string;
-		customerScore: string;
-		imageNamesAllView : string;
-		imageNamesRoomView : string;
-		imageNamesEtcView : string;
-		reviseDate : string;
-	}
+
 	const [list, setList] = useState<ListProps[]>([]);
 	const [nationlist, setNationList] = useState<ListProps[]>([]);
   const fetchPosts = async () => {
@@ -109,32 +132,52 @@ export default function Sub2_CounselList (props:any) {
       })
   };
 
-	// 요금표 가져오기
-	const fetchPostCost = async (id:string) => {
-    const res = await axios.get(`${MainURL}/producthotel/gethotelcost/${id}`)
-    if (res.data !== false) {
-      const copy = res.data;
-      const result = copy.map((item: any) => {
-        return {
-         reservePeriod : JSON.parse(item.reservePeriod),
-         inputDefault : JSON.parse(item.inputDefault),
-         inputPackage : JSON.parse(item.inputPackage),
-         saleDefaultCost: JSON.parse(item.saleDefaultCost)
-        //  saleSeasonCost: JSON.parse(item.saleSeasonCost)
-        };
-      });
-      setHotelCost(result);
-			setIsViewHotelCostModal(true);
-    }
-  };
-
  	// 모달 ---------------------------------------------------------
 	const [isViewAddHotelModal, setIsViewAddHotelModal] = useState<boolean>(false);
 	const [isViewHotelInfoModal, setIsViewHotelInfoModal] = useState<boolean>(false);
 	const [hotelInfo, setHotelInfo] = useState<ListProps>();
-	const [hotelCost, setHotelCost] = useState();
+	const [hotelCostInfo, setHotelCostInfo] = useState<HotelInfoProps>();
+	const [hotelCostInputDefault, setHotelCostInputDefault] = useState<any>([]);
 	const [isViewHotelCostModal, setIsViewHotelCostModal] = useState<boolean>(false);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
+
+	// 요금표 가져오기
+	const fetchPostCost = async (id:string) => {
+		const res = await axios.get(`${MainURL}/producthotel/gethotelcostinfo/${id}`)
+		if (res.data !== false) {
+			const copy = res.data[0];
+			setHotelCostInfo(copy);
+		} 
+		const resCost = await axios.get(`${MainURL}/producthotel/gethotelcostinput/${id}`)
+		if (resCost.data !== false) {
+			const copy = resCost.data;
+  		const groupedData: { [key: string]: any } = {};
+			copy.forEach((item: any) => {
+				const reservePeriod = JSON.parse(item.reservePeriod);
+				const inputDefault = JSON.parse(item.inputDefault);
+		  	const key = `${item.hotelCostID}_${item.reserveIndex}`;
+		  	if (!groupedData[key]) {
+						groupedData[key] = {
+								hotelCostID: item.hotelCostID,
+								reserveIndex: item.reserveIndex,
+								reserveType: item.reserveType,
+								reservePeriod: reservePeriod,
+								inputDefault: []
+						};
+				}
+				inputDefault.costIndex = item.costIndex;
+				groupedData[key].inputDefault.push(inputDefault);
+			});
+			Object.keys(groupedData).forEach((key) => {
+				groupedData[key].inputDefault.sort((a: any, b: any) => a.costIndex - b.costIndex);
+			});
+			const result = Object.values(groupedData);
+			setHotelCostInputDefault(result);
+		} else {
+			setHotelCostInputDefault([]);
+		}
+		setIsViewHotelCostModal(true);
+	};
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
 	const deleteHotel = async (itemId:any, images:any) => {
@@ -247,10 +290,13 @@ export default function Sub2_CounselList (props:any) {
 										<div className="hotelControlBtn"
 											onClick={()=>{
 												setHotelInfo(item);
-												if (item.isCostInput === 'false') {
+												if (item.isInfoInput === 'false') {
 													handleHotelCostCreat(item);
+													setHotelCostInputDefault([]);
+													setIsAddOrRevise('add');
 												} else {
 													fetchPostCost(item.id);
+													setIsAddOrRevise('revise');
 												}
 											}}
 										>
@@ -325,9 +371,11 @@ export default function Sub2_CounselList (props:any) {
           <div className='modal-maincover'>
              <ModalHotelCost
 								refresh={refresh}
+								isAddOrRevise={isAddOrRevise}
 								setRefresh={setRefresh}
 								hotelInfo={hotelInfo}
-								hotelCost={hotelCost}
+								hotelCostInfo={hotelCostInfo}
+								hotelCostInputDefault={hotelCostInputDefault}
 								setIsViewHotelCostModal={setIsViewHotelCostModal}
 						 />
           </div>

@@ -9,74 +9,68 @@ import axios from 'axios';
 import MainURL from '../../../../MainURL';
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { ImLocation } from 'react-icons/im';
-import { formatDate } from 'date-fns';
+import { formatDate, set } from 'date-fns';
 
+interface ScheduleProps {
+  day : string;
+  breakfast :string;
+  lunch:string;
+  dinner :string;
+  hotel:string;
+  score:string;
+  scheduleDetail: ScheduleDetailProps[];
+}
+
+interface ScheduleDetailProps {
+  id : string;
+  sort: string;
+  location: string;
+  subLocation : string;
+  locationTitle : string;
+  locationContent : string;
+  locationContentDetail : {name:string; notice:string[]}[];
+  postImage : string;
+}
 
 export default function ModalAddSchedule (props : any) {
 	
-  interface ScheduleProps {
-    id: string;
-		day : string;
-    breakfast :string;
-    lunch:string;
-    dinner :string;
-    hotel:string;
-    score:string;
-    schedule: TourLocationListProps[]
-  }  
-
-  interface TourLocationListProps {
-    id: string;
-		sort : string;
-		location: string;
-		subLocation: string;
-		locationTitle: string;
-		locationContent: string;
-		locationContentDetail: {name:string; notice:string[]}[];
-		postImage : string;
-  }
-
   let navigate = useNavigate();
   const userId = sessionStorage.getItem('userId');
   const isAddOrRevise = props.isAddOrRevise;
-  const scheduleData = isAddOrRevise === 'revise' ? props.scheduleInfo : null;
+  const scheduleData = props.scheduleInfo;
   const [selectedNation, setSelectedNation] = useState<any>([]);
 
   const [isView, setIsView] = useState<boolean>(isAddOrRevise === 'revise' ? scheduleData.isView : true);
   const [nation, setNation] = useState(isAddOrRevise === 'revise' ? scheduleData.nation : '');
   const [tourLocation, setTourLocation] = useState(isAddOrRevise === 'revise' ? scheduleData.tourLocation : '');
-  const [landCompany, setLandCompany] = useState(isAddOrRevise === 'revise' ? scheduleData.landCompany : '');
-  const [productType, setProductType] = useState(isAddOrRevise === 'revise' ? scheduleData.productType : '');
-  const [tourPeriodNight, setTourPeriodNight] = useState(isAddOrRevise === 'revise' ? scheduleData.tourPeriodNight : '');
-  const [tourPeriodDay, setTourPeriodDay] = useState(isAddOrRevise === 'revise' ? scheduleData.tourPeriodDay : '');
+  const [tourPeriod, setTourPeriod] = useState(isAddOrRevise === 'revise' ? scheduleData.tourPeriod : '');
   const [departAirport, setDepartAirport] = useState(isAddOrRevise === 'revise' ? scheduleData.departAirport : '');
   const [departFlight, setDepartFlight] = useState(isAddOrRevise === 'revise' ? scheduleData.departFlight : '');
+  const [landCompany, setLandCompany] = useState(isAddOrRevise === 'revise' ? scheduleData.landCompany : '');
+  const [productType, setProductType] = useState(isAddOrRevise === 'revise' ? scheduleData.productType : '');
   const [selectedSchedule, setSelectedSchedule] = useState(isAddOrRevise === 'revise' ? scheduleData.selectedSchedule : '');
   const [cautionNote, setCautionNote] = useState(isAddOrRevise === 'revise' ? scheduleData.cautionNote : '');
   const [includeNote, setIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.includeNote) : [""]);
   const [includeNoteText, setIncludeNoteText] = useState(isAddOrRevise === 'revise' ? scheduleData.includeNoteText : '');
   const [notIncludeNote, setNotIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.notIncludeNote) : [""]);
   const [notIncludeNoteText, setNotIncludeNoteText] = useState(isAddOrRevise === 'revise' ? scheduleData.notIncludeNoteText : '');
-
-  const [scheduleList, setScheduleList] = useState<ScheduleProps[]>(
+  const [scheduleList, setScheduleList] = useState<ScheduleProps[]>( 
     isAddOrRevise === 'revise' 
-    ? JSON.parse(scheduleData.scheduleList)
-    : [
-      { day : '1', breakfast :'', lunch:'', dinner :'', hotel:'', score:'', 
-        schedule: [
-          { id : '1',
-            sort : '',
-            location: '',
-            subLocation: '',
-            locationTitle: '',
-            locationContent: '',
-            locationContentDetail: [{name:"", notice:[""]}],
-            postImage : '',
-          }
-      ]}
-      ]
-  );
-
+    ? props.scheduleDetails 
+    : [{ day : '1', breakfast :'', lunch:'', dinner :'', hotel:'', score:'', 
+        scheduleDetail: [{ 
+          id: '',
+          sort: '',
+          location: '',
+          subLocation: '',
+          locationTitle: '',
+          locationContent: '',
+          locationContentDetail: [{ name: "", notice: [""] }],
+          postImage: '',
+        }]
+      }]
+  );  
+  
   // 데이 추가
   const handleDayAdd = async () => {
     const lastItem = scheduleList[scheduleList.length - 1]; 
@@ -89,7 +83,8 @@ export default function ModalAddSchedule (props : any) {
       dinner: lastItem.dinner,
       hotel: lastItem.hotel,
       score: lastItem.score,
-      schedule: [{ id: '',
+      scheduleDetail: [{ 
+        id: '',
         sort: '',
         location: '',
         subLocation: '',
@@ -102,7 +97,7 @@ export default function ModalAddSchedule (props : any) {
     setScheduleList([...scheduleList, newItem]);
     setViewAutoCompleteTourLocation([
       ...viewAutoCompleteTourLocation,
-      Array(newItem.schedule.length).fill(false)
+      Array(newItem.scheduleDetail.length).fill(false)
     ]);
   };
 
@@ -161,40 +156,89 @@ export default function ModalAddSchedule (props : any) {
     </div>
   )
 
-  // 항공편 검색
-  const fetchAirplane = async (tourLocationSelected:string) => {
-    const res = await axios.get(`${MainURL}/product/getairplane/${tourLocationSelected}`)
+
+  // 여행 기간, 적용 항공편 가져오기 
+  const [tourPeriodOptions, setTourPeriodOptions] = useState([{ value: '선택', label: '선택' }]);
+  const [departAirportOptions, setDepartAirportOptions] = useState([{ value: '선택', label: '선택' }]);
+  const [airlineNameOptions, setAirlineNameOptions] = useState([{ value: '선택', label: '선택' }]);
+  const [hotelsOptions, setHotelsOptions] = useState([{ value: '선택', label: '선택' }]);
+
+  const fetchTourPeriod = async (tourLocationSelected: string) => {
+    const res = await axios.get(`${MainURL}/product/getairplane/${tourLocationSelected}`);
     if (res.data) {
       const copy = res.data[0];
-      const directAirlineCopy = copy.directAirline ? JSON.parse(copy.directAirline) : [];
+      const directAirlineCopy = copy.directAirline ? JSON.parse(copy.directAirline as string) : [];
       const viaAirlineCopy = copy.viaAirline ? JSON.parse(copy.viaAirline) : [];
-      console.log(directAirlineCopy);
-      console.log(viaAirlineCopy);
-      // setDirectAirline(directAirlineCopy);
-      // setViaAirline(viaAirlineCopy);
-    } 
+      const directAirlineFiltered = directAirlineCopy.map((item: { tourPeriodNight: string, tourPeriodDay: string, departAirportMain: string, airlineData: any[] }) =>
+        ({ tourPeriodNight: item.tourPeriodNight, tourPeriodDay: item.tourPeriodDay, departAirportMain: item.departAirportMain, airlineName:item.airlineData[0].airlineName, sort: '직항' })
+      );
+      const viaAirlineFiltered = viaAirlineCopy.map((item: { tourPeriodNight: string, tourPeriodDay: string, departAirportMain: string, airlineData: any[] }) =>
+        ({ tourPeriodNight: item.tourPeriodNight, tourPeriodDay: item.tourPeriodDay, departAirportMain: item.departAirportMain, airlineName:item.airlineData[0].airlineName, sort: '경유' })
+      );
+      const combinedAirlines = [...directAirlineFiltered, ...viaAirlineFiltered];
+      const uniqueAirlines = Array.from(
+        new Map(combinedAirlines.map(item => [`${item.tourPeriodNight}${item.tourPeriodDay}-${item.sort}`, item])).values()
+      );
+      const resultAirlines = uniqueAirlines.map((item:any)=>
+        ({ value:`${item.tourPeriodNight}${item.tourPeriodDay}, ${item.sort}`,  label:`${item.tourPeriodNight}${item.tourPeriodDay}, ${item.sort}` })
+      );
+      resultAirlines.unshift({ value: '선택', label: '선택' });
+      setTourPeriodOptions(resultAirlines);
+      const uniqueDepartAirport = Array.from(
+        new Map(combinedAirlines.map(item => [`${item.departAirportMain}`, item])).values()
+      );
+      const resultDepartAirport = uniqueDepartAirport.map((item:any)=>
+        ({ value:`${item.departAirportMain}`,  label:`${item.departAirportMain}` })
+      );
+      resultDepartAirport.unshift({ value: '선택', label: '선택' });
+      setDepartAirportOptions(resultDepartAirport);
+      const uniqueAirlineName = Array.from(
+        new Map(combinedAirlines.map(item => [`${item.airlineName}`, item])).values()
+      );
+      const resultAirlineName = uniqueAirlineName.map((item:any)=>
+        ({ value:`${item.airlineName}`,  label:`${item.airlineName}` })
+      );
+      resultAirlineName.unshift({ value: '선택', label: '선택' });
+      setAirlineNameOptions(resultAirlineName);
+    }
   };
 
+  const fetchHotelInNation = async (nationCopy: string) => {
+    console.log(nationCopy);
+    const res = await axios.get(`${MainURL}/producthotel/gethotels`);
+    if (res.data) {
+      const copy = res.data;
+      const hotelsCopy = copy.filter((e:any)=> e.city === nationCopy);
+      const result = hotelsCopy.map((item:any)=>
+        ({ value:`${item.hotelNameKo}`,  label:`${item.hotelNameKo}` })
+      );
+      result.unshift({ value: '선택', label: '선택' });
+      setHotelsOptions(result);
+    }
+  };
 
-   
-  // 일정 등록 함수 ----------------------------------------------
+  useEffect(() => {
+    if (isAddOrRevise === 'revise') {
+      fetchHotelInNation(tourLocation);
+    }
+	}, []);  
+     
+  // 일정 정보 등록 함수 ----------------------------------------------
   const registerPost = async () => {
     const getParams = {
       isView : isView,
+      nation : nation,
       tourLocation: tourLocation,
       landCompany: landCompany,
       productType : productType,
-      tourPeriodNight : tourPeriodNight,
-      tourPeriodDay : tourPeriodDay,
+      tourPeriod : tourPeriod,
       departAirport: departAirport,
       departFlight: departFlight,
-      selectedSchedule: selectedSchedule,
       cautionNote: cautionNote,
       includeNote: JSON.stringify(includeNote),
       includeNoteText: includeNoteText,
       notIncludeNote: JSON.stringify(notIncludeNote),
-      notIncludeNoteText: notIncludeNoteText,
-      scheduleList: JSON.stringify(scheduleList)
+      notIncludeNoteText: notIncludeNoteText
     }
     axios 
       .post(`${MainURL}/productschedule/registerschedule`, getParams)
@@ -202,7 +246,6 @@ export default function ModalAddSchedule (props : any) {
         if (res.data) {
           alert('등록되었습니다.');
           props.setRefresh(!props.refresh);
-          props.setIsViewAddScheduleModal(false);
         }
       })
       .catch(() => {
@@ -210,27 +253,20 @@ export default function ModalAddSchedule (props : any) {
       })
   };
 
-  // 일정 수정 함수 ----------------------------------------------
+  // 일정 정보 수정 함수 ----------------------------------------------
   const reviseSchedule = async () => {
     const currentdate = new Date();
 		const revisetoday = formatDate(currentdate, 'yyyy-MM-dd');
     const getParams = {
       postId : scheduleData.id,
       isView : isView,
-      tourLocation: tourLocation,
       landCompany: landCompany,
       productType : productType,
-      tourPeriodNight : tourPeriodNight,
-      tourPeriodDay : tourPeriodDay,
-      departAirport: departAirport,
-      departFlight: departFlight,
-      selectedSchedule: selectedSchedule,
       cautionNote: cautionNote,
       includeNote: JSON.stringify(includeNote),
       includeNoteText: includeNoteText,
       notIncludeNote: JSON.stringify(notIncludeNote),
       notIncludeNoteText: notIncludeNoteText,
-      scheduleList: JSON.stringify(scheduleList),
       reviseDate : revisetoday
     }
     axios 
@@ -239,7 +275,6 @@ export default function ModalAddSchedule (props : any) {
         if (res.data) {
           alert('수정되었습니다.');
           props.setRefresh(!props.refresh);
-          props.setIsViewAddScheduleModal(false);
         }
       })
       .catch(() => {
@@ -259,11 +294,119 @@ export default function ModalAddSchedule (props : any) {
     { value: '불포함', label: '불포함' }
   ]
 
+  // 일정 데이별 디테일 등록&저장 함수 ----------------------------------------------
+  const registerDetailPost = async (item:any) => {
+    const getParams = {
+      scheduleID : scheduleData.id,
+      day: item.day,
+      breakfast: item.breackfast,
+      lunch: item.lunch, 
+      dinner: item.dinner,
+      hotel: item.hotel,
+      score: item.score,
+      scheduleDetail: JSON.stringify(item.scheduleDetail)
+    }
+    axios 
+      .post(`${MainURL}/productschedule/registerscheduledetail`, getParams)
+      .then((res) => {
+        if (res.data) {
+          alert('저장되었습니다.');
+          props.setRefresh(!props.refresh);
+        }
+      })
+      .catch(() => {
+        console.log('실패함')
+      })
+  };
+
+  // 일정 검색 & 자동완성기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+  const [fetchScheduleList, setFetchScheduleList] = useState<ScheduleDetailProps[]>([]);
+  // 일정가져오기 리스트 가져오기
+  const fetchPostsScheduleList = async () => {
+    let res = await axios.get(`${MainURL}/productschedule/getproductschedule`);
+    if (res.data) {
+      const copy = res.data;
+      setFetchScheduleList(copy);
+    }
+  };
+
+  const [viewAutoCompleteFetchSchedule, setViewAutoCompleteFetchSchedule] = useState<boolean>(false);
+  const [dropDownListFetchSchedule, setDropDownListFetchSchedule] = useState<ScheduleDetailProps[]>([]);
+  const [dropDownItemIndexFetchSchedule, setDropDownItemIndexFetchSchedule] = useState(-1);
+  const [isComposingFetchSchedule, setIsComposingFetchSchedule] = useState(false);
+
+  // 일정가져오기 입력창 변경 
+  const handleFetchScheduleChange = (text: string) => {
+    setSelectedSchedule(text)
+    if (text.length > 1) {
+      fetchPostsScheduleList();
+    }
+    setDropDownItemIndexFetchSchedule(-1);
+    handleAutoCompleteFetchSchedule(text);
+    setViewAutoCompleteFetchSchedule(true);
+  };
+
+  // 일정가져오기 자동필터  -----------------
+  const handleAutoCompleteFetchSchedule = (text : string ) => {
+    const copy = fetchScheduleList.filter((e: any) => e.tourLocation.includes(text) === true);
+    copy.sort((a, b) => (a.location > b.location) ? 1 : -1);
+    setDropDownListFetchSchedule(copy);
+  }
+
+  const handleDropDownKeyFetchSchedule = (event:any) => {
+    if (isComposingFetchSchedule) return;
+    if (viewAutoCompleteFetchSchedule) {
+      if (event.key === 'ArrowDown' && dropDownItemIndexFetchSchedule === -1) {
+        setDropDownItemIndexFetchSchedule(0)
+      } else if (event.key === 'ArrowDown' && dropDownItemIndexFetchSchedule >= 0 && dropDownItemIndexFetchSchedule !== dropDownListFetchSchedule.length - 1) {
+        setDropDownItemIndexFetchSchedule(dropDownItemIndexFetchSchedule + 1)
+      } else if (event.key === 'ArrowDown' && dropDownItemIndexFetchSchedule === dropDownListFetchSchedule.length - 1) {
+        return
+      } else if (event.key === 'ArrowUp' && dropDownItemIndexFetchSchedule >= 0) {
+        setDropDownItemIndexFetchSchedule(dropDownItemIndexFetchSchedule - 1)
+      } else if (event.key === 'Enter' && dropDownItemIndexFetchSchedule >= 0) {
+        handleSelectedFetchSchedule(dropDownListFetchSchedule[dropDownItemIndexFetchSchedule]);
+        setViewAutoCompleteFetchSchedule(false);
+        setDropDownItemIndexFetchSchedule(-1)
+      } else if (event.key === 'Enter' && dropDownItemIndexFetchSchedule === -1) {
+        setViewAutoCompleteFetchSchedule(false);
+      }
+    }
+  }
+
+  // 일정가져오기 자동입력  -----------------
+  const handleSelectedFetchSchedule = async (item:any) => {
+    const scheduleListOrigin = [...scheduleList];
+    const res = await axios.get(`${MainURL}/productschedule/getproductscheduledetails/${item.id}`)
+		if (res.data !== false) {
+			const copy = res.data;
+			const result = copy.map((item:any) => ({
+				...item,
+				scheduleDetail: JSON.parse(item.scheduleDetail)
+			}));
+      if (scheduleListOrigin[0].scheduleDetail[0].location === '') {
+        setScheduleList(result);
+      } else {
+        const combine = [...scheduleListOrigin, ...result];
+        const combineResult = combine.map((item:any, index:any) => ({
+          ...item,
+          day: index+1
+        }));
+        setScheduleList(combineResult);
+        setViewAutoCompleteTourLocation(combineResult?.map((item:any) => Array(item.scheduleDetail.length).fill(false)))
+      }
+      alert('일정 가져오기가 완료되었습니다.')
+      setSelectedSchedule('');
+		}
+  }
+
+
   // 여행지 검색 & 자동완성기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-  const [tourLocationList, setTourLocationList] = useState<TourLocationListProps[]>([]);
-  // 리스트 가져오기
-  const fetchPosts = async () => {
+  const [tourLocationList, setTourLocationList] = useState<ScheduleDetailProps[]>([]);
+  // 여행지 리스트 가져오기
+  const fetchPostsTourList = async () => {
     let res = await axios.get(`${MainURL}/productschedule/gettourlocationforpost`);
     if (res !== undefined ) {
       let copy = res.data;
@@ -271,18 +414,18 @@ export default function ModalAddSchedule (props : any) {
     }
   };
 
-  const [viewAutoCompleteTourLocation, setViewAutoCompleteTourLocation] = useState(scheduleList.map(item => Array(item.schedule.length).fill(false)));
-  const [dropDownListTourLocation, setDropDownListTourLocation] = useState<TourLocationListProps[]>([]);
+  const [viewAutoCompleteTourLocation, setViewAutoCompleteTourLocation] = useState(scheduleList?.map((item:any) => Array(item.scheduleDetail.length).fill(false)));
+  const [dropDownListTourLocation, setDropDownListTourLocation] = useState<ScheduleDetailProps[]>([]);
   const [dropDownItemIndexTourLocation, setDropDownItemIndexTourLocation] = useState(-1);
   const [isComposingTourLocation, setIsComposingTourLocation] = useState(false);
 
   // 스케줄 여행지 이름 변경 
   const handleTourLocationChange = (index: number, text: string, subIndex: number ) => {
     const inputs = [...scheduleList];
-    inputs[index].schedule[subIndex].location = text;
+    inputs[index].scheduleDetail[subIndex].location = text;
     const viewAutoComplete = [...viewAutoCompleteTourLocation];
-    if (text.length > 2) {
-      fetchPosts();
+    if (text.length > 1) {
+      fetchPostsTourList();
       viewAutoComplete[index][subIndex] = true;
     }
     setDropDownItemIndexTourLocation(-1);
@@ -291,7 +434,7 @@ export default function ModalAddSchedule (props : any) {
     setScheduleList(inputs);
   };
 
-  // 자동필터  -----------------
+  // 여행지 자동필터  -----------------
   const handleAutoCompleteTourLocation = (text : string ) => {
     const copy = tourLocationList.filter((e: any) => e.location.includes(text) === true);
     copy.sort((a, b) => (a.location > b.location) ? 1 : -1);
@@ -323,10 +466,10 @@ export default function ModalAddSchedule (props : any) {
     }
   }
 
-  // 자동입력  -----------------
+  // 여행지 자동입력  -----------------
   const handleSelectedTourLocation = (index:number, subIndex: number, item:any) => {
     const inputs = [...scheduleList];
-    inputs[index].schedule[subIndex] = {
+    inputs[index].scheduleDetail[subIndex] = {
       id: item.id,
       sort : item.sort,
       location: item.location,
@@ -339,6 +482,8 @@ export default function ModalAddSchedule (props : any) {
     setScheduleList(inputs);
   }
 
+
+
   return (
     <div className='modal-addinput'>
 
@@ -347,6 +492,7 @@ export default function ModalAddSchedule (props : any) {
           onClick={()=>{
             props.setRefresh(!props.refresh);
             props.setIsViewAddScheduleModal(false);
+            props.setScheduleDetails([]);
           }} 
         >
           <IoMdClose size={30}/>
@@ -384,38 +530,102 @@ export default function ModalAddSchedule (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='국가/도시'/>
-            <DropdownBox
-              widthmain='20%'
-              height='35px'
-              selectedValue={nation}
-              options={[
-                { value: '선택', label: '선택' },
-                ...props.nationlist.map((nation:any) => (
-                  { value: nation.nationKo, label: nation.nationKo }
-                ))
-              ]}    
-              handleChange={(e)=>{
-                setNation(e.target.value);
-                const copy = [...props.nationlist];
-                const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
-                setSelectedNation(filtered[0].cities);
-              }}
-            />
-            <DropdownBox
-              widthmain='20%'
-              height='35px'
-              selectedValue={tourLocation}
-              options={[
-                { value: '선택', label: '선택' },
-                ...selectedNation.map((nation:any) => (
-                  { value: nation.cityKo, label: nation.cityKo }
-                ))
-              ]}    
-              handleChange={(e)=>{
-                setTourLocation(e.target.value)
-                fetchAirplane(e.target.value);
-              }}
-            />
+            {
+              isAddOrRevise === 'revise' 
+              ? 
+              <p>{nation}</p>
+              :
+              <DropdownBox
+                widthmain='20%'
+                height='35px'
+                selectedValue={nation}
+                options={[
+                  { value: '선택', label: '선택' },
+                  ...props.nationlist.map((nation:any) => (
+                    { value: nation.nationKo, label: nation.nationKo }
+                  ))
+                ]}    
+                handleChange={(e)=>{
+                  setNation(e.target.value);
+                  const copy = [...props.nationlist];
+                  const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+                  setSelectedNation(filtered[0].cities);
+                }}
+              />
+            }
+            {
+              isAddOrRevise === 'revise' 
+              ? 
+              <p>{tourLocation}</p>
+              :
+              <DropdownBox
+                widthmain='20%'
+                height='35px'
+                selectedValue={tourLocation}
+                options={[
+                  { value: '선택', label: '선택' },
+                  ...selectedNation.map((nation:any) => (
+                    { value: nation.cityKo, label: nation.cityKo }
+                  ))
+                ]}    
+                handleChange={(e)=>{
+                  setTourLocation(e.target.value);
+                  fetchTourPeriod(e.target.value);
+                  fetchHotelInNation(e.target.value);
+                }}
+              />
+            }
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='여행기간'/>
+            {
+              isAddOrRevise === 'revise' 
+              ? 
+              <p>{tourPeriod}</p>
+              :
+              <DropdownBox
+                widthmain='20%'
+                height='35px'
+                selectedValue={tourPeriod}
+                options={tourPeriodOptions}
+                handleChange={(e)=>{setTourPeriod(e.target.value)}}
+              />
+            }
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='적용항공편'/>
+            {
+              isAddOrRevise === 'revise' 
+              ? 
+              <p>{departAirport}</p>
+              :
+              <DropdownBox
+                widthmain='20%'
+                height='35px'
+                selectedValue={departAirport}
+                options={departAirportOptions}
+                handleChange={(e)=>{setDepartAirport(e.target.value)}}
+              />
+            }
+            {
+              isAddOrRevise === 'revise' 
+              ? 
+              <p>{departFlight}</p>
+              :
+              <DropdownBox
+                widthmain='20%'
+                height='35px'
+                selectedValue={departFlight}
+                options={airlineNameOptions}    
+                handleChange={(e)=>{
+                  setDepartFlight(e.target.value)
+                }}
+              />
+            }
           </div>
         </div>
         <div className="coverbox">
@@ -437,56 +647,30 @@ export default function ModalAddSchedule (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
-            <TitleBox width="120px" text='여행기간'/>
-            <DropdownBox
-              widthmain='20%'
-              height='35px'
-              selectedValue={tourPeriodNight}
-              options={DropDownTourPeriodNightType}    
-              handleChange={(e)=>{setTourPeriodNight(e.target.value)}}
-            />
-            <DropdownBox
-              widthmain='20%'
-              height='35px'
-              selectedValue={tourPeriodDay}
-              options={DropDownTourPeriodDayType}    
-              handleChange={(e)=>{setTourPeriodDay(e.target.value)}}
-            />
-          </div>
-        </div>
-        <div className="coverbox">
-          <div className="coverrow hole">
-            <TitleBox width="120px" text='적용항공편'/>
-            <DropdownBox
-              widthmain='20%'
-              height='35px'
-              selectedValue={departAirport}
-              options={[
-                { value: '출발공항', label: '출발공항' },
-                { value: '인천', label: '인천' },
-                { value: '부산', label: '부산' },
-                { value: '대구', label: '대구' }
-              ]}    
-              handleChange={(e)=>{setDepartAirport(e.target.value)}}
-            />
-            <DropdownBox
-              widthmain='20%'
-              height='35px'
-              selectedValue={departFlight}
-              options={DropDownAirline}    
-              handleChange={(e)=>{
-                setDepartFlight(e.target.value)
-              }}
-            />
-          </div>
-        </div>
-        <div className="coverbox">
-          <div className="coverrow hole">
             <TitleBox width="120px" text='일정검색'/>
             <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
               placeholder='등록된 일정 가져오기'
-              value={selectedSchedule} onChange={(e)=>{setSelectedSchedule(e.target.value)}}/>
+              // value={selectedSchedule} 
+              onChange={(e) => {
+                handleFetchScheduleChange(e.target.value)
+              }}
+              onKeyDown={(e)=>{handleDropDownKeyFetchSchedule(e)}}
+              onCompositionStart={() => setIsComposingFetchSchedule(true)}
+              onCompositionEnd={() => setIsComposingFetchSchedule(false)}
+            />
           </div>
+          {
+            (selectedSchedule !== '' && viewAutoCompleteFetchSchedule) &&
+            <div className="scheduleAutoComplete">
+              { 
+                dropDownListFetchSchedule.slice(0, 10).map((item:any, index:any)=>{
+                  return(
+                    <div key={index} className={dropDownItemIndexFetchSchedule === index ? 'dropDownList selected' : 'dropDownList'}>{item.tourLocation} {item.tourPeriod}</div>
+                  )
+                })
+              }
+            </div>  
+          }
         </div>
       </section>
         
@@ -542,9 +726,31 @@ export default function ModalAddSchedule (props : any) {
         </div>
       </section>
 
+      <div className='btn-box' style={{marginBottom:'50px'}}>
+        <div className="btn" 
+          onClick={()=>{
+            props.setRefresh(!props.refresh);
+            props.setIsViewAddScheduleModal(false);
+            props.setScheduleDetails([]);
+          }}
+        >
+          <p style={{color:'#333'}}>취소</p>
+        </div>
+        <div className="btn" style={{backgroundColor:'#5fb7ef'}}
+            onClick={()=>{
+              isAddOrRevise === 'add' 
+              ? registerPost()
+              : reviseSchedule();
+            }}
+          >
+          <p>기본 정보 저장</p>
+        </div>
+      </div>
+
       <section>
-      {
-        scheduleList.map((item:any, index:any)=>{
+      { scheduleList.length > 0 &&
+        scheduleList?.map((item:any, index:any)=>{
+
           return (
             <div className="schedule" key={index}>
               <div className="top-row">
@@ -589,12 +795,17 @@ export default function ModalAddSchedule (props : any) {
                     }}
                   />
                   <p>호텔</p>
-                  <input style={{width:'15%'}} value={item.hotel} className="inputdefault" type="text" 
-                      onChange={(e) => {
-                        const copy = [...scheduleList];
-                        copy[index].hotel = e.target.value;
-                        setScheduleList(copy);
-                      }}/>
+                  <DropdownBox
+                    widthmain='15%'
+                    height='35px'
+                    selectedValue={item.hotel}
+                    options={hotelsOptions}
+                    handleChange={(e)=>{
+                      const copy = [...scheduleList];
+                      copy[index].hotel = e.target.value;
+                      setScheduleList(copy);
+                    }}
+                  />
                   <DropdownBox
                     widthmain='10%'
                     height='35px'
@@ -618,7 +829,7 @@ export default function ModalAddSchedule (props : any) {
 
               <div className="bottom-content">
                 {
-                  item.schedule.map((subItem:any, subIndex:any)=>{ 
+                  item.scheduleDetail?.map((subItem:any, subIndex:any)=>{ 
 
                     const postImages = subItem.postImage ? JSON.parse(subItem.postImage) : "";
 
@@ -655,7 +866,7 @@ export default function ModalAddSchedule (props : any) {
                               <input style={{width:'45%', marginBottom:'10px'}} value={subItem.subLocation} className="inputdefault" type="text" 
                                 onChange={(e) => {
                                   const inputs = [...scheduleList];
-                                  inputs[index].schedule[subIndex].subLocation = e.target.value;
+                                  inputs[index].scheduleDetail[subIndex].subLocation = e.target.value;
                                   setScheduleList(inputs);
                                 }}/>
                             </div>
@@ -663,7 +874,7 @@ export default function ModalAddSchedule (props : any) {
                               <input style={{width:'95%'}} value={subItem.locationTitle} className="inputdefault" type="text" 
                                 onChange={(e) => {
                                   const inputs = [...scheduleList];
-                                  inputs[index].schedule[subIndex].locationTitle = e.target.value;
+                                  inputs[index].scheduleDetail[subIndex].locationTitle = e.target.value;
                                   setScheduleList(inputs);
                                 }}/>
                             </div>
@@ -675,7 +886,7 @@ export default function ModalAddSchedule (props : any) {
                                   value={subItem.locationContent}
                                   onChange={(e)=>{
                                     const inputs = [...scheduleList];
-                                    inputs[index].schedule[subIndex].locationContent = e.target.value;
+                                    inputs[index].scheduleDetail[subIndex].locationContent = e.target.value;
                                     setScheduleList(inputs);
                                   }}
                                 />
@@ -683,6 +894,7 @@ export default function ModalAddSchedule (props : any) {
                             }
                             { (subItem.sort === '선택' || subItem.sort === '상세') &&
                                 subItem.locationContentDetail?.map((detailItem:any, detailIndex:any)=>{
+
                                 return (
                                   <div style={{marginTop:'10px', border:'1px solid #EAEAEA'}} key={detailIndex}>
                                     <div className='rowbox'>
@@ -690,7 +902,7 @@ export default function ModalAddSchedule (props : any) {
                                       <input style={{width:'95%'}} value={detailItem.name} className="inputdefault" type="text" 
                                         onChange={(e) => {
                                           const inputs = [...scheduleList];
-                                          inputs[index].schedule[subIndex].locationContentDetail[detailIndex].name = e.target.value;
+                                          inputs[index].scheduleDetail[subIndex].locationContentDetail[detailIndex].name = e.target.value;
                                           setScheduleList(inputs);
                                         }}/>
                                     </div>
@@ -702,13 +914,14 @@ export default function ModalAddSchedule (props : any) {
                                             <div style={{width:'10%', display:'flex', justifyContent:'end', alignItems:'center'}}>
                                               <p onClick={()=>{
                                                  const inputs = [...scheduleList];
-                                                 inputs[index].schedule[subIndex].locationContentDetail[detailIndex].notice = [...inputs[index].schedule[subIndex].locationContentDetail[detailIndex].notice, ""]
+                                                 inputs[index].scheduleDetail[subIndex].locationContentDetail[detailIndex].notice 
+                                                 = [...inputs[index].scheduleDetail[subIndex].locationContentDetail[detailIndex].notice, ""]
                                                  setScheduleList(inputs);
                                                 }}
                                               ><CiCirclePlus color='#333' size={20}/></p>
                                               <p onClick={()=>{
                                                  const inputs = [...scheduleList];
-                                                 inputs[index].schedule[subIndex].locationContentDetail[detailIndex].notice.splice(noticeIndex, 1);
+                                                 inputs[index].scheduleDetail[subIndex].locationContentDetail[detailIndex].notice.splice(noticeIndex, 1);
                                                  setScheduleList(inputs);
                                                 }}
                                               ><CiCircleMinus color='#FF0000' size={20}/></p>
@@ -716,14 +929,13 @@ export default function ModalAddSchedule (props : any) {
                                             <input style={{width:'90%'}} value={noticeItem} className="inputdefault" type="text" 
                                               onChange={(e) => {
                                                 const inputs = [...scheduleList];
-                                                inputs[index].schedule[subIndex].locationContentDetail[detailIndex].notice[noticeIndex] = e.target.value;
+                                                inputs[index].scheduleDetail[subIndex].locationContentDetail[detailIndex].notice[noticeIndex] = e.target.value;
                                                 setScheduleList(inputs);
                                               }}/>
                                           </div>
                                         )
                                       })
                                     }
-                                    
                                   </div>
                                 )
                               })
@@ -733,7 +945,7 @@ export default function ModalAddSchedule (props : any) {
                             <div className="btn" style={{backgroundColor:"#EAEAEA", margin:'10px 0'}}
                               onClick={()=>{
                                 const inputs = [...scheduleList];
-                                inputs[index].schedule = [...inputs[index].schedule, { id : '1',sort : '', location: '', subLocation: '',
+                                inputs[index].scheduleDetail = [...inputs[index].scheduleDetail, { id : '1',sort : '', location: '', subLocation: '',
                                   locationTitle: '', locationContent: '', locationContentDetail: [{name:"", notice:[""]}], postImage : ''}];
                                 setScheduleList(inputs);
                                 const viewAutoCopy = [...viewAutoCompleteTourLocation];
@@ -745,7 +957,7 @@ export default function ModalAddSchedule (props : any) {
                             <div className="btn" style={{backgroundColor:"#fff", margin:'10px 0'}}
                               onClick={()=>{
                                 const inputs = [...scheduleList];
-                                inputs[index].schedule.splice(subIndex, 1);
+                                inputs[index].scheduleDetail.splice(subIndex, 1);
                                 setScheduleList(inputs);
                                 const viewAutoCopy = [...viewAutoCompleteTourLocation];
                                 viewAutoCopy[index].splice(subIndex, 1);
@@ -771,6 +983,15 @@ export default function ModalAddSchedule (props : any) {
                 }
               </div>
               <div style={{width:'100%', height:'1px', backgroundColor:'#BDBDBD'}}></div>
+              <div className='btn-box' style={{marginTop:'20px'}}>
+                <div className="btn" style={{backgroundColor:'#5fb7ef'}}
+                    onClick={()=>{
+                      registerDetailPost(item);
+                    }}
+                  >
+                  <p>{item.day}DAY 저장</p>
+                </div>
+              </div>
             </div>      
           )
         })
@@ -791,25 +1012,7 @@ export default function ModalAddSchedule (props : any) {
         </div>
       </section>
 
-      <div className='btn-box'>
-        <div className="btn" 
-          onClick={()=>{
-            props.setRefresh(!props.refresh);
-            props.setIsViewAddScheduleModal(false);
-          }}
-        >
-          <p style={{color:'#333'}}>취소</p>
-        </div>
-        <div className="btn" style={{backgroundColor:'#5fb7ef'}}
-            onClick={()=>{
-              isAddOrRevise === 'add' 
-              ? registerPost()
-              : reviseSchedule();
-            }}
-          >
-          <p>저장</p>
-        </div>
-      </div>
+
       
     </div>     
   )

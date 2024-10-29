@@ -142,9 +142,9 @@ export const DropDownAirline = [
   { value: '5J 세부퍼시픽항공', label: '5J 세부퍼시픽항공' },
   { value: '7C 제주항공', label: '7C 제주항공' },
   { value: 'AA 아메리칸항공', label: 'AA 아메리칸항공' },
-  { value: 'AC 에어캐나다', label: 'AC 에어캐나다' },
+  { value: 'AC 캐나다항공', label: 'AC 캐나다항공' },
   { value: 'AF 에어프랑스', label: 'AF 에어프랑스' },
-  { value: 'AM 에어멕시코', label: 'AM 에어멕시코' },
+  { value: 'AM 아에로멕시코', label: 'AM 아에로멕시코' },
   { value: 'AY 핀에어', label: 'AY 핀에어' },
   { value: 'AZ ITA항공', label: 'AZ ITA항공' },
   { value: 'BA 영국항공', label: 'BA 영국항공' },
@@ -364,5 +364,17 @@ export const DropDownPackageType = [
   { value: '셔틀팩', label: '셔틀팩' },
   { value: '시티팩', label: '시티팩' },
   { value: '베이직팩', label: '베이직팩' },
-  { value: '스마트플러스', label: '스마트플러스' }
+  { value: '스마트플러스', label: '스마트플러스' },
+  { value: '60일 미만', label: '60일 미만' },
+  { value: '30일 미만', label: '30일 미만' },
+  { value: '트랜스퍼', label: '트랜스퍼' },
+  { value: '정글투어', label: '정글투어' },
+  { value: '웨딩스냅', label: '웨딩스냅' }
+]
+
+export const DropDownSeasonType = [
+  { value: '선택', label: '선택' },
+  { value: '하이시즌', label: '하이시즌' },
+  { value: '픽시즌', label: '픽시즌' },
+  { value: '블랫아웃', label: '블랫아웃' }
 ]

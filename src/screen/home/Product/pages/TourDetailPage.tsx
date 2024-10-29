@@ -1,31 +1,16 @@
 import "./TourDetailPage.scss";
-import { useParams } from "react-router-dom";
-import mockData from "../../mockData";
 import { useCallback, useState } from "react";
-
+import { IoLocationOutline } from "react-icons/io5";
+import { LuCalendarDays } from "react-icons/lu";
+import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
+import TourImageData from "../../common/TourImageData";
+import CommonImageData from "../../common/CommonImageData";
+import RatingBoard from "../../common/RatingBoard";
+import { useNavigate } from "react-router-dom";
 
 export default function ResortDetailPage() {
-  const { tourId } = useParams();
-  const id = 1;
-  const tourData = mockData.tour.findDataById(id)!;
-  const tourDatas = mockData.tour.findMany();
-  const hotelObjs = mockData.hotel.findMany();
-  const [infoIdx, setInfoIdx] = useState(0);
-  const [categoryIdx, setCategoryIdx] = useState(0);
-  const infoObj = [
-    { idx: 0, title: "리조트 안내" },
-    { idx: 1, title: "발리 안내" },
-    { idx: 2, title: "일정 미리보기" },
-  ];
-  const categoryObj = [
-    { idx: 0, title: "추천 풀빌라" },
-    { idx: 1, title: "얼리버드 프로모션" },
-    { idx: 2, title: "가족여행추천 리조트" },
-    { idx: 3, title: "우붓 스테이" },
-  ];
-
-
-  const [categoryTitle, setCategoryTitle] = useState("전체");
+  
+  let navigate = useNavigate();
   const categoryObjs = [
     { idx: 0, title: "전체" },
     { idx: 1, title: "쿠타" },
@@ -33,10 +18,19 @@ export default function ResortDetailPage() {
     { idx: 3, title: "잠바란" },
     { idx: 4, title: "우붓" },
   ];
-  const filteringHotelObjs = hotelObjs.filter((hotelObj) => {
-    if (categoryTitle === "전체") return true;
-    return hotelObj.address.city === categoryTitle;
-  });
+
+  const hotelObjs = [
+    { id: 0, title: "콘레드", rating: 3, location: '발리/스미냑', image: CommonImageData.hotel_01 },
+    { id: 1, title: "반얀트리", rating: 4, location: '발리/스미냑', image: CommonImageData.hotel_02 },
+    { id: 2, title: "세인트레지스", rating: 5, location: '발리/스미냑', image: CommonImageData.hotel_03 },
+    { id: 3, title: "르메르디앙", rating: 3, location: '발리/스미냑', image: CommonImageData.hotel_04 },
+    { id: 4, title: "노보텔", rating: 4, location: '발리/스미냑', image: CommonImageData.hotel_05 },
+    { id: 5, title: "콘래드", rating: 5, location: '발리/스미냑', image: CommonImageData.hotel_06 },
+    { id: 6, title: "반얀트리", rating: 4, location: '발리/스미냑', image: CommonImageData.hotel_07 },
+    { id: 7, title: "세인트", rating: 3, location: '발리/스미냑', image: CommonImageData.hotel_08 },
+  ]
+
+
 
   const formatRatingArray = useCallback((rating: number) => {
     const integerPart = Math.floor(rating);
@@ -53,109 +47,173 @@ export default function ResortDetailPage() {
     });
   }, []);
 
+  // -----------------------------------------------------------------------------------------------------------------------
+  const [toUser, setToUser] = useState('발리');
+  const [category, setCategory] = useState('resortinfo');
+  const [categoryBtn, setCategoryBtn] = useState('recommend');
+  const [sidebar, setSidebar] = useState('전체');
+
   return (
-    <div>
-      <div className="resort__search__bar__wrapper">
-        <div className="search__btn__wrapper">
-          <button className="search__btn__wrapper" onClick={() => {}}>
+    <div className="tour_detail_">
+
+      <div className="tour_detail_search__bar___wrapper">
+        <div className="tour_detail_search__box">
+          <IoLocationOutline className="tour_detail_search__text"/>
+          <select value={toUser} onChange={(e)=>{setToUser(e.target.value)}} className="tour_detail_search__select">
+            { ['발리','몰디브','칸쿤','푸켓'].map((option:any, index:any) => (
+              <option key={index} value={option.value}>발리</option>
+            ))}
+          </select>
+        </div>
+        <div className="tour_detail_search__bar"></div>
+        <div className="tour_detail_search__box">
+          <select value={toUser} onChange={(e)=>{setToUser(e.target.value)}} className="tour_detail_search__select">
+            { ['대서양','인도양','남미'].map((option:any, index:any) => (
+              <option key={index} value={option.value}>전체</option>
+            ))}
+          </select>
+        </div>
+        <div className="tour_detail_search__bar"></div>
+        <div className="tour_detail_search__box">
+          <LuCalendarDays className="tour_detail_search__text"/>
+          <div className="tour_detail_search__select">
+
+          </div>
+        </div>
+        <div className="tour_detail_search__bar"></div>
+        <div className="tour_detail_search__box">
+          <HiOutlineBuildingOffice2 className="tour_detail_search__text"/>
+          <select value={toUser} onChange={(e)=>{setToUser(e.target.value)}} className="tour_detail_search__select">
+            { ['발리','몰디브','칸쿤','푸켓'].map((option:any, index:any) => (
+              <option key={index} value={option.value}>리조트</option>
+            ))}
+          </select>
+        </div>
+        <div className="tour_detail_search__box">
+          <div className="tour_detail_search__btn">
             찾기
-          </button>
+          </div>
         </div>
       </div>
 
       <div className="tour__header__section__wrapper">
-        <img className="bg__image" src={tourData?.mainBgImage} alt="temp" />
+        <img className="bg__image" src={TourImageData.tourDetailMain_bg} alt="temp" />
         <div className="header__info">
-          <span className="header__title">{tourData?.title}</span>
-          <span className="header__subtitle">{tourData?.subtitle}</span>
+          <span className="header__title">몰디브</span>
+          <span className="header__subtitle">Maldives</span>
         </div>
       </div>
       
-      <div className="resort__category__section__wrapper">
-        <div className="mx__section gap-3">
-          {/* <CategorySelector
-            type="underbar"
-            categories={infoObj}
-            currentIdx={infoIdx}
-            setCurrentIdx={setInfoIdx}
-          />
-          <CategorySelector
-            type="button"
-            categories={categoryObj}
-            currentIdx={categoryIdx}
-            setCurrentIdx={setCategoryIdx}
-          /> */}
+      <div className="tour_detail_category__section__wrapper">
+        
+        <div className="tour_detail_category__selector__box">
+          <div
+            className={`tour_detail_category__bar ${
+              category === "resortinfo" ? "on" : ""
+            }`}
+            onClick={() => setCategory("resortinfo")}
+          >
+            리조트 안내
+          </div>
+          <div
+            className={`tour_detail_category__bar ${
+              category === "nationinfo" ? "on" : ""
+            }`}
+            onClick={() => setCategory("nationinfo")}
+          >
+            발리 안내
+          </div>
+          <div
+            className={`tour_detail_category__bar ${
+              category === "schedule" ? "on" : ""
+            }`}
+            onClick={() => setCategory("schedule")}
+          >
+            일정 미리보기
+          </div>
         </div>
 
-        <div className="hotel__list__wrapper">
-          <div className="pb-2">
-            <div
-                className={"sidebar__wrapper"}
-              >
-                {categoryObjs.map(({ idx, title }) => (
-                  <span
-                    key={idx}
-                    className={"selected__sidebar"}
-                    onClick={() => {}}
-                  >
-                    {title}
-                  </span>
-                ))}
-              </div>
+        <div className="tour_detail_category__selectorBtn__box">
+          <div
+            className={`tour_detail_category__Btn ${
+              categoryBtn === "recommend" ? "on" : ""
+            }`}
+            onClick={() => setCategoryBtn("recommend")}
+          >
+            추천 풀빌라
           </div>
-          <div className="category__items__wrapper">
-            {filteringHotelObjs.map((hotelObj) => (
-              <a key={hotelObj.id} href={`/hotel/${hotelObj.id}`}>
-                <div className="recommend__card__wrapper">
-                  <div className="recommend__image__wrapper">
-                    <img src={hotelObj.thumbnailImagePath} alt="temp" />
-                  </div>
-                  <span className="recommend__card__title">{hotelObj.title}</span>
-                  <div className="recommend__card__info">
-                    <span>
-                      {hotelObj.address.state}/{hotelObj.address.city}
-                    </span>
-                    <div className="recommend__rating__wrapper">
-                      <div className="rating__board__wrapper">
-                      {formatRatingArray(hotelObj.rating).map((value, idx) => (
-                        <div className="rating__icon__wrapper" key={idx} >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            className="empty__star"
-                          >
-                            <path
-                              stroke="none"
-                              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-                            />
-                          </svg>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            className="filled__star"
-                            style={{
-                              clipPath: `polygon(0 0, ${value}% 0, ${value}% 100%, 0 100%)`,
-                            }}
-                          >
-                            <path
-                              strokeWidth="1.5"
-                              stroke="rgba(252, 196, 0, 1)"
-                              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-                            />
-                          </svg>
-                        </div>
-                      ))}
+          <div
+            className={`tour_detail_category__Btn ${
+              categoryBtn === "early" ? "on" : ""
+            }`}
+            onClick={() => setCategoryBtn("early")}
+          >
+            얼리버드 프로모션
+          </div>
+          <div
+            className={`tour_detail_category__Btn ${
+              categoryBtn === "family" ? "on" : ""
+            }`}
+            onClick={() => setCategoryBtn("family")}
+          >
+            가족여행 추천 리조트
+          </div>
+          <div
+            className={`tour_detail_category__Btn ${
+              categoryBtn === "stay" ? "on" : ""
+            }`}
+            onClick={() => setCategoryBtn("stay")}
+          >
+            우붓 스테이
+          </div>
+        </div>
+
+
+        <div className="tour_detail_hotel__list__wrapper">
+
+          <div className="tour_detail_pb-2">
+            <div className={"tour_detail_sidebar__wrapper"}>
+              {categoryObjs.map(({ idx, title }) => (
+                <span
+                  key={idx}
+                  className={sidebar === title ? "selected__sidebar" :  ""}
+                  onClick={() => {
+                    setSidebar(title)
+                  }}
+                >
+                  {title}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="tour_detail_category__items__wrapper">
+            {
+              hotelObjs.map((hotelObj:any) => (
+                <div key={hotelObj.id}>
+                  <div className="tour_detail_card__wrapper"
+                    onClick={()=>{
+                      window.scrollTo(0, 0);
+                      navigate("/products/hotelresort");
+                    }}
+                  >
+                    <div className="tour_detail_image__wrapper">
+                      <img src={hotelObj.image} alt="temp" />
                     </div>
+                    <span className="tour_detail_card__title">{hotelObj.title}</span>
+                    <div className="tour_detail__card__info">
+                      <span>
+                        {hotelObj.location}
+                      </span>
+                      <div className="tour_detail__rating__wrapper">
+                        <RatingBoard rating={hotelObj.rating} />
+                      </div>
                     </div>
+                    <span className="tour_detail_promotion__duedate">{`[프로모션 기간 2024년 12월 31일까지]`}</span>
                   </div>
-                  {/* {promotionDueDate && (
-                    <span className="promotion__duedate">{`[프로모션 기간 ${formatKrDate(
-                      promotionDueDate
-                    )}까지]`}</span>
-                  )} */}
                 </div>
-              </a>
-            ))}
+              ))
+            }
           </div>
         </div>
       </div>

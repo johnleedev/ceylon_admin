@@ -1,40 +1,64 @@
 import "./TourMainPage.scss";
-import mockData from "../../mockData";
-import mainImg0 from "../../images/resort/hotel_07.png";
-import mainImg1 from "../../images/img_mauritius.jpg";
-import mainImg2 from "../../images/resort/hotel_13.png";
-import mainImg3 from "../../images/img_bali.jpg";
 import { useCallback, useState } from "react";
+import { IoIosArrowForward , IoIosArrowBack } from "react-icons/io";
+import { IoLocationOutline } from "react-icons/io5";
+import { LuCalendarDays } from "react-icons/lu";
+import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
+import RatingBoard from "../../common/RatingBoard";
+import CommonImageData from "../../common/CommonImageData";
+import { useNavigate } from "react-router-dom";
 
 export default function ResortPage() {
 
-  const tourData = mockData.tour.findMany();
-  const hotelObjs = mockData.hotel.findMany().slice(0, 3);
-
+  let navigate = useNavigate();
   const [selectId, setSelectId] = useState(0);
+
   const bgObjs = [
-    {
-      title: "발리 풀빌라 프로모션",
+    { title: "발리 풀빌라 프로모션",
       subtitle: "특별한 가격으로 만나는 완벽한 풀빌라",
-      imagePath: mainImg0,
-    },
-    {
-      title: "발리 풀빌라 프로모션",
+      imagePath: CommonImageData.hotel_07 },
+    { title: "발리 풀빌라 프로모션",
       subtitle: "특별한 가격으로 만나는 완벽한 풀빌라",
-      imagePath: mainImg1,
-    },
-    {
-      title: "발리 풀빌라 프로모션",
+      imagePath: CommonImageData.hotel_12 },
+    { title: "발리 풀빌라 프로모션",
       subtitle: "특별한 가격으로 만나는 완벽한 풀빌라",
-      imagePath: mainImg2,
-    },
-    {
-      title: "발리 풀빌라 프로모션",
+      imagePath: CommonImageData.hotel_13 },
+    { title: "발리 풀빌라 프로모션",
       subtitle: "특별한 가격으로 만나는 완벽한 풀빌라",
-      imagePath: mainImg3,
-    },
+      imagePath: CommonImageData.hotel_14 }
+  ];
+  const tourData = [
+    { id: 0, title: "발리", subtitle: "Bali", imagePath: CommonImageData.Image_bali,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 1, title: "몰디브", subtitle: "Maldives", imagePath: CommonImageData.Image_maldives,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 2, title: "칸쿤", subtitle: "Cancun", imagePath: CommonImageData.Image_cancun,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 3, title: "푸켓/카오락", subtitle: "Phuket", imagePath: CommonImageData.Image_phuket,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 4, title: "모리셔스", subtitle: "Mauritius", imagePath: CommonImageData.Image_morisus,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 5, title: "호주", subtitle: "Australia", imagePath: CommonImageData.Image_aus,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 6, title: "하와이", subtitle: "Hawaii", imagePath: CommonImageData.Image_hawaii,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 7, title: "나트랑", subtitle: "Nha Trang", imagePath: CommonImageData.Image_nhatrang,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 8, title: "두바이", subtitle: "Dubai", imagePath: CommonImageData.Image_dubai,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
+    { id: 9, title: "괌/사이판", subtitle: "Guam/Saipan", imagePath: CommonImageData.Image_guam,
+      desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
   ];
 
+  const hotelObjs = [
+    { id: 0, title: "파드라 리조트", rating: 3, image: CommonImageData.hotel_01,
+      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"} },
+    { id: 1, title: "더 카욘 정글 리조트 우붓", rating: 4, image: CommonImageData.hotel_02,
+      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"} },
+    { id: 2, title: "아야나 풀빌라", rating: 5, image: CommonImageData.hotel_03,
+      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"}}
+  ]
+  
   const handleClickBtn = (dir: "left" | "right") => {
     setSelectId((prev) => {
       if (dir === "left") {
@@ -48,86 +72,83 @@ export default function ResortPage() {
     setSelectId(idx);
   };
 
-  const formatRatingArray = useCallback((rating: number) => {
-    const integerPart = Math.floor(rating);
-    const fractionalPart = Math.round((rating - integerPart) * 100);
 
-    return new Array(5).fill(0).map((_, i) => {
-      if (i < integerPart) {
-        return 100;
-      }
-      if (i === integerPart) {
-        return fractionalPart;
-      }
-      return 0;
-    });
-  }, []);
+  // -----------------------------------------------------------------------------------------------------------------------
+  const [toUser, setToUser] = useState('발리');
 
   return (
-    <div>
+    <div className="tour_main">
+      
+      {/* 검색창 -------------------------------------------------------------------------------------------------- */}
+      <div className="tour_main_search__bar___wrapper">
+        <div className="tour_main_search__box">
+          <IoLocationOutline className="tour_main_search__text"/>
+          <select value={toUser} onChange={(e)=>{setToUser(e.target.value)}} className="tour_main_search__select">
+            { ['발리','몰디브','칸쿤','푸켓'].map((option:any, index:any) => (
+              <option key={index} value={option.value}>발리</option>
+            ))}
+          </select>
+        </div>
+        <div className="tour_main_search__bar"></div>
+        <div className="tour_main_search__box">
+          <select value={toUser} onChange={(e)=>{setToUser(e.target.value)}} className="tour_main_search__select">
+            { ['대서양','인도양','남미'].map((option:any, index:any) => (
+              <option key={index} value={option.value}>전체</option>
+            ))}
+          </select>
+        </div>
+        <div className="tour_main_search__bar"></div>
+        <div className="tour_main_search__box">
+          <LuCalendarDays className="tour_main_search__text"/>
+          <div className="tour_main_search__select">
 
-      <div className="resort__search__bar__wrapper">
-        
-        <div className="search__btn__wrapper">
-          <button className="search__btn__wrapper" onClick={() => {}}>
+          </div>
+        </div>
+        <div className="tour_main_search__bar"></div>
+        <div className="tour_main_search__box">
+          <HiOutlineBuildingOffice2 className="tour_main_search__text"/>
+          <select value={toUser} onChange={(e)=>{setToUser(e.target.value)}} className="tour_main_search__select">
+            { ['발리','몰디브','칸쿤','푸켓'].map((option:any, index:any) => (
+              <option key={index} value={option.value}>리조트</option>
+            ))}
+          </select>
+        </div>
+        <div className="tour_main_search__box">
+          <div className="tour_main_search__btn">
             찾기
-          </button>
+          </div>
         </div>
       </div>
 
-
-      <div className="resort__main__section__wrapper">
+      {/* 상단 메인 섹션 -------------------------------------------------------------------------------------------------- */}
+      <div className="tour_main_main__section__wrapper">
         <div
           className="bg__image__wrapper"
           style={{ backgroundImage: `url(${bgObjs[selectId].imagePath})` }}
         />
-
         <div className="contents__wrapper">
           <div className="bg__contents__wrapper">
             <div className="web__wrapper">
               <span className="web__wrapper_title">{bgObjs[selectId].title}</span>
               <span className="web__wrapper_subtitle">{bgObjs[selectId].subtitle}</span>
             </div>
-            <div className="mobile__wrapper">
+            {/* <div className="mobile__wrapper">
               <span className="mobile__title">내가 꿈꾸는 허니문</span>
               <span className="mobile__subtitle">실론투어 여행 전문가가 설계해 드리는 상력한 허니문</span>
-            </div>
+            </div> */}
           </div>
-          <div className="bg__select__btns__wrapper">
-            <div className="select__indicator">
-              <span>{selectId + 1}</span>
-              <span>/</span>
-              <span>{bgObjs.length}</span>
-            </div>
-            <div className="select__btns">
-              <svg
-                onClick={() => handleClickBtn("left")}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="left__btn"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <div />
-              <svg
-                onClick={() => handleClickBtn("right")}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="right__btn"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
+          
+        </div>
+        <div className="bg__select__btns__wrapper">
+          <div className="select__indicator">
+            <span>{selectId + 1}</span>
+            <span style={{margin:'0 5px'}}>/</span>
+            <span>{bgObjs.length}</span>
+          </div>
+          <div className="select__btns">
+            <IoIosArrowBack onClick={() => handleClickBtn("left")} size={20}/>
+            <div className="select__btns_ver_bar"></div>
+            <IoIosArrowForward onClick={() => handleClickBtn("right")} size={20}/>
           </div>
         </div>
         <div className="bg__selector__wrapper">
@@ -143,11 +164,16 @@ export default function ResortPage() {
         </div>
       </div>
 
-
-      <div className="resort__tour__section__wrapper">
+      {/* 중간 리스트 섹션 -------------------------------------------------------------------------------------------------- */}
+      <div className="tour_main_tour__section__wrapper">
         <div className="spot__cards">
-          {tourData.map((itemObj) => (
-            <a key={itemObj.id} href={`tour/${itemObj.id}`}>
+          {tourData.map((itemObj:any, index:any) => (
+            <div key={index} className="spot__card__wrapper_box"
+              onClick={()=>{
+                window.scrollTo(0, 0);
+                navigate("/products/tourdetail");
+              }}
+            >
               <div
                 className="spot__card__wrapper"
                 style={{ backgroundImage: `url(${itemObj.imagePath})` }}
@@ -156,13 +182,13 @@ export default function ResortPage() {
                 <span className="spot__title">{itemObj.title}</span>
               </div>
               <span className="font__desc">{itemObj.desc}</span>
-            </a>
+            </div>
           ))}
         </div>
       </div>
 
-
-      <div className="resort__best__section__wrapper">
+      {/* 하단 리스트 섹션 -------------------------------------------------------------------------------------------------- */}
+      <div className="tour_main_best__section__wrapper">
         <div className="section__header__wrapper">
           <div className="section__title">
             <span>Best</span>
@@ -182,10 +208,9 @@ export default function ResortPage() {
         </div>
         <div className="promotion__cards__wrapper">
           {hotelObjs.slice(0,3).map((obj) => (
-            // <RecommendCard key={obj.id} {...obj} promotionDueDate={undefined} />
-            <div className="recommend__card__wrapper">
+             <div className="recommend__card__wrapper">
               <div className="recommend__image__wrapper">
-                <img src={obj.thumbnailImagePath} alt="temp" />
+                <img src={obj.image} alt="temp" />
               </div>
               <span className="recommend__card__title">{obj.title}</span>
               <div className="recommend__card__info">
@@ -193,48 +218,16 @@ export default function ResortPage() {
                   {obj.address.state}/{obj.address.city}
                 </span>
                 <div className="recommend__rating__wrapper">
-                  <div className="rating__board__wrapper">
-                  {formatRatingArray(obj.rating).map((value, idx) => (
-                    <div className="rating__icon__wrapper">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        className="empty__star"
-                      >
-                        <path
-                          stroke="none"
-                          d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-                        />
-                      </svg>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        className="filled__star"
-                        style={{
-                          clipPath: `polygon(0 0, ${value}% 0, ${value}% 100%, 0 100%)`,
-                        }}
-                      >
-                        <path
-                          strokeWidth="1.5"
-                          stroke="rgba(252, 196, 0, 1)"
-                          d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-                        />
-                      </svg>
-                    </div>
-                  ))}
-                </div>
+                  <RatingBoard rating={obj.rating} />
                 </div>
               </div>
-              {/* {promotionDueDate && (
-                <span className="promotion__duedate">{`[프로모션 기간 ${formatKrDate(
-                  promotionDueDate
-                )}까지]`}</span>
-              )} */}
+
             </div>
           ))}
         </div>
-     
+    
       </div>
+
     </div>
   );
 }
