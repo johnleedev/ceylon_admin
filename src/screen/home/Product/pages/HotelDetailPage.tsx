@@ -55,6 +55,8 @@ export default function PackagePage() {
       { distance: "20km", name: "사원" },
     ],
   }
+
+  const [categoryBtn, setCategoryBtn] = useState('1');
   
   // 이요한 작업 -------------------------------------------------------------------------------------------------------------------------------------
  
@@ -211,8 +213,16 @@ export default function PackagePage() {
           </span>
         </div>
         <div className="hotel__selector__wrapper">
-          <span>포 포인츠 바이 쉐리톤</span>
-          <span className="selected">세인트레지스 풀빌라</span>
+          <div className={`hotel__selector__Btn ${categoryBtn === "1" ? "selected" : ""}`}
+            onClick={()=>{setCategoryBtn('1')}}
+          >
+            <p>포 포인츠 바이 쉐리톤</p>
+          </div>
+          <div className={`hotel__selector__Btn ${categoryBtn === "2" ? "selected" : ""}`}
+            onClick={()=>{setCategoryBtn('2')}}
+          >
+            <p>세인트레지스 풀빌라</p>
+          </div>
         </div>
       </div>
   
@@ -257,16 +267,16 @@ export default function PackagePage() {
           <span className="item__title">고객 베네핏</span>
           <ul>
             {hotelDataSub.benefit.map((item, idx) => (
-              <li key={idx}>- {item}</li>
+              <li key={idx} className="item__title_text">- {item}</li>
             ))}
           </ul>
         </div>
         <div className={"only-web"}>
           <span className="item__title">호텔 위치</span>
           <ul>
-            <li key="address">{`주소 : ${hotelDataSub.address.state} ${hotelDataSub.address.city} ${hotelDataSub.address.detailAddress}`}</li>
+            <li key="address" className="item__title_text">{`주소 : ${hotelDataSub.address.state} ${hotelDataSub.address.city} ${hotelDataSub.address.detailAddress}`}</li>
             {hotelDataSub.nearby.map(({ distance, name }, idx) => (
-              <li key={idx}>{`${distance} - ${name}`}</li>
+              <li key={idx} className="item__title_text">{`${distance} - ${name}`}</li>
             ))}
             <div className="map__view__btn">
               <FaLocationDot size={16}/>
@@ -277,11 +287,9 @@ export default function PackagePage() {
       </div>
 
       <div className="hotel_detail_select__package__byroom__wrapper">
-        <div className="header__wrapper">
+        <div className="hotel_detail_select_header__wrapper">
           <span className="header__main">룸타입별 선택상품</span>
-          <span className="header__sub">
-            상품기간 : 2024.01.05 ~ 2024.12.20
-          </span>
+          <span className="header__sub">상품기간 : 2024.01.05 ~ 2024.12.20</span>
         </div>
         <div className="package__item__wrapper">
           <div className="image__wrapper">
@@ -319,7 +327,7 @@ export default function PackagePage() {
       </div>
 
       <div className="hotel_detail_schedule__byairline__wrapper">
-        <div className="header__wrapper">
+        <div className="hotel_detail_schedule_header__wrapper">
           <span className="header__main">항공사별 일정표</span>
           <div className={"sidebar__wrapper"}
           >
@@ -345,7 +353,6 @@ export default function PackagePage() {
               const airlineWord = item.airlineData[0].airlineName.slice(0, 2); 
               const airlineWordCopy = (airlineWord === '5J' || airlineWord === '7C') ?  `A${airlineWord}` : airlineWord;
               const airlineImage = AirlineData[airlineWordCopy as keyof typeof AirlineData];
-
 
               return (
                 (item.tourPeriodNight !== '' && item.tourPeriodDay !== '')
@@ -700,6 +707,8 @@ export default function PackagePage() {
                                   <div className="table__main">
                                     {
                                       subItem.locationContentDetail.map((detailItem:any, detailIndex:any)=>{
+
+                        
                                         return (
                                           <div key={detailIndex} className="detailbox">
                                             <p className="detailbox-name">{detailIndex+1}. {detailItem.name}</p>
@@ -741,6 +750,10 @@ export default function PackagePage() {
                                     <span>{subItem.locationTitle}</span>
                                   </div>
                                   <div className="table__main">
+                                    <div className="detailbox">
+                                      {/* <p className="detailbox-name"><span style={{marginRight:'10px'}}>&#183;</span>{detailItem.name}</p> */}
+                                      <p className="detailbox-notice">{subItem.locationContent}</p>
+                                    </div>
                                     {
                                       subItem.locationContentDetail.map((detailItem:any, detailIndex:any)=>{
                                         return (
@@ -784,7 +797,19 @@ export default function PackagePage() {
                                     <span>{subItem.locationTitle}</span>
                                   </div>
                                   <div className="table__main">
-                                    <span></span>
+                                    <div className="detailbox">
+                                      <p className="detailbox-notice">{subItem.locationContent}</p>
+                                    </div>
+                                    { subItem.locationContentDetail[0].name !== '' &&
+                                      subItem.locationContentDetail.map((detailItem:any, detailIndex:any)=>{
+                                        return (
+                                          <div key={detailIndex} className="detailbox">
+                                            <p className="detailbox-name"><span style={{marginRight:'10px'}}>&#183;</span>{detailItem.name}</p>
+                                            <p className="detailbox-notice">{detailItem.notice}</p>
+                                          </div>
+                                        )
+                                      })
+                                    }
                                   </div>
                                 </div>
                               </div>

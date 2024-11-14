@@ -1,6 +1,6 @@
 import { DateBoxNum } from "../../../boxs/DateBoxNum"
 import { DropdownBox } from "../../../boxs/DropdownBox"
-import './SearchBox.scss'
+import '../SearchBox.scss'
 import { useState } from "react";
 import { formatDate, subDays } from 'date-fns';
 

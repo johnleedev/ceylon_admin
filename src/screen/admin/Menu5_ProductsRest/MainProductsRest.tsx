@@ -8,7 +8,7 @@ import Sub6_LandCompany from './Sub6_LandCompany';
 import Sub4_TourLocation from './Sub4_TourLocation';
 
 
-export default function MainProducts () {
+export default function MainProductsRest () {
 
   return (
     <div>

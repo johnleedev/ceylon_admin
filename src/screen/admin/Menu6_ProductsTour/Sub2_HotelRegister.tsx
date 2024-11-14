@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
 import '../SearchList.scss'
-import './Menu5Products.scss'
+import '../Products.scss'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
@@ -69,25 +69,6 @@ interface HotelInfoProps {
 export default function Sub2_CounselList (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-	
-	const [currentTab, setCurrentTab] = useState(2);
-  interface SelectMenuProps {
-    tabNum : number;
-    title: string;
-  }
-  const SelectMenu: React.FC<SelectMenuProps> = ({ tabNum, title}) => {
-    return (
-      <div className='selectBtn'
-       onClick={() => setCurrentTab(tabNum)}
-     >
-       <p style={{color: currentTab === tabNum ? '#333' : '#BDBDBD'}}>{title}</p>
-       <div className='bar' style={{backgroundColor: currentTab === tabNum ? '#5fb7ef' : '#f6f6f6'}}></div>
-     </div>
-    )    
-  };
-
-	// 리스트 가져오기 ------------------------------------------------------
-
 	const [list, setList] = useState<ListProps[]>([]);
 	const [nationlist, setNationList] = useState<ListProps[]>([]);
   const fetchPosts = async () => {
@@ -106,7 +87,7 @@ export default function Sub2_CounselList (props:any) {
   };
 
 	useEffect(() => {
-		fetchPosts();
+		// fetchPosts();
 	}, [refresh]);  
 
 	
@@ -220,14 +201,6 @@ export default function Sub2_CounselList (props:any) {
 				<div className='title-box'>
 					<h1>호텔관리</h1>	
 				</div>
-			</div>
-
-			<div className="topRow">
-				<div className="tabSelectBtnBox">
-					<SelectMenu title='전체' tabNum={1} />
-					<SelectMenu title='휴양지' tabNum={2} />
-					<SelectMenu title='관광지' tabNum={3} />
-				</div>
 				<div className="addBtn"
 					onClick={()=>{
 						setIsAddOrRevise('add')
@@ -263,19 +236,16 @@ export default function Sub2_CounselList (props:any) {
 									}}
 								>
 									<TextBox width='3%' text={item.id} />
-									<div className="text" style={{width:`3%`, height: '50px', textAlign:'center'}}>
+									<div className="text" style={{width:`3%`, textAlign:'center'}}>
 										{ item.isView === 'true'  
-											? <FaCircle color='#5fb7ef'/>
+											? <FaCircle color='#5fb7ef' size={13}/>
 											: <IoCloseOutline />
 										}
 									</div>
 									<TextBox width='10%' text={`${item.nation}/${item.city}`} />
-									<div className="text" style={{width:`15%`, height: '50px', textAlign:'center', flexDirection:'column'}}>
-										<p>{item.hotelNameKo}</p>	
-										<p>{item.hotelNameEn}</p>	
-									</div>
+									<TextBox width='15%' text={item.hotelNameKo} />
 									<TextBox width='5%' text={item.isInfoInput === 'false' ? '미입력' : item.selectCostType} />
-									<div className="text" style={{width:`25%`, height: '50px', textAlign:'center'}}>
+									<div className="text" style={{width:`25%`, textAlign:'center'}}>
 										<div className="hotelControlBtn"
 											onClick={()=>{
 												setHotelInfo(item);

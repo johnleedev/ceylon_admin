@@ -729,127 +729,132 @@ export default function ModalAddHotel (props : any) {
       {/* 전경 ----------------------------------------------------------------------------------------------------------------------------------------- */}
       <section>
         <div className="bottombar"></div>
-        <div className="coverrow hole bigHeight">
-          <TitleBox width="120px" text='전경'/>
-          <div className="lastImageInputCover" style={{flexDirection:'column'}}>
-            { lastImageNamesAllView.length > 0 &&
-              lastImageNamesAllView.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='lastImage-box-column'
-                    style={{width:'100%', display:'flex', justifyContent:'space-between'}}
-                  >
-                    <div style={{display:'flex', alignItems:'center'}}>
-                      <img style={{width:'100px'}}
-                          src={`${MainURL}/images/hotelimages/${item.imageName}`}
-                        />
-                    </div>
-                    <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
-                      value={item.title} placeholder='제목' onChange={(e)=>{
-                          const copy = [...lastImageNamesAllView];
-                          copy[index].title = e.target.value;
-                          setLastImageNamesAllView(copy);
-                        }}/>
-                    <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
-                      value={item.notice} placeholder='설명' onChange={(e)=>{
-                          const copy = [...lastImageNamesAllView];
-                          copy[index].notice = e.target.value;
-                          setLastImageNamesAllView(copy);
-                        }}/>
-                    <div className='lastImage-box-column-delete'
-                      onClick={()=>{
-                        deleteInputLastImage(item.imageName, lastImageNamesAllView, setLastImageNamesAllView, imageNamesAllView, setImageNamesAllView, 'imageNamesAllView')
-                      }}
-                    >
-                      <p><IoClose color='#FF0000' size={20}/></p>
-                    </div>
-                  </div>
-                )
-              })
-            }
-          </div>
-          <div className="imageInputBox">
-            {
-              imageLoading ?
-              <div style={{width:'100%', height:'100%', position:'absolute'}}>
-                <Loading/>
-              </div>
-              :
-              <div className='imageDropzoneCover'>
-                <div {...getRootAllView()} className="imageDropzoneStyle" >
-                  <input {...getInputAllView()} />
-                  {
-                    imagesAllView.length > 0 
-                    ? <div className='imageplus'>+ 다시첨부하기</div>
-                    : <div className='imageplus'>+ 사진첨부하기</div>
-                  }
+
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='전경'/>
+            <div className="imageInputBox">
+              {
+                imageLoading ?
+                <div style={{width:'100%', height:'100%', position:'absolute'}}>
+                  <Loading/>
                 </div>
-              </div>
-            }
-            {
-              imagesAllView.length > 0 &&
-              imagesAllView.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='imagebox'>
-                    <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
-                      <p>{index+1}.</p>
-                      <img 
-                        src={URL.createObjectURL(item)}
-                      />
-                      <p>{renderPreview(item.name)}</p>
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{deleteInputImageAllView(index);}}
-                        >
-                          <p><IoClose color='#FF0000'/></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageListUp(imagesAllView, setImagesAllView, item);
-                            handleImageNamesListUp(imageNamesAllView, setImageNamesAllView, item.name);
-                          }}
-                        >
-                          <p><TiArrowSortedUp /></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageListDown(imagesAllView, setImagesAllView, item);
-                            handleImageNamesListDown(imageNamesAllView, setImageNamesAllView, item.name);
-                          }}
-                        >
-                          <p><TiArrowSortedDown /></p>
-                        </div>
-                      </div>
-                    </div>
-                    { 
-                      imageNamesAllView.map((namesItem:any, namesIndex:any)=>{
-                        return (
-                          index === namesIndex &&
-                          <>
-                          <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
-                            value={namesItem.title} placeholder='제목' onChange={(e)=>{
-                                const copy = [...imageNamesAllView];
-                                copy[index].title = e.target.value;
-                                setImageNamesAllView(copy);
-                              }}/>
-                          <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
-                            value={namesItem.notice} placeholder='설명' onChange={(e)=>{
-                                const copy = [...imageNamesAllView];
-                                copy[index].notice = e.target.value;
-                                setImageNamesAllView(copy);
-                              }}/>
-                          </>
-                        )
-                      })
+                :
+                <div className='imageDropzoneCover'>
+                  <div {...getRootAllView()} className="imageDropzoneStyle" >
+                    <input {...getInputAllView()} />
+                    {
+                      imagesAllView.length > 0 
+                      ? <div className='imageplus'>+ 다시첨부하기</div>
+                      : <div className='imageplus'>+ 사진첨부하기</div>
                     }
                   </div>
-                )
-              })
-            }
-          </div>
+                </div>
+              }
+            </div> 
+          </div> 
+        </div>
+        <div className="lastImageInputCover" style={{flexDirection:'column'}}>
+          { lastImageNamesAllView.length > 0 &&
+            lastImageNamesAllView.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='lastImage-box-column'
+                  style={{width:'100%', display:'flex', justifyContent:'space-between'}}
+                >
+                  <div style={{display:'flex', alignItems:'center'}}>
+                    <img style={{width:'100px'}}
+                        src={`${MainURL}/images/hotelimages/${item.imageName}`}
+                      />
+                  </div>
+                  <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
+                    value={item.title} placeholder='제목' onChange={(e)=>{
+                        const copy = [...lastImageNamesAllView];
+                        copy[index].title = e.target.value;
+                        setLastImageNamesAllView(copy);
+                      }}/>
+                  <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
+                    value={item.notice} placeholder='설명' onChange={(e)=>{
+                        const copy = [...lastImageNamesAllView];
+                        copy[index].notice = e.target.value;
+                        setLastImageNamesAllView(copy);
+                      }}/>
+                  <div className='lastImage-box-column-delete'
+                    onClick={()=>{
+                      deleteInputLastImage(item.imageName, lastImageNamesAllView, setLastImageNamesAllView, imageNamesAllView, setImageNamesAllView, 'imageNamesAllView')
+                    }}
+                  >
+                    <p><IoClose color='#FF0000' size={20}/></p>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
+        <div className="inputImageInputCover">
+          {
+            imagesAllView.length > 0 &&
+            imagesAllView.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='imagebox'>
+                  <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
+                    <p>{index+1}.</p>
+                    <img 
+                      src={URL.createObjectURL(item)}
+                    />
+                    <p>{renderPreview(item.name)}</p>
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{deleteInputImageAllView(index);}}
+                      >
+                        <p><IoClose color='#FF0000'/></p>
+                      </div>
+                    </div>  
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{
+                          handleImageListUp(imagesAllView, setImagesAllView, item);
+                          handleImageNamesListUp(imageNamesAllView, setImageNamesAllView, item.name);
+                        }}
+                      >
+                        <p><TiArrowSortedUp /></p>
+                      </div>
+                    </div>  
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{
+                          handleImageListDown(imagesAllView, setImagesAllView, item);
+                          handleImageNamesListDown(imageNamesAllView, setImageNamesAllView, item.name);
+                        }}
+                      >
+                        <p><TiArrowSortedDown /></p>
+                      </div>
+                    </div>
+                  </div>
+                  { 
+                    imageNamesAllView.map((namesItem:any, namesIndex:any)=>{
+                      return (
+                        index === namesIndex &&
+                        <>
+                        <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
+                          value={namesItem.title} placeholder='제목' onChange={(e)=>{
+                              const copy = [...imageNamesAllView];
+                              copy[index].title = e.target.value;
+                              setImageNamesAllView(copy);
+                            }}/>
+                        <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
+                          value={namesItem.notice} placeholder='설명' onChange={(e)=>{
+                              const copy = [...imageNamesAllView];
+                              copy[index].notice = e.target.value;
+                              setImageNamesAllView(copy);
+                            }}/>
+                        </>
+                      )
+                    })
+                  }
+                </div>
+              )
+            })
+          }
         </div>
 
         <div style={{height:'100px'}}></div>
@@ -857,127 +862,131 @@ export default function ModalAddHotel (props : any) {
         {/* 객실 ----------------------------------------------------------------------------------------------------------------------------------------- */}
 
         <div className="bottombar"></div>
-        <div className="coverrow hole bigHeight">
-          <TitleBox width="120px" text='객실'/>
-          <div className="lastImageInputCover" style={{flexDirection:'column'}}>
-            { lastImageNamesRoomView.length > 0 &&
-              lastImageNamesRoomView.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='lastImage-box-column'
-                    style={{width:'100%', display:'flex', justifyContent:'space-between'}}
-                  >
-                    <div style={{display:'flex', alignItems:'center'}}>
-                      <img style={{width:'100px'}}
-                          src={`${MainURL}/images/hotelimages/${item.imageName}`}
-                        />
-                    </div>
-                    <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
-                      value={item.title} placeholder='제목' onChange={(e)=>{
-                          const copy = [...lastImageNamesRoomView];
-                          copy[index].title = e.target.value;
-                          setLastImageNamesRoomView(copy);
-                        }}/>
-                    <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
-                      value={item.notice} placeholder='설명' onChange={(e)=>{
-                          const copy = [...lastImageNamesRoomView];
-                          copy[index].notice = e.target.value;
-                          setLastImageNamesRoomView(copy);
-                        }}/>
-                    <div className='lastImage-box-column-delete'
-                      onClick={()=>{
-                        deleteInputLastImage(item.imageName, lastImageNamesRoomView, setLastImageNamesRoomView, imageNamesRoomView, setImageNamesRoomView, 'imageNamesRoomView')
-                      }}
-                    >
-                      <p><IoClose color='#FF0000' size={20}/></p>
-                    </div>
-                  </div>
-                )
-              })
-            }
-          </div>
-          <div className="imageInputBox">
-            {
-              imageLoading ?
-              <div style={{width:'100%', height:'100%', position:'absolute'}}>
-                <Loading/>
-              </div>
-              :
-              <div className='imageDropzoneCover'>
-                <div {...getRootRoomView()} className="imageDropzoneStyle" >
-                  <input {...getInputRoomView()} />
-                  {
-                    imagesRoomView.length > 0 
-                    ? <div className='imageplus'>+ 다시첨부하기</div>
-                    : <div className='imageplus'>+ 사진첨부하기</div>
-                  }
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='객실'/>
+            <div className="imageInputBox">
+              {
+                imageLoading ?
+                <div style={{width:'100%', height:'100%', position:'absolute'}}>
+                  <Loading/>
                 </div>
-              </div>
-            }
-            {
-              imagesRoomView.length > 0 &&
-              imagesRoomView.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='imagebox'>
-                    <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
-                      <p>{index+1}.</p>
-                      <img 
-                        src={URL.createObjectURL(item)}
-                      />
-                      <p>{renderPreview(item.name)}</p>
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{deleteInputImageRoomView(index);}}
-                        >
-                          <p><IoClose color='#FF0000'/></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageListUp(imagesRoomView, setImagesRoomView, item);
-                            handleImageNamesListUp(imageNamesRoomView, setImageNamesRoomView, item.name);
-                          }}
-                        >
-                          <p><TiArrowSortedUp /></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageListDown(imagesRoomView, setImagesRoomView, item);
-                            handleImageNamesListDown(imageNamesRoomView, setImageNamesRoomView, item.name);
-                          }}
-                        >
-                          <p><TiArrowSortedDown /></p>
-                        </div>
-                      </div>  
-                    </div>
-                    { 
-                      imageNamesRoomView.map((namesItem:any, namesIndex:any)=>{
-                        return (
-                          index === namesIndex &&
-                          <>
-                          <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
-                            value={namesItem.title} placeholder='제목' onChange={(e)=>{
-                                const copy = [...imageNamesRoomView];
-                                copy[index].title = e.target.value;
-                                setImageNamesRoomView(copy);
-                              }}/>
-                          <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
-                            value={namesItem.notice} placeholder='설명' onChange={(e)=>{
-                                const copy = [...imageNamesRoomView];
-                                copy[index].notice = e.target.value;
-                                setImageNamesRoomView(copy);
-                              }}/>
-                          </>
-                        )
-                      })
+                :
+                <div className='imageDropzoneCover'>
+                  <div {...getRootRoomView()} className="imageDropzoneStyle" >
+                    <input {...getInputRoomView()} />
+                    {
+                      imagesRoomView.length > 0 
+                      ? <div className='imageplus'>+ 다시첨부하기</div>
+                      : <div className='imageplus'>+ 사진첨부하기</div>
                     }
                   </div>
-                )
-              })
-            }
+                </div>
+              }
+             </div>
           </div>
+        </div>
+        <div className="lastImageInputCover" style={{flexDirection:'column'}}>
+          { lastImageNamesRoomView.length > 0 &&
+            lastImageNamesRoomView.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='lastImage-box-column'
+                  style={{width:'100%', display:'flex', justifyContent:'space-between'}}
+                >
+                  <div style={{display:'flex', alignItems:'center'}}>
+                    <img style={{width:'100px'}}
+                        src={`${MainURL}/images/hotelimages/${item.imageName}`}
+                      />
+                  </div>
+                  <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
+                    value={item.title} placeholder='제목' onChange={(e)=>{
+                        const copy = [...lastImageNamesRoomView];
+                        copy[index].title = e.target.value;
+                        setLastImageNamesRoomView(copy);
+                      }}/>
+                  <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
+                    value={item.notice} placeholder='설명' onChange={(e)=>{
+                        const copy = [...lastImageNamesRoomView];
+                        copy[index].notice = e.target.value;
+                        setLastImageNamesRoomView(copy);
+                      }}/>
+                  <div className='lastImage-box-column-delete'
+                    onClick={()=>{
+                      deleteInputLastImage(item.imageName, lastImageNamesRoomView, setLastImageNamesRoomView, imageNamesRoomView, setImageNamesRoomView, 'imageNamesRoomView')
+                    }}
+                  >
+                    <p><IoClose color='#FF0000' size={20}/></p>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
+        <div className="inputImageInputCover">
+          {
+            imagesRoomView.length > 0 &&
+            imagesRoomView.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='imagebox'>
+                  <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
+                    <p>{index+1}.</p>
+                    <img 
+                      src={URL.createObjectURL(item)}
+                    />
+                    <p>{renderPreview(item.name)}</p>
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{deleteInputImageRoomView(index);}}
+                      >
+                        <p><IoClose color='#FF0000'/></p>
+                      </div>
+                    </div>  
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{
+                          handleImageListUp(imagesRoomView, setImagesRoomView, item);
+                          handleImageNamesListUp(imageNamesRoomView, setImageNamesRoomView, item.name);
+                        }}
+                      >
+                        <p><TiArrowSortedUp /></p>
+                      </div>
+                    </div>  
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{
+                          handleImageListDown(imagesRoomView, setImagesRoomView, item);
+                          handleImageNamesListDown(imageNamesRoomView, setImageNamesRoomView, item.name);
+                        }}
+                      >
+                        <p><TiArrowSortedDown /></p>
+                      </div>
+                    </div>  
+                  </div>
+                  { 
+                    imageNamesRoomView.map((namesItem:any, namesIndex:any)=>{
+                      return (
+                        index === namesIndex &&
+                        <>
+                        <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
+                          value={namesItem.title} placeholder='제목' onChange={(e)=>{
+                              const copy = [...imageNamesRoomView];
+                              copy[index].title = e.target.value;
+                              setImageNamesRoomView(copy);
+                            }}/>
+                        <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
+                          value={namesItem.notice} placeholder='설명' onChange={(e)=>{
+                              const copy = [...imageNamesRoomView];
+                              copy[index].notice = e.target.value;
+                              setImageNamesRoomView(copy);
+                            }}/>
+                        </>
+                      )
+                    })
+                  }
+                </div>
+              )
+            })
+          }
         </div>
 
         <div style={{height:'100px'}}></div>
@@ -985,127 +994,132 @@ export default function ModalAddHotel (props : any) {
         {/* 부대시설 ----------------------------------------------------------------------------------------------------------------------------------------- */}
 
         <div className="bottombar"></div>
-        <div className="coverrow hole bigHeight">
-          <TitleBox width="120px" text='부대시설'/>
-          <div className="lastImageInputCover" style={{flexDirection:'column'}}>
-            { lastImageNamesEtcView.length > 0 &&
-              lastImageNamesEtcView.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='lastImage-box-column'
-                    style={{width:'100%', display:'flex', justifyContent:'space-between'}}
-                  >
-                    <div style={{display:'flex', alignItems:'center'}}>
-                      <img style={{width:'100px'}}
-                          src={`${MainURL}/images/hotelimages/${item.imageName}`}
-                        />
-                    </div>
-                    <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
-                      value={item.title} placeholder='제목' onChange={(e)=>{
-                          const copy = [...lastImageNamesEtcView];
-                          copy[index].title = e.target.value;
-                          setLastImageNamesEtcView(copy);
-                        }}/>
-                    <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
-                      value={item.notice} placeholder='설명' onChange={(e)=>{
-                          const copy = [...lastImageNamesEtcView];
-                          copy[index].notice = e.target.value;
-                          setLastImageNamesEtcView(copy);
-                        }}/>
-                    <div className='lastImage-box-column-delete'
-                      onClick={()=>{
-                        deleteInputLastImage(item.imageName, lastImageNamesEtcView, setLastImageNamesEtcView, imageNamesEtcView, setImageNamesEtcView, 'imageNamesEtcView')
-                      }}
-                    >
-                      <p><IoClose color='#FF0000' size={20}/></p>
-                    </div>
-                  </div>
-                )
-              })
-            }
-          </div>
-          <div className="imageInputBox">
-            {
-              imageLoading ?
-              <div style={{width:'100%', height:'100%', position:'absolute'}}>
-                <Loading/>
-              </div>
-              :
-              <div className='imageDropzoneCover'>
-                <div {...getRootEtcView()} className="imageDropzoneStyle" >
-                  <input {...getInputEtcView()} />
-                  {
-                    imagesEtcView.length > 0 
-                    ? <div className='imageplus'>+ 다시첨부하기</div>
-                    : <div className='imageplus'>+ 사진첨부하기</div>
-                  }
+
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='부대시설'/>
+            <div className="imageInputBox">
+              {
+                imageLoading ?
+                <div style={{width:'100%', height:'100%', position:'absolute'}}>
+                  <Loading/>
                 </div>
-              </div>
-            }
-            {
-              imagesEtcView.length > 0 &&
-              imagesEtcView.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='imagebox'>
-                    <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
-                      <p>{index+1}.</p>
-                      <img 
-                        src={URL.createObjectURL(item)}
-                      />
-                      <p>{renderPreview(item.name)}</p>
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{deleteInputImageEtcView(index);}}
-                        >
-                          <p><IoClose color='#FF0000'/></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageListUp(imagesEtcView, setImagesEtcView, item);
-                            handleImageNamesListUp(imageNamesEtcView, setImageNamesEtcView, item.name);
-                          }}
-                        >
-                          <p><TiArrowSortedUp /></p>
-                        </div>
-                      </div>  
-                      <div className="updownBtnBox">
-                        <div className="updownBtnBtn"
-                          onClick={()=>{
-                            handleImageListDown(imagesEtcView, setImagesEtcView, item);
-                            handleImageNamesListDown(imageNamesEtcView, setImageNamesEtcView, item.name);
-                          }}
-                        >
-                          <p><TiArrowSortedDown /></p>
-                        </div>
-                      </div>  
-                    </div>
-                    { 
-                      imageNamesEtcView.map((namesItem:any, namesIndex:any)=>{
-                        return (
-                          index === namesIndex &&
-                          <>
-                          <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
-                            value={namesItem.title} placeholder='제목' onChange={(e)=>{
-                                const copy = [...imageNamesEtcView];
-                                copy[index].title = e.target.value;
-                                setImageNamesEtcView(copy);
-                              }}/>
-                          <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
-                            value={namesItem.notice} placeholder='설명' onChange={(e)=>{
-                                const copy = [...imageNamesEtcView];
-                                copy[index].notice = e.target.value;
-                                setImageNamesEtcView(copy);
-                              }}/>
-                          </>
-                        )
-                      })
+                :
+                <div className='imageDropzoneCover'>
+                  <div {...getRootEtcView()} className="imageDropzoneStyle" >
+                    <input {...getInputEtcView()} />
+                    {
+                      imagesEtcView.length > 0 
+                      ? <div className='imageplus'>+ 다시첨부하기</div>
+                      : <div className='imageplus'>+ 사진첨부하기</div>
                     }
                   </div>
-                )
-              })
-            }
+                </div>
+              }
+            </div>
           </div>
+        </div>
+        <div className="lastImageInputCover" style={{flexDirection:'column'}}>
+          { lastImageNamesEtcView.length > 0 &&
+            lastImageNamesEtcView.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='lastImage-box-column'
+                  style={{width:'100%', display:'flex', justifyContent:'space-between'}}
+                >
+                  <div style={{display:'flex', alignItems:'center'}}>
+                    <img style={{width:'100px'}}
+                        src={`${MainURL}/images/hotelimages/${item.imageName}`}
+                      />
+                  </div>
+                  <input className="inputdefault" type="text" style={{width:'10%', textAlign:'left'}} 
+                    value={item.title} placeholder='제목' onChange={(e)=>{
+                        const copy = [...lastImageNamesEtcView];
+                        copy[index].title = e.target.value;
+                        setLastImageNamesEtcView(copy);
+                      }}/>
+                  <input className="inputdefault" type="text" style={{width:'70%', textAlign:'left'}} 
+                    value={item.notice} placeholder='설명' onChange={(e)=>{
+                        const copy = [...lastImageNamesEtcView];
+                        copy[index].notice = e.target.value;
+                        setLastImageNamesEtcView(copy);
+                      }}/>
+                  <div className='lastImage-box-column-delete'
+                    onClick={()=>{
+                      deleteInputLastImage(item.imageName, lastImageNamesEtcView, setLastImageNamesEtcView, imageNamesEtcView, setImageNamesEtcView, 'imageNamesEtcView')
+                    }}
+                  >
+                    <p><IoClose color='#FF0000' size={20}/></p>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
+        <div className="inputImageInputCover">
+          {
+            imagesEtcView.length > 0 &&
+            imagesEtcView.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='imagebox'>
+                  <div style={{width:'40%', display:'flex', justifyContent:'flex-start'}}>
+                    <p>{index+1}.</p>
+                    <img 
+                      src={URL.createObjectURL(item)}
+                    />
+                    <p>{renderPreview(item.name)}</p>
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{deleteInputImageEtcView(index);}}
+                      >
+                        <p><IoClose color='#FF0000'/></p>
+                      </div>
+                    </div>  
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{
+                          handleImageListUp(imagesEtcView, setImagesEtcView, item);
+                          handleImageNamesListUp(imageNamesEtcView, setImageNamesEtcView, item.name);
+                        }}
+                      >
+                        <p><TiArrowSortedUp /></p>
+                      </div>
+                    </div>  
+                    <div className="updownBtnBox">
+                      <div className="updownBtnBtn"
+                        onClick={()=>{
+                          handleImageListDown(imagesEtcView, setImagesEtcView, item);
+                          handleImageNamesListDown(imageNamesEtcView, setImageNamesEtcView, item.name);
+                        }}
+                      >
+                        <p><TiArrowSortedDown /></p>
+                      </div>
+                    </div>  
+                  </div>
+                  { 
+                    imageNamesEtcView.map((namesItem:any, namesIndex:any)=>{
+                      return (
+                        index === namesIndex &&
+                        <>
+                        <input className="inputdefault" type="text" style={{width:'10%', paddingLeft:'5px', textAlign:'left'}} 
+                          value={namesItem.title} placeholder='제목' onChange={(e)=>{
+                              const copy = [...imageNamesEtcView];
+                              copy[index].title = e.target.value;
+                              setImageNamesEtcView(copy);
+                            }}/>
+                        <input className="inputdefault" type="text" style={{width:'50%', paddingLeft:'5px', textAlign:'left'}} 
+                          value={namesItem.notice} placeholder='설명' onChange={(e)=>{
+                              const copy = [...imageNamesEtcView];
+                              copy[index].notice = e.target.value;
+                              setImageNamesEtcView(copy);
+                            }}/>
+                        </>
+                      )
+                    })
+                  }
+                </div>
+              )
+            })
+          }
         </div>
       </section>
       

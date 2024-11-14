@@ -7,7 +7,7 @@ import MainImageData from "../common/MainImageData";
 import CommonImagesData from "../common/CommonImageData";
 import { IoLocationOutline } from "react-icons/io5";
 import { LuCalendarDays } from "react-icons/lu";
-
+import { HiOutlineArrowLongLeft, HiOutlineArrowLongRight } from "react-icons/hi2";
 
 export interface IBgObj {
   title: string;
@@ -184,15 +184,16 @@ export default function MainPage() {
             </div>
           </div>
           <div className="bg__select__btns__wrapper">
+            <div className="select__btns">
+              <HiOutlineArrowLongLeft onClick={() => handleClickBtn("left")} size={20}/>
+            </div>
             <div className="select__indicator">
               <span>{selectId + 1}</span>
-              <span style={{margin:'0 5px'}}>/</span>
+              <div className="select__btns_ver_bar"></div>
               <span>{bgObjs.length}</span>
             </div>
             <div className="select__btns">
-              <IoIosArrowBack onClick={() => handleClickBtn("left")} size={20}/>
-              <div className="select__btns_ver_bar"></div>
-              <IoIosArrowForward onClick={() => handleClickBtn("right")} size={20}/>
+              <HiOutlineArrowLongRight onClick={() => handleClickBtn("right")} size={20}/>
             </div>
           </div>
         </div>
@@ -207,7 +208,21 @@ export default function MainPage() {
             </div>
           ))}
         </div>
-        {/* <MobileSearchBar /> */}
+        <div className="mobile__search__bar__wrapper">
+          <div className="mobile__search__bar__title">
+           <span>WHERE</span> DO YOU <br></br>
+           WANT TO <span>Go</span>?
+          </div>
+          <div className="mobile__search__input__container">
+            <div className="mobile__search__input__wrapper">
+              <input type="text" placeholder="어디로 가고 싶으세요?"/>
+              <IoLocationOutline color="#333" size={25}/>
+            </div>
+            <div className="mobile__search__btn__wapper">
+              Let's go
+            </div>
+          </div>
+        </div>
       </section>
 
 
@@ -333,7 +348,9 @@ export default function MainPage() {
                     >
                       <span className="question_spot__title">{item.name}</span>
                     </div>
-                    <span className="question_spot___bottom__text">실론투어의 유럽전문가와 함께 만드는 일정</span>
+                    <div className="question_spot___bottom__text">
+                      <span>실론투어의 유럽전문가와 함께 만드는 일정</span>  
+                    </div>
                   </div>
                 )
               })

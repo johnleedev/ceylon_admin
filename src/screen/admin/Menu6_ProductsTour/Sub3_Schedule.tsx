@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
 import '../SearchList.scss'
-import './Menu5Products.scss'
+import '../Products.scss'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
@@ -12,42 +12,39 @@ import ModalAddSchedule from './Modal/ModalAddSchedule';
 import { FaCircle } from 'react-icons/fa';
 import { IoCloseOutline } from 'react-icons/io5';
 
+interface ListProps {
+	id: string;
+	isView : string;
+	tourLocation: string;
+	landCompany : string;
+	productType: string;
+	tourPeriod: string;
+	departAirport: string;
+	departFlight : string;
+	selectedSchedule : string;
+	cautionNote : string;
+	includeNote : string;
+	includeNoteText : string;
+	notIncludeNote : string;
+	notIncludeNoteText : string;
+	scheduleList : string;
+	reviseDate : string;
+}
+interface DetailsProps {
+	id: string;
+	scheduleID : string;
+	day : string;
+	breakfast : string;
+	lunch : string;
+	dinner : string;
+	hotel : string;
+	score : string;
+	scheduleDetail : string;
+}
+
 export default function Sub3_Schedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-	let navigate = useNavigate();
-
-	// 리스트 가져오기 ------------------------------------------------------
-	interface ListProps {
-		id: string;
-		isView : string;
-		tourLocation: string;
-		landCompany : string;
-		productType: string;
-		tourPeriod: string;
-		departAirport: string;
-		departFlight : string;
-		selectedSchedule : string;
-		cautionNote : string;
-		includeNote : string;
-		includeNoteText : string;
-		notIncludeNote : string;
-		notIncludeNoteText : string;
-		scheduleList : string;
-		reviseDate : string;
-	}
-	interface DetailsProps {
-		id: string;
-		scheduleID : string;
-		day : string;
-		breakfast : string;
-		lunch : string;
-		dinner : string;
-		hotel : string;
-		score : string;
-		scheduleDetail : string;
-	}
-
 	const [list, setList] = useState<ListProps[]>([]);
 	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
@@ -66,7 +63,7 @@ export default function Sub3_Schedule (props:any) {
   };
 
 	useEffect(() => {
-		fetchPosts();
+		// fetchPosts();
 	}, [refresh]);  
 
 
@@ -123,9 +120,6 @@ export default function Sub3_Schedule (props:any) {
 				<div className='title-box'>
 					<h1>일정관리</h1>	
 				</div>
-			</div>
-
-			<div className="topRow">
 				<div className="addBtn"
 					onClick={()=>{
 						setIsAddOrRevise('add');

@@ -365,50 +365,53 @@ export default function ModalAddCity (props : any) {
             />
           </div>
         </div>
-
-        <div className="coverrow hole bigHeight">
-          <TitleBox width="120px" text='지도/이미지'/>
-
-          <div className="lastImageInputCover">
-            { lastImages.length > 0 &&
-              lastImages.map((item:any, index:any)=>{
-                return (
-                  <div key={index} className='lastImage-box'
-                    onClick={()=>{deleteInputLastImage(item)}}
-                  >
-                    <div style={{display:'flex', alignItems:'center'}}>
-                      <img style={{width:'100px'}}
-                          src={`${MainURL}/images/cityimages/${item}`}
-                        />
-                    </div>
-                    <p style={{width:'10%'}}>{item.title}</p>
-                    <p style={{width:'70%'}}>{item.notice}</p>
-                    <div className='lastImage-delete'>
-                      <p><IoClose color='#FF0000'/></p>
-                    </div>
-                  </div>
-                )
-              })
-            }
-          </div>
-          <div className="imageInputBox">
-          {
-            imageLoading ?
-            <div style={{width:'100%', height:'100%', position:'absolute'}}>
-              <Loading/>
-            </div>
-            :
-            <div className='imageDropzoneCover'>
-              <div {...getRootProps()} className="imageDropzoneStyle" >
-                <input {...getInputProps()} />
-                {
-                  imageFiles.length > 0 
-                  ? <div className='imageplus'>+ 다시첨부하기</div>
-                  : <div className='imageplus'>+ 사진첨부하기</div>
-                }
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='지도/이미지'/>
+            <div className="imageInputBox">
+            {
+              imageLoading ?
+              <div style={{width:'100%', height:'100%', position:'absolute'}}>
+                <Loading/>
               </div>
+              :
+              <div className='imageDropzoneCover'>
+                <div {...getRootProps()} className="imageDropzoneStyle" >
+                  <input {...getInputProps()} />
+                  {
+                    imageFiles.length > 0 
+                    ? <div className='imageplus'>+ 다시첨부하기</div>
+                    : <div className='imageplus'>+ 사진첨부하기</div>
+                  }
+                </div>
+              </div>
+            }
             </div>
+          </div>
+        </div>
+        <div className="lastImageInputCover">
+          { lastImages.length > 0 &&
+            lastImages.map((item:any, index:any)=>{
+              return (
+                <div key={index} className='lastImage-box'
+                  onClick={()=>{deleteInputLastImage(item)}}
+                >
+                  <div style={{display:'flex', alignItems:'center'}}>
+                    <img style={{width:'100px'}}
+                        src={`${MainURL}/images/cityimages/${item}`}
+                      />
+                  </div>
+                  <p style={{width:'10%'}}>{item.title}</p>
+                  <p style={{width:'70%'}}>{item.notice}</p>
+                  <div className='lastImage-delete'>
+                    <p><IoClose color='#FF0000'/></p>
+                  </div>
+                </div>
+              )
+            })
           }
+        </div>
+        <div className="inputImageInputCover">
           {
             imageFiles.length > 0 &&
             imageFiles.map((item:any, index:any)=>{
@@ -449,7 +452,6 @@ export default function ModalAddCity (props : any) {
               )
             })
           }
-          </div>
         </div>
       </section>
 

@@ -53,6 +53,9 @@
         .menu-item {
           position: relative;
           padding: 0 20px;
+          @media (max-width: 1200px) {
+            padding: 0 10px;
+          }
           height: 100%;
           display: flex;
           align-items: center;

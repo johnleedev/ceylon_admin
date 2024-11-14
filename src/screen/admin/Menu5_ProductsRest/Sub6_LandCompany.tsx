@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
-import './Menu5Products.scss'
+import '../Products.scss'
 import { PiPencilSimpleLineFill } from 'react-icons/pi';
-import { SearchBox } from './SearchBox';
 import ModalAddLandCompany from './Modal/ModalAddLandCompany';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import ModalLandCompanyInfo from './Modal/ModalLandComapanyInfo';
+import { DropdownBox } from '../../../boxs/DropdownBox';
 
 
 export default function Sub6_LandCompany (props:any) {
@@ -29,6 +29,7 @@ export default function Sub6_LandCompany (props:any) {
 		}[]
 	}
 	const [landCompanyList, setLandCompanyList] = useState<LandCompanyProps[]>([]);
+	const [listAllLength, setListAllLength] = useState<number>(0);
   const [nationlist, setNationList] = useState<ListProps[]>([]);
   const fetchPosts = async () => {
 	  const landCompanyRes = await axios.get(`${MainURL}/landcompany/getlandcompany`)
@@ -49,6 +50,28 @@ export default function Sub6_LandCompany (props:any) {
 		fetchPosts();
 	}, [refresh]);  
 
+	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
+	const [searchSort, setSearchSort] = useState('전체');
+	const [searchWord, setSearchWord] = useState('');
+	const handleWordSearching = async () => {
+		setLandCompanyList([]);
+		try {
+			const res = await axios.post(`${MainURL}/landcompany/getlandcompany`, {
+				sort : searchSort,
+				word : searchWord
+			});
+			if (res.data.resultData) {
+				const copy = [...res.data.resultData];
+				setLandCompanyList(copy);
+				setListAllLength(res.data.totalCount);
+			} else {
+				setLandCompanyList([]);
+				setListAllLength(0);
+			}
+		} catch (error) {
+			console.error("Failed to fetch search results:", error);
+		}	
+	};
 	
 	// 모달 ---------------------------------------------------------
 	const [isViewAddLandCompany, setIsViewAddLandCompany] = useState<boolean>(false);
@@ -85,13 +108,10 @@ export default function Sub6_LandCompany (props:any) {
 	return (
 		<div className='Menu5'>
 
-      <div className="main-title">
+			<div className="main-title">
 				<div className='title-box'>
 					<h1>랜드사관리</h1>	
 				</div>
-			</div>
-
-			<div className="topRow">
 				<div className="addBtn"
 					onClick={()=>{
 						setIsAddOrRevise('add');
@@ -102,6 +122,7 @@ export default function Sub6_LandCompany (props:any) {
 					<p>랜드사등록</p>
 				</div>
 			</div>
+			
 
 			{/* 랜드사등록 모달창 */}
       {
@@ -121,7 +142,37 @@ export default function Sub6_LandCompany (props:any) {
         </div>
       }
 
-			<SearchBox/>
+			<div className="searchbox">
+				<div className="cover">
+					<div className="content">
+						<DropdownBox
+							widthmain='150px'
+							height='35px'
+							selectedValue={searchSort}
+							options={[
+								{ value: '전체', label: '전체' },
+								{ value: '텍스트', label: '텍스트' },
+								{ value: '선택', label: '선택' },
+								{ value: '상세', label: '상세' }
+							]}
+							handleChange={(e)=>{setSearchSort(e.target.value)}}
+						/>
+						<input className="inputdefault" type="text" style={{width:'30%', textAlign:'left'}} 
+								value={searchWord} onChange={(e)=>{setSearchWord(e.target.value)}} 
+								onKeyDown={(e)=>{if (e.key === 'Enter') {handleWordSearching();}}}
+								/>
+						<div className="buttons" style={{margin:'20px 0'}}>
+							<div className="btn searching"
+								onClick={()=>{
+									handleWordSearching();
+								}}
+							>
+								<p>검색</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<div className="seachlist">
 				<div className="main-list-cover-hotel">

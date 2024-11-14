@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
 import '../SearchList.scss'
-import './Menu5Products.scss'
+import '../Products.scss'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
@@ -13,25 +13,23 @@ import { FaCircle } from 'react-icons/fa';
 import { IoCloseOutline } from 'react-icons/io5';
 import ModalAddTourLocation from './Modal/ModalAddTourLocation';
 
+interface ListProps {
+	id: string;
+	sort : string;
+	nation: string;
+	city: string;
+	location: string;
+	subLocation: string;
+	locationTitle: string;
+	locationContent: string;
+	locationContentDetail: string;
+	date : string;
+	postImage : string;
+}
+
 export default function Sub4_TourLocation (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-	let navigate = useNavigate();
-
-	// 리스트 가져오기 ------------------------------------------------------
-	interface ListProps {
-		id: string;
-		sort : string;
-		nation: string;
-		city: string;
-		location: string;
-		subLocation: string;
-		locationTitle: string;
-		locationContent: string;
-		locationContentDetail: string;
-		date : string;
-		postImage : string;
-	}
 	const [list, setList] = useState<ListProps[]>([]);
 	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
@@ -50,7 +48,7 @@ export default function Sub4_TourLocation (props:any) {
   };
 
 	useEffect(() => {
-		fetchPosts();
+		// fetchPosts();
 	}, [refresh]);  
 
 
@@ -93,9 +91,6 @@ export default function Sub4_TourLocation (props:any) {
 				<div className='title-box'>
 					<h1>여행지관리</h1>	
 				</div>
-			</div>
-
-			<div className="topRow">
 				<div className="addBtn"
 					onClick={()=>{
 						setIsAddOrRevise('add');

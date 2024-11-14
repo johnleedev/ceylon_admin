@@ -1,6 +1,5 @@
 import './App.scss';
-import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import AdminMenuBar from './screen/admin/components/AdminMenuBar';
 import AdminTopBar from './screen/admin/components/AdminTopBar';
 import MainAdmin from './screen/admin/MainAdmin';
@@ -8,15 +7,15 @@ import MainSchdule from './screen/admin/Menu1_Schedule/MainSchedule';
 import MainCounsel from './screen/admin/Menu2_Counsel/MainCounsel';
 import ManinReserve from './screen/admin/Menu3_Reserve/MainReserve';
 import MainUser from './screen/admin/Menu4_User/MainUser';
-import MainProducts from './screen/admin/Menu5_Products/MainProducts';
-import MainMenual from './screen/admin/Menu6_Menual/MainMenual';
-import MainState from './screen/admin/Menu7_State/MainState';
-import MainSystem from './screen/admin/Menu8_System/MainSystem';
+import MainProductsRest from './screen/admin/Menu5_ProductsRest/MainProductsRest';
+import MainMenual from './screen/admin/Menu7_Menual/MainMenual';
+import MainState from './screen/admin/Menu8_State/MainState';
+import MainSystem from './screen/admin/Menu9_System/MainSystem';
 import Main from './screen/home/main/Main';
-import Header from './screen/home/component/Header';
 import Footer from './screen/home/component/Footer';
 import MainProduct from './screen/home/Product/MainProduct';
-import HotelPage from './screen/home/Product/pages/HotelPage';
+import MainProductsTour from './screen/admin/Menu6_ProductsTour/MainProductsTour';
+
 
 function App() {
 
@@ -47,7 +46,8 @@ function App() {
                 <Route path="/counsel/*" element={<MainCounsel/>}/>
                 <Route path="/reserve/*" element={<ManinReserve/>}/>
                 <Route path="/user/*" element={<MainUser/>}/>
-                <Route path="/products/*" element={<MainProducts/>}/>
+                <Route path="/productsrest/*" element={<MainProductsRest/>}/>
+                <Route path="/productstour/*" element={<MainProductsTour/>}/>
                 <Route path="/menual/*" element={<MainMenual/>}/>
                 <Route path="/state/*" element={<MainState/>}/>
                 <Route path="/system/*" element={<MainSystem/>}/>

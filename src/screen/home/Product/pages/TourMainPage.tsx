@@ -132,10 +132,10 @@ export default function ResortPage() {
               <span className="web__wrapper_title">{bgObjs[selectId].title}</span>
               <span className="web__wrapper_subtitle">{bgObjs[selectId].subtitle}</span>
             </div>
-            {/* <div className="mobile__wrapper">
+            <div className="mobile__wrapper">
               <span className="mobile__title">내가 꿈꾸는 허니문</span>
               <span className="mobile__subtitle">실론투어 여행 전문가가 설계해 드리는 상력한 허니문</span>
-            </div> */}
+            </div>
           </div>
           
         </div>
@@ -174,8 +174,7 @@ export default function ResortPage() {
                 navigate("/products/tourdetail");
               }}
             >
-              <div
-                className="spot__card__wrapper"
+              <div className="spot__card__wrapper"
                 style={{ backgroundImage: `url(${itemObj.imagePath})` }}
               >
                 <span className="spot__subtitle">{itemObj.subtitle}</span>

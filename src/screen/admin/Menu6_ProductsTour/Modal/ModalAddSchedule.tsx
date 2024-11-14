@@ -3,13 +3,13 @@ import './ModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
 import { TitleBox } from '../../../../boxs/TitleBox';
 import { useNavigate } from 'react-router-dom';
-import { DropDownAirline, DropDownTourPeriodNightType, DropDownTourPeriodDayType } from '../../../DefaultData';
 import { DropdownBox } from '../../../../boxs/DropdownBox';
 import axios from 'axios';
 import MainURL from '../../../../MainURL';
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { ImLocation } from 'react-icons/im';
 import { formatDate, set } from 'date-fns';
+import * as XLSX from 'xlsx';
 
 interface ScheduleProps {
   day : string;
@@ -482,7 +482,28 @@ export default function ModalAddSchedule (props : any) {
     setScheduleList(inputs);
   }
 
+  // 엑셀파일 삽입 기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
+  const [xlsxData, setXlsxData] = useState<any>([]);
+
+  const handleFileUpload = (e:any) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event:any) => {
+      const arrayBuffer = event.target.result;
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      const workbook = XLSX.read(uint8Array, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+      setXlsxData(jsonData);
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  console.log(xlsxData[0]);
 
   return (
     <div className='modal-addinput'>
@@ -672,6 +693,13 @@ export default function ModalAddSchedule (props : any) {
             </div>  
           }
         </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='엑셀파일'/>
+            <input type="file" style={{marginLeft: '10px'}} 
+              accept=".xlsx, .xls" onChange={handleFileUpload}/>
+          </div>
+        </div>
       </section>
         
       <section>
@@ -836,34 +864,34 @@ export default function ModalAddSchedule (props : any) {
                     return (
                       <div className='day-area' key={subIndex}>
                         <div className='left-area'>
-                          <div className="left-areabox">
-                            <ImLocation color='#5fb7ef' size={20}/>                    
-                            <input style={{width:'95%'}} value={subItem.location} className="inputdefault" type="text" 
-                                onChange={(e) => {
-                                  handleTourLocationChange(index, e.target.value, subIndex)
-                                }}
-                                onKeyDown={(e)=>{handleDropDownKeyTourLocation(e, index, subIndex)}}
-                                onCompositionStart={() => setIsComposingTourLocation(true)}
-                                onCompositionEnd={() => setIsComposingTourLocation(false)}
-                            />
-                          </div>
-                          {
-                            (subItem.location !== '' && viewAutoCompleteTourLocation[index][subIndex]) &&
-                            <div className="autoComplete">
-                              { 
-                                dropDownListTourLocation.slice(0, 10).map((item:any, index:any)=>{
-                                  return(
-                                    <div key={index} className={dropDownItemIndexTourLocation === index ? 'dropDownList selected' : 'dropDownList'}>{item.location}</div>
-                                  )
-                                })
-                              }
-                            </div>  
-                          }
+                          <ImLocation color='#5fb7ef' size={20}/>
                         </div>
                         <div className='input-area'>
                           <div className="cover">
                             <div className='rowbox'>
-                              <input style={{width:'45%', marginBottom:'10px'}} value={subItem.subLocation} className="inputdefault" type="text" 
+                              <input style={{width:'95%', marginBottom:'10px'}} value={subItem.location} className="inputdefault" type="text" 
+                                  onChange={(e) => {
+                                    handleTourLocationChange(index, e.target.value, subIndex)
+                                  }}
+                                  onKeyDown={(e)=>{handleDropDownKeyTourLocation(e, index, subIndex)}}
+                                  onCompositionStart={() => setIsComposingTourLocation(true)}
+                                  onCompositionEnd={() => setIsComposingTourLocation(false)}
+                              />
+                              {
+                                (subItem.location !== '' && viewAutoCompleteTourLocation[index][subIndex]) &&
+                                <div className="autoComplete">
+                                  { 
+                                    dropDownListTourLocation.slice(0, 10).map((item:any, index:any)=>{
+                                      return(
+                                        <div key={index} className={dropDownItemIndexTourLocation === index ? 'dropDownList selected' : 'dropDownList'}>{item.location}</div>
+                                      )
+                                    })
+                                  }
+                                </div>  
+                              }
+                            </div>
+                            <div className='rowbox'>
+                              <input style={{width:'95%', marginBottom:'10px'}} value={subItem.subLocation} className="inputdefault" type="text" 
                                 onChange={(e) => {
                                   const inputs = [...scheduleList];
                                   inputs[index].scheduleDetail[subIndex].subLocation = e.target.value;
@@ -942,6 +970,17 @@ export default function ModalAddSchedule (props : any) {
                             }
                           </div>
                           <div className="btnrow">
+                            <div className="btn" style={{backgroundColor:"#fff", margin:'10px 10px'}}
+                              onClick={()=>{
+                                const inputs = [...scheduleList];
+                                inputs[index].scheduleDetail.splice(subIndex, 1);
+                                setScheduleList(inputs);
+                                const viewAutoCopy = [...viewAutoCompleteTourLocation];
+                                viewAutoCopy[index].splice(subIndex, 1);
+                                setViewAutoCompleteTourLocation(viewAutoCopy)
+                              }}>
+                              <p><CiCircleMinus/>일정삭제</p>
+                            </div>
                             <div className="btn" style={{backgroundColor:"#EAEAEA", margin:'10px 0'}}
                               onClick={()=>{
                                 const inputs = [...scheduleList];
@@ -953,17 +992,6 @@ export default function ModalAddSchedule (props : any) {
                                 setViewAutoCompleteTourLocation(viewAutoCopy)
                               }}>
                               <p><CiCirclePlus />일정추가</p>
-                            </div>
-                            <div className="btn" style={{backgroundColor:"#fff", margin:'10px 0'}}
-                              onClick={()=>{
-                                const inputs = [...scheduleList];
-                                inputs[index].scheduleDetail.splice(subIndex, 1);
-                                setScheduleList(inputs);
-                                const viewAutoCopy = [...viewAutoCompleteTourLocation];
-                                viewAutoCopy[index].splice(subIndex, 1);
-                                setViewAutoCompleteTourLocation(viewAutoCopy)
-                              }}>
-                              <p><CiCircleMinus/>일정삭제</p>
                             </div>
                           </div>
                           {
@@ -1001,13 +1029,13 @@ export default function ModalAddSchedule (props : any) {
 
       <section>
         <div className="daybtnrow">
-          <div className="daybtn" style={{width:'70%', backgroundColor:"#EAEAEA"}}
-              onClick={handleDayAdd}>
-            <CiCirclePlus /><p>DAY추가</p>
-          </div>
           <div className="daybtn" style={{width:'25%', backgroundColor:"#fff"}}
             onClick={handleDayDelete}>
             <CiCircleMinus /><p>DAY삭제</p>
+          </div>
+          <div className="daybtn" style={{width:'70%', backgroundColor:"#EAEAEA"}}
+              onClick={handleDayAdd}>
+            <CiCirclePlus /><p>DAY추가</p>
           </div>
         </div>
       </section>

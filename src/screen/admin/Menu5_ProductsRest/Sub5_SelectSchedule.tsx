@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
-import './Menu5Products.scss'
-import { useNavigate } from 'react-router-dom';
-import { FaPlus } from "react-icons/fa6";
+import '../Products.scss'
 import ModalAddNation from './Modal/ModalAddNation';
 import ModalAddCity from './Modal/ModalAddCity';
 import { CiCircleRemove, CiCircleCheck  } from "react-icons/ci";
@@ -13,28 +11,10 @@ import { PiPencilSimpleLineFill } from 'react-icons/pi';
 export default function Sub5_SelectSchedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-	const [currentTab, setCurrentTab] = useState(1);
-  interface SelectMenuProps {
-    tabNum : number;
-    title: string;
-  }
-  const SelectMenu: React.FC<SelectMenuProps> = ({ tabNum, title}) => {
-    return (
-      <div className='selectBtn'
-       onClick={() => setCurrentTab(tabNum)}
-     >
-       <p style={{color: currentTab === tabNum ? '#333' : '#BDBDBD'}}>{title}</p>
-       <div className='bar' style={{backgroundColor: currentTab === tabNum ? '#5fb7ef' : '#f6f6f6'}}></div>
-     </div>
-    )    
-  };
-
-
 	const [continents, setContinents] = useState([
 		"전체", "아시아/호주", "태평양", "인도양", "미주/중남미", "중동", "아프리카", "유럽"
 	]);
 	const [selectContinent, setSelectContinent] = useState(0);
-
 
 	const list = [
 		{id : '1', isView: true, nation: '태국', city: '푸켓', productName: "상품명", deviseDate:'2024-05-01'},
@@ -61,30 +41,21 @@ export default function Sub5_SelectSchedule (props:any) {
 	return (
 		<div className='Menu5'>
 
+
 			<div className="main-title">
 				<div className='title-box'>
 					<h1>선택일정관리</h1>	
 				</div>
-			</div>
-
-			<div className="topRow">
-				{/* <div className="addBtn"
+				<div className="addBtn"
 					onClick={()=>{
-			
+					
 					}}
 				>
 					<PiPencilSimpleLineFill />
-					<p>국가등록</p>
-				</div> */}
-			</div>
-
-			<div className="topRow">
-				<div className="tabSelectBtnBox">
-					<SelectMenu title='전체' tabNum={1} />
-					<SelectMenu title='휴양지' tabNum={2} />
-					<SelectMenu title='관광지' tabNum={3} />
+					<p>여행지등록</p>
 				</div>
 			</div>
+			
 
 			{/* 국가등록 모달창 */}
       {

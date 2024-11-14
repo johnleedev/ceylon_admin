@@ -8,24 +8,6 @@
   width: 100%;
   min-height: 100vh;
 
-  .header__wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5vw;
-    
-    .header__main {
-      min-width: 500px;
-      font-weight: 500;
-      font-size: 1.2vw;
-      color: rgba(0, 0, 0, 1);
-    }
-    .header__sub {
-      color: rgba(51, 51, 51, 1);
-      font-size: 0.83vw;
-    }
-  }
-
   .hotel_detail__header__section__wrapper {
     position: relative;
     width: 100%;
@@ -49,13 +31,13 @@
     .hotel_detail_header__info {
       width: 80%;
       max-width: 1200px;
-      padding-top: 10vw;
-      padding-bottom: 5vw;
+      padding-top: 200px;
+      padding-bottom: 50px;
       display: flex;
       flex-direction: column;
-      @media (max-width: 500px) {
-        padding-top: 95px;
-        padding-bottom: 55px;
+      @media (max-width: 800px) {
+        padding-top: 150px;
+        padding-bottom: 50px;
       }
       .hotel_detail_header__title {
         line-height: 1.45;
@@ -63,15 +45,15 @@
         font-weight: 700;
         font-size: 45px;
         margin-bottom: 0.6vw;
-        @media (max-width: 500px) {
-          margin-bottom: 0px;
+        @media (max-width: 1200px) {
+          font-size: 30px;
         }
       }
   
       .hotel_detail_header__loc__rating {
         display: flex;
         align-items: center;
-        @media (min-width: 500px) {
+        @media (min-width: 800px) {
           display: flex;
           align-items: center;
           margin-bottom: 50px;
@@ -89,7 +71,7 @@
         @media (max-width: 1000px) {
           width: 50%;
         }
-        @media (max-width: 500px) {
+        @media (max-width: 800px) {
           width: 100%;
           margin-top: 43px;
         }
@@ -98,21 +80,28 @@
   }
 
   .hotel_detail_acommodation__selector__wrapper {
-    margin: 2.5vw auto;
+    margin: 0 auto;
     width: 80%;
     max-width: 1200px;
+    margin-top: 20px;
     color: rgba(51, 51, 51, 1);
+    @media (max-width: 1200px) {
+      width: 90%;
+    }
+
     .selected__item__wrapper {
       display: flex;
       justify-content: space-between;
       width: 100%;
-      padding-bottom: 0.4vw;
-      border-bottom: 0.2vw solid rgba(51, 51, 51, 1);
-      margin-bottom: 2.5vw;
+      border-bottom: 2px solid rgba(51, 51, 51, 1);
+      padding-bottom: 10px;
       .selected__item {
-        font-weight: 500;
+        font-weight: 600;
         line-height: 1.2;
-        font-size: 1.25vw;
+        font-size: 24px;
+        @media (max-width: 1000px) {
+          font-size: 20px;
+        }
       }
       .extension__btn {
         width: 1.2vw;
@@ -122,16 +111,23 @@
     .hotel__selector__wrapper {
       display: flex;
       letter-spacing: -1px;
-      font-size: 0.83vw;
-      gap: 0.52vw;
-      span {
-        padding: 0.4vw 2vw;
+      font-size: 16px;
+      gap: 10px;
+      margin: 50px 0;
+      .hotel__selector__Btn {
+        padding: 10px 20px;
         border: 1px solid rgba(153, 153, 153, 1);
         border-radius: 7px;
         &.selected {
           background-color: rgba(2, 2, 2, 1);
           color: rgba(255, 255, 255, 1);
         }
+        @media (max-width: 1000px) {
+          font-size: 14px;
+        }
+      }
+      .hotel__selector__Btn:hover {
+        cursor: pointer;
       }
     }
   }
@@ -139,21 +135,22 @@
   .hotel_detail_image__selector__wrapper {
     position: relative;
     overflow: hidden;
-    margin-bottom: 25px;
-    @media (min-width: 500px) {
-      width: 80%;
-      max-width: 1200px;
-      margin: 0 auto 2.5vw auto;
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+    @media (max-width: 1200px) {
+      width: 100%;
     }
+    
     .images__grid__wrapper {
       display: grid;
-      @media (min-width: 500px) {
+      @media (min-width: 800px) {
         gap: 0.5vw;
         grid-template:
           "a a b" 1fr
           "a a c" 1fr;
       }
-      @media (max-width: 500px) {
+      @media (max-width: 800px) {
         grid-template:
           "a a a" 1fr
           "a a a" 1fr
@@ -179,7 +176,7 @@
       div:last-child {
         grid-area: d;
         position: relative;
-        @media (min-width: 500px) {
+        @media (min-width: 800px) {
           display: none;
         }
       }
@@ -187,7 +184,7 @@
   }
 
   .hotel_detail_info__items__wrapper {
-    @media (max-width: 500px) {
+    @media (max-width: 800px) {
       display: flex;
       flex-direction: column;
       gap: 30px;
@@ -196,7 +193,7 @@
     grid-template-columns: repeat(3, 1fr);
     div {
       .item__title {
-        @media (max-width: 500px) {
+        @media (max-width: 800px) {
           margin-bottom: 15px;
         }
         display: inline-block;
@@ -213,8 +210,13 @@
         font-size: clamp(14px, 0.78vw, 15px);
         line-height: 21.72px;
         padding-right: 2vw;
+
+        .item__title_text {
+          font-size: 16px;
+          margin-bottom: 5px;
+        }
         .map__view__btn {
-          @media (max-width: 500px) {
+          @media (max-width: 800px) {
             width: 204px;
             height: 38.28px;
             gap: 10px;
@@ -234,7 +236,7 @@
             width: 20px;
           }
           span {
-            font-size: clamp(14px, 0.83vw, 16px);
+            font-size: 16px;
             font-weight: 500;
             margin-top: 4px;
           }
@@ -245,13 +247,13 @@
             align-items: center;
             gap: 0.7vw;
             margin-bottom: 0.7vw;
-            @media (max-width: 500px) {
+            @media (max-width: 800px) {
               gap: 10px;
               margin-bottom: 3px;
             }
           }
           span {
-            font-size: clamp(14px, 0.89vw, 17px);
+            font-size: 16px;
             font-weight: 300;
             color: rgba(0, 0, 0, 1);
             &.select__room__type {
@@ -281,12 +283,12 @@
     }
   }
   .hotel_detail_mx__section {
-    @media (min-width: 500px) {
+    @media (min-width: 800px) {
       width: 80%;
       max-width: 1200px;
       margin: 0 auto 5vw auto;
     }
-    @media (max-width: 500px) {
+    @media (max-width: 800px) {
       width: 90%;
       margin: 0 auto 30px auto;
     }
@@ -295,7 +297,26 @@
   .hotel_detail_select__package__byroom__wrapper {
     width: 80%;
     max-width: 1200px;
-    margin: 0 auto 5vw auto;
+    margin: 0 auto 70px auto;
+    @media (max-width: 1200px) {
+      width: 90%;
+    }
+
+    .hotel_detail_select_header__wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      .header__main {
+        font-weight: 500;
+        font-size: 20px;
+        color: rgba(0, 0, 0, 1);
+      }
+      .header__sub {
+        color: rgba(51, 51, 51, 1);
+        font-size: 14px;
+      }
+    }
 
     .package__item__wrapper {
       border-radius: 7px;
@@ -303,15 +324,14 @@
       width: 100%;
       display: flex;
       overflow: hidden;
-      @media (max-width: 500px) {
+      @media (max-width: 800px) {
         flex-direction: column;
         border-radius: 0px;
       }
       .image__wrapper {
-        width: 40%;
-        @media (max-width: 500px) {
+        width: 30%;
+        @media (max-width: 800px) {
           width: 100%;
-          aspect-ratio: 2;
           overflow: hidden;
         }
         img {
@@ -321,22 +341,22 @@
         }
       }
       .padding__wrapper {
-        width: 60%;
+        width: 70%;
         display: flex;
-        padding: 3vw 0;
-        @media (max-width: 500px) {
+        padding: 20px 10px;
+        @media (max-width: 800px) {
           width: 100%;
-          padding: 20px 20px 30px 20px;
         }
+
         .package__info__wrapper {
           width: 70%;
           color: rgba(0, 0, 0, 1);
           display: flex;
-          padding: 0 3vw;
+          padding: 0 30px;
           flex-direction: column;
           justify-content: center;
           border-right: 1px dotted rgba(204, 204, 204, 1);
-          @media (max-width: 500px) {
+          @media (max-width: 800px) {
             width: 100%;
             border-right: 0px;
             padding: 0px;
@@ -345,23 +365,22 @@
             display: flex;
             flex-direction: column;
             .info__title {
-              font-size: clamp(17px, 1.3vw, 24px);
+              font-size: 20px;
               font-weight: 700;
-              margin-right: 0.8vw;
-              margin-bottom: 0.8vw;
+              margin-bottom: 10px;
             }
             .info__subtitle {
               font-size: clamp(14px, 0.78vw, 15px);
-              margin-bottom: 0.4vw;
+              margin-bottom: 5px;
             }
             .info__detail__wrapper {
               background-color: rgba(242, 247, 251, 1);
               border-radius: 1.3vw;
               display: flex;
               flex-direction: column;
-              padding: 1vw 2vw;
-              gap: 0.3vw;
-              @media (max-width: 500px) {
+              padding: 10px 30px;
+              gap: 5px;
+              @media (max-width: 800px) {
                 margin-top: 20px;
                 border-radius: 15px;
                 padding: 10px 25px;
@@ -380,7 +399,7 @@
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          @media (max-width: 500px) {
+          @media (max-width: 800px) {
             display: none;
           }
           .mb {
@@ -412,45 +431,61 @@
     width: 80%;
     max-width: 1200px;
     margin: 0 auto 5vw auto;
+    @media (max-width: 1200px) {
+      width: 90%;
+    }
 
-    .sidebar__wrapper {
+    .hotel_detail_schedule_header__wrapper {
       display: flex;
-      width: 100%;
-      justify-content: flex-end;
-      color: rgba(51, 51, 51, 1);
-      font-size: clamp(13px, 1vw, 19px);
-      span {
-        line-height: 1;
-        border-right: 1px solid rgba(148, 148, 148, 1);
-        padding: 0 1vw;
-        @media (max-width: 500px) {
-          padding: 1px 15px;
-        }
-        &.selected__sidebar {
-          font-weight: 700;
-          color: rgba(11, 11, 11, 1);
-        }
-        &:last-child {
-          padding-right: 0px;
-          border-right: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      .header__main {
+        font-weight: 500;
+        font-size: 20px;
+        color: rgba(0, 0, 0, 1);
+      }
+      .sidebar__wrapper {
+        display: flex;
+        justify-content: flex-end;
+        color: rgba(51, 51, 51, 1);
+        font-size: clamp(13px, 1vw, 19px);
+        span {
+          line-height: 1;
+          border-right: 1px solid rgba(148, 148, 148, 1);
+          padding: 0 1vw;
+          @media (max-width: 800px) {
+            padding: 1px 15px;
+          }
+          &.selected__sidebar {
+            font-weight: 700;
+            color: rgba(11, 11, 11, 1);
+          }
+          &:last-child {
+            padding-right: 0px;
+            border-right: none;
+          }
         }
       }
+      .sidebar__wrapper:hover {
+        cursor: pointer;
+      }
     }
-    .sidebar__wrapper:hover {
-      cursor: pointer;
-    }
+
+    
   }
 
   .flight__item__wrapper {
     width: 100%;
     display: grid;
-    grid-template-columns: 0.25fr 0.58fr 0.17fr;
+    grid-template-columns: 0.25fr 0.60fr 0.15fr;
     color: rgba(51, 51, 51, 1);
     border-radius: 7px;
     border: 1px solid rgba(187, 187, 187, 1);
     padding: 1vw;
     font-size: clamp(12px, 0.78vw, 15px);
-    @media (max-width: 500px) {
+    margin-bottom: 15px;
+    @media (max-width: 800px) {
       display: flex;
       flex-direction: column;
       font-size: 15px;
@@ -458,7 +493,7 @@
     }
     & > div {
       border-right: 1px dotted rgba(204, 204, 204, 1);
-      @media (max-width: 500px) {
+      @media (max-width: 800px) {
         width: 100%;
         border: none;
       }
@@ -471,23 +506,16 @@
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      @media (max-width: 500px) {
-        justify-content: flex-start;
-        align-items: baseline;
-        padding-left: 50px;
-      }
-      span {
-        line-height: 1.6;
+      @media (max-width: 800px) {
+        flex-direction: row;
+        justify-content: space-between;
       }
       img {
         max-width: 200px;
         max-height: 30px;
-        @media (max-width: 500px) {
-          position: absolute;
-          left: 35px;
-          width: 35px;
-          height: 35px;
-        }
+      }
+      span {
+        line-height: 1.6;
       }
     }
     .flight__schedule__wrapper {
@@ -499,7 +527,7 @@
       span {
         line-height: 1.6;
       }
-      @media (max-width: 500px) {
+      @media (max-width: 800px) {
         padding-left: 50px;
         flex-direction: column;
         align-items: baseline;
@@ -522,7 +550,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      @media (max-width: 500px) {
+      @media (max-width: 800px) {
         justify-content: flex-end;
       }
      
@@ -539,7 +567,7 @@
           padding: 5px 10px;
           border-radius: 5px;
         }
-        @media (max-width: 500px) {
+        @media (max-width: 800px) {
           padding: 5px 20px;
         }
         cursor: pointer;
@@ -559,7 +587,7 @@
 
   .single__header__main {
     font-weight: 500;
-    font-size: 1.2vw;
+    font-size: 18px;
     color: rgba(0, 0, 0, 1);
     margin-bottom: 0.5vw;
   }
@@ -567,7 +595,7 @@
 
   .hotel_detail_included__items__section__wrapper {
     .included__items__wrapper {
-      @media (min-width: 500px) {
+      @media (min-width: 800px) {
         display: grid;
         grid-template-columns: 0.25fr 0.75fr;
         border-top: 1px solid rgba(0, 0, 0, 1);
@@ -582,11 +610,11 @@
         display: flex;
         color: rgba(0, 0, 0, 1);
         align-items: center;
-        gap: 1vw;
         font-size: clamp(16px, 1vw, 20px);
         justify-content: center;
         background-color: rgba(248, 248, 248, 1);
-        @media (max-width: 500px) {
+        gap: 5px;
+        @media (max-width: 800px) {
           align-items: flex-start;
           justify-content: flex-start;
           background-color: rgba(255, 255, 255, 1);
@@ -594,25 +622,12 @@
           padding: 5px 0;
         }
         .included__icon {
-          font-size: 1.5vw;
           font-weight: 700;
           color: rgba(40, 171, 225, 1);
-
-          @media (max-width: 500px) {
-            width: 16px;
-            height: 16px;
-            border: 3px solid rgba(40, 171, 225, 1);
-            margin-right: 3px;
-          }
         }
-        .excluded__icon {
-          width: clamp(22px, 1.5vw, 24px);
+        .unincluded__icon {
+          font-weight: 700;
           color: rgba(224, 49, 49, 1);
-          @media (max-width: 500px) {
-            width: 22px;
-            height: 22px;
-            transform: translateY(-3px);
-          }
         }
       }
       .elements__wrapper {
@@ -622,7 +637,7 @@
         font-size: clamp(13px, 0.78vw, 15px);
         gap: 0.2vw;
         padding: 1vw 2vw;
-        @media (max-width: 500px) {
+        @media (max-width: 800px) {
           padding: 10px 0 30px;
           gap: 2px;
         }
@@ -641,7 +656,7 @@
       border-top: 1px solid rgba(0, 0, 0, 1);
       border-bottom: 1px solid rgba(187, 187, 187, 1);
       white-space: pre-line;
-      @media (max-width: 500px) {
+      @media (max-width: 800px) {
         border-bottom: none;
         padding: 10px 0 30px;
         gap: 2px;
@@ -676,7 +691,7 @@
         border-bottom: 1px solid rgba(224, 224, 224, 1);
         
 
-        @media (max-width: 500px) {
+        @media (max-width: 800px) {
           padding: 13px 20px 10px 20px;
           gap: 20px;
         }
@@ -701,15 +716,12 @@
         .schedule__element__wrapper {
           position: relative;
           margin-left: 30px;
-          margin-top: 30px;
+          padding-top: 30px;
           padding-bottom: 20px;
           border-left: 1px dotted rgba(180, 180, 180, 1);
-          &:last-child {
-            border: none;
-          }
-
+ 
           .flight__schedule__board__wrapper {
-            @media (min-width: 500px) {
+            @media (min-width: 800px) {
               display: flex;
               width: 100%;
               flex-direction: column;
@@ -733,8 +745,8 @@
                   max-height: 30px;
                 }
                 span {
-                  font-size: 0.78vw;
-                  line-height: 1;
+                  font-size: 16px;
+                  color: #333;
                 }
               }
               .flight__time__wrapper {
@@ -743,8 +755,8 @@
                 margin-top: 0.5vw;
                 position: relative;
                 .flight__time {
-                  color: rgba(104, 104, 104, 1);
-                  font-size: 0.73vw;
+                  color: #686868;
+                  font-size: 14px;
                 }
                 & > div {
                   position: absolute;
@@ -752,11 +764,11 @@
                   flex-direction: column;
                   align-items: center;
                   .time__text {
-                    font-size: 1.2vw;
+                    font-size: 25px;
                     font-weight: 700;
                   }
                   .airport__text {
-                    font-size: 0.78vw;
+                    font-size: 15px;
                   }
                   div {
                     width: 0.625vw;
@@ -785,7 +797,7 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
-            @media (max-width: 500px) {
+            @media (max-width: 800px) {
               padding-top: 20px;
             }
             .schedule__location__wrapper {
@@ -807,7 +819,7 @@
             .schedule__element__header {
               display: flex;
               align-items: center;
-              @media (max-width: 500px) {
+              @media (max-width: 800px) {
                 padding-top: 10px;
               }
               .absolute__wrapper {
@@ -829,7 +841,7 @@
                 display: flex;
                 padding-left: 2.5vw;
                 
-                @media (max-width: 500px) {
+                @media (max-width: 800px) {
                   padding-left: clamp(27px, 2.5vw, 57px);
                   flex-direction: column;
                   gap: 0px;
@@ -845,7 +857,7 @@
           .schedule__element__main__wrapper {
             padding: 20px;
 
-            @media (max-width: 500px) {
+            @media (max-width: 800px) {
              
             }
 
@@ -897,7 +909,7 @@
           justify-content: center;
           gap: 0.7vw;
           padding: 0.7vw 0;
-          @media (max-width: 500px) {
+          @media (max-width: 800px) {
             padding: 8px 0;
             gap: 10px;
           }
@@ -918,7 +930,7 @@
 
           &.meal__info__wrapper {
             gap: 10vw;
-            @media (max-width: 500px) {
+            @media (max-width: 800px) {
               gap: 10px;
             }
           }

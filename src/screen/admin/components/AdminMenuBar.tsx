@@ -129,22 +129,35 @@ export default function AdminMenuBar () {
             </div>
           }
 
-          <MenuBox num={5} text='상품관리' icon={icon5} link="/admin/products"/>
+          <MenuBox num={5} text='휴양지관리' icon={icon5} link="/admin/productsrest"/>
           {
             currentTab === 5 &&
             <div className="sub-box">
-              <RowBox num={1} text='도시&항공편관리' link="/admin/products"/>
-              <RowBox num={2} text='호텔관리' link="/admin/products/hotelregister"/>
-              <RowBox num={3} text='일정관리' link="/admin/products/schedule"/>
-              <RowBox num={4} text='여행지관리' link="/admin/products/tourlocation"/>
-              <RowBox num={5} text='선택일정관리' link="/admin/products/selectschedule"/>
-              <RowBox num={6} text='랜드사관리' link="/admin/products/landcompany"/>
+              <RowBox num={1} text='도시&항공편관리' link="/admin/productsrest"/>
+              <RowBox num={2} text='호텔관리' link="/admin/productsrest/hotelregister"/>
+              <RowBox num={3} text='일정관리' link="/admin/productsrest/schedule"/>
+              <RowBox num={4} text='여행지관리' link="/admin/productsrest/tourlocation"/>
+              <RowBox num={5} text='선택일정관리' link="/admin/productsrest/selectschedule"/>
+              <RowBox num={6} text='랜드사관리' link="/admin/productsrest/landcompany"/>
             </div>
           }
 
-          <MenuBox num={6} text='업무메뉴얼' icon={icon6} link="/admin/menual"/>
+          <MenuBox num={6} text='관광지관리' icon={icon5} link="/admin/productstour"/>
           {
             currentTab === 6 &&
+            <div className="sub-box">
+              <RowBox num={1} text='도시&항공편관리' link="/admin/productstour"/>
+              <RowBox num={2} text='호텔관리' link="/admin/productstour/hotelregister"/>
+              <RowBox num={3} text='일정관리' link="/admin/productstour/schedule"/>
+              <RowBox num={4} text='여행지관리' link="/admin/productstour/tourlocation"/>
+              <RowBox num={5} text='선택일정관리' link="/admin/productstour/selectschedule"/>
+              <RowBox num={6} text='랜드사관리' link="/admin/productstour/landcompany"/>
+            </div>
+          }
+
+          <MenuBox num={7} text='업무메뉴얼' icon={icon6} link="/admin/menual"/>
+          {
+            currentTab === 7 &&
             <div className="sub-box">
               <RowBox num={1} text='예약진행프로세스' link="/admin/menual"/>
               <RowBox num={2} text='고객응대프로세스' link="/admin/menual/receptionprocess"/>
@@ -153,9 +166,9 @@ export default function AdminMenuBar () {
             </div>
           }
 
-          <MenuBox num={7} text='운영현황' icon={icon7} link="/admin/state"/>
+          <MenuBox num={8} text='운영현황' icon={icon7} link="/admin/state"/>
           {
-            currentTab === 7 &&
+            currentTab === 8 &&
             <div className="sub-box">
               <RowBox num={1} text='예약현황' link="/admin/state"/>
               <RowBox num={2} text='출발현황' link="/admin/state/departstate"/>
@@ -163,9 +176,9 @@ export default function AdminMenuBar () {
             </div>
           }
 
-          <MenuBox num={8} text='시스템관리' icon={icon8} link="/admin/system"/>
+          <MenuBox num={9} text='시스템관리' icon={icon8} link="/admin/system"/>
           {
-            currentTab === 8 &&
+            currentTab === 9 &&
             <div className="sub-box">
               <RowBox num={1} text='권한관리' link="/admin/system"/>
               <RowBox num={2} text='임직원관리' link="/admin/system/executive"/>

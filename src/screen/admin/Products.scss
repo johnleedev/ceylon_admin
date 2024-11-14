@@ -7,7 +7,7 @@
 .Menu5 {
   height: auto;
   background-color: #f6f6f6;
-  padding: 30px;
+  padding: 30px 30px;
   min-height: 100vh;
 
   .main-title {
@@ -17,56 +17,16 @@
     align-items: center;
     left: 0;
     right: 0;
-    margin: 15px auto;
+    margin: 5px auto;
 
     .title-box {
-
-      h1 {
-        font-size: 30px;
+       h1 {
+        font-size: 27px;
         font-weight: bold;
-      }
-    }
-  }
-
-  .topRow {
-    position: relative;
-    height: 50px;
-
-    .tabSelectBtnBox {
-      display: flex;
-      width:100%; 
-      align-items: flex-start;
-      padding-left: 10px;
-      border-bottom: 1px solid #e0e0e0;
-      margin-bottom: 20px;
-  
-      .selectBtn {
-        font-size: 14px;
-        width: 100px;
-        @include middle();
-        flex-direction: column;
-        padding-top: 10px;
-        
-        p {
-          font-size: 18px;
-          font-weight: 600;
-        }
-        .bar {
-          width: 80px; 
-          height: 3px; 
-          background-color: #fff;
-          margin-top:10px;
-        }
-      }
-      .selectBtn:hover {
-        cursor: pointer;
       }
     }
 
     .addBtn {
-      position: absolute;
-      right: 0;
-      top: 10px;
       width: 120px;
       height: 30px;
       @include middle();
@@ -83,20 +43,19 @@
       background-color: #e7e7e7;
     }
   }
-  
-  // 
+
 
   .continentBtnbox {
     display: flex;
-    margin: 50px 10px;
-    justify-content: space-between;
+    margin: 30px 0px;
+    
 
     .continentNtn {
       width: 10%;
-      padding: 5px 10px;
-      border: 1px solid #8C8C8C;
+      padding: 5px 5px;
+      border: 1px solid #dadada;
       border-radius: 5px;
-      margin: 0 5px;
+      margin-right: 10px;
       @include middle();
     }
     .continentNtn:hover {
@@ -104,67 +63,109 @@
     }
   }
 
-  .nationbox {
-    display: grid;
+  .nation_city_cover {
+    width: 100%;
+    display: flex;
     justify-content: space-between;
-    grid-template-columns: 30% 30% 30%;
-    padding: 10px;
+   
+    .nation_city_box {
+      width: 48%;
 
-    .nation {
-      width: 100%;
-      padding: 10px;
-
-      .nation__titlebox {
+      .nation_city_title_box {
         display: flex;
         align-items: center;
         margin-bottom: 10px;
-        justify-content: space-between;
 
-        .nation__title_leftbox {
-          display: flex;
-          align-items: center;
-
-          .nation__title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-right: 10px;  
-          }
-          .nation__title_addBtn {
-            @include middle();
-            padding: 5px;
-            border: 1px solid #c2c2c2;
-            border-radius: 3px;
-            background-color: #fff;
-          }
-          .nation__title_addBtn:hover {
-            cursor: pointer;
-            background-color: #ededed;
-          }
+        .nation_city_title {
+          font-size: 20px;
+          font-weight: 600;
+          margin-right: 10px;
         }
-        .nation__title_rightbox {
+        .nation_city_title_addBtn {
           @include middle();
-          padding: 5px;
+          padding: 3px;
+          border: 1px solid #c2c2c2;
+          border-radius: 3px;
+          background-color: #fff;
         }
-        .nation__title_rightbox:hover {
+        .nation_city_title_addBtn:hover {
           cursor: pointer;
-          opacity: 0.8;
+          background-color: #ededed;
         }
       }
-
-      .nation__cities{
-        padding: 20px;
-        box-sizing: border-box;
-        border: 1px solid #d9d9d9;
-        border-radius: 5px;
+      .nationbox {
+        width: 100%;
+        padding: 10px;
         background-color: #fff;
-        flex-direction: column;
-
-        .cities__row {
-          margin: 15px 0;
+        border-top: 2px solid #333;
+    
+        .nation {
+          padding: 10px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-
+  
+          .nation__title_leftbox {
+            display: flex;
+            align-items: center;
+  
+            .nation__title {
+              font-size: 16px;
+              font-weight: 600;
+            }
+            
+          }
+          .nation__title_rightbox {
+            @include middle();
+  
+            .nation__title_addBtn {
+              @include middle();
+              padding: 3px;
+              border: 1px solid #c2c2c2;
+              border-radius: 3px;
+              background-color: #fff;
+              margin-right: 10px;
+            }
+            .nation__title_setBtn {
+              @include middle();
+            }
+            .nation__title_addBtn:hover,
+            .nation__title_setBtn:hover {
+              cursor: pointer;
+              background-color: #ededed;
+            }
+          }
+          .nation__title_rightbox:hover {
+            cursor: pointer;
+            opacity: 0.8;
+          }
+        }  
+        .nation:hover {
+          cursor: pointer;
+          background-color: #ddf2ff;
+        }
+        .selected {
+          background-color: #5fb7ef;
+        }
+        .selected:hover {
+          background-color: #5fb7ef;
+        }
+      }
+      .nation__cities {
+        width: 100%;
+        background-color: #fff;
+        border-top: 2px solid #333;
+        padding: 20px;
+        box-sizing: border-box;
+        background-color: #fff;
+        flex-direction: column;
+  
+        .cities__row {
+          margin-bottom: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+  
           .reviseBtn {
             .divider {
               width: 2px;
@@ -181,15 +182,22 @@
           }
           
         }
-      }
-    }    
+        .cities__row:hover {
+          cursor: pointer;
+          background-color: #ddf2ff;
+        }
+      }  
+    }
+    
   }
+  
 
 
   .seachlist {
     display: flex;
     flex-direction: column;
     align-items: center; 
+    
 
     .main-list-cover-hotel {
       width: 100%;
@@ -205,26 +213,24 @@
       .rowbox {
         display: flex;
         align-items: center;
-        height: 70px;
+        height: 50px;
         justify-content: space-between;
         background-color: #fff;;
         border-bottom: 1px solid #E2E2E2;
         padding: 0 5px;
 
         .text {
-
+          font-size: 14px;
           .hotelControlBtn {
             width: 80px;
             padding: 3px 10px;
             border: 1px solid #d5d5d5;
             border-radius: 5px;
             margin: 0 5px;
-            font-size: 14px;
           }
           .hotelControlBtn2 {
             width: 50px;
             margin: 0 5px;
-            font-size: 14px;
           }
           .divider {
             width: 1px;
@@ -234,9 +240,29 @@
           .hotelControlBtn:hover,
           .hotelControlBtn2:hover {
             cursor: pointer;
-            opacity: 0.6;
+            color: #fff;
+            background-color: #333;
           }
         }
+      }
+      .rowbox:hover {
+        cursor: pointer;
+        background-color: #f0f9ff;
+      }
+    }
+
+    .btn-row {
+      width: 100%;
+      margin: 20px 0;
+      @include middle();
+
+      .btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 5px; 
+        cursor: pointer; 
+        margin: 7px;
+        @include middle();
       }
     }
   }
