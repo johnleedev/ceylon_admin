@@ -92,7 +92,7 @@ export default function Sub2_CounselList (props:any) {
 
 
   // State 변수 추가
-  const itemsPerPage = 10; // 한 페이지당 표시될 게시글 수
+  const itemsPerPage = 15; // 한 페이지당 표시될 게시글 수
   const totalPages = Math.ceil(listAllLength / itemsPerPage);
 
   // 페이지 변경 함수

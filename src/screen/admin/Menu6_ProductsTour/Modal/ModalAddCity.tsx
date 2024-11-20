@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import './ModalAdd.scss'
+import '../../ProductsModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";
@@ -116,59 +116,7 @@ export default function ModalAddCity (props : any) {
     setUseState(newList);
   };
 
-  // 항공편 입력 ------------------------------------------------------------------------------------------------------------------------------------------
-  const [airlineSelectInput, setAirlineSelectInput] = useState('direct');
-  interface AirlineProps {
-    sort : string;
-    airlineName: string;
-    departDate: string[];
-    planeName: string;
-    departAirport: string;
-    departTime: string;
-    arriveAirport: string;
-    arriveTime: string;
-  }
-  interface DirectProps {
-    tourPeriodNight: string;
-    tourPeriodDay: string;
-    departAirportMain : string;
-    airlineData: AirlineProps[];
-  }   
-  interface ViaProps {
-    tourPeriodNight: string;
-    tourPeriodDay: string;
-    departAirportMain : string;
-    airlineData: AirlineProps[];
-  }   
-  const [directAirline, setDirectAirline] = useState<DirectProps[]>(
-    isAddOrRevise === 'revise' 
-    ? JSON.parse(cityData.directAirline)
-    : [{tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", 
-        airlineData : [
-          { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-          { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
-        ]
-      }]
-  )
-  const [viaAirline, setViaAirline] = useState<ViaProps[]>(
-    isAddOrRevise === 'revise' 
-    ? JSON.parse(cityData.viaAirline)
-    : [{tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", 
-        airlineData : [
-          { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-          { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-          { sort:"viaDepart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-          { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-        ]
-      }]
-  )
 
-  // 내용변경
-  const handleContentChange = (text:any, useState:any, setUseState:any, index:any, subIndex:any, name:any) => {
-    const inputs = [...useState]
-    inputs[index].airlineData[subIndex][name] = text;
-    setUseState(inputs);
-  };
 
   // 저장 함수 ------------------------------------------------------------------------------------------------------------------------------------------
   const registerCity = async () => {
@@ -188,12 +136,10 @@ export default function ModalAddCity (props : any) {
         cityEn : cityEn,
         weather : weather,
         tourNotice : tourNotice,
-        inputImage : JSON.stringify(inputImage),
-        directAirline : JSON.stringify(directAirline),
-        viaAirline : JSON.stringify(viaAirline),
+        inputImage : JSON.stringify(inputImage)
       }
       axios 
-        .post(`${MainURL}/nationcity/registercities`, formData, {
+        .post(`${MainURL}/tournationcity/registercities`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -220,7 +166,7 @@ export default function ModalAddCity (props : any) {
     const inputImagesNewItems = inputImagesCopy.filter((item, index) => item !== imageName);
 
     axios 
-      .post(`${MainURL}/nationcity/deletecityimage`, {
+      .post(`${MainURL}/tournationcity/deletecityimage`, {
         postId : cityData.id,
         imageName : imageName,
         inputImage : JSON.stringify(lastImagesNewItems)
@@ -254,11 +200,9 @@ export default function ModalAddCity (props : any) {
       weather : weather,
       tourNotice : tourNotice,
       inputImage : JSON.stringify(inputImage),
-      directAirline : JSON.stringify(directAirline),
-      viaAirline : JSON.stringify(viaAirline),
     }
     axios 
-      .post(`${MainURL}/nationcity/revisecities`, formData, {
+      .post(`${MainURL}/tournationcity/revisecities`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -274,6 +218,134 @@ export default function ModalAddCity (props : any) {
         console.log('실패함')
       })
   };
+
+  // 항공편 입력 ------------------------------------------------------------------------------------------------------------------------------------------
+  const [airlineSelectInput, setAirlineSelectInput] = useState('direct');
+  interface AirlineProps {
+    sort : string;
+    airlineName: string;
+    departDate: string[];
+    planeName: string;
+    departAirport: string;
+    departTime: string;
+    arriveAirport: string;
+    arriveTime: string;
+  }
+  interface DirectProps {
+    tourPeriodNight: string;
+    tourPeriodDay: string;
+    departAirportMain : string;
+    departAirline: string;
+    airlineData: AirlineProps[];
+  }   
+  interface ViaProps {
+    tourPeriodNight: string;
+    tourPeriodDay: string;
+    departAirportMain : string;
+    departAirline: string;
+    airlineData: AirlineProps[];
+  }   
+  const [directAirline, setDirectAirline] = useState<DirectProps[]>(
+    // isAddOrRevise === 'revise' 
+    // ? JSON.parse(cityData.directAirline)
+    // : 
+    [
+      {tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", departAirline : "",
+        airlineData : [
+          { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+          { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
+        ]
+      }
+    ]
+  )
+  const [viaAirline, setViaAirline] = useState<ViaProps[]>(
+    // isAddOrRevise === 'revise' 
+    // ? JSON.parse(cityData.viaAirline)
+    // : 
+    [{tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
+        airlineData : [
+          { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+          { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+          { sort:"viaDepart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+          { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+        ]
+      }]
+  )
+
+  // 내용변경
+  const handleContentChange = (text:any, useState:any, setUseState:any, index:any, subIndex:any, name:any) => {
+    const inputs = [...useState]
+    inputs[index].airlineData[subIndex][name] = text;
+    setUseState(inputs);
+  };
+
+
+  // 항공편 저장 함수 -------------------------------------
+
+  const registerAirline22 = async () => {
+    const getParams = {
+      nation : nation,
+      city : cityKo,
+      
+      sort : sort,
+     
+      
+    }
+    axios 
+      .post(`${MainURL}/tournationcity/registercities`, getParams)
+      .then((res) => {
+        if (res.data) {
+          alert('등록되었습니다.');
+          props.setRefresh(!props.refresh);
+        }
+      })
+      .catch(() => {
+        console.log('실패함')
+      })
+  };
+
+
+  // 항공편 (직항) 저장 함수 ----------------------------------------------
+  const registerAirlineDirect = async () => {
+    const inputAirlineOrigin = [...directAirline];
+    const promises = [];
+  
+    for (let index = 0; index < inputAirlineOrigin.length; index++) {
+      const postPromise = axios.post(`${MainURL}/tournationcity/registerairlinedirect`, {
+        nation : nation,
+        city : cityKo,
+        sort : 'direct',
+        tourPeriodNight : inputAirlineOrigin[index].tourPeriodNight,
+        tourPeriodDay : inputAirlineOrigin[index].tourPeriodDay,
+        departAirportMain : inputAirlineOrigin[index].departAirportMain,
+        departAirline : inputAirlineOrigin[index].departAirline,
+        airlineData : JSON.stringify(inputAirlineOrigin[index].airlineData)
+      })
+        .then((response) => {
+          return { success: true, data: response.data };
+        })
+        .catch((error) => {
+          console.error(`에러 발생 : ${inputAirlineOrigin[index]}`, error);
+          return { success: false };
+        });
+      promises.push(postPromise);
+    }
+  
+    try {
+      const results = await Promise.all(promises);
+      const allSuccess = results.every(result => result.success);
+      if (allSuccess) {
+        alert('모두 정상적으로 저장되었습니다.');
+      } else {
+        alert('정상적으로 저장되지 않았습니다.');
+      }
+    } catch (error) {
+      alert('실패');
+      console.error('전체적인 오류 발생', error);
+    }
+  };
+
+
   
   const verticalBar40 = {width:'1px', minHeight:'40px', backgroundColor:'#d4d4d4'};
 
@@ -455,6 +527,25 @@ export default function ModalAddCity (props : any) {
         </div>
       </section>
 
+      <div className='btn-box'>
+        <div className="btn" 
+          onClick={()=>{
+            props.setRefresh(!props.refresh);
+            props.setIsViewAddCityModal(false);
+          }}
+        >
+          <p style={{color:'#333'}}>취소</p>
+        </div>
+        <div className="btn" style={{backgroundColor:'#5fb7ef'}}
+          onClick={()=>{
+            isAddOrRevise === 'revise' ? reviseCity() : registerCity();
+          }}
+        >
+          <p>도시 정보 저장</p>
+        </div>
+       
+      </div>
+
       <div style={{height:'50px'}}></div>
 
       {/* 항공편 입력 --------------------------------------------------------------------------------------------------------------- */}
@@ -477,7 +568,7 @@ export default function ModalAddCity (props : any) {
           onClick={()=>{
             if (airlineSelectInput === 'direct') {
               setDirectAirline([...directAirline, 
-                {tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", 
+                {tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
                   airlineData : [
                     { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
                     { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
@@ -486,7 +577,7 @@ export default function ModalAddCity (props : any) {
               )
             } else if (airlineSelectInput === 'via') {
               setViaAirline([...viaAirline,
-                {tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "", 
+                {tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
                   airlineData : [
                     { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
                     { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
@@ -512,7 +603,9 @@ export default function ModalAddCity (props : any) {
             <div className="chart-divider"></div>
             <div className='chartbox' style={{width:'7%'}} ><p>출발공항</p></div>
             <div className="chart-divider"></div>
-            <div style={{width:'80%', display:'flex'}}>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발편명</p></div>
+            <div className="chart-divider"></div>
+            <div style={{width:'73%', display:'flex'}}>
               <div className='chartbox' style={{width:'3%'}} ><p></p></div>
               <div className="chart-divider"></div>
               <div className='chartbox' style={{width:'12%'}} ><p>항공사</p></div>
@@ -589,7 +682,19 @@ export default function ModalAddCity (props : any) {
                       />
                     </div>
                     <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'80%'}} >
+                    <div style={{width:'7%'}} >
+                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
+                        value={item.departAirline}
+                        onChange={(e)=>{
+                          const inputtext = e.target.value;
+                          const copy = [...directAirline];
+                          copy[index].departAirline = inputtext;
+                          copy[index].airlineData[0].planeName = inputtext;
+                          setDirectAirline(copy);
+                        }}/>
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'73%'}} >
                     {
                       item.airlineData.map((subItem:any, subIndex:any)=>{
                         return (
@@ -644,8 +749,14 @@ export default function ModalAddCity (props : any) {
                             <div style={verticalBar40}></div>
                             <div style={{width:'12%'}} >
                               <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
-                                value={subItem.planeName} 
-                                onChange={(e)=>{handleContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'planeName');}}/>
+                                value={subItem.planeName}
+                                onChange={(e)=>{
+                                  const inputtext = e.target.value;
+                                  const copy = [...directAirline];
+                                  copy[index].departAirline = inputtext;
+                                  copy[index].airlineData[subIndex].planeName = inputtext;
+                                  setDirectAirline(copy);
+                                }}/>
                             </div>
                             <div style={verticalBar40}></div>
                             <div style={{width:'12%'}} >
@@ -879,10 +990,14 @@ export default function ModalAddCity (props : any) {
         </div>
         <div className="btn" style={{backgroundColor:'#5fb7ef'}}
           onClick={()=>{
-            isAddOrRevise === 'revise' ? reviseCity() : registerCity();
+            if (airlineSelectInput === 'direct') {
+              registerAirlineDirect();
+            }
+            
+            // isAddOrRevise === 'revise' ? reviseCity() : registerCity();
           }}
         >
-          <p>저장</p>
+          <p>{airlineSelectInput === 'direct' ? '직항' : '경유'} 저장</p>
         </div>
        
       </div>

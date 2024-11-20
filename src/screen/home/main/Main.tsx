@@ -8,6 +8,9 @@ import CommonImagesData from "../common/CommonImageData";
 import { IoLocationOutline } from "react-icons/io5";
 import { LuCalendarDays } from "react-icons/lu";
 import { HiOutlineArrowLongLeft, HiOutlineArrowLongRight } from "react-icons/hi2";
+import icon_instar from '../images/bottomInfo/instar.png';
+import icon_kakao from '../images/bottomInfo/kakao.png';
+import icon_blog from '../images/bottomInfo/blog.png';
 
 export interface IBgObj {
   title: string;
@@ -455,6 +458,42 @@ export default function MainPage() {
           ))}
         </div>
       </section>
+
+      <section className="bottomInfo__section__wrapper">
+        <div className="bottomInfo__cover">
+          <div className="bottomInfo__left_box">
+            <h3>실론투어 고객센터</h3>
+            <div className="bottomInfo__left_box_textrow">
+              <h4>문의시간</h4>
+              <p>AM 9:00 ~ PM 7:00</p>
+            </div>
+            <div className="bottomInfo__left_box_textrow">
+              <h4>점심시간</h4>
+              <p>PM 12:00 ~ PM 1:00</p>
+            </div>
+            <div className="bottomInfo__left_box_textrow">
+              <h4>정기휴무</h4>
+              <p>수요일</p>
+            </div>
+          </div>
+          <div className="bottomInfo__center_box">
+            <p>실론투어 대표번호</p>
+            <h3>1522-0047</h3>
+          </div>
+          <div className="bottomInfo__right_box">
+            <div className="bottomInfo__right_box_icon">
+              <img src={icon_instar}/>
+            </div>
+            <div className="bottomInfo__right_box_icon">
+              <img src={icon_kakao}/>
+            </div>
+            <div className="bottomInfo__right_box_icon">
+              <img src={icon_blog}/>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }

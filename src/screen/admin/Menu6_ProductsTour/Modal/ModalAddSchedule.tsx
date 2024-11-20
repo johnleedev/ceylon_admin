@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import './ModalAdd.scss'
+import '../../ProductsModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
 import { TitleBox } from '../../../../boxs/TitleBox';
 import { useNavigate } from 'react-router-dom';

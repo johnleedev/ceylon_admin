@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import './ModalAdd.scss'
+import '../../ProductsModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";
@@ -25,7 +25,6 @@ export default function ModalAddNation (props : any) {
   const nationList = props.nationList ? props.nationList : '';
 
   const [isView, setIsView] = useState<boolean>(props.isAddOrRevise === 'revise' ? nationData.isView : true);
-  const [sort, setSort] = useState(props.isAddOrRevise === 'revise' ? nationData.sort : '');
   const [continent, setContinent] = useState(props.isAddOrRevise === 'revise' ? nationData.continent : '');
   const [nationKo, setNationKo] = useState(props.isAddOrRevise === 'revise' ? nationData.nationKo : '');
   const [nationEn, setNationEn] = useState(props.isAddOrRevise === 'revise' ? nationData.nationEn : '');
@@ -131,7 +130,7 @@ export default function ModalAddNation (props : any) {
       });
       const getParams = {
         isView : isView,
-        sort : sort,
+        sort : '휴양지',
         continent : continent,
         nationKo : nationKo,
         nationEn : nationEn,
@@ -199,7 +198,7 @@ export default function ModalAddNation (props : any) {
     const getParams = {
       postId : nationData.id,
       isView : isView,
-      sort : sort,
+      sort : '휴양지',
       continent : continent,
       nationKo : nationKo,
       nationEn : nationEn,
@@ -304,17 +303,7 @@ export default function ModalAddNation (props : any) {
         <div className="coverbox">
           <div className="coverrow half">
             <TitleBox width="120px" text='분류'/>
-            <DropdownBox
-              widthmain='60%'
-              height='35px'
-              selectedValue={sort}
-              options={[
-                { value: '선택', label: '선택' },
-                { value: '휴양지', label: '휴양지' },
-                { value: '관광지', label: '관광지' },
-              ]}    
-              handleChange={(e)=>{setSort(e.target.value)}}
-            />
+            <p>휴양지</p>
           </div>
           <div className="coverrow half">
             <TitleBox width="120px" text='대륙'/>

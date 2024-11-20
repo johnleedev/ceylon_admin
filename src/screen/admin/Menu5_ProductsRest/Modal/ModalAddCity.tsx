@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import './ModalAdd.scss'
+import '../../ProductsModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";

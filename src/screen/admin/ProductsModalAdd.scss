@@ -66,7 +66,7 @@
       }
       > .textarea {
         margin-left: 5px;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: normal;
         flex: 1;
         min-height: 180px;
@@ -78,7 +78,7 @@
         outline: none;
       }
       .inputdefault {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: normal;
         height: 40px;
         text-align: left;
@@ -184,6 +184,7 @@
         height: 20px;
         @include middle();
       }
+
     }
 
     .autoComplete {
@@ -432,14 +433,15 @@
           padding: 10px;
     
           .cover {
+            position: relative;
   
             .rowbox {
               display: flex;
               align-items: center;
   
-              > .textarea {
+              .textarea {
                 margin:10px 5px;
-                font-size: 15px;
+                font-size: 14px;
                 font-weight: normal;
                 flex: 1;
                 min-height: 50px;
@@ -448,6 +450,18 @@
                 border-radius: 5px;
                 padding: 10px;
                 outline: none;
+              }
+
+              .inputdefault {
+                font-size: 14px;
+                font-weight: normal;
+                height: 35px;
+                text-align: left;
+                border: 1px solid #E9E9E9;
+                box-sizing: border-box;
+                border-radius: 5px;
+                padding-left: 3px;
+              
               }
 
               .autoComplete {

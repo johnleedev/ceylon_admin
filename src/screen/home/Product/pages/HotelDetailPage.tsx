@@ -6,9 +6,8 @@ import MainURL from "../../../../MainURL";
 import hotelbuilding from "../../images/tourPage/hotelbuilding.png"
 import hotelplate from "../../images/tourPage/hotelplate.png"
 import location from "../../images/tourPage/location.png"
-import hotelImagePath1 from "../../images/hotels/hotel_01.png";
-import headerBgImage from "../../images/tourPage/hotelPageMain.jpg";
-import mobileImagePath from "../../images/tourPage/mobile-info.jpg";
+import { FaRegCircle } from "react-icons/fa";
+import { IoMdClose } from "react-icons/io";
 import { FaStar, FaCheck } from "react-icons/fa";
 import AirlineData from "../../common/AirlineData";
 import RatingBoard from "../../common/RatingBoard";
@@ -212,6 +211,9 @@ export default function PackagePage() {
             세인트레지스 풀빌라 2박
           </span>
         </div>
+      </div>
+
+      <div className="hotel_detail_roomtype__selector__wrapper">
         <div className="hotel__selector__wrapper">
           <div className={`hotel__selector__Btn ${categoryBtn === "1" ? "selected" : ""}`}
             onClick={()=>{setCategoryBtn('1')}}
@@ -477,7 +479,7 @@ export default function PackagePage() {
         <div className="single__header__main">포함/불포함</div>
         <div className="included__items__wrapper">
           <div className="index__title__wrapper">
-            <span className="included__icon">O</span>
+            <span className="included__icon"><FaRegCircle size={14}/></span>
             <span>포함사항</span>
           </div>
           <div className="elements__wrapper">
@@ -491,7 +493,7 @@ export default function PackagePage() {
             <span>- {includeNoteText}</span>
           </div>
           <div className="index__title__wrapper">
-            <span className="unincluded__icon">X</span>
+            <span className="unincluded__icon"><IoMdClose size={18}/></span>
             <span>불포함사항</span>
           </div>
           <div className="elements__wrapper">

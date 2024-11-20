@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import './ModalAdd.scss'
+import '../../ProductsModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
 import { TitleBox } from '../../../../boxs/TitleBox';
 import { useNavigate } from 'react-router-dom';
@@ -705,8 +705,14 @@ export default function ModalAddSchedule (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='랜드사'/>
-            <input className="inputdefault" type="text" style={{width:'50%', marginLeft:'5px'}} 
-              value={landCompany} onChange={(e)=>{setLandCompany(e.target.value)}}/>
+            {
+              isAddOrRevise === 'revise' 
+              ? 
+              <p>{landCompany}</p>
+              :
+              <input className="inputdefault" type="text" style={{width:'50%', marginLeft:'5px'}} 
+                value={landCompany} onChange={(e)=>{setLandCompany(e.target.value)}}/>
+            }
           </div>
         </div>
         <div className="coverbox">

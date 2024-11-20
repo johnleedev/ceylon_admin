@@ -69,7 +69,7 @@ export default function Sub1_CityAirplane (props:any) {
 	const [list, setList] = useState<ListProps[]>([]);
 	const [selectedNation, setSelectedNation] = useState<ListProps>();
   const fetchPosts = async () => {
-    const res = await axios.post(`${MainURL}/nationcity/getnationcity`, {
+    const res = await axios.post(`${MainURL}/tournationcity/getnationcity`, {
 			selectContinent : selectContinent
 		})
     if (res.data !== false) {
@@ -94,6 +94,43 @@ export default function Sub1_CityAirplane (props:any) {
 	const [isViewAddCityModal, setIsViewAddCityModal] = useState<boolean>(false);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
 	
+
+	// 요금표 가져오기
+	const fetchPostCost = async (id:string) => {
+		
+		const resCost = await axios.post(`${MainURL}/tournationcity/getairlinedata`, {
+
+		})
+		if (resCost.data !== false) {
+			const copy = resCost.data;
+  		const groupedData: { [key: string]: any } = {};
+			copy.forEach((item: any) => {
+				const reservePeriod = JSON.parse(item.reservePeriod);
+				const inputDefault = JSON.parse(item.inputDefault);
+		  	const key = `${item.hotelCostID}_${item.reserveIndex}`;
+		  	if (!groupedData[key]) {
+						groupedData[key] = {
+								hotelCostID: item.hotelCostID,
+								reserveIndex: item.reserveIndex,
+								reserveType: item.reserveType,
+								reservePeriod: reservePeriod,
+								inputDefault: []
+						};
+				}
+				inputDefault.costIndex = item.costIndex;
+				groupedData[key].inputDefault.push(inputDefault);
+			});
+			Object.keys(groupedData).forEach((key) => {
+				groupedData[key].inputDefault.sort((a: any, b: any) => a.costIndex - b.costIndex);
+			});
+			const result = Object.values(groupedData);
+			// setHotelCostInputDefault(result);
+		} else {
+			// setHotelCostInputDefault([]);
+		}
+		setIsViewAddCityModal(true);
+	};
+
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
 	const deleteCity = async (itemId:any, images:any) => {
 		const getParams = {
@@ -255,9 +292,9 @@ export default function Sub1_CityAirplane (props:any) {
 											style={{display:'flex', alignItems:'center'}}>
 											<p onClick={()=>{
 												window.scrollTo(0, 0);
-												setIsAddOrRevise('revise');
 												setCityData(item);
-												setIsViewAddCityModal(true);
+												setIsAddOrRevise('revise');
+												fetchPostCost(item);
 											}}
 											>수정</p>
 											<div className='divider'></div>

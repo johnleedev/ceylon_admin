@@ -100,7 +100,7 @@
         border-top: 2px solid #333;
     
         .nation {
-          padding: 10px;
+          padding: 7px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -110,7 +110,7 @@
             align-items: center;
   
             .nation__title {
-              font-size: 16px;
+              font-size: 14px;
               font-weight: 600;
             }
             
@@ -161,7 +161,7 @@
         flex-direction: column;
   
         .cities__row {
-          margin-bottom: 15px;
+          margin-bottom: 10px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -276,7 +276,7 @@
       left: 0;
       z-index: 8;
       opacity: 0.8;
-      background-color: #242d3f;
+      background-color: #000;
     }
     .modal-maincover {
       position: absolute;
