@@ -3,53 +3,68 @@ import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
 import '../Products.scss'
 import { PiPencilSimpleLineFill } from 'react-icons/pi';
-import ModalAddSelectSchedule from './Modal/ModalAddTourProduct';
+import ModalAddSelectSchedule from './Modal/ModalAddSelectSchedule';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { DropdownBox } from '../../../boxs/DropdownBox';
-import { FaCircle } from 'react-icons/fa';
-import { IoCloseOutline } from 'react-icons/io5';
-import ModalAddLandCompany from './Modal/ModalAddLandCompany';
 
 
 interface ListProps {
 	id: string,
+	sort : string,
 	nation : string,
 	city : string,
-	landCompanyName : string,
-	businessDate : string,
-	owner : string,
-	ownerPhone : string,
-	opcharger : string,
-	opchargerPhone : string,
-	localTourCompany : string,
-	localPhone : string,
-	localOwner : string,
-	localOwnerPhone : string,
-	notice : string,
-	registeredHotels : string,
-	registeredProducts : string,
-	discount : string,
-	isCostApply : string,
-	issue : string,
-	benefits : string,
-	reviseDate : string
+	productName : string,
+	nativeLanguage : string,
+	address : string,
+	site : string,
+	detailNotice : string,
+	tourTime : string,
+	runTime : string,
+	openDate : string,
+	closeDate : string,
+	meetLocation : string,
+	phone : string,
+	caution : string,
+	programTimeCost : string,
+	mainMenuCost : string,
+	includeNoteText : string,
+	notIncludeNoteText : string,
+	recommendPoint : string,
+	reserveWay : string,
+	cancelNotice : string,
+	keyword : string,
+	badges : string,
+	scores : string,
+	lastImages : string,
+	inputImage : string,
+	reviseDate : string;
 }
 
-export default function Sub6_LandCompany (props:any) {
+export default function Sub4_SelectSchedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
+	const sorts = ["전체", "가이드투어", "입장권", "탑승권", "공연/경기", "식사", "카페/바/클럽"];
+	const [selectSort, setSelectSort] = useState(0);
+
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
 	const [list, setList] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
+	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
-    const res = await axios.get(`${MainURL}/restlandcompany/getlandcompany/${currentPage}`)
+    const res = await axios.get(`${MainURL}/tourselectschedule/getselectschedules/${currentPage}`)
     if (res.data.resultData) {
       const copy = res.data.resultData;
       setList(copy);
 			setListOrigin(copy);
       setListAllLength(res.data.totalCount);
+    }
+		const nationCityRes = await axios.get(`${MainURL}/tournationcity/getnationcity`)
+    if (nationCityRes.data !== false) {
+			const copy = [...nationCityRes.data];
+			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
+      setNationList(copy);
     }
   };
 
@@ -92,7 +107,7 @@ export default function Sub6_LandCompany (props:any) {
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
-			const res = await axios.post(`${MainURL}/restlandcompany/getlandcompanysearch`, {
+			const res = await axios.post(`${MainURL}/tourselectschedule/getselectschedulesearch`, {
 				sort : searchSort,
 				word : searchWord
 			});
@@ -111,31 +126,81 @@ export default function Sub6_LandCompany (props:any) {
 	
 	
 	// 모달 ---------------------------------------------------------
-	const [isViewLandCompanyModal, setIsViewLandCompanyModal] = useState<boolean>(false);
+	const [isViewAddSelectScheduleModal, setIsViewAddSelectScheduleModal] = useState<boolean>(false);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
-	const [landCompanyInfo, setLandCompanyInfo] = useState<ListProps>();
+	const [selectScheduleInfo, setSelectScheduleInfo] = useState<ListProps>();
+
+	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
+	const deleteSelectSchedule = async (item:any) => {
+		const getParams = {
+			postId : item.id,
+			images : JSON.parse(item.inputImage)
+		}
+		axios 
+			.post(`${MainURL}/tourselectschedule/deleteselectschedule`, getParams)
+			.then((res) => {
+				if (res.data) {
+					setRefresh(!refresh);
+				}
+			})
+			.catch(() => {
+				console.log('실패함')
+			})
+	};
+
+	const handleDeleteAlert = (item:any) => {
+		const costConfirmed = window.confirm(`${item.id}번 일정을 정말 삭제하시겠습니까?`);
+			if (costConfirmed) {
+				deleteSelectSchedule(item);
+		} else {
+			return
+		}
+	};
+
 
 	return (
 		<div className='Menu5'>
 
-
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>랜드사 관리</h1>	
+					<h1>선택일정관리</h1>	
 				</div>
 				<div className="addBtn"
 					onClick={()=>{
 						setIsAddOrRevise('add');
-						setIsViewLandCompanyModal(true);
+						setIsViewAddSelectScheduleModal(true);
 					}}
 				>
 					<PiPencilSimpleLineFill />
-					<p>랜드사 등록</p>
+					<p>선택일정등록</p>
 				</div>
 			</div>
-
-			<div style={{height:'20px'}}></div>
 			
+
+			<div className="continentBtnbox">
+				{
+					sorts.map((item:any, index:any)=>{
+						return (
+							<div className="continentNtn"
+								style={{backgroundColor: selectSort === index ? '#242d3f' : '#fff'}}
+								onClick={()=>{
+									setSelectSort(index);
+									const copy = [...listOrigin]
+									if (item === '전체') {
+										setList(listOrigin);	
+									} else {
+										const result = copy.filter((e:any)=> e.sort === item);
+										setList(result);
+									}
+								}}
+							>
+								<p style={{color: selectSort === index ? '#fff' : '#333'}}>{item}</p>
+							</div>
+						)
+					})
+				}
+			</div>
+
 			<div className="searchbox">
 				<div className="cover">
 					<div className="content">
@@ -178,21 +243,17 @@ export default function Sub6_LandCompany (props:any) {
 				<div className="main-list-cover-hotel">
 					<div className="titlebox">
 						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='5%' text='노출'/>
-						<TitleBox width='15%' text='랜드사'/>
-						<TitleBox width='15%' text='등록상품'/>
-						<TitleBox width='15%' text='등록호텔'/>
-						<TitleBox width='10%' text='여행사베네핏'/>
+						<TitleBox width='10%' text='구분'/>
+						<TitleBox width='25%' text='상품명'/>
+						<TitleBox width='15%' text='운영일'/>
+						<TitleBox width='15%' text='진행시간'/>
+						<TitleBox width='10%' text='요금'/>
 						<TitleBox width='10%' text='예약'/>
-						<TitleBox width='10%' text='참고사항'/>
 						<TitleBox width='10%' text=''/>
   				</div>
 					
 					{
 						list.map((item:any, index:any)=>{
-							const registeredProductsCopy = JSON.parse(item.registeredProducts);
-							const benefitsCopy = JSON.parse(item.benefits);
-
 							return (
 								<div key={index}
 									className="rowbox"
@@ -200,30 +261,26 @@ export default function Sub6_LandCompany (props:any) {
 									}}
 								>
 									<TextBox width='3%' text={item.id} />
-									<div className="text" style={{width:`5%`, textAlign:'center'}}>
-										{ item.isView === 'true'  
-											? <FaCircle color='#5fb7ef' size={13}/>
-											: <IoCloseOutline />
-										}
-									</div>
-									<TextBox width='15%' text={item.landCompanyName} />
-									<TextBox width='15%' text={item.registeredHotels} />
-									<TextBox width='15%' text={registeredProductsCopy} />
-									<TextBox width='10%' text={benefitsCopy.content} />
+									<TextBox width='10%' text={item.sort} />
+									<TextBox width='25%' text={item.productName} />
+									<TextBox width='15%' text={item.openDate} />
+									<TextBox width='15%' text={item.runTime} />
 									<TextBox width='10%' text={''} />
-									<TextBox width='10%' text={item.notice} />
+									<TextBox width='10%' text={''} />
 									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn2"
 											onClick={()=>{
-												setLandCompanyInfo(item);
+												setSelectScheduleInfo(item);
 												setIsAddOrRevise('revise');
-												setIsViewLandCompanyModal(true);
+												setIsViewAddSelectScheduleModal(true);
 											}}
 										>
 											<p>수정</p>
 										</div>
 										<div className="divider"></div>
-										<div className="hotelControlBtn2">
+										<div className="hotelControlBtn2"
+											onClick={()=>{handleDeleteAlert(item);}}
+										>
 											<p>삭제</p>
 										</div>
 									</div>
@@ -267,16 +324,17 @@ export default function Sub6_LandCompany (props:any) {
 
 			{/* 선택일정등록 모달창 */}
       {
-        isViewLandCompanyModal &&
+        isViewAddSelectScheduleModal &&
         <div className='Modal'>
           <div className='modal-backcover'></div>
           <div className='modal-maincover'>
-             <ModalAddLandCompany
+             <ModalAddSelectSchedule
 								refresh={refresh}
 								setRefresh={setRefresh}
 								isAddOrRevise={isAddOrRevise}
-								landCompanyInfo={landCompanyInfo}
-								setIsViewLandCompanyModal={setIsViewLandCompanyModal}
+								nationlist={nationlist}
+								setIsViewAddSelectScheduleModal={setIsViewAddSelectScheduleModal}
+								selectScheduleData={selectScheduleInfo}
 						 />
           </div>
         </div>

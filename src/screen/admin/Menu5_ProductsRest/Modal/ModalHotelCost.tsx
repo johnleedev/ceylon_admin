@@ -25,7 +25,7 @@ export default function ModalHotelCost (props : any) {
   const [selectCostType, setSelectCostType] = useState(isAddOrRevise === 'revise' ? hotelCostInfoData.selectCostType : "");
 
   const handleClose = async () => {
-    const infores = await axios.get(`${MainURL}/producthotel/getinfoinputstate/${hotelInfoData.id}`)
+    const infores = await axios.get(`${MainURL}/restproducthotel/getinfoinputstate/${hotelInfoData.id}`)
     if (infores.data !== false) {
       const infocopy = infores.data[0];
       if (infocopy.isInfoInput === 'false' || infocopy.isInfoInput === '' ) {
@@ -48,7 +48,7 @@ export default function ModalHotelCost (props : any) {
  
   const inputContentDelete = async () => {
     axios
-      .post(`${MainURL}/producthotel/hotelcostcreatingdelete`, {
+      .post(`${MainURL}/restproducthotel/hotelcostcreatingdelete`, {
         postId : hotelInfoData.id
       })
       .then((res) => {
@@ -105,53 +105,25 @@ export default function ModalHotelCost (props : any) {
               <div className='checkInputCover'>
                 <div className='checkInput'>
                   <input className="input" type="checkbox"
-                    checked={selectCostType === '선투숙'}
-                    onChange={()=>{setSelectCostType('선투숙')}}
+                    checked={selectCostType === '선투숙/후투숙'}
+                    onChange={()=>{setSelectCostType('선투숙/후투숙')}}
                   />
                 </div>
-                <p>선투숙리조트</p>
+                <p>선투숙/후투숙</p>
                 <div className='checkInput'>
                   <input className="input" type="checkbox"
-                    checked={selectCostType === '후투숙'}
-                    onChange={()=>{setSelectCostType('후투숙')}}
+                    checked={selectCostType === '팩요금'}
+                    onChange={()=>{setSelectCostType('팩요금')}}
                   />
                 </div>
-                <p>후투숙리조트</p>
+                <p>팩요금</p>
                 <div className='checkInput'>
                   <input className="input" type="checkbox"
-                    checked={selectCostType === '경유지'}
-                    onChange={()=>{setSelectCostType('경유지')}}
+                    checked={selectCostType === '박당/경유지'}
+                    onChange={()=>{setSelectCostType('박당/경유지')}}
                   />
                 </div>
-                <p>경유호텔</p>
-                <div className='checkInput'>
-                  <input className="input" type="checkbox"
-                    checked={selectCostType === '풀빌라'}
-                    onChange={()=>{setSelectCostType('풀빌라')}}
-                  />
-                </div>
-                <p>풀빌라</p>
-                <div className='checkInput'>
-                  <input className="input" type="checkbox"
-                    checked={selectCostType === '리조트'}
-                    onChange={()=>{setSelectCostType('리조트')}}
-                  />
-                </div>
-                <p>리조트</p>
-                <div className='checkInput'>
-                  <input className="input" type="checkbox"
-                    checked={selectCostType === '호텔'}
-                    onChange={()=>{setSelectCostType('호텔')}}
-                  />
-                </div>
-                <p>호텔</p>
-                <div className='checkInput'>
-                  <input className="input" type="checkbox"
-                    checked={selectCostType === '박당'}
-                    onChange={()=>{setSelectCostType('박당')}}
-                  />
-                </div>
-                <p>박당요금</p>
+                <p>박당/경유지</p>
               </div>
             }
           </div>
@@ -162,18 +134,18 @@ export default function ModalHotelCost (props : any) {
       {
         (selectCostType !== '' && selectCostType !== null) &&
         <>
-          { selectCostType === '선투숙' &&
+          { selectCostType === '선투숙/후투숙' &&
             <PreHotelCost isAddOrRevise={isAddOrRevise} 
               hotelInfoData={hotelInfoData} hotelCostInfoData={hotelCostInfoData} hotelCostInputDefaultData={hotelCostInputDefaultData}
               handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
               setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}
-          { selectCostType === '박당' &&
-            <PerDayCost isAddOrRevise={isAddOrRevise} 
+          { selectCostType === '팩요금' &&
+            <FullVillaCost isAddOrRevise={isAddOrRevise} 
               hotelInfoData={hotelInfoData} hotelCostInfoData={hotelCostInfoData} hotelCostInputDefaultData={hotelCostInputDefaultData}
               handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
               setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}
-          { (selectCostType !== '선투숙' && selectCostType !== '박당') &&
-            <FullVillaCost isAddOrRevise={isAddOrRevise} 
+          { selectCostType === '박당/경유지' &&
+            <PerDayCost isAddOrRevise={isAddOrRevise} 
               hotelInfoData={hotelInfoData} hotelCostInfoData={hotelCostInfoData} hotelCostInputDefaultData={hotelCostInputDefaultData}
               handleClose={handleClose} locationDetail={locationDetail} landCompany={landCompany} selectCostType={selectCostType}
               setIsViewHotelCostModal={props.setIsViewHotelCostModal} refresh={props.refresh} setRefresh={props.setRefresh} />}

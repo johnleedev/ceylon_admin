@@ -25,7 +25,6 @@ export default function ModalAddNation (props : any) {
   const nationList = props.nationList ? props.nationList : '';
 
   const [isView, setIsView] = useState<boolean>(props.isAddOrRevise === 'revise' ? nationData.isView : true);
-  const [continent, setContinent] = useState(props.isAddOrRevise === 'revise' ? nationData.continent : '');
   const [nationKo, setNationKo] = useState(props.isAddOrRevise === 'revise' ? nationData.nationKo : '');
   const [nationEn, setNationEn] = useState(props.isAddOrRevise === 'revise' ? nationData.nationEn : '');
   const [visa, setVisa] = useState(props.isAddOrRevise === 'revise' ? nationData.visa : '');
@@ -130,8 +129,6 @@ export default function ModalAddNation (props : any) {
       });
       const getParams = {
         isView : isView,
-        sort : '휴양지',
-        continent : continent,
         nationKo : nationKo,
         nationEn : nationEn,
         visa : visa,
@@ -145,7 +142,7 @@ export default function ModalAddNation (props : any) {
         inputImage : JSON.stringify(inputImage)
       }
       axios 
-        .post(`${MainURL}/nationcity/registernation`, formData, {
+        .post(`${MainURL}/restnationcity/registernation`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -172,7 +169,7 @@ export default function ModalAddNation (props : any) {
     const inputImagesNewItems = inputImagesCopy.filter((item, index) => item !== imageName);
 
     axios 
-      .post(`${MainURL}/nationcity/deletenationimage`, {
+      .post(`${MainURL}/restnationcity/deletenationimage`, {
         postId : nationData.id,
         imageName : imageName,
         inputImage : JSON.stringify(lastImagesNewItems)
@@ -198,8 +195,6 @@ export default function ModalAddNation (props : any) {
     const getParams = {
       postId : nationData.id,
       isView : isView,
-      sort : '휴양지',
-      continent : continent,
       nationKo : nationKo,
       nationEn : nationEn,
       visa : visa,
@@ -213,7 +208,7 @@ export default function ModalAddNation (props : any) {
       inputImage : JSON.stringify(inputImage)
     }
     axios 
-      .post(`${MainURL}/nationcity/revisenation`, formData, {
+      .post(`${MainURL}/restnationcity/revisenation`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -237,7 +232,7 @@ export default function ModalAddNation (props : any) {
       images: JSON.parse(images)
 		}
 		axios 
-			.post(`${MainURL}/nationcity/deletenation`, getParams)
+			.post(`${MainURL}/restnationcity/deletenation`, getParams)
 			.then((res) => {
 				if (res.data) {
 					alert('삭제되었습니다.');
@@ -298,31 +293,6 @@ export default function ModalAddNation (props : any) {
               </div>
               <p>미노출</p>
             </div>
-          </div>
-        </div>
-        <div className="coverbox">
-          <div className="coverrow half">
-            <TitleBox width="120px" text='분류'/>
-            <p>휴양지</p>
-          </div>
-          <div className="coverrow half">
-            <TitleBox width="120px" text='대륙'/>
-            <DropdownBox
-              widthmain='60%'
-              height='35px'
-              selectedValue={continent}
-              options={[
-                { value: '선택', label: '선택' }, 
-                { value: '아시아/호주', label: '아시아/호주' },
-                { value: '태평양', label: '태평양' },
-                { value: '인도양', label: '인도양' },
-                { value: '미주/중남미', label: '미주/중남미' },
-                { value: '중동', label: '중동' },
-                { value: '아프리카', label: '아프리카' },
-                { value: '유럽', label: '유럽' }
-              ]}    
-              handleChange={(e)=>{setContinent(e.target.value)}}
-            />
           </div>
         </div>
         <div className="coverbox">

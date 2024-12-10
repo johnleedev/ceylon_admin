@@ -62,7 +62,7 @@ interface HotelInfoProps {
 	reviseDate: string;
 }
 
-export default function Sub2_CounselList (props:any) {
+export default function Sub2_HotelRegister (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -70,15 +70,13 @@ export default function Sub2_CounselList (props:any) {
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<ListProps[]>([]);
   const fetchPosts = async () => {
-    const res = await axios.get(`${MainURL}/producthotel/gethotels/${currentPage}`)
+    const res = await axios.get(`${MainURL}/restproducthotel/gethotels/${currentPage}`)
 		if (res.data.resultData) {
       const copy = res.data.resultData;
       setList(copy);
       setListAllLength(res.data.totalCount);
     }
-		const nationCityRes = await axios.post(`${MainURL}/nationcity/getnationcity`, {
-      selectContinent : '전체'
-		})
+		const nationCityRes = await axios.get(`${MainURL}/restnationcity/getnationcity`)
     if (nationCityRes.data !== false) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
@@ -126,7 +124,7 @@ export default function Sub2_CounselList (props:any) {
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
-			const res = await axios.post(`${MainURL}/producthotel/gethotelssearch`, {
+			const res = await axios.post(`${MainURL}/restproducthotel/gethotelssearch`, {
 				sort : searchSort,
 				word : searchWord
 			});
@@ -150,7 +148,7 @@ export default function Sub2_CounselList (props:any) {
 	// 요금표 생성
 	const handleHotelCostCreat = async (item : any) => {
     axios 
-      .post(`${MainURL}/producthotel/hotelcostcreat`, {
+      .post(`${MainURL}/restproducthotel/hotelcostcreat`, {
         postId : item.id,
 				hotelNameKo : item.hotelNameKo, 
       	hotelNameEn : item.hotelNameEn
@@ -178,12 +176,12 @@ export default function Sub2_CounselList (props:any) {
 
 	// 요금표 가져오기
 	const fetchPostCost = async (id:string) => {
-		const res = await axios.get(`${MainURL}/producthotel/gethotelcostinfo/${id}`)
+		const res = await axios.get(`${MainURL}/restproducthotel/gethotelcostinfo/${id}`)
 		if (res.data !== false) {
 			const copy = res.data[0];
 			setHotelCostInfo(copy);
 		} 
-		const resCost = await axios.get(`${MainURL}/producthotel/gethotelcostinput/${id}`)
+		const resCost = await axios.get(`${MainURL}/restproducthotel/gethotelcostinput/${id}`)
 		if (resCost.data !== false) {
 			const copy = resCost.data;
   		const groupedData: { [key: string]: any } = {};
@@ -221,7 +219,7 @@ export default function Sub2_CounselList (props:any) {
 			images: images
 		}
 		axios 
-			.post(`${MainURL}/producthotel/deletehotel`, getParams)
+			.post(`${MainURL}/restproducthotel/deletehotel`, getParams)
 			.then((res) => {
 				if (res.data) {
 					setRefresh(!refresh);
@@ -231,6 +229,7 @@ export default function Sub2_CounselList (props:any) {
 				console.log('실패함')
 			})
 	};
+	
 	const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.hotelNameKo}(${item.hotelNameEn})를 정말 삭제하시겠습니까?`);
 		if (costConfirmed) {
@@ -254,7 +253,7 @@ export default function Sub2_CounselList (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>호텔관리</h1>	
+					<h1>호텔&요금 관리</h1>	
 				</div>
 				<div className="addBtn"
 					onClick={()=>{
@@ -266,6 +265,8 @@ export default function Sub2_CounselList (props:any) {
 					<p>호텔등록</p>
 				</div>
 			</div>
+
+			<div style={{height:'20px'}}></div>
 
 			<div className="searchbox">
 				<div className="cover">
@@ -303,6 +304,8 @@ export default function Sub2_CounselList (props:any) {
 				</div>
 			</div>
 
+			<div style={{height:'20px'}}></div>
+
 			<div className="seachlist">
 				<div className="main-list-cover-hotel">
 					<div className="titlebox">
@@ -311,8 +314,9 @@ export default function Sub2_CounselList (props:any) {
 						<TitleBox width='10%' text='국가/지역'/>
 						<TitleBox width='15%' text='리조트명'/>
 						<TitleBox width='5%' text='구분'/>
+						<TitleBox width='10%' text='GSA'/>
 						<TitleBox width='25%' text='관리'/>
-						<TitleBox width='10%' text='수정일'/>
+						<TitleBox width='5%' text='수정일'/>
 						<TitleBox width='10%' text=''/>
   				</div>
 					
@@ -334,6 +338,7 @@ export default function Sub2_CounselList (props:any) {
 									<TextBox width='10%' text={`${item.nation}/${item.city}`} />
 									<TextBox width='15%' text={item.hotelNameKo} />
 									<TextBox width='5%' text={item.isInfoInput === 'false' ? '미입력' : item.selectCostType} />
+									<TextBox width='10%' text={''} />
 									<div className="text" style={{width:`25%`, textAlign:'center'}}>
 										<div className="hotelControlBtn"
 											onClick={()=>{
@@ -362,7 +367,7 @@ export default function Sub2_CounselList (props:any) {
 											<p>요금표</p>
 										</div>
 									</div>
-									<TextBox width='10%' text={item.reviseDate} />
+									<TextBox width='5%' text={item.reviseDate} />
 									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn2"
 											onClick={()=>{

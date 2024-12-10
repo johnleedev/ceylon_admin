@@ -127,12 +127,13 @@ export default function PackagePage() {
   const [scheduleList, setScheduleList] = useState<SelectScheduleListProps[]>([]);
   const [reviseDate, setReviseDate] = useState('');
 
-  const fetchAirplane = async (location:string) => {
-    const res = await axios.get(`${MainURL}/product/getairplane/${location}`)
+  const fetchAirplane = async (nation:string, location:string) => {
+    const res = await axios.get(`${MainURL}/product/getairplane/${nation}/${location}`)
     if (res.data) {
-      const copy = res.data[0];
-      const directAirlineCopy = copy.directAirline ? JSON.parse(copy.directAirline) : [];
-      const viaAirlineCopy = copy.viaAirline ? JSON.parse(copy.viaAirline) : [];
+      const copy = res.data;
+      const parsedCopy = copy.map((item:any) => {return {...item, airlineData: JSON.parse(item.airlineData)};});
+      const directAirlineCopy = parsedCopy.filter((e:any)=> e.sort === 'direct')
+      const viaAirlineCopy = parsedCopy.filter((e:any)=> e.sort === 'via')
       setDirectAirline(directAirlineCopy);
       setViaAirline(viaAirlineCopy);
       setTourPeriodNight(directAirlineCopy[0].tourPeriodNight);
@@ -146,7 +147,7 @@ export default function PackagePage() {
   };
 
   const fetchScheduleDetails = async (postId:any) => {
-    const res = await axios.get(`${MainURL}/productschedule/getproductscheduledetails/${postId}`)
+    const res = await axios.get(`${MainURL}/restproductschedule/getproductscheduledetails/${postId}`)
 		if (res.data !== false) {
 			const copy = res.data;
 			const result = copy.map((item:any) => ({
@@ -163,7 +164,7 @@ export default function PackagePage() {
     })
     if (resschedule.data) {
       const copy = resschedule.data[0];
-      fetchAirplane(copy.tourLocation);
+      fetchAirplane(copy.nation, copy.tourLocation);
       fetchScheduleDetails(copy.id);
       setFlightType('직항')
       setIsView(copy.isView);
@@ -643,181 +644,66 @@ export default function PackagePage() {
                     {
                       item.scheduleDetail.map((subItem:any, subIndex:any)=>{
 
-                        return (
-                          <>
-                          {
-                            subItem.sort === '텍스트' &&
-                            <div className="schedule__element__wrapper" key={subIndex}>
-                              <div className="schedule__element__header__wrapper">
-                                {
-                                  subItem.location &&
-                                  <div className="schedule__location__wrapper">
-                                    <div className="location__absolute__wrapper">
-                                      <img src={location} style={{width:'46px'}}/>
-                                    </div>
-                                    <span className="location__text">{subItem.location}</span>
-                                  </div>
-                                }
-                                <div className="schedule__element__header">
-                                  <div className="absolute__wrapper">
-                                    <div className="dot__icon" />
-                                  </div>
-                                  <div className="schedule__text__wrapper">
-                                    <span>{subItem.subLocation}</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="schedule__element__main__wrapper">
-                                <div className="table__wrapper">
-                                  <div className="table__header">
-                                    <span>{subItem.locationTitle}</span>
-                                  </div>
-                                  <div className="table__main">
-                                    <span></span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          }
-                          {
-                            subItem.sort === '선택' &&
-                            <div className="schedule__element__wrapper" key={subIndex}>
-                              <div className="schedule__element__header__wrapper">
-                                {
-                                  subItem.location &&
-                                  <div className="schedule__location__wrapper">
-                                    <div className="location__absolute__wrapper">
-                                      <img src={location} style={{width:'46px'}}/>
-                                    </div>
-                                    <span className="location__text">{subItem.location}</span>
-                                  </div>
-                                }
-                                <div className="schedule__element__header">
-                                  <div className="absolute__wrapper">
-                                    <div className="dot__icon" />
-                                  </div>
-                                  <div className="schedule__text__wrapper">
-                                    <span>{subItem.subLocation}</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="schedule__element__main__wrapper">
-                                <div className="table__wrapper">
-                                  <div className="table__header">
-                                    <span>{subItem.locationTitle}</span>
-                                  </div>
-                                  <div className="table__main">
-                                    {
-                                      subItem.locationContentDetail.map((detailItem:any, detailIndex:any)=>{
+                        console.log(subItem);
 
-                        
-                                        return (
-                                          <div key={detailIndex} className="detailbox">
-                                            <p className="detailbox-name">{detailIndex+1}. {detailItem.name}</p>
-                                            <p className="detailbox-notice">{detailItem.notice}</p>
-                                          </div>
-                                        )
-                                      })
-                                    }
+                        return (
+                          <div className="schedule__element__wrapper" key={subIndex}>
+                            <div className="schedule__element__header__wrapper">
+                              {
+                                subItem.location !== '' &&
+                                <div className="schedule__location__wrapper">
+                                  <div className="location__absolute__wrapper">
+                                    <img src={location} style={{width:'46px'}}/>
                                   </div>
+                                  <span className="location__text">{subItem.location}</span>
                                 </div>
-                              </div>
+                              }
                             </div>
-                          }
-                          {
-                            subItem.sort === '상세' &&
-                            <div className="schedule__element__wrapper" key={subIndex}>
-                              <div className="schedule__element__header__wrapper">
-                                {
-                                  subItem.location &&
-                                  <div className="schedule__location__wrapper">
-                                    <div className="location__absolute__wrapper">
-                                      <img src={location} style={{width:'46px'}}/>
-                                    </div>
-                                    <span className="location__text">{subItem.location}</span>
-                                  </div>
-                                }
-                                <div className="schedule__element__header">
-                                  <div className="absolute__wrapper">
-                                    <div className="dot__icon" />
-                                  </div>
-                                  <div className="schedule__text__wrapper">
-                                    <span>{subItem.subLocation}</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="schedule__element__main__wrapper">
-                                <div className="table__wrapper">
-                                  <div className="table__header">
-                                    <span>{subItem.locationTitle}</span>
-                                  </div>
-                                  <div className="table__main">
-                                    <div className="detailbox">
-                                      {/* <p className="detailbox-name"><span style={{marginRight:'10px'}}>&#183;</span>{detailItem.name}</p> */}
-                                      <p className="detailbox-notice">{subItem.locationContent}</p>
+                            {
+                              subItem.locationDetail.map((detailItem:any, detailIndex:number)=>{
+                                return (
+                                  <div key={detailIndex}>
+                                    <div className="schedule__element__header__wrapper">
+                                      <div className="schedule__element__header">
+                                        <div className="absolute__wrapper">
+                                          <div className="dot__icon" />
+                                        </div>
+                                        <div className="schedule__text__wrapper">
+                                          <span>{detailItem.subLocation}</span>
+                                        </div>
+                                      </div>
                                     </div>
                                     {
-                                      subItem.locationContentDetail.map((detailItem:any, detailIndex:any)=>{
+                                      detailItem.subLocationDetail.map((subDetailItem:any, subDetailIndex:number)=>{
+
+                                        const postImages = subDetailItem.postImage ? JSON.parse(subDetailItem.postImage) : "";
+
                                         return (
-                                          <div key={detailIndex} className="detailbox">
-                                            <p className="detailbox-name"><span style={{marginRight:'10px'}}>&#183;</span>{detailItem.name}</p>
-                                            <p className="detailbox-notice">{detailItem.notice}</p>
+                                          <div className="schedule__element__main__wrapper" key={subDetailIndex}>
+                                            <div className="image__wrapper">
+                                              <div className="imagebox">
+                                                <img style={{height:'100%', width:'100%'}}
+                                                  src={`${MainURL}/images/scheduleboximages/${postImages[0]}`}
+                                                />                                                
+                                              </div>
+                                            </div>
+                                            <div className="table__wrapper">
+                                              <div className="table__header">
+                                                <span>{subDetailItem.locationTitle}</span>
+                                              </div>
+                                              <div className="table__main">
+                                                <span>{subDetailItem.locationContent}</span>
+                                              </div>
+                                            </div>
                                           </div>
                                         )
                                       })
                                     }
                                   </div>
-                                </div>
-                              </div>
+                                )
+                              })
+                            }
                             </div>
-                          }
-                          {
-                            subItem.sort === '' &&
-                            <div className="schedule__element__wrapper" key={subIndex}>
-                              <div className="schedule__element__header__wrapper">
-                                {
-                                  subItem.location &&
-                                  <div className="schedule__location__wrapper">
-                                    <div className="location__absolute__wrapper">
-                                      <img src={location} style={{width:'46px'}}/>
-                                    </div>
-                                    <span className="location__text">{subItem.location}</span>
-                                  </div>
-                                }
-                                <div className="schedule__element__header">
-                                  <div className="absolute__wrapper">
-                                    <div className="dot__icon" />
-                                  </div>
-                                  <div className="schedule__text__wrapper">
-                                    <span>{subItem.subLocation}</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="schedule__element__main__wrapper">
-                                <div className="table__wrapper">
-                                  <div className="table__header">
-                                    <span>{subItem.locationTitle}</span>
-                                  </div>
-                                  <div className="table__main">
-                                    <div className="detailbox">
-                                      <p className="detailbox-notice">{subItem.locationContent}</p>
-                                    </div>
-                                    { subItem.locationContentDetail[0].name !== '' &&
-                                      subItem.locationContentDetail.map((detailItem:any, detailIndex:any)=>{
-                                        return (
-                                          <div key={detailIndex} className="detailbox">
-                                            <p className="detailbox-name"><span style={{marginRight:'10px'}}>&#183;</span>{detailItem.name}</p>
-                                            <p className="detailbox-notice">{detailItem.notice}</p>
-                                          </div>
-                                        )
-                                      })
-                                    }
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          }
-                          </>
                         )
                       })
                     }

@@ -6,7 +6,7 @@ import '../Products.scss'
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { PiPencilSimpleLineFill } from "react-icons/pi";
-import ModalAddTourLocation from './Modal/ModalAddTourLocation';
+import ModalAddScheduleBox from './Modal/ModalAddScheduleBox';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 
 interface ListProps {
@@ -23,7 +23,7 @@ interface ListProps {
 	postImage : string;
 }
 
-export default function Sub4_TourLocation (props:any) {
+export default function Sub5_ScheduleBox (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -31,15 +31,13 @@ export default function Sub4_TourLocation (props:any) {
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
-    const res = await axios.get(`${MainURL}/tourlocation/gettourlocation/${currentPage}`)
+    const res = await axios.get(`${MainURL}/restschedulebox/getschedulebox/${currentPage}`)
     if (res.data.resultData) {
       const copy = res.data.resultData;
       setList(copy);
       setListAllLength(res.data.totalCount);
     }
-		const nationCityRes = await axios.post(`${MainURL}/nationcity/getnationcity`, {
-      selectContinent : '전체'
-		})
+		const nationCityRes = await axios.get(`${MainURL}/restnationcity/getnationcity`)
     if (nationCityRes.data !== false) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
@@ -85,7 +83,7 @@ export default function Sub4_TourLocation (props:any) {
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
-			const res = await axios.post(`${MainURL}/tourlocation/gettourlocationsearch`, {
+			const res = await axios.post(`${MainURL}/restschedulebox/getscheduleboxsearch`, {
 				sort : searchSort,
 				word : searchWord
 			});
@@ -104,7 +102,7 @@ export default function Sub4_TourLocation (props:any) {
 	
 
 	// 모달 ---------------------------------------------------------
-	const [isViewAddTourLoactionModal, setIsViewAddTourLoactionModal] = useState<boolean>(false);
+	const [isViewAddScheduleBoxModal, setIsViewAddScheduleBoxModal] = useState<boolean>(false);
 	const [locationInfo, setLocationInfo] = useState<ListProps>();
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
 
@@ -115,7 +113,7 @@ export default function Sub4_TourLocation (props:any) {
 			images : JSON.parse(item.postImage)
 		}
 		axios 
-			.post(`${MainURL}/tourlocation/deletelocation`, getParams)
+			.post(`${MainURL}/restschedulebox/deletelocation`, getParams)
 			.then((res) => {
 				if (res.data) {
 					setRefresh(!refresh);
@@ -140,18 +138,20 @@ export default function Sub4_TourLocation (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>여행지관리</h1>	
+					<h1>일정박스 관리</h1>	
 				</div>
 				<div className="addBtn"
 					onClick={()=>{
 						setIsAddOrRevise('add');
-						setIsViewAddTourLoactionModal(true);
+						setIsViewAddScheduleBoxModal(true);
 					}}
 				>
 					<PiPencilSimpleLineFill />
 					<p>여행지등록</p>
 				</div>
 			</div>
+
+			<div style={{height:'20px'}}></div>
 
 			<div className="searchbox">
 				<div className="cover">
@@ -185,14 +185,17 @@ export default function Sub4_TourLocation (props:any) {
 				</div>
 			</div>
 
+			<div style={{height:'20px'}}></div>
+
 			<div className="seachlist">
 				<div className="main-list-cover-hotel">
 					<div className="titlebox">
 						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='10%' text='종류'/>
+						<TitleBox width='7%' text='구분'/>
+						<TitleBox width='7%' text='선택일정'/>
 						<TitleBox width='10%' text='국가'/>
 						<TitleBox width='10%' text='도시'/>
-						<TitleBox width='10%' text='여행지명'/>
+						<TitleBox width='16%' text='여행지명'/>
 						<TitleBox width='10%' text='여행지명(서브)'/>
 						<TitleBox width='10%' text='수정일'/>
 						<TitleBox width='10%' text=''/>
@@ -207,10 +210,11 @@ export default function Sub4_TourLocation (props:any) {
 									}}
 								>
 									<TextBox width='3%' text={item.id} />
-									<TextBox width='10%' text={item.sort} />
+									<TextBox width='7%' text={item.isViaSort} />
+									<TextBox width='7%' text={item.sort} />
 									<TextBox width='10%' text={item.nation} />
 									<TextBox width='10%' text={item.city} />
-									<TextBox width='10%' text={item.location} />
+									<TextBox width='16%' text={item.location} />
 									<TextBox width='10%' text={item.subLocation}/>
 									<TextBox width='10%' text={item.date.slice(0,10)} />
 									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
@@ -218,7 +222,7 @@ export default function Sub4_TourLocation (props:any) {
 											onClick={()=>{
 												setIsAddOrRevise('revise');
 												setLocationInfo(item);
-												setIsViewAddTourLoactionModal(true);
+												setIsViewAddScheduleBoxModal(true);
 											}}
 										>
 											<p>수정</p>
@@ -268,17 +272,17 @@ export default function Sub4_TourLocation (props:any) {
 
 			{/* 일정등록 모달창 */}
       {
-        isViewAddTourLoactionModal &&
+        isViewAddScheduleBoxModal &&
         <div className='Modal'>
           <div className='modal-backcover'></div>
           <div className='modal-maincover'>
-             <ModalAddTourLocation
+             <ModalAddScheduleBox
 								refresh={refresh}
 								setRefresh={setRefresh}
 								nationlist={nationlist}
 								isAddOrRevise={isAddOrRevise}
 								locationInfo={locationInfo}
-								setIsViewAddTourLoactionModal={setIsViewAddTourLoactionModal}
+								setIsViewAddScheduleBoxModal={setIsViewAddScheduleBoxModal}
 						 />
           </div>
         </div>

@@ -17,6 +17,13 @@ interface PackageCostProps {
   content : string;
 };
 
+interface ServiceCostProps {
+  serviceName: string;
+  product : string;
+  program : string;
+  personCost : string;
+};
+
 interface SeasonCostProps {
   seasonName: string;
   periodStart:string, 
@@ -73,6 +80,15 @@ export default function FullVillaCost (props : any) {
     ? JSON.parse(hotelCostInfoData?.packageCost)
     : [{addtionName :"", personCost : "", content: ""}]
   );
+  const [serviceCost, setServiceCost] = useState<ServiceCostProps[]>(
+    isAddOrRevise === 'revise'
+    ? JSON.parse(hotelCostInfoData?.serviceCost)
+    : [
+        {serviceName: "스파마사지", product : "", program : "", personCost : ""},
+        {serviceName: "다이닝/바", product : "", program : "", personCost : ""},
+        {serviceName: "클래스", product : "", program : "", personCost : ""},
+      ]
+  );
   const [seasonCost, setSeasonCost] = useState<SeasonCostProps[]>(
     isAddOrRevise === 'revise'
     ? JSON.parse(hotelCostInfoData?.seasonCost)
@@ -96,10 +112,11 @@ export default function FullVillaCost (props : any) {
       applyCurrency : applyCurrency,
       commission : JSON.stringify(commission),
       packageCost : JSON.stringify(packageCost),
+      serviceCost : JSON.stringify(serviceCost),
       seasonCost : JSON.stringify(seasonCost)
     }
     axios
-      .post(`${MainURL}/producthotel/registerhotelcostinfo`, getParams)
+      .post(`${MainURL}/restproducthotel/registerhotelcostinfo`, getParams)
       .then((res) => {
         if (res.data) {
          alert('저장되었습니다.');
@@ -152,6 +169,23 @@ export default function FullVillaCost (props : any) {
     setInputCost(updatedinputCost);
   };
   
+  // 부대시설 입력된 숫자 금액으로 변경
+  const handleinputServiceCostChange = (
+    e: React.ChangeEvent<HTMLInputElement>, index: number,
+  ) => {
+    const text = e.target.value;
+    const copy = [...serviceCost];
+    if (text === '') {
+      copy[index].personCost = ''; 
+      setServiceCost(copy);
+      return;
+    }
+    const inputNumber = parseInt(text.replace(/,/g, ''), 10);
+    if (isNaN(inputNumber)) {return;}
+    const formattedNumber = inputNumber.toLocaleString('en-US');
+    copy[index].personCost = formattedNumber; 
+    setServiceCost(copy);
+  };
 
 
   // 입금가 & 판매가 ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -264,7 +298,7 @@ export default function FullVillaCost (props : any) {
     const promises = [];
   
     for (let index = 0; index < inputCostCopy.inputDefault.length; index++) {
-      const postPromise = axios.post(`${MainURL}/producthotel/registerhotelcostinput`, {
+      const postPromise = axios.post(`${MainURL}/restproducthotel/registerhotelcostinput`, {
         postId: props.hotelInfoData.id,
         reserveIndex: sectionIndex,
         costIndex: index,
@@ -302,7 +336,7 @@ export default function FullVillaCost (props : any) {
   
   // // 요금표 예약기간 섹션 삭제 함수 ----------------------------------------------
   const deleteReserveSection = async (sectionIndex:number) => {
-    const response = await axios.post(`${MainURL}/producthotel/deletehotelreserveindex`, {
+    const response = await axios.post(`${MainURL}/restproducthotel/deletehotelreserveindex`, {
       postId : hotelCostInfoData.hotelCostID, 
       reserveIndex: sectionIndex,
     });
@@ -325,7 +359,7 @@ export default function FullVillaCost (props : any) {
 
   // // 요금표 각 상품 기간별 요금 삭제 함수 ----------------------------------------------
   const deleteCostSection = async (sectionIndex:number, index:number) => {
-    const response = await axios.post(`${MainURL}/producthotel/deletehotelcostindex`, {
+    const response = await axios.post(`${MainURL}/restproducthotel/deletehotelcostindex`, {
       postId : hotelCostInfoData.hotelCostID, 
       reserveIndex: sectionIndex,
       costIndex: index
@@ -699,6 +733,83 @@ export default function FullVillaCost (props : any) {
             )
           })
         }
+      </section>
+      <section>
+        {/* 부대시설 이용요금 ----------------------------------------------------------------------------------------------------------------- */}
+        <div className="bottombar"></div>
+        <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+          <div className='chartbox' style={{width:'15%'}} ><p>부대시설</p></div>
+          <div className="chart-divider"></div>
+          <div className='chartbox' style={{width:'20%'}} ><p>상품</p></div>
+          <div className="chart-divider"></div>
+          <div className='chartbox' style={{width:'40%'}} ><p>세부내용/프로그램</p></div>
+          <div className="chart-divider"></div>
+          <div className='chartbox' style={{width:'20%'}} ><p>1인/요금</p></div>
+          <div className="chart-divider"></div>
+        </div>
+        {
+          serviceCost.map((item:any, index:any)=>{
+            return (
+              <div className="coverbox">
+                <div className="coverrow hole" style={{minHeight:'60px'}} >
+                  <div style={{width:'15%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                    {
+                      item.serviceName === '' 
+                      ?
+                      <DropdownBox
+                        widthmain='95%'
+                        height='35px'
+                        selectedValue={item.serviceName}
+                        options={DropDownPackageType}    
+                        handleChange={(e)=>{const copy = [...serviceCost]; copy[index].serviceName = e.target.value; setServiceCost(copy);}}
+                      />
+                      :
+                      <p>{item.serviceName}</p>
+                    }
+                  </div>
+                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                  <div style={{width:'20%', display:'flex'}} >
+                    <input className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
+                       value={item.content} onChange={(e)=>{const copy = [...serviceCost]; copy[index].product = e.target.value; setServiceCost(copy);}}/>
+                  </div>
+                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                  <div style={{width:'40%'}} >
+                    <input className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
+                        value={item.content} onChange={(e)=>{const copy = [...serviceCost]; copy[index].program = e.target.value; setServiceCost(copy);}}/>
+                  </div>
+                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                  <div style={{width:'20%'}} >
+                    <input className="inputdefault" type="text" style={{width:'100%', marginRight:'5px', textAlign:'right', paddingRight:'5px'}} 
+                      value={item.personCost} onChange={(e)=>{
+                          handleinputServiceCostChange(e, index)
+                    }}/>
+                  </div>
+                  <div className="dayBox">
+                    <div className="dayBtn"
+                      onClick={()=>{
+                        const copy = [...serviceCost, {serviceName: "", product : "", program : "", personCost : ""}];
+                        setServiceCost(copy);
+                      }}
+                    >
+                      <p>+</p>
+                    </div>
+                    <div className="dayBtn"
+                      onClick={()=>{
+                        const copy = [...serviceCost];
+                        copy.splice(index, 1);
+                        setServiceCost(copy);
+                      }}
+                    >
+                      <p>-</p>
+                    </div>
+                  </div>  
+                </div>
+              </div>
+            )
+          })
+        }
+      </section>
+      <section>
         {/* 시즌요금 ----------------------------------------------------------------------------------------------------------------- */}
         <div className="bottombar"></div>
         <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
@@ -1067,29 +1178,29 @@ export default function FullVillaCost (props : any) {
                                         inputs[sectionIndex].inputDefault[index].period[subIndex].end = e;
                                         setInputCost(inputs);
                                       }} 
-                                      />
-                                      <div className="dayBox">
-                                        <div className="dayBtn"
-                                          onClick={()=>{
-                                            const copy = [...inputCost];
-                                            copy[sectionIndex].inputDefault[index].period = [...copy[index].inputDefault[index].period, {start:"", end:""}];
-                                            setInputCost(copy);
-                                          }}
-                                        >
-                                          <p>+</p>
-                                        </div>
-                                      </div>  
-                                      <div className="dayBox">
-                                        <div className="dayBtn"
-                                          onClick={()=>{
-                                            const copy = [...inputCost];
-                                            copy[sectionIndex].inputDefault[index].period.splice(subIndex, 1);
-                                            setInputCost(copy);
-                                          }}
-                                        >
-                                          <p>-</p>
-                                        </div>
-                                      </div>  
+                                    />
+                                    <div className="dayBox">
+                                      <div className="dayBtn"
+                                        onClick={()=>{
+                                          const copy = [...inputCost];
+                                          copy[sectionIndex].inputDefault[index].period = [...copy[index].inputDefault[index].period, {start:"", end:""}];
+                                          setInputCost(copy);
+                                        }}
+                                      >
+                                        <p>+</p>
+                                      </div>
+                                    </div>  
+                                    <div className="dayBox">
+                                      <div className="dayBtn"
+                                        onClick={()=>{
+                                          const copy = [...inputCost];
+                                          copy[sectionIndex].inputDefault[index].period.splice(subIndex, 1);
+                                          setInputCost(copy);
+                                        }}
+                                      >
+                                        <p>-</p>
+                                      </div>
+                                    </div>  
                                   </div>
                                 )
                               })

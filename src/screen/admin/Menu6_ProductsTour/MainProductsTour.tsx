@@ -1,11 +1,12 @@
 import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import Sub1_CityAirplane from './Sub1_CityAirplane';
-import Sub2_HotelRegister from './Sub2_HotelRegister';
-import Sub3_Schedule from './Sub3_Schedule';
-import Sub5_SelectSchedule from './Sub5_SelectSchedule';
+import Sub1_CityAirplaneTraffic from './Sub1_CityAirplaneTraffic';
+import Sub2_TourSchedule from './Sub2_TourSchedule';
+import Sub3_TourHotelRegister from './Sub3_TourHotelRegister';
+import Sub4_SelectSchedule from './Sub4_SelectSchedule';
+import Sub5_ScheduleBox from './Sub5_ScheduleBox';
 import Sub6_LandCompany from './Sub6_LandCompany';
-import Sub4_TourLocation from './Sub4_TourLocation';
+
 
 
 export default function MainProductsTour () {
@@ -13,11 +14,11 @@ export default function MainProductsTour () {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Sub1_CityAirplane/>}/>
-        <Route path="/hotelregister" element={<Sub2_HotelRegister/>}/>
-        <Route path="/schedule" element={<Sub3_Schedule/>}/>
-        <Route path="/tourlocation" element={<Sub4_TourLocation/>}/>
-        <Route path="/selectschedule" element={<Sub5_SelectSchedule/>}/>
+        <Route path="/" element={<Sub1_CityAirplaneTraffic/>}/>
+        <Route path="/tourschedule" element={<Sub2_TourSchedule/>}/>
+        <Route path="/tourhotelregister" element={<Sub3_TourHotelRegister/>}/>
+        <Route path="/selectschedule" element={<Sub4_SelectSchedule/>}/>
+        <Route path="/schedulebox" element={<Sub5_ScheduleBox/>}/>
         <Route path="/landcompany" element={<Sub6_LandCompany/>}/>
       </Routes>
     </div>

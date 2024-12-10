@@ -27,17 +27,21 @@ export default function ModalAddHotel (props : any) {
   const [isView, setIsView] = useState<boolean>(isAddOrRevise === 'revise' ? hotelData.isView : true);
   const [nation, setNation] = useState(isAddOrRevise === 'revise' ? hotelData.nation : '');
   const [city, setCity] = useState(isAddOrRevise === 'revise' ? hotelData.city : '');
-  const [label, setLabel] = useState(isAddOrRevise === 'revise' ? hotelData.label : '');
-  
   const [hotelNameKo, setHotelNameKo] = useState(isAddOrRevise === 'revise' ? hotelData.hotelNameKo : '');
   const [hotelNameEn, setHotelNameEn] = useState(isAddOrRevise === 'revise' ? hotelData.hotelNameEn : '');
+
   const [hotelLevel, setHotelLevel] = useState(isAddOrRevise === 'revise' ? hotelData.hotelLevel : '');
   const [hotelSort, setHotelSort] = useState(isAddOrRevise === 'revise' ? hotelData.hotelSort : '');
-
   const [hotelPhone, setHotelPhone] = useState(isAddOrRevise === 'revise' ? hotelData.hotelPhone : '');
   const [hotelAddress, setHotelAddress] = useState(isAddOrRevise === 'revise' ? hotelData.hotelAddress : '');
+  const [hotelLocation, setHotelLocation] = useState(isAddOrRevise === 'revise' ? hotelData.hotelLocation : '');
+  const [hotelBadge, setHotelBadge] = useState(isAddOrRevise === 'revise' ? hotelData.hotelBadge : '');
   const [hotelNotice, setHotelNotice] = useState(isAddOrRevise === 'revise' ? hotelData.hotelNotice : '');
+  const [hotelRecommendPoint, setHotelRecommendPoint] = useState(isAddOrRevise === 'revise' ? hotelData.hotelRecommendPoint : '');
+
   const [hotelConvenience, setHotelConvenience] = useState<string[]>(isAddOrRevise === 'revise' ? JSON.parse(hotelData.hotelConvenience) : []);
+  const [hotelRecommendService, setHotelRecommendService] = useState(isAddOrRevise === 'revise' ? hotelData.hotelRecommendService : '');
+  const [notIncludeCost, setNotIncludeCost] = useState(isAddOrRevise === 'revise' ? hotelData.notIncludeCost : '');
 
   const [hotelCheckIn, setHotelCheckIn] = useState(isAddOrRevise === 'revise' ? hotelData.hotelCheckIn : 'PM 3:00');
   const [hotelCheckOut, setHotelCheckOut] = useState(isAddOrRevise === 'revise' ? hotelData.hotelCheckOut : 'AM 11:00');
@@ -47,6 +51,7 @@ export default function ModalAddHotel (props : any) {
   const [googleLocation, setGoogleLocation] = useState(isAddOrRevise === 'revise' ? hotelData.googleLocation : '');
   const [keywordHashtag, setKeywordHashtag] = useState(isAddOrRevise === 'revise' ? hotelData.keywordHashtag : '');
   const [customerScore, setCustomerScore] = useState(isAddOrRevise === 'revise' ? hotelData.customerScore : '');
+  const [tripAdviser, setTripAdviser] = useState(isAddOrRevise === 'revise' ? hotelData.tripAdviser : '');
 
   interface ImageNoticeProps {
     imageName: string; 
@@ -78,9 +83,9 @@ export default function ModalAddHotel (props : any) {
     <>
       <div className='checkInput'>
         <input className="input" type="checkbox"
-          checked={label === text}
+          checked={hotelBadge === text}
           onChange={()=>{
-            setLabel(text);
+            setHotelBadge(text);
           }}
         />
       </div>
@@ -342,15 +347,19 @@ export default function ModalAddHotel (props : any) {
       isView : isView,
       nation : nation,
       city : city,
-      label : label,
       hotelNameKo: hotelNameKo,
       hotelNameEn: hotelNameEn,
       hotelLevel : hotelLevel,
       hotelSort: hotelSort,
       hotelPhone: hotelPhone,
       hotelAddress: hotelAddress,
+      hotelLocation : hotelLocation,
+      hotelBadge : hotelBadge,
       hotelNotice: hotelNotice,
+      hotelRecommendPoint : hotelRecommendPoint,
       hotelConvenience: JSON.stringify(hotelConvenience),
+      hotelRecommendService: hotelRecommendService,
+      notIncludeCost : notIncludeCost,
       hotelCheckIn: hotelCheckIn,
       hotelCheckOut: hotelCheckOut,
       hotelAllowPet: hotelAllowPet,
@@ -358,13 +367,14 @@ export default function ModalAddHotel (props : any) {
       googleLocation: googleLocation,
       keywordHashtag : keywordHashtag,
       customerScore: customerScore,
+      tripAdviser : tripAdviser,
       imageNamesAllView : JSON.stringify(imageNamesAllView),
       imageNamesRoomView : JSON.stringify(imageNamesRoomView),
       imageNamesEtcView : JSON.stringify(imageNamesEtcView)
     }
 
     axios 
-      .post(`${MainURL}/producthotel/registerhotel`, formData, {
+      .post(`${MainURL}/restproducthotel/registerhotel`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -390,7 +400,7 @@ export default function ModalAddHotel (props : any) {
     const inputImagesNewItems = inputImagesCopy.filter((item, index) => item.imageName !== imageNameCopy);
 
     axios 
-      .post(`${MainURL}/producthotel/deletehotelimage`, {
+      .post(`${MainURL}/restproducthotel/deletehotelimage`, {
         postId : hotelData.id,
         imageName : imageNameCopy,
         sort : sortCopy,
@@ -429,15 +439,19 @@ export default function ModalAddHotel (props : any) {
       isView : isView,
       nation : nation,
       city : city,
-      label : label,
       hotelNameKo: hotelNameKo,
       hotelNameEn: hotelNameEn,
       hotelLevel : hotelLevel,
       hotelSort: hotelSort,
       hotelPhone: hotelPhone,
       hotelAddress: hotelAddress,
+      hotelLocation : hotelLocation,
+      hotelBadge : hotelBadge,
       hotelNotice: hotelNotice,
+      hotelRecommendPoint : hotelRecommendPoint,
       hotelConvenience: JSON.stringify(hotelConvenience),
+      hotelRecommendService: hotelRecommendService,
+      notIncludeCost : notIncludeCost,
       hotelCheckIn: hotelCheckIn,
       hotelCheckOut: hotelCheckOut,
       hotelAllowPet: hotelAllowPet,
@@ -445,13 +459,14 @@ export default function ModalAddHotel (props : any) {
       googleLocation: googleLocation,
       keywordHashtag : keywordHashtag,
       customerScore: customerScore,
+      tripAdviser : tripAdviser,
       imageNamesAllView : imageNamesAllView.length === 0 ? JSON.stringify(lastImageNamesAllView) : JSON.stringify(imageNamesAllView),
       imageNamesRoomView : imageNamesRoomView.length === 0 ? JSON.stringify(lastImageNamesRoomView) : JSON.stringify(imageNamesRoomView),
       imageNamesEtcView : imageNamesEtcView.length === 0 ? JSON.stringify(lastImageNamesEtcView) : JSON.stringify(imageNamesEtcView),
       reviseDate : revisetoday
     }
     axios 
-      .post(`${MainURL}/producthotel/revisehotel`, formData, {
+      .post(`${MainURL}/restproducthotel/revisehotel`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -555,17 +570,6 @@ export default function ModalAddHotel (props : any) {
           </div>
         </div>
         <div className="coverbox">
-          <div className="coverrow hole">
-            <TitleBox width="120px" text='상품뱃지'/>
-            <div className='checkInputCover'>
-              <SelectBox text='NEW'/>
-              <SelectBox text='프로모션'/>
-              <SelectBox text='인기'/>
-              <SelectBox text='특가'/>
-            </div>
-          </div>
-        </div>
-        <div className="coverbox">
           <div className="coverrow half">
             <TitleBox width="120px" text='호텔명(한글)'/>
             <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
@@ -603,11 +607,11 @@ export default function ModalAddHotel (props : any) {
               selectedValue={hotelSort}
               options={[
                 { value: '선택', label: '선택' },
-                { value: '럭셔리', label: '럭셔리' },
-                { value: '스몰', label: '스몰' },
-                { value: '유니크', label: '유니크' },
-                { value: '7성급', label: '7성급' },
-                { value: '하이엔드', label: '하이엔드' }
+                { value: '리조트', label: '리조트' },
+                { value: '풀빌라', label: '풀빌라' },
+                { value: '호텔', label: '호텔' },
+                { value: '선투숙', label: '선투숙' },
+                { value: '후투숙', label: '후투숙' }
               ]}    
               handleChange={(e)=>{setHotelSort(e.target.value)}}
             />
@@ -628,8 +632,27 @@ export default function ModalAddHotel (props : any) {
           </div>
         </div>
         <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='분류지명(위치)'/>
+            <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
+              value={hotelLocation} onChange={(e)=>{setHotelLocation(e.target.value)}}/>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='상품뱃지'/>
+            <div className='checkInputCover'>
+              <SelectBox text='NEW'/>
+              <SelectBox text='프로모션'/>
+              <SelectBox text='인기특가진행'/>
+              <SelectBox text='최저가보장'/>
+              <SelectBox text='실론투어단독'/>
+            </div>
+          </div>
+        </div>
+        <div className="coverbox">
           <div className="coverrow hole bigHeight">
-            <TitleBox width="120px" text='간략소개' height={200}/>
+            <TitleBox width="120px" text='호텔소개' height={200}/>
             <textarea 
               className="textarea"
               value={hotelNotice}
@@ -639,17 +662,89 @@ export default function ModalAddHotel (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
+            <TitleBox width="120px" text='호텔추천포인트'/>
+            <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
+              value={hotelRecommendPoint} onChange={(e)=>{setHotelRecommendPoint(e.target.value)}}/>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
             <TitleBox width="120px" text='부대시설'/>
             <div className='checkInputCover'>
               <SelectBoxConvenience text='와이파이'/>
-              <SelectBoxConvenience text='레스토랑'/>
               <SelectBoxConvenience text='실내수영장'/>
               <SelectBoxConvenience text='실외수영장'/>
-              <SelectBoxConvenience text='스파'/>
+              <SelectBoxConvenience text='레스토랑'/>
+              <SelectBoxConvenience text='스파마사지'/>
               <SelectBoxConvenience text='온천'/>
               <SelectBoxConvenience text='피트니스센터'/>
-              <SelectBoxConvenience text='하우스키핑'/>
+              <SelectBoxConvenience text='전용비치'/>
+              <SelectBoxConvenience text='키즈클럽'/>
+              <SelectBoxConvenience text='해양스포츠'/>
+              <SelectBoxConvenience text='다이버클럽'/>
             </div>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='추천부대시설'/>
+            <div className='checkInputCover'>
+              <div className='checkInput'>
+                <input className="input" type="checkbox"
+                  checked={hotelRecommendService === '스파마사지'}
+                  onChange={()=>{setHotelRecommendService('스파마사지')}}
+                />
+              </div>
+              <p>스파마사지</p>
+              <div className='checkInput'>
+                <input className="input" type="checkbox"
+                  checked={hotelRecommendService === '다이닝바'}
+                  onChange={()=>{setHotelRecommendService('다이닝바')}}
+                />
+              </div>
+              <p>다이닝바</p>
+              <div className='checkInput'>
+                <input className="input" type="checkbox"
+                  checked={hotelRecommendService === '클래스'}
+                  onChange={()=>{setHotelRecommendService('클래스')}}
+                />
+              </div>
+              <p>클래스</p>
+              <p>직접입력:</p>
+            </div>
+            <input className="inputdefault" type="text" style={{width:'30%', marginLeft:'5px'}} 
+              value={hotelRecommendService} onChange={(e)=>{setHotelRecommendService(e.target.value)}}/>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='불포함비용'/>
+            <div className='checkInputCover'>
+              <div className='checkInput'>
+                <input className="input" type="checkbox"
+                  checked={notIncludeCost === '리조트피'}
+                  onChange={()=>{setNotIncludeCost('리조트피')}}
+                />
+              </div>
+              <p>리조트피</p>
+              <div className='checkInput'>
+                <input className="input" type="checkbox"
+                  checked={notIncludeCost === '시티택스'}
+                  onChange={()=>{setNotIncludeCost('시티택스')}}
+                />
+              </div>
+              <p>시티택스</p>
+              <div className='checkInput'>
+                <input className="input" type="checkbox"
+                  checked={notIncludeCost === '그린택스'}
+                  onChange={()=>{setNotIncludeCost('그린택스')}}
+                />
+              </div>
+              <p>그린택스</p>
+              <p>직접입력:</p>
+            </div>
+            <input className="inputdefault" type="text" style={{width:'30%', marginLeft:'5px'}} 
+              value={notIncludeCost} onChange={(e)=>{setNotIncludeCost(e.target.value)}}/>
           </div>
         </div>
         <div className="coverbox">
@@ -701,7 +796,6 @@ export default function ModalAddHotel (props : any) {
               handleChange={(e)=>{setHotelParking(e.target.value)}}
             />
           </div>
-          
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
@@ -718,10 +812,15 @@ export default function ModalAddHotel (props : any) {
           </div>
         </div>
         <div className="coverbox">
-          <div className="coverrow hole">
+          <div className="coverrow half">
             <TitleBox width="120px" text='고객별점/평점'/>
             <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
               value={customerScore} onChange={(e)=>{setCustomerScore(e.target.value)}}/>
+          </div>
+          <div className="coverrow half">
+            <TitleBox width="120px" text='트립어드바이저'/>
+            <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
+              value={tripAdviser} onChange={(e)=>{setTripAdviser(e.target.value)}}/>
           </div>
         </div>
       </section>

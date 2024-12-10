@@ -347,6 +347,7 @@ export const DropDownTourPeriodNightType = [
 
 export const DropDownTourPeriodDayType = [
   { value: '선택', label: '선택' },
+  { value: '5일', label: '5일' },
   { value: '6일', label: '6일' },
   { value: '7일', label: '7일' },
   { value: '8일', label: '8일' },

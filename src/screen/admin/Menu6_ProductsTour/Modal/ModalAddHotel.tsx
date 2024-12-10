@@ -364,7 +364,7 @@ export default function ModalAddHotel (props : any) {
     }
 
     axios 
-      .post(`${MainURL}/producthotel/registerhotel`, formData, {
+      .post(`${MainURL}/restproducthotel/registerhotel`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -390,7 +390,7 @@ export default function ModalAddHotel (props : any) {
     const inputImagesNewItems = inputImagesCopy.filter((item, index) => item.imageName !== imageNameCopy);
 
     axios 
-      .post(`${MainURL}/producthotel/deletehotelimage`, {
+      .post(`${MainURL}/restproducthotel/deletehotelimage`, {
         postId : hotelData.id,
         imageName : imageNameCopy,
         sort : sortCopy,
@@ -410,8 +410,6 @@ export default function ModalAddHotel (props : any) {
 
   // 호텔 수정 함수 ----------------------------------------------
   const reviseHotel = async () => {
-    console.log('last', lastImageNamesAllView)
-    console.log(imageNamesAllView)
     const currentdate = new Date();
 		const revisetoday = formatDate(currentdate, 'yyyy-MM-dd');
     const formData = new FormData();
@@ -451,7 +449,7 @@ export default function ModalAddHotel (props : any) {
       reviseDate : revisetoday
     }
     axios 
-      .post(`${MainURL}/producthotel/revisehotel`, formData, {
+      .post(`${MainURL}/restproducthotel/revisehotel`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -559,9 +557,7 @@ export default function ModalAddHotel (props : any) {
             <TitleBox width="120px" text='상품뱃지'/>
             <div className='checkInputCover'>
               <SelectBox text='NEW'/>
-              <SelectBox text='프로모션'/>
-              <SelectBox text='인기'/>
-              <SelectBox text='특가'/>
+              <SelectBox text='랜드마크옆'/>
             </div>
           </div>
         </div>
@@ -603,11 +599,8 @@ export default function ModalAddHotel (props : any) {
               selectedValue={hotelSort}
               options={[
                 { value: '선택', label: '선택' },
-                { value: '럭셔리', label: '럭셔리' },
-                { value: '스몰', label: '스몰' },
-                { value: '유니크', label: '유니크' },
-                { value: '7성급', label: '7성급' },
-                { value: '하이엔드', label: '하이엔드' }
+                { value: '팔래스', label: '팔래스' },
+                { value: '고성호텔', label: '고성호텔' }
               ]}    
               handleChange={(e)=>{setHotelSort(e.target.value)}}
             />

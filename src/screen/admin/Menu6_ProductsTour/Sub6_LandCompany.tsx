@@ -1,181 +1,229 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
 import '../Products.scss'
 import { PiPencilSimpleLineFill } from 'react-icons/pi';
-import { SearchBox } from './SearchBox';
-import ModalAddLandCompany from './Modal/ModalAddLandCompany';
+import ModalAddSelectSchedule from './Modal/ModalAddSelectSchedule';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
-import ModalLandCompanyInfo from './Modal/ModalLandComapanyInfo';
+import { DropdownBox } from '../../../boxs/DropdownBox';
+import { FaCircle } from 'react-icons/fa';
+import { IoCloseOutline } from 'react-icons/io5';
+import ModalAddLandCompany from './Modal/ModalAddLandCompany';
 
+
+interface ListProps {
+	id: string,
+	nation : string,
+	city : string,
+	landCompanyName : string,
+	businessDate : string,
+	owner : string,
+	ownerPhone : string,
+	opcharger : string,
+	opchargerPhone : string,
+	localTourCompany : string,
+	localPhone : string,
+	localOwner : string,
+	localOwnerPhone : string,
+	notice : string,
+	registeredHotels : string,
+	registeredProducts : string,
+	discount : string,
+	isCostApply : string,
+	issue : string,
+	benefits : string,
+	reviseDate : string
+}
 
 export default function Sub6_LandCompany (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-	
-	interface LandCompanyProps {
-		id: string;
-		companyName: string;
-		owner : string;
-		notice: string;
-		reviseDate: string;
-	}
-  interface ListProps {
-		id: string;
-		nationKo : string;
-		cities : {
-			cityKo: string;
-		}[]
-	}
-	
-	const [landCompanyList, setLandCompanyList] = useState<LandCompanyProps[]>([]);
-  const [nationlist, setNationList] = useState<ListProps[]>([]);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
+	const [list, setList] = useState<ListProps[]>([]);
+	const [listAllLength, setListAllLength] = useState<number>(0);
   const fetchPosts = async () => {
-	  const landCompanyRes = await axios.get(`${MainURL}/landcompany/getlandcompany`)
-		if (landCompanyRes.data !== false) {
-			const copy = [...landCompanyRes.data];
-      setLandCompanyList(copy);
-    } 
-    const nationCityRes = await axios.post(`${MainURL}/nationcity/getnationcity`, {
-      selectContinent : '전체'
-		})
-    if (nationCityRes.data !== false) {
-			const copy = [...nationCityRes.data];
-      setNationList(copy);
+    const res = await axios.get(`${MainURL}/tourlandcompany/getlandcompany/${currentPage}`)
+    if (res.data.resultData) {
+      const copy = res.data.resultData;
+      setList(copy);
+			setListOrigin(copy);
+      setListAllLength(res.data.totalCount);
     }
   };
 
-  useEffect(() => {
-		// fetchPosts();
-	}, [refresh]);  
+	useEffect(() => {
+		fetchPosts();
+	}, [refresh, currentPage]);  
 
+  // State 변수 추가
+  const itemsPerPage = 15; // 한 페이지당 표시될 게시글 수
+  const totalPages = Math.ceil(listAllLength / itemsPerPage);
+
+  // 페이지 변경 함수
+  const changePage = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  // 페이지네이션 범위 계산
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 4;
+    const half = Math.floor(maxPagesToShow / 2);
+    let start = Math.max(1, currentPage - half);
+    let end = Math.min(totalPages, currentPage + half);
+    if (currentPage - half < 1) {
+      end = Math.min(totalPages, end + (half - currentPage + 1));
+    }
+    if (currentPage + half > totalPages) {
+      start = Math.max(1, start - (currentPage + half - totalPages));
+    }
+    for (let i = start; i <= end; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
+
+
+	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
+	const [searchSort, setSearchSort] = useState('전체');
+	const [searchWord, setSearchWord] = useState('');
+	const handleWordSearching = async () => {
+		setList([]);
+		try {
+			const res = await axios.post(`${MainURL}/tourlandcompany/getlandcompanysearch`, {
+				sort : searchSort,
+				word : searchWord
+			});
+			if (res.data.resultData) {
+				const copy = [...res.data.resultData];
+				setList(copy);
+				setListAllLength(res.data.totalCount);
+			} else {
+				setList([]);
+				setListAllLength(0);
+			}
+		} catch (error) {
+			console.error("Failed to fetch search results:", error);
+		}	
+	};
+	
 	
 	// 모달 ---------------------------------------------------------
-	const [isViewAddLandCompany, setIsViewAddLandCompany] = useState<boolean>(false);
-	const [isViewLandCompanyInfo, setIsViewLandCompanyInfo] = useState<boolean>(false);
+	const [isViewLandCompanyModal, setIsViewLandCompanyModal] = useState<boolean>(false);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
-	const [selectedData, setSelectedData] = useState();
-
-	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
-	const deleteHotel = async (itemId:any) => {
-		const getParams = {
-			postId : itemId,
-		}
-		axios 
-			.post(`${MainURL}/landcompany/deletelandcompany`, getParams)
-			.then((res) => {
-				if (res.data) {
-					alert('삭제되었습니다.');
-					setRefresh(!refresh);
-				}
-			})
-			.catch(() => {
-				console.log('실패함')
-			})
-	};
-	const handleDeleteAlert = (item:any) => {
-		const costConfirmed = window.confirm(`${item.companyName}(${item.owner})를 정말 삭제하시겠습니까?`);
-			if (costConfirmed) {
-				deleteHotel(item.id);
-		} else {
-			return
-		}
-	};
+	const [landCompanyInfo, setLandCompanyInfo] = useState<ListProps>();
 
 	return (
 		<div className='Menu5'>
 
+
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>랜드사관리</h1>	
+					<h1>랜드사 관리</h1>	
 				</div>
 				<div className="addBtn"
 					onClick={()=>{
 						setIsAddOrRevise('add');
-						setIsViewAddLandCompany(true);
+						setIsViewLandCompanyModal(true);
 					}}
 				>
-					<PiPencilSimpleLineFill/>
-					<p>랜드사등록</p>
+					<PiPencilSimpleLineFill />
+					<p>랜드사 등록</p>
 				</div>
 			</div>
 
-			{/* 랜드사등록 모달창 */}
-      {
-        isViewAddLandCompany &&
-        <div className='Modal'>
-          <div className='modal-backcover'></div>
-          <div className='modal-maincover'>
-             <ModalAddLandCompany
-								refresh={refresh}
-								setRefresh={setRefresh}
-								isAddOrRevise={isAddOrRevise}
-								selectedData={selectedData}
-								setIsViewAddLandCompany={setIsViewAddLandCompany}
-                nationlist={nationlist}
-						 />
-          </div>
-        </div>
-      }
+			<div style={{height:'20px'}}></div>
+			
+			<div className="searchbox">
+				<div className="cover">
+					<div className="content">
+						<DropdownBox
+							widthmain='150px'
+							height='35px'
+							selectedValue={searchSort}
+							options={[
+								{ value: '전체', label: '전체' },
+								{ value: '풀빌라', label: '풀빌라' },
+								{ value: '리조트', label: '리조트' },
+								{ value: '호텔', label: '호텔' },
+								{ value: '박당', label: '박당' },
+								{ value: '선투숙', label: '선투숙' },
+								{ value: '후투숙', label: '후투숙' },
+								{ value: '경유호텔', label: '경유호텔' }
+							]}
+							handleChange={(e)=>{setSearchSort(e.target.value)}}
+						/>
+						<input className="inputdefault" type="text" style={{width:'30%', textAlign:'left'}} 
+								value={searchWord} onChange={(e)=>{setSearchWord(e.target.value)}} 
+								onKeyDown={(e)=>{if (e.key === 'Enter') {handleWordSearching();}}}
+								/>
+						<div className="buttons" style={{margin:'20px 0'}}>
+							<div className="btn searching"
+								onClick={()=>{
+									handleWordSearching();
+								}}
+							>
+								<p>검색</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-			<SearchBox/>
+			<div style={{height:'20px'}}></div>
 
 			<div className="seachlist">
 				<div className="main-list-cover-hotel">
 					<div className="titlebox">
 						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='10%' text='랜드사명'/>
-						<TitleBox width='10%' text='소장'/>
-						<TitleBox width='10%' text='등록호텔수(GSA)'/>
-						<TitleBox width='10%' text='등록상품수'/>
-						<TitleBox width='10%' text='여행사프로모션'/>
+						<TitleBox width='5%' text='노출'/>
+						<TitleBox width='15%' text='랜드사'/>
+						<TitleBox width='15%' text='등록상품'/>
+						<TitleBox width='15%' text='등록호텔'/>
+						<TitleBox width='10%' text='여행사베네핏'/>
+						<TitleBox width='10%' text='예약'/>
 						<TitleBox width='10%' text='참고사항'/>
-						<TitleBox width='10%' text='관리'/>
-						<TitleBox width='10%' text='수정일'/>
 						<TitleBox width='10%' text=''/>
   				</div>
 					
 					{
-						landCompanyList.map((item:any, index:any)=>{
+						list.map((item:any, index:any)=>{
+							const registeredProductsCopy = JSON.parse(item.registeredProducts);
+							const benefitsCopy = JSON.parse(item.benefits);
+
 							return (
 								<div key={index}
 									className="rowbox"
+									onClick={()=>{
+									}}
 								>
 									<TextBox width='3%' text={item.id} />
-									<TextBox width='10%' text={item.companyName} />
-									<TextBox width='10%' text={item.owner} />
-									<TextBox width='10%' text={""} />
-									<TextBox width='10%' text={""} />
-									<TextBox width='10%' text={""} />
-									<TextBox width='10%' text={item.notice} />
-									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
-										<div className="hotelControlBtn"
-											onClick={()=>{
-												setSelectedData(item);
-    										setIsViewLandCompanyInfo(true);
-											}}
-										>
-											<p>보기</p>
-										</div>
+									<div className="text" style={{width:`5%`, textAlign:'center'}}>
+										{ item.isView === 'true'  
+											? <FaCircle color='#5fb7ef' size={13}/>
+											: <IoCloseOutline />
+										}
 									</div>
-									<TextBox width='10%' text={item.reviseDate} />
+									<TextBox width='15%' text={item.landCompanyName} />
+									<TextBox width='15%' text={item.registeredHotels} />
+									<TextBox width='15%' text={registeredProductsCopy} />
+									<TextBox width='10%' text={benefitsCopy.content} />
+									<TextBox width='10%' text={''} />
+									<TextBox width='10%' text={item.notice} />
 									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn2"
 											onClick={()=>{
+												setLandCompanyInfo(item);
 												setIsAddOrRevise('revise');
-												setSelectedData(item);
-												setIsViewAddLandCompany(true);
+												setIsViewLandCompanyModal(true);
 											}}
 										>
 											<p>수정</p>
 										</div>
 										<div className="divider"></div>
-										<div className="hotelControlBtn2"
-											onClick={()=>{
-												handleDeleteAlert(item);
-											}}
-										>
+										<div className="hotelControlBtn2">
 											<p>삭제</p>
 										</div>
 									</div>
@@ -184,19 +232,51 @@ export default function Sub6_LandCompany (props:any) {
 						})
 					}
 				</div>
+				<div className='btn-row'>
+					<div onClick={() => changePage(1)} className='btn'
+						style={{ backgroundColor: currentPage === 1 ? "#EAEAEA" : "#2c3d54" }}
+					>
+						<p style={{ color: currentPage === 1 ? "#ccc" : "#fff" }}>{"<<"}</p>
+					</div>
+					<div onClick={() => changePage(currentPage - 1)} className='btn'
+						style={{ backgroundColor: currentPage === 1 ? "#EAEAEA" : "#2c3d54" }}
+					>
+						<p style={{ color: currentPage === 1 ? "#ccc" : "#fff" }}>{"<"}</p>
+					</div>
+					{getPageNumbers().map((page) => (
+						<div key={page} onClick={() => changePage(page)} className='btn'
+							style={{ backgroundColor: currentPage === page ? "#2c3d54" : "#EAEAEA" }}
+						>
+							<p style={{ color: currentPage === page ? "#fff" : "#333" }}>{page}</p>
+						</div>
+					))}
+					<div onClick={() => changePage(currentPage + 1)} className='btn'
+						style={{ backgroundColor: currentPage === totalPages ? "#EAEAEA" : "#2c3d54" }}
+					>
+						<p style={{ color: currentPage === totalPages ? "#ccc" : "#fff" }}>{">"}</p>
+					</div>
+					<div onClick={() => changePage(totalPages)} className='btn'
+						style={{ backgroundColor: currentPage === totalPages ? "#EAEAEA" : "#2c3d54" }}
+					>
+						<p style={{ color: currentPage === totalPages ? "#ccc" : "#fff" }}>{">>"}</p>
+					</div>
+				</div>
 			</div>
 
-			{/* 랜드사 확인 모달창 */}
+			
+
+			{/* 선택일정등록 모달창 */}
       {
-        isViewLandCompanyInfo &&
+        isViewLandCompanyModal &&
         <div className='Modal'>
           <div className='modal-backcover'></div>
           <div className='modal-maincover'>
-             <ModalLandCompanyInfo
+             <ModalAddLandCompany
 								refresh={refresh}
 								setRefresh={setRefresh}
-								setIsViewLandCompanyInfo={setIsViewLandCompanyInfo}
-								selectedData={selectedData}
+								isAddOrRevise={isAddOrRevise}
+								landCompanyInfo={landCompanyInfo}
+								setIsViewLandCompanyModal={setIsViewLandCompanyModal}
 						 />
           </div>
         </div>

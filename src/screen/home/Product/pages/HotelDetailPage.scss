@@ -825,7 +825,7 @@
               }
               .location__text {
                 padding-left: clamp(27px, 2.5vw, 57px);
-                font-size: clamp(17px, 1.05vw, 20px);
+                font-size: 20px;
                 line-height: 1.3;
               }
             }
@@ -840,7 +840,6 @@
                 transform: translate(-50%, 0);
                 z-index: 3;
 
-
                 .dot__icon {
                   width: clamp(8px, 0.52vw, 10px);
                   height: clamp(8px, 0.52vw, 10px);
@@ -852,14 +851,15 @@
               .schedule__text__wrapper {
                 position: absolute;
                 display: flex;
-                padding-left: 2.5vw;
-                
+                margin-left: 30px;
+                font-size: 18px;
+
                 @media (max-width: 800px) {
                   padding-left: clamp(27px, 2.5vw, 57px);
                   flex-direction: column;
                   gap: 0px;
                   .time__text {
-                    font-size: 17px;
+                    font-size: 20px;
                     font-weight: 700;
                   }
                 }
@@ -868,25 +868,37 @@
 
           }
           .schedule__element__main__wrapper {
-            padding: 20px;
+            width: 100%;
+            min-height: 200px;
+            margin-top: 20px;
+            margin-left: 30px;
+            border: 1px solid #ccc;
+            display: flex;
+            
+            .image__wrapper {
+              width: 30%;
+              @include middle();
 
-            @media (max-width: 800px) {
-             
+              .imagebox {
+          
+                img {
+                  
+                }
+              }
             }
 
             .table__wrapper {
-              width: 100%;
-              border: 1px solid rgba(221, 221, 221, 1);
+              width: 70%;
+              padding: 20px;
+
               .table__header {
-                font-size: 0.89vw;
+                font-size: 18px;
                 color: rgba(0, 0, 0, 1);
-                background-color: rgba(247, 247, 247, 1);
-                padding: 1vw 2vw;
+                margin-bottom: 10px;
               }
               .table__main {
                 display: flex;
                 flex-direction: column;
-                padding: 30px;
                 
                 .detailbox {
                   

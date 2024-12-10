@@ -50,12 +50,6 @@ export default function ModalHotelInfo (props : any) {
           </div>
         </div>
         <div className="coverbox">
-          <div className="coverrow hole">
-            <TitleBox width="120px" text='상품뱃지'/>
-            <p>{infoData.label}</p>
-          </div>
-        </div>
-        <div className="coverbox">
           <div className="coverrow half">
             <TitleBox width="120px" text='호텔명(한글)'/>
             <p>{infoData.hotelNameKo}</p>
@@ -88,9 +82,21 @@ export default function ModalHotelInfo (props : any) {
           </div>
         </div>
         <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='상품뱃지'/>
+            <p>{infoData.hotelBadge}</p>
+          </div>
+        </div>
+        <div className="coverbox">
           <div className="coverrow hole bigHeight">
-            <TitleBox width="120px" text='간략소개' height={200}/>
+            <TitleBox width="120px" text='호텔소개' height={200}/>
             <p>{infoData.hotelNotice}</p>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='호텔추천포인트'/>
+            <p>{infoData.hotelRecommendPoint}</p>
           </div>
         </div>
         <div className="coverbox">
@@ -101,20 +107,32 @@ export default function ModalHotelInfo (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
+            <TitleBox width="120px" text='추천부대시설'/>
+            <p>{infoData.hotelRecommendService}</p>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='불포함비용'/>
+            <p>{infoData.notIncludeCost}</p>
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow half">
             <TitleBox width="120px" text='체크인'/>
             <p>{infoData.hotelCheckIn}</p>
           </div>
-          <div className="coverrow hole">
+          <div className="coverrow half">
             <TitleBox width="120px" text='체크아웃'/>
             <p>{infoData.hotelCheckOut}</p>
           </div>
         </div>
         <div className="coverbox">
-          <div className="coverrow hole">
+          <div className="coverrow half">
             <TitleBox width="120px" text='반려동물'/>
             <p>{infoData.hotelAllowPet}</p>
           </div>
-          <div className="coverrow hole">
+          <div className="coverrow half">
             <TitleBox width="120px" text='주차'/>
             <p>{infoData.hotelParking}</p>
           </div>
@@ -132,9 +150,13 @@ export default function ModalHotelInfo (props : any) {
           </div>
         </div>
         <div className="coverbox">
-          <div className="coverrow hole">
+          <div className="coverrow half">
             <TitleBox width="120px" text='고객별점/평점'/>
             <p>{infoData.customerScore}</p>
+          </div>
+          <div className="coverrow half">
+            <TitleBox width="120px" text='트립어드바이저'/>
+            <p>{infoData.tripAdviser}</p>
           </div>
         </div>
       </section>

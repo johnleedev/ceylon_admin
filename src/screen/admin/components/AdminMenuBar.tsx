@@ -133,11 +133,11 @@ export default function AdminMenuBar () {
           {
             currentTab === 5 &&
             <div className="sub-box">
-              <RowBox num={1} text='도시&항공편관리' link="/admin/productsrest"/>
-              <RowBox num={2} text='호텔관리' link="/admin/productsrest/hotelregister"/>
-              <RowBox num={3} text='일정관리' link="/admin/productsrest/schedule"/>
-              <RowBox num={4} text='여행지관리' link="/admin/productsrest/tourlocation"/>
-              <RowBox num={5} text='선택일정관리' link="/admin/productsrest/selectschedule"/>
+              <RowBox num={1} text='도시&항공관리' link="/admin/productsrest"/>
+              <RowBox num={2} text='호텔&요금관리' link="/admin/productsrest/hotelregister"/>
+              <RowBox num={3} text='여행일정관리' link="/admin/productsrest/schedule"/>
+              <RowBox num={4} text='여행지상품관리' link="/admin/productsrest/tourproduct"/>
+              <RowBox num={5} text='일정박스관리' link="/admin/productsrest/schedulebox"/>
               <RowBox num={6} text='랜드사관리' link="/admin/productsrest/landcompany"/>
             </div>
           }
@@ -146,11 +146,11 @@ export default function AdminMenuBar () {
           {
             currentTab === 6 &&
             <div className="sub-box">
-              <RowBox num={1} text='도시&항공편관리' link="/admin/productstour"/>
-              <RowBox num={2} text='호텔관리' link="/admin/productstour/hotelregister"/>
-              <RowBox num={3} text='일정관리' link="/admin/productstour/schedule"/>
-              <RowBox num={4} text='여행지관리' link="/admin/productstour/tourlocation"/>
-              <RowBox num={5} text='선택일정관리' link="/admin/productstour/selectschedule"/>
+              <RowBox num={1} text='도시&항공&교통관리' link="/admin/productstour"/>
+              <RowBox num={2} text='여행일정관리' link="/admin/productstour/tourschedule"/>
+              <RowBox num={3} text='호텔관리' link="/admin/productstour/tourhotelregister"/>
+              <RowBox num={4} text='선택일정관리' link="/admin/productstour/selectschedule"/>
+              <RowBox num={5} text='일정박스관리' link="/admin/productstour/schedulebox"/>
               <RowBox num={6} text='랜드사관리' link="/admin/productstour/landcompany"/>
             </div>
           }

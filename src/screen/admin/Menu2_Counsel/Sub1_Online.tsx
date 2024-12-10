@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './SearchBox.scss'
+import '../SearchBox.scss'
 import '../SearchList.scss'
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';

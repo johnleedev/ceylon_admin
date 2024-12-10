@@ -15,24 +15,6 @@ import { PiPencilSimpleLineFill } from 'react-icons/pi';
 export default function Sub1_CityAirplane (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-	const [currentTab, setCurrentTab] = useState(1);
-  interface SelectMenuProps {
-    tabNum : number;
-    title: string;
-  }
-  const SelectMenu: React.FC<SelectMenuProps> = ({ tabNum, title}) => {
-    return (
-      <div className='selectBtn'
-       onClick={() => setCurrentTab(tabNum)}
-     >
-       <p style={{color: currentTab === tabNum ? '#333' : '#BDBDBD'}}>{title}</p>
-       <div className='bar' style={{backgroundColor: currentTab === tabNum ? '#5fb7ef' : '#f6f6f6'}}></div>
-     </div>
-    )    
-  };
-
-	const continents = ["전체", "아시아/호주", "태평양", "인도양", "미주/중남미", "중동", "아프리카", "유럽"];
-	const [selectContinent, setSelectContinent] = useState("전체");
 	const [nationData, setNationData] = useState();
 	const [cityData, setCityData] = useState();
 	
@@ -69,16 +51,13 @@ export default function Sub1_CityAirplane (props:any) {
 	const [list, setList] = useState<ListProps[]>([]);
 	const [selectedNation, setSelectedNation] = useState<ListProps>();
   const fetchPosts = async () => {
-    const res = await axios.post(`${MainURL}/tournationcity/getnationcity`, {
-			selectContinent : selectContinent
-		})
+    const res = await axios.get(`${MainURL}/tournationcity/getnationcity`)
     if (res.data !== false) {
 			const copy = [...res.data];
-			let result = [];
-			result = copy.filter((e:any)=>e.sort === '관광지')
-			result.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
-      setList(result);
-			setSelectedNation(result[0]);
+			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
+      setList(copy);
+			setNationData(copy[0]);
+			setSelectedNation(copy[0]);
     } else {
 			setList([])
 		}
@@ -86,50 +65,78 @@ export default function Sub1_CityAirplane (props:any) {
 
 	useEffect(() => {
 		fetchPosts();
-	}, [refresh, selectContinent, currentTab]);  
+	}, [refresh]);  
 
 
 	// 모달 ---------------------------------------------------------
 	const [isViewAddNationModal, setIsViewAddNationModal] = useState<boolean>(false);
 	const [isViewAddCityModal, setIsViewAddCityModal] = useState<boolean>(false);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
-	
+	const [directAirlineData, setDirectAirlineData] = useState([]);
+	const [viaAirlineData, setViaAirlineData] = useState([]);
+	const [trafficData, setTrafficData] = useState<any>();
 
-	// 요금표 가져오기
-	const fetchPostCost = async (id:string) => {
-		
-		const resCost = await axios.post(`${MainURL}/tournationcity/getairlinedata`, {
-
-		})
-		if (resCost.data !== false) {
-			const copy = resCost.data;
-  		const groupedData: { [key: string]: any } = {};
-			copy.forEach((item: any) => {
-				const reservePeriod = JSON.parse(item.reservePeriod);
-				const inputDefault = JSON.parse(item.inputDefault);
-		  	const key = `${item.hotelCostID}_${item.reserveIndex}`;
-		  	if (!groupedData[key]) {
-						groupedData[key] = {
-								hotelCostID: item.hotelCostID,
-								reserveIndex: item.reserveIndex,
-								reserveType: item.reserveType,
-								reservePeriod: reservePeriod,
-								inputDefault: []
+	// 항공편&교통편 가져오기
+	const fetchPostAirline = async (item: any) => {
+		try {
+			const resAirline = await axios.post(`${MainURL}/tournationcity/getairlinedata`, {
+				nation: item.nation,
+				city: item.cityKo,
+			});
+			const resTraffic = await axios.post(`${MainURL}/tournationcity/gettrafficdata`, {
+				nation: item.nation,
+				city: item.cityKo,
+				cityId : item.id
+			});
+	  	if (resAirline.data !== false) {
+				const copy = resAirline.data;
+				const sortedData = copy.reduce((acc: Record<string, any[]>, item: any) => {
+					try {
+						const parsedItem = {
+							id : item.id,
+							tourPeriodNight: item.tourPeriodNight,
+							tourPeriodDay: item.tourPeriodDay,
+							departAirportMain: item.departAirportMain,
+							departAirline: item.departAirline,
+							airlineData: JSON.parse(item.airlineData)
 						};
-				}
-				inputDefault.costIndex = item.costIndex;
-				groupedData[key].inputDefault.push(inputDefault);
-			});
-			Object.keys(groupedData).forEach((key) => {
-				groupedData[key].inputDefault.sort((a: any, b: any) => a.costIndex - b.costIndex);
-			});
-			const result = Object.values(groupedData);
-			// setHotelCostInputDefault(result);
-		} else {
-			// setHotelCostInputDefault([]);
+						const key = item.sort;
+						if (!acc[key]) {
+							acc[key] = [];
+						}
+						acc[key].push(parsedItem);
+					} catch (err) {
+						console.error("Failed to parse airlineData:", item.airlineData);
+					}
+					return acc;
+				}, {});
+	  		setDirectAirlineData(sortedData.direct || []);
+				setViaAirlineData(sortedData.via || []);
+			} else {
+				setDirectAirlineData([]);
+				setViaAirlineData([]);
+			}
+			if (resTraffic.data !== false) { 
+				const copy = resTraffic.data[0];
+				const parsedItem = [
+					{sort : '공항/항공', trafficList : JSON.parse(copy.airport)},
+					{sort : '역/기차', trafficList : JSON.parse(copy.station)},
+					{sort : '터미널/시외버스', trafficList : JSON.parse(copy.terminal)},
+					{sort : '항구/선박', trafficList : JSON.parse(copy.harbor)}
+				]
+				setTrafficData(parsedItem);
+			} else {
+				setTrafficData([]);
+			}
+		} catch (err) {
+			setDirectAirlineData([]);
+			setViaAirlineData([]);
+			setTrafficData([]);
+		} finally {
+			setIsViewAddCityModal(true);
 		}
-		setIsViewAddCityModal(true);
 	};
+	
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
 	const deleteCity = async (itemId:any, images:any) => {
@@ -138,7 +145,7 @@ export default function Sub1_CityAirplane (props:any) {
 			images : JSON.parse(images)
 		}
 		axios 
-			.post(`${MainURL}/nationcity/deletecity`, getParams)
+			.post(`${MainURL}/restnationcity/deletecity`, getParams)
 			.then((res) => {
 				if (res.data) {
 					setRefresh(!refresh);
@@ -162,7 +169,7 @@ export default function Sub1_CityAirplane (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>도시&항공편관리</h1>	
+					<h1>도시&항공&교통 관리</h1>	
 				</div>
 				<div className="addBtn"
 					onClick={()=>{
@@ -174,6 +181,8 @@ export default function Sub1_CityAirplane (props:any) {
 					<p>국가생성</p>
 				</div>
 			</div>
+
+			<div style={{height:'20px'}}></div>
 
 
 			{/* 국가등록 모달창 */}
@@ -194,22 +203,7 @@ export default function Sub1_CityAirplane (props:any) {
         </div>
       }
 
-			<div className="continentBtnbox">
-				{
-					continents.map((item:any, index:any)=>{
-						return (
-							<div className="continentNtn" key={index}
-								style={{backgroundColor: selectContinent === item ? '#242d3f' : '#fff'}}
-								onClick={()=>{
-									setSelectContinent(item);
-								}}
-							>
-								<p style={{color: selectContinent === item ? '#fff' : '#333'}}>{item}</p>
-							</div>
-						)
-					})
-				}
-			</div>
+			
 			<div className="nation_city_cover">
 			 	<div className="nation_city_box">
 				 <div className="nation_city_title_box">
@@ -294,7 +288,7 @@ export default function Sub1_CityAirplane (props:any) {
 												window.scrollTo(0, 0);
 												setCityData(item);
 												setIsAddOrRevise('revise');
-												fetchPostCost(item);
+												fetchPostAirline(item);
 											}}
 											>수정</p>
 											<div className='divider'></div>
@@ -324,6 +318,9 @@ export default function Sub1_CityAirplane (props:any) {
 								setIsViewAddCityModal={setIsViewAddCityModal}
 								nationData={nationData}
 								cityData={cityData}
+								directAirlineData={directAirlineData}
+								viaAirlineData={viaAirlineData}
+								trafficData={trafficData}
 						 />
           </div>
         </div>

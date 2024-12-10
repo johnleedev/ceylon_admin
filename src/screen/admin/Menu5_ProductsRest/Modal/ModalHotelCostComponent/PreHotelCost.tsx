@@ -91,7 +91,7 @@ export default function PreHotelCost (props : any) {
       seasonCost : JSON.stringify(seasonCost)
     }
     axios
-      .post(`${MainURL}/producthotel/registerhotelcostinfo`, getParams)
+      .post(`${MainURL}/restproducthotel/registerhotelcostinfo`, getParams)
       .then((res) => {
         if (res.data) {
          alert('저장되었습니다.');
@@ -251,7 +251,7 @@ export default function PreHotelCost (props : any) {
     const promises = [];
   
     for (let index = 0; index < inputCostCopy.inputDefault.length; index++) {
-      const postPromise = axios.post(`${MainURL}/producthotel/registerhotelcostinput`, {
+      const postPromise = axios.post(`${MainURL}/restproducthotel/registerhotelcostinput`, {
         postId: props.hotelInfoData.id,
         reserveIndex: sectionIndex,
         costIndex: index,
@@ -290,7 +290,7 @@ export default function PreHotelCost (props : any) {
   
   // // 요금표 예약기간 섹션 삭제 함수 ----------------------------------------------
   const deleteReserveSection = async (sectionIndex:number) => {
-    const response = await axios.post(`${MainURL}/producthotel/deletehotelreserveindex`, {
+    const response = await axios.post(`${MainURL}/restproducthotel/deletehotelreserveindex`, {
       postId : hotelCostInfoData.hotelCostID, 
       reserveIndex: sectionIndex,
     });
@@ -313,7 +313,7 @@ export default function PreHotelCost (props : any) {
 
   // // 요금표 각 상품 기간별 요금 삭제 함수 ----------------------------------------------
   const deleteCostSection = async (sectionIndex:number, index:number) => {
-    const response = await axios.post(`${MainURL}/producthotel/deletehotelcostindex`, {
+    const response = await axios.post(`${MainURL}/restproducthotel/deletehotelcostindex`, {
       postId : hotelCostInfoData.hotelCostID, 
       reserveIndex: sectionIndex,
       costIndex: index

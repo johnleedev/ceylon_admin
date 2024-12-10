@@ -84,9 +84,11 @@ export default function HotelPage() {
       title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",},
     { id:3, name : '두바이', image: TourImageData.package2, packagePeriod: "5박 7일",
       title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",},
-    { id:21, name : '나트랑', image: TourImageData.package2, packagePeriod: "4박 6일",
+    { id:4, name : '나트랑', image: TourImageData.package2, packagePeriod: "4박 6일",
       title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",},
-    { id:22, name : '나트랑', image: TourImageData.package2, packagePeriod: "5박 7일",
+    { id:5, name : '나트랑', image: TourImageData.package2, packagePeriod: "5박 7일",
+      title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",},
+    { id:7, name : '발리', image: TourImageData.package2, packagePeriod: "5박 7일",
       title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",}
   ];
 
