@@ -11,7 +11,8 @@ import { ImLocation } from 'react-icons/im';
 import { formatDate, set } from 'date-fns';
 import * as XLSX from 'xlsx';
 import ModalSelectScheduleBox from './ModalSelectScheduleBox';
-
+import { BiSolidArrowFromLeft, BiSolidArrowFromRight, BiSolidArrowToLeft, BiSolidArrowToRight, BiSolidLeftArrowAlt, BiSolidRightArrowAlt } from 'react-icons/bi';
+import AirlineData from '../../../AirlineData';
 
 interface ScheduleProps {
   id : string;
@@ -27,9 +28,19 @@ interface ScheduleProps {
 interface ScheduleDetailProps {
   id : string;
   isViaSort: string;
-  sort: string;
   nation : string;
   city : string;
+  selectScheduleSort : string;
+  airline : string;
+  airlineDetail : {
+    airlineImage : string;
+    airlineName : string;
+    departTime : string;
+    departAirport : string;
+    arriveTime : string;
+    arriveAirport : string;
+    flightTime : string;
+  }[],
   location: string;
   locationDetail : {
     subLocation : string;
@@ -41,13 +52,33 @@ interface ScheduleDetailProps {
   }[]
 }
 
+interface AirlineDataProps {
+  sort : string;
+  airlineName: string;
+  departDate: string[];
+  planeName: string;
+  departAirport: string;
+  departTime: string;
+  arriveAirport: string;
+  arriveTime: string;
+}
+interface AirlineProps {
+  id : string;
+  tourPeriodNight: string;
+  tourPeriodDay: string;
+  departAirportMain : string;
+  departAirline: string;
+  airlineData: AirlineDataProps[];
+}   
+
 
 export default function ModalAddSchedule (props : any) {
 	
-  const isAddOrRevise = props.isAddOrRevise;
+  const [isAddOrRevise, setIsAddOrRevise] = useState(props.isAddOrRevise);
   const scheduleData = props.scheduleInfo;
   const [selectedNation, setSelectedNation] = useState<any>([]);
 
+  const [postId, setPostId] = useState(isAddOrRevise === 'revise' ? scheduleData.id : '');
   const [isView, setIsView] = useState<boolean>(isAddOrRevise === 'revise' ? scheduleData.isView : true);
   const [landCompany, setLandCompany] = useState(isAddOrRevise === 'revise' ? scheduleData.landCompany : '');
   const [landCompanyCode, setLandCompanyCode] = useState(isAddOrRevise === 'revise' ? scheduleData.landCompanyCode : '');
@@ -72,9 +103,19 @@ export default function ModalAddSchedule (props : any) {
         scheduleDetail: [{ 
           id: '',
           isViaSort : '',
-          sort: '',
           nation: '',
           city : '',
+          selectScheduleSort: '',
+          airline : '',
+          airlineDetail : [{
+            airlineImage : '',
+            airlineName : '',
+            departTime : '',
+            departAirport : '',
+            arriveTime : '',
+            arriveAirport : '',
+            flightTime: ''
+          }],
           location: '',
           locationDetail : [{
             subLocation: '',
@@ -94,6 +135,8 @@ export default function ModalAddSchedule (props : any) {
   const [departAirportOptions, setDepartAirportOptions] = useState([{ value: '선택', label: '선택' }]);
   const [airlineNameOptions, setAirlineNameOptions] = useState([{ value: '선택', label: '선택' }]);
   const [hotelsOptions, setHotelsOptions] = useState([{ value: '선택', label: '선택' }]);
+  const [directAirline, setDirectAirline] = useState<AirlineProps[]>([])
+  const [viaAirline, setViaAirline] = useState<AirlineProps[]>([])
 
   const fetchTourPeriod = async (tourLocationSelected: string) => {
     const res = await axios.get(`${MainURL}/product/getairplane/${nation}/${tourLocationSelected}`);
@@ -103,12 +146,14 @@ export default function ModalAddSchedule (props : any) {
       const viaAirlineCopy = copy.filter((e:any) => e.sort === 'via');
       const directAirlineFiltered = directAirlineCopy.map((item: { tourPeriodNight: string, tourPeriodDay: string, departAirportMain: string, departAirline: string, airlineData: string }) =>
         ({ tourPeriodNight: item.tourPeriodNight, tourPeriodDay: item.tourPeriodDay, departAirportMain: item.departAirportMain, 
-          departAirline : item.departAirline, airlineName: JSON.parse(item.airlineData), sort: '직항' })
+          departAirline : item.departAirline, airlineData: JSON.parse(item.airlineData), sort: '직항' })
       );
       const viaAirlineFiltered = viaAirlineCopy.map((item: { tourPeriodNight: string, tourPeriodDay: string, departAirportMain: string, departAirline: string, airlineData: string }) =>
         ({ tourPeriodNight: item.tourPeriodNight, tourPeriodDay: item.tourPeriodDay, departAirportMain: item.departAirportMain, 
-          departAirline : item.departAirline, airlineName: JSON.parse(item.airlineData), sort: '경유' })
+          departAirline : item.departAirline, airlineData: JSON.parse(item.airlineData), sort: '경유' })
       );
+      setDirectAirline(directAirlineFiltered );
+      setViaAirline(viaAirlineFiltered );
       const combinedAirlines = [...directAirlineFiltered, ...viaAirlineFiltered];
       const uniqueAirlines = Array.from(
         new Map(combinedAirlines.map(item => [`${item.tourPeriodNight}${item.tourPeriodDay}-${item.sort}`, item])).values()
@@ -127,10 +172,10 @@ export default function ModalAddSchedule (props : any) {
       resultDepartAirport.unshift({ value: '선택', label: '선택' });
       setDepartAirportOptions(resultDepartAirport);
       const uniqueAirlineName = Array.from(
-        new Map(combinedAirlines.map(item => [`${item.airlineName[0].airlineName}`, item])).values()
+        new Map(combinedAirlines.map(item => [`${item.airlineData[0].airlineName}`, item])).values()
       );
       const resultAirlineName = uniqueAirlineName.map((item:any)=>
-        ({ value:`${item.airlineName[0].airlineName}`,  label:`${item.airlineName[0].airlineName}` })
+        ({ value:`${item.airlineData[0].airlineName}`,  label:`${item.airlineData[0].airlineName}` })
       );
       resultAirlineName.unshift({ value: '선택', label: '선택' });
       setAirlineNameOptions(resultAirlineName);
@@ -181,9 +226,10 @@ export default function ModalAddSchedule (props : any) {
     axios 
       .post(`${MainURL}/tourproductschedule/registerschedule`, getParams)
       .then((res) => {
-        if (res.data) {
+        if (res.data.success) {
           alert('등록되었습니다.');
           props.setRefresh(!props.refresh);
+          setPostId(res.data.id);
         }
       })
       .catch(() => {
@@ -196,7 +242,7 @@ export default function ModalAddSchedule (props : any) {
     const currentdate = new Date();
 		const revisetoday = formatDate(currentdate, 'yyyy-MM-dd');
     const getParams = {
-      postId : scheduleData.id,
+      postId : postId,
       isView : isView,
       landCompany: landCompany,
       landCompanyCode: landCompanyCode,
@@ -243,7 +289,7 @@ export default function ModalAddSchedule (props : any) {
   // 일정 데이별 디테일 등록&저장 함수 ----------------------------------------------
   const registerDetailPost = async (item:any) => {
     const getParams = {
-      scheduleID : scheduleData.id,
+      scheduleID : postId,
       day: item.day,
       breakfast: item.breackfast,
       lunch: item.lunch, 
@@ -266,6 +312,105 @@ export default function ModalAddSchedule (props : any) {
   };
 
 
+  // 항공편 선택 기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+  // 직항
+  const handleAirlineDirect = (airlineItem:any, index:number, subIndex:number, airlineSubIndex:number) => {
+    const copy = [...scheduleList];
+    copy[index].scheduleDetail[subIndex].airline = 'direct';
+    const airlineWord = airlineItem.airlineData[airlineSubIndex].airlineName.slice(0, 2);
+    const airlineWordCopy = (airlineWord === '5J' || airlineWord === '7C') ? `A${airlineWord}` : airlineWord;
+    const airlineImage = AirlineData[airlineWordCopy as keyof typeof AirlineData];
+    // 시간 차이를 계산하는 로직 추가
+    const departTime = airlineItem.airlineData[airlineSubIndex].departTime;
+    const arriveTime = airlineItem.airlineData[airlineSubIndex].arriveTime;
+    const calcFlightTime = (depart: string, arrive: string) => {
+      const departHours = parseInt(depart.slice(0, 2), 10);
+      const departMinutes = parseInt(depart.slice(2), 10);
+      const arriveHours = parseInt(arrive.slice(0, 2), 10);
+      const arriveMinutes = parseInt(arrive.slice(2), 10);
+      // 분 단위로 변환
+      const departTotalMinutes = departHours * 60 + departMinutes;
+      const arriveTotalMinutes = arriveHours * 60 + arriveMinutes;
+      // 시간 차이 계산 (도착 시간이 출발 시간보다 빠를 경우 하루를 넘겼다고 가정)
+      let flightMinutes = arriveTotalMinutes - departTotalMinutes;
+      if (flightMinutes < 0) flightMinutes += 24 * 60; // 하루 더해줌
+      const hours = Math.floor(flightMinutes / 60);
+      const minutes = flightMinutes % 60;
+      return minutes === 0 ? `${hours}시간` : `${hours}시간 ${minutes}분`;
+    };
+    const flightTime = calcFlightTime(departTime, arriveTime);
+    copy[index].scheduleDetail[subIndex].airlineDetail = [{
+      airlineImage : airlineImage,
+      airlineName : airlineItem.airlineData[airlineSubIndex].airlineName,
+      departTime : `${departTime.slice(0, 2)}:${departTime.slice(2)}`,
+      departAirport : airlineItem.airlineData[airlineSubIndex].departAirport,
+      arriveTime : `${arriveTime.slice(0, 2)}:${arriveTime.slice(2)}`,
+      arriveAirport : airlineItem.airlineData[airlineSubIndex].arriveAirport,
+      flightTime: flightTime
+    }];
+    setScheduleList(copy);
+  }
+
+  // 경유
+  const handleAirlineVia = (airlineItem:any, index:number, subIndex:number, airlineSubIndex:number) => {
+    const airlineSubIndexCopy1 = airlineSubIndex === 0 ? 0 : 2;
+    const airlineSubIndexCopy2 = airlineSubIndex === 0 ? 1 : 3;
+    const copy = [...scheduleList];
+    copy[index].scheduleDetail[subIndex].airline = 'via';
+
+    const calcFlightTime = (depart: string, arrive: string) => {
+      const departHours = parseInt(depart.slice(0, 2), 10);
+      const departMinutes = parseInt(depart.slice(2), 10);
+      const arriveHours = parseInt(arrive.slice(0, 2), 10);
+      const arriveMinutes = parseInt(arrive.slice(2), 10);
+      const departTotalMinutes = departHours * 60 + departMinutes;
+      const arriveTotalMinutes = arriveHours * 60 + arriveMinutes;
+      let flightMinutes = arriveTotalMinutes - departTotalMinutes;
+      if (flightMinutes < 0) flightMinutes += 24 * 60;
+      const hours = Math.floor(flightMinutes / 60);
+      const minutes = flightMinutes % 60;
+      return minutes === 0 ? `${hours}시간` : `${hours}시간 ${minutes}분`;
+    };
+    // 첫 번째 구간
+    const airlineWord1 = airlineItem.airlineData[airlineSubIndexCopy1].airlineName.slice(0, 2); 
+    const airlineWordCopy1 = (airlineWord1 === '5J' || airlineWord1 === '7C') ? `A${airlineWord1}` : airlineWord1;
+    const airlineImage1 = AirlineData[airlineWordCopy1 as keyof typeof AirlineData];
+    const departTime1 = airlineItem.airlineData[airlineSubIndexCopy1].departTime;
+    const arriveTime1 = airlineItem.airlineData[airlineSubIndexCopy1].arriveTime;
+    const flightTime1 = calcFlightTime(departTime1, arriveTime1);
+    // 두 번째 구간
+    const airlineWord2 = airlineItem.airlineData[airlineSubIndexCopy2].airlineName.slice(0, 2); 
+    const airlineWordCopy2 = (airlineWord2 === '5J' || airlineWord2 === '7C') ? `A${airlineWord2}` : airlineWord2;
+    const airlineImage2 = AirlineData[airlineWordCopy2 as keyof typeof AirlineData];
+    const departTime2 = airlineItem.airlineData[airlineSubIndexCopy2].departTime;
+    const arriveTime2 = airlineItem.airlineData[airlineSubIndexCopy2].arriveTime;
+    const flightTime2 = calcFlightTime(departTime2, arriveTime2);
+    copy[index].scheduleDetail[subIndex].airlineDetail = [
+      {
+        airlineImage: airlineImage1,
+        airlineName: airlineItem.airlineData[airlineSubIndexCopy1].airlineName,
+        departTime: `${departTime1.slice(0, 2)}:${departTime1.slice(2)}`,
+        departAirport: airlineItem.airlineData[airlineSubIndexCopy1].departAirport,
+        arriveTime: `${arriveTime1.slice(0, 2)}:${arriveTime1.slice(2)}`,
+        arriveAirport: airlineItem.airlineData[airlineSubIndexCopy1].arriveAirport,
+        flightTime: flightTime1 // 첫 번째 구간 비행 시간
+      },
+      {
+        airlineImage: airlineImage2,
+        airlineName: airlineItem.airlineData[airlineSubIndexCopy2].airlineName,
+        departTime: `${departTime2.slice(0, 2)}:${departTime2.slice(2)}`,
+        departAirport: airlineItem.airlineData[airlineSubIndexCopy2].departAirport,
+        arriveTime: `${arriveTime2.slice(0, 2)}:${arriveTime2.slice(2)}`,
+        arriveAirport: airlineItem.airlineData[airlineSubIndexCopy2].arriveAirport,
+        flightTime: flightTime2 // 두 번째 구간 비행 시간
+      }
+    ];
+    setScheduleList(copy);
+  }
+
+
+
   // 여행지 검색 & 자동완성기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
 	const [isViewSelectScheduleBoxModal, setIsViewSelectScheduleBoxModal] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -286,8 +431,8 @@ export default function ModalAddSchedule (props : any) {
 
   // 여행지 리스트 가져오기 & location 셋팅
   const fetchPostsTourList = async (selectedCity:any) => {
-    let res = await axios.get(`${MainURL}/tourproductschedule/getscheduleboxforpost/${selectedCity}`);
-    if (res !== undefined ) {
+    let res = await axios.get(`${MainURL}/restproductschedule/getscheduleboxforpost/${selectedCity}`);
+    if (res.data) {
       let copy = res.data;
       setTourLocationList(copy);
       const locationresult = copy.map((item:any)=>
@@ -334,9 +479,19 @@ export default function ModalAddSchedule (props : any) {
       scheduleDetail: [{ 
         id: '',
         isViaSort : '',
-        sort: '',
         nation: '',
         city : '',
+        selectScheduleSort: '',
+        airline : '',
+        airlineDetail : [{
+          airlineImage : '',
+          airlineName : '',
+          departTime : '',
+          departAirport : '',
+          arriveTime : '',
+          arriveAirport : '',
+          flightTime: ''
+        }],
         location: '',
         locationDetail : [{
           subLocation: '',
@@ -366,10 +521,9 @@ export default function ModalAddSchedule (props : any) {
   const handleLocationAdd = async (index:number) => {
     const inputs = [...scheduleList];
     inputs[index].scheduleDetail = [...inputs[index].scheduleDetail, 
-      { id : '',  isViaSort : '', sort: '', nation: nation, city : '', location: '', 
-        locationDetail:[
-          {subLocation: '', subLocationDetail : [{locationTitle: '',locationContent: '', postImage: ''}]}
-        ]}];
+      { id : '',  isViaSort : '', nation: nation, city : '', selectScheduleSort: '', 
+        airline : '', airlineDetail : [{airlineImage : '', airlineName : '', departTime : '', departAirport : '', arriveTime : '', arriveAirport : '', flightTime: ''}],
+        location: '', locationDetail : [{subLocation: '', subLocationDetail : [{locationTitle: '',locationContent: '', postImage: ''}]}]}];
     setScheduleList(inputs);
     const viewAutoCopy = [...viewAutoCompleteTourLocation];
     viewAutoCopy[index] = [...viewAutoCopy[index], [[false]]];
@@ -391,7 +545,7 @@ export default function ModalAddSchedule (props : any) {
     const copy = [...scheduleList];
     copy[index].scheduleDetail[subIndex].locationDetail = [
       ...copy[index].scheduleDetail[subIndex].locationDetail, 
-      {
+      { 
         subLocation: '',
         subLocationDetail : [{
           locationTitle: '',
@@ -442,6 +596,9 @@ export default function ModalAddSchedule (props : any) {
     viewAutoCopy[index][subIndex][detailIndex].splice(subDetailIndex, 1);
     setViewAutoCompleteTourLocation(viewAutoCopy)
   };
+
+  const verticalBar40 = {width:'1px', minHeight:'40px', backgroundColor:'#d4d4d4'};
+
   
 
 
@@ -742,7 +899,8 @@ export default function ModalAddSchedule (props : any) {
       </div>
 
       <section>
-      { scheduleList.length > 0 &&
+      { scheduleList.length > 0 
+        ?
         scheduleList?.map((item:any, index:any)=>{
 
           return (
@@ -825,9 +983,319 @@ export default function ModalAddSchedule (props : any) {
                 {
                   item.scheduleDetail?.map((subItem:any, subIndex:any)=>{ 
 
+                      console.log(subItem);
+
                     return (
                       <div className='input-area' key={subIndex}>
-                        <div className="cover">
+
+                      {
+                        subItem.selectScheduleSort === ''
+                        &&
+                        <div className='select-cover'>
+                          <div className="select-Btn-box"
+                            onClick={()=>{
+                              if (nation === '' || tourLocation === '') {
+                                alert('먼저 국가/도시를 선택하셔야 합니다.')
+                              } else {
+                                const copy = [...scheduleList];
+                                copy[index].scheduleDetail[subIndex].selectScheduleSort = 'airline'
+                                setScheduleList(copy);  
+                              }
+                            }}
+                          >
+                            <p>출도착/항공편</p>
+                          </div>
+                          <div className="select-Btn-box"
+                            onClick={()=>{
+                              if (nation === '' || tourLocation === '') {
+                                alert('먼저 국가/도시를 선택하셔야 합니다.')
+                              } else {
+                                const copy = [...scheduleList];
+                                copy[index].scheduleDetail[subIndex].selectScheduleSort = 'location'
+                                setScheduleList(copy);
+                              }
+                            }}
+                          >
+                            <p>일정추가</p>
+                          </div>
+                        </div>
+                      }
+                      {
+                        subItem.selectScheduleSort === 'airline'
+                        &&
+                        <>
+                        { subItem.airline === ""
+                          ?
+                          <div className='airline-cover'>
+                            <section>
+                              <div className="bottombar"></div>
+                              <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+                                <div className='chartbox' style={{width:'10%'}} ><p>기간</p></div>
+                                <div className="chart-divider"></div>
+                                <div className='chartbox' style={{width:'7%'}} ><p>출발공항</p></div>
+                                <div className="chart-divider"></div>
+                                <div className='chartbox' style={{width:'7%'}} ><p>출발편명</p></div>
+                                <div className="chart-divider"></div>
+                                <div style={{width:'76%', display:'flex', justifyContent:'space-between'}}>
+                                  <div className='chartbox' style={{width:'3%'}} ><p></p></div>
+                                  <div className="chart-divider"></div>
+                                  <div className='chartbox' style={{width:'12%'}} ><p>항공사</p></div>
+                                  <div className="chart-divider"></div>
+                                  <div className='chartbox' style={{width:'15%'}} ><p>출발요일</p></div>
+                                  <div className="chart-divider"></div>
+                                  <div className='chartbox' style={{width:'12%'}} ><p>편명</p></div>
+                                  <div className="chart-divider"></div>
+                                  <div className='chartbox' style={{width:'12%'}} ><p>출발공항</p></div>
+                                  <div className="chart-divider"></div>
+                                  <div className='chartbox' style={{width:'12%'}} ><p>출발시간</p></div>
+                                  <div className="chart-divider"></div>
+                                  <div className='chartbox' style={{width:'12%'}} ><p>도착공항</p></div>
+                                  <div className="chart-divider"></div>
+                                  <div className='chartbox' style={{width:'12%'}} ><p>도착시간</p></div>
+                                  <div className="chart-divider"></div>
+                                  <div className='chartbox' style={{width:'8%'}} ><p>선택</p></div>
+                                </div>
+                              </div>
+                              <div className="bottombar"></div>
+                              {
+                                directAirline.map((airlineItem:any, airlineIndex:any)=>{
+
+                                  return (
+                                    <div className="coverbox" key={airlineIndex}>
+                                      <div className="coverrow hole">
+                                        <div style={{width:'10%', display:'flex', alignItems:'center'}} >
+                                          <p>{airlineItem.sort}</p>
+                                          <p>{airlineItem.tourPeriodNight}</p>
+                                          <p>{airlineItem.tourPeriodDay}</p>
+                                        </div>
+                                        <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                                        <div style={{width:'7%'}} >
+                                          <p>{airlineItem.departAirportMain}</p>
+                                        </div>
+                                        <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                                        <div style={{width:'7%'}} >
+                                          <p>{airlineItem.departAirline}</p>
+                                        </div>
+                                        <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                                        <div style={{width:'76%'}} >
+                                        {
+                                          airlineItem.airlineData.map((airlineSubItem:any, airlineSubIndex:any)=>{
+                                            return (
+                                              <div className='airline-cover-select-subRow' key={airlineSubIndex}>
+                                                <div style={{width:'3%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                                                  { airlineSubItem.sort === 'depart' && <BiSolidRightArrowAlt /> }
+                                                  { airlineSubItem.sort === 'arrive' && <BiSolidLeftArrowAlt /> }
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.airlineName}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'15%'}} >
+                                                  <div className="dayBox">
+                                                    <p>{airlineSubItem.departDate}</p>
+                                                  </div>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.planeName}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.departAirport}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.departTime}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.arriveAirport}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.arriveTime}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'8%'}} className='airline-cover-select-box'>
+                                                  <p
+                                                  onClick={()=>{
+                                                    handleAirlineDirect(airlineItem, index, subIndex, airlineSubIndex);
+                                                  }}
+                                                  >선택</p>
+                                                </div>
+                                              </div>
+                                            )
+                                          })
+                                        }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )
+                                })
+                              }
+                              <div className="bottombar"></div>
+                              {
+                                viaAirline.map((airlineItem:any, airlineIndex:any)=>{
+                                  return (
+                                    <div className="coverbox" key={airlineIndex}>
+                                      <div className="coverrow hole">
+                                        <div style={{width:'10%', display:'flex', alignItems:'center'}} >
+                                          <p>{airlineItem.sort}</p>
+                                          <p>{airlineItem.tourPeriodNight}</p>
+                                          <p>{airlineItem.tourPeriodDay}</p>
+                                        </div>
+                                        <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
+                                        <div style={{width:'7%'}} >
+                                          <p>{airlineItem.departAirportMain}</p>
+                                        </div>
+                                        <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
+                                        <div style={{width:'7%'}} >
+                                          <p>{airlineItem.departAirline}</p>
+                                        </div>
+                                        <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
+                                        <div style={{width:'76%'}} >
+                                        {
+                                          airlineItem.airlineData.map((airlineSubItem:any, airlineSubIndex:any)=>{
+                                            return (
+                                              <div className='airline-cover-select-subRow' key={airlineSubIndex}>
+                                                <div style={{width:'3%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                                                { airlineSubItem.sort === 'depart' && <BiSolidArrowToRight /> }
+                                                { airlineSubItem.sort === 'viaArrive' && <BiSolidArrowFromLeft /> }
+                                                { airlineSubItem.sort === 'viaDepart' && <BiSolidArrowToLeft /> }
+                                                { airlineSubItem.sort === 'arrive' && <BiSolidArrowFromRight /> }
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.airlineName}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'15%'}} >
+                                                  <div className="dayBox">
+                                                    <p>{airlineSubItem.departDate}</p>
+                                                  </div>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.planeName}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.departAirport}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.departTime}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.arriveAirport}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'12%'}} >
+                                                  <p>{airlineSubItem.arriveTime}</p>
+                                                </div>
+                                                <div style={verticalBar40}></div>
+                                                <div style={{width:'8%'}} className='airline-cover-select-box'>
+                                                { (airlineSubIndex === 0 || airlineSubIndex === 3) &&
+                                                  <p
+                                                    onClick={()=>{
+                                                      handleAirlineVia(airlineItem, index, subIndex, airlineSubIndex);
+                                                    }}
+                                                  >선택</p> 
+                                                }
+                                                </div>
+                                              </div>
+                                            )
+                                          })
+                                        }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )
+                                })
+                              }
+                            </section>
+                          </div>
+                          :
+                          <div className='airline-cover'>
+                          { subItem.airline === "direct"
+                            ?
+                            <div className="schedule__element__wrapper">
+                              <div className="flight__schedule__board__wrapper">
+                                <div className="flight__schedule__board">
+                                  <div className="flight__info__wrapper">
+                                    <img src={subItem.airlineDetail[0].airlineImage} alt="temp" />
+                                    <span>{subItem.airlineDetail[0].airlineName}</span>
+                                  </div>
+                                  <div className="flight__time__wrapper">
+                                    <span className="flight__time">{subItem.airlineDetail[0].flightTime}</span>
+                                    <div className="depart__info">
+                                      <div />
+                                      <span className="time__text">{subItem.airlineDetail[0].departTime}</span>
+                                      <span className="airport__text">{subItem.airlineDetail[0].departAirport} 출발</span>
+                                    </div>
+                                    <div className="arrive__info">
+                                      <div />
+                                      <span className="time__text">{subItem.airlineDetail[0].arriveTime}</span>
+                                      <span className="airport__text">{subItem.airlineDetail[0].arriveAirport} 도착</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            :
+                            <div className="schedule__element__wrapper">
+                              <div className="flight__schedule__board__wrapper">
+                                <div className="flight__schedule__board" style={{marginBottom:'50px'}}>
+                                  <div className="flight__info__wrapper">
+                                    <img src={subItem.airlineDetail[0].airlineImage} alt="temp" />
+                                    <span>{subItem.airlineDetail[0].airlineName}</span>
+                                  </div>
+                                  <div className="flight__time__wrapper">
+                                    <span className="flight__time">{subItem.airlineDetail[0].flightTime}</span>
+                                    <div className="depart__info">
+                                      <div />
+                                      <span className="time__text">{subItem.airlineDetail[0].departTime}</span>
+                                      <span className="airport__text">{subItem.airlineDetail[0].departAirport} 출발</span>
+                                    </div>
+                                    <div className="arrive__info">
+                                      <div />
+                                      <span className="time__text">{subItem.airlineDetail[0].arriveTime}</span>
+                                      <span className="airport__text">{subItem.airlineDetail[0].arriveAirport} 도착</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flight__schedule__board">
+                                  <div className="flight__info__wrapper">
+                                    <img src={subItem.airlineDetail[1].airlineImage} alt="temp" />
+                                    <span>{subItem.airlineDetail[1].airlineName}</span>
+                                  </div>
+                                  <div className="flight__time__wrapper">
+                                    <span className="flight__time">{subItem.airlineDetail[1].flightTime}</span>
+                                    <div className="depart__info">
+                                      <div />
+                                      <span className="time__text">{subItem.airlineDetail[1].departTime}</span>
+                                      <span className="airport__text">{subItem.airlineDetail[1].departAirport} 출발</span>
+                                    </div>
+                                    <div className="arrive__info">
+                                      <div />
+                                      <span className="time__text">{subItem.airlineDetail[1].arriveTime}</span>
+                                      <span className="airport__text">{subItem.airlineDetail[1].arriveAirport} 도착</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                          </div>
+                        }
+                        </>
+                      }
+                      {
+                        subItem.selectScheduleSort === 'location'
+                        &&
+                        <div className="schedule-cover">
                           <div className='rowbox'>
                             <div className='icon-box'>
                               <ImLocation color='#5fb7ef' size={20}/>
@@ -942,11 +1410,7 @@ export default function ModalAddSchedule (props : any) {
                                               <input style={{width:'95%'}} value={subDetailItem.locationTitle} 
                                                 className="inputdefault" type="text" maxLength={100}
                                                 onClick={(e) => {
-                                                  if (nation === '' || tourLocation === '') {
-                                                    alert('먼저 국가/도시를 선택하셔야 합니다.')
-                                                  } else {
-                                                    handleSelectScheduleBoxChange(index, subIndex, detailIndex, subDetailIndex, subItem.location, detailItem.subLocation)
-                                                  }
+                                                  handleSelectScheduleBoxChange(index, subIndex, detailIndex, subDetailIndex, subItem.location, detailItem.subLocation)
                                                 }}
                                                 onChange={(e)=>{
                                                   const copy = [...scheduleList];
@@ -994,6 +1458,7 @@ export default function ModalAddSchedule (props : any) {
                             })
                           }
                         </div>
+                        }
                         <div className="btnrow">
                           <div className="btn" style={{backgroundColor:"#fff", margin:'10px 10px'}}
                             onClick={()=>{
@@ -1043,6 +1508,51 @@ export default function ModalAddSchedule (props : any) {
             </div>      
           )
         })
+        :
+        <div className="daybtnrow"  style={{marginTop:'20px'}}>
+          <div className="daybtn" style={{width:'70%', backgroundColor:"#EAEAEA"}}
+              onClick={()=>{
+                setScheduleList(
+                  [{
+                    id: ``,
+                    day: '1',
+                    breakfast: '',
+                    lunch: '',
+                    dinner: '',
+                    hotel: '',
+                    score: '',
+                    scheduleDetail: [{ 
+                      id: '',
+                      isViaSort : '',
+                      nation: '',
+                      city : '',
+                      selectScheduleSort: '',
+                      airline : '',
+                      airlineDetail : [{
+                        airlineImage : '',
+                        airlineName : '',
+                        departTime : '',
+                        departAirport : '',
+                        arriveTime : '',
+                        arriveAirport : '',
+                        flightTime: ''
+                      }],
+                      location: '',
+                      locationDetail : [{
+                        subLocation: '',
+                        subLocationDetail : [{
+                          locationTitle: '',
+                          locationContent: '',
+                          postImage: ''
+                        }]
+                      }]
+                    }]
+                  }]
+                )
+              }}>
+            <CiCirclePlus /><p>DAY추가</p>
+          </div>
+        </div>
       }
             
       </section>

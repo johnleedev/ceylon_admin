@@ -245,7 +245,7 @@ export default function ModalAddCity (props : any) {
 
   // 항공편 입력 ------------------------------------------------------------------------------------------------------------------------------------------
   const [airlineSelectInput, setAirlineSelectInput] = useState('direct');
-  interface AirlineProps {
+  interface AirlineDataProps {
     sort : string;
     airlineName: string;
     departDate: string[];
@@ -255,26 +255,19 @@ export default function ModalAddCity (props : any) {
     arriveAirport: string;
     arriveTime: string;
   }
-  interface DirectProps {
+  interface AirlineProps {
     id : string;
     tourPeriodNight: string;
     tourPeriodDay: string;
     departAirportMain : string;
     departAirline: string;
-    airlineData: AirlineProps[];
+    airlineData: AirlineDataProps[];
   }   
-  interface ViaProps {
-    id : string;
-    tourPeriodNight: string;
-    tourPeriodDay: string;
-    departAirportMain : string;
-    departAirline: string;
-    airlineData: AirlineProps[];
-  }   
-  const [directAirline, setDirectAirline] = useState<DirectProps[]>(
+
+  const [directAirline, setDirectAirline] = useState<AirlineProps[]>(
     isAddOrRevise === 'revise' ? props.directAirlineData : []
   )
-  const [viaAirline, setViaAirline] = useState<ViaProps[]>(
+  const [viaAirline, setViaAirline] = useState<AirlineProps[]>(
     isAddOrRevise === 'revise' ? props.viaAirlineData : []
   )
 
@@ -690,8 +683,8 @@ export default function ModalAddCity (props : any) {
         >+</div>
       </div>
 
-      <div style={{marginBottom:'50px'}}>
       {/* 직항 ----------------- */}
+      <div style={{marginBottom:'50px'}}>
       { 
         airlineSelectInput === 'direct' &&
         <section>

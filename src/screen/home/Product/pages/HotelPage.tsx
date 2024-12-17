@@ -1,43 +1,40 @@
 import "./HotelPage.scss";
 import { useEffect, useState } from "react";
-// import mobileImagePath from "../../images/tourPage/mobile-info.jpg";
 import { FaStar } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import TourImageData from "../../common/TourImageData";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import MainURL from "../../../../MainURL";
 
 
 export default function HotelPage() {
  
   let navigate = useNavigate();
 
-  // const [hotelInfo, setHotelInfo] = useState([]);
-  // const [hotelCost, setHotelCost] = useState([]);
-  // const [tourLocation, setTourLocation] = useState([]);
+  const [scheduleInfo, setScheduleInfo] = useState<any[]>([]);
+  
+  // 게시글 가져오기
+  const fetchPosts = async () => {
+    const resinfo = await axios.get(`${MainURL}/product/getscheduleall`)
+    if (resinfo.data) {
+      const copy = [...resinfo.data];
+      const result = copy.map((item: { id: string, tourLocation:string}) =>
+        ({ 
+          id: item.id,
+          name : item.tourLocation,
+          image: TourImageData.package1, 
+          packagePeriod: "5박 7일",
+          title: "선투숙리조트 2박 + 세인트레지스 가든뷰 1박 + 세인트레지스 오션뷰 풀빌라 2박",
+        })
+      );
+      setScheduleInfo(result);
+    } 
+  };
 
-  // // 게시글 가져오기
-  // const fetchPosts = async () => {
-  //   const resinfo = await axios.get(`${MainURL}/product/getproduct/77`)
-  //   if (resinfo.data) {
-  //     console.log(resinfo.data);
-  //     setHotelInfo(resinfo.data);
-  //   } 
-  //   const rescost = await axios.get(`${MainURL}/product/getproductcost/77`)
-  //   if (rescost.data) {
-  //     console.log(rescost.data);
-  //     setHotelCost(rescost.data);
-  //   } 
-  //   const resschedule = await axios.get(`${MainURL}/product/getschedule/발리`)
-  //   if (resschedule.data) {
-  //     console.log(resschedule.data);
-  //     setTourLocation(resschedule.data);
-  //   } 
-  // };
-
-  // useEffect(() => {
-  //   // fetchPosts();
-  // }, []);  
-
+  useEffect(() => {
+    fetchPosts();
+  }, []);  
 
   const [category, setCategory] = useState('notice');
 
@@ -76,21 +73,6 @@ export default function HotelPage() {
       { distance: "20km", name: "사원" },
     ],
   }
-
-  const packages = [
-    { id:1, name : '나트랑', image: TourImageData.package1, packagePeriod: "5박 7일",
-      title: "선투숙리조트 2박 + 세인트레지스 가든뷰 1박 + 세인트레지스 오션뷰 풀빌라 2박",},
-    { id:2, name : '발리', image: TourImageData.package2, packagePeriod: "5박 7일",
-      title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",},
-    { id:3, name : '두바이', image: TourImageData.package2, packagePeriod: "5박 7일",
-      title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",},
-    { id:4, name : '나트랑', image: TourImageData.package2, packagePeriod: "4박 6일",
-      title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",},
-    { id:5, name : '나트랑', image: TourImageData.package2, packagePeriod: "5박 7일",
-      title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",},
-    { id:7, name : '발리', image: TourImageData.package2, packagePeriod: "5박 7일",
-      title: "선투숙리조트 2박 + 원베드 풀빌라 2박 + 세인트레지스 오션뷰 풀빌라 2박",}
-  ];
 
 
   return (
@@ -212,7 +194,7 @@ export default function HotelPage() {
           <span> 추천 상품</span>
         </div>
         <div className="package__items__wrapper">
-          {packages.map((item, idx) => (
+          {scheduleInfo.map((item, idx) => (
             <div className="package__item__wrapper"
               onClick={()=>{
                 window.scrollTo(0, 0);

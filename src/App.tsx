@@ -15,6 +15,8 @@ import Main from './screen/home/main/Main';
 import Footer from './screen/home/component/Footer';
 import MainProduct from './screen/home/Product/MainProduct';
 import MainProductsTour from './screen/admin/Menu6_ProductsTour/MainProductsTour';
+import MainEstimate from './screen/home/estimate/MainEstimate';
+import MainUserPage from './screen/home/user/MainUserPage';
 
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Main/>}/>
           <Route path="/products/*" element={<MainProduct/>}/>
+          <Route path="/estimate" element={<MainEstimate/>}/>
+          <Route path="/user" element={<MainUserPage/>}/>
         </Routes>
         <Footer/>
         </>

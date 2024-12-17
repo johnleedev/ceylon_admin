@@ -18,7 +18,7 @@ export interface IBgObj {
   imagePath: string;
 }
 
-export default function MainPage() {
+export default function Main() {
 
   const [selectId, setSelectId] = useState(0);
   const bgObjs = [

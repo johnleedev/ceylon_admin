@@ -23,8 +23,6 @@ export default function ModalAddTourProduct (props : any) {
   const isAddOrRevise = props.isAddOrRevise;
   const tourProductData = isAddOrRevise === 'revise' ? props.tourProductData : null;
 
-  console.log(tourProductData);
-
   const [selectedNation, setSelectedNation] = useState<any>([]);
   const [sort, setSort] = useState(isAddOrRevise === 'revise' ? tourProductData.sort : "경유지일정");
   const [nation, setNation] = useState(isAddOrRevise === 'revise' ? tourProductData.nation :'');

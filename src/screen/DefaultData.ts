@@ -367,10 +367,12 @@ export const DropDownPackageType = [
   { value: '베이직팩', label: '베이직팩' },
   { value: '스마트플러스', label: '스마트플러스' },
   { value: '60일 미만', label: '60일 미만' },
+  { value: '45일 미만', label: '45일 미만' },
   { value: '30일 미만', label: '30일 미만' },
   { value: '트랜스퍼', label: '트랜스퍼' },
   { value: '정글투어', label: '정글투어' },
-  { value: '웨딩스냅', label: '웨딩스냅' }
+  { value: '웨딩스냅', label: '웨딩스냅' },
+  { value: '오전도착비행기', label: '오전도착비행기' },
 ]
 
 export const DropDownSeasonType = [

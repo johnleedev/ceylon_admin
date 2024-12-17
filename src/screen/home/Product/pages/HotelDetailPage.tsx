@@ -9,7 +9,7 @@ import location from "../../images/tourPage/location.png"
 import { FaRegCircle } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { FaStar, FaCheck } from "react-icons/fa";
-import AirlineData from "../../common/AirlineData";
+import AirlineData from "../../../AirlineData";
 import RatingBoard from "../../common/RatingBoard";
 import TourImageData from "../../common/TourImageData";
 import { FaLocationDot } from "react-icons/fa6";
@@ -643,8 +643,6 @@ export default function PackagePage() {
                     }
                     {
                       item.scheduleDetail.map((subItem:any, subIndex:any)=>{
-
-                        console.log(subItem);
 
                         return (
                           <div className="schedule__element__wrapper" key={subIndex}>

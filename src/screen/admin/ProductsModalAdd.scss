@@ -195,6 +195,32 @@
         cursor: pointer;
         border: 1px solid #878787;
       }
+
+      .airline-cover-select-subRow {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .airline-cover-select-subRow:hover {
+        background-color: #e8e8e8;
+      }
+      .airline-cover-select-box {
+        @include middle();
+        p {
+          margin: 0;
+          border: 1px solid #ccc;
+          border-radius: 3px;
+          padding: 5px 10px;
+        }
+      }
+      .airline-cover-select-box:hover {
+        cursor: pointer;
+        p {
+          color: #fff;
+          background-color: #333;
+        }
+      }
     }
 
     .autoComplete {
@@ -430,8 +456,115 @@
       .input-area {
         width: 100%;
         padding: 10px;
+
+        .select-cover {
+          width: 100%;
+          min-height: 300px;
+          @include middle();
   
-        .cover {
+          .select-Btn-box {
+            width: 300px;
+            height: 50px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px;
+            @include middle();
+            p {
+              font-size: 16px;
+              font-weight: bold;
+            }
+          }
+          .select-Btn-box:hover {
+            cursor: pointer;
+            border: 1px solid #9f9f9f;
+          }
+        }
+  
+        .airline-cover {
+          
+
+          .schedule__element__wrapper {
+            position: relative;
+            margin-left: 30px;
+            padding-top: 30px;
+            padding-bottom: 20px;
+            border-left: 1px dotted rgba(180, 180, 180, 1);
+          
+            .flight__schedule__board__wrapper {
+                
+              @media (min-width: 800px) {
+                display: flex;
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+                padding: 1.5vw 0;
+              }
+              .flight__schedule__board {
+                display: flex;
+                flex-direction: column;
+                width: 40%;
+                .flight__info__wrapper {
+                  display: flex;
+                  width: 100%;
+                  justify-content: center;
+                  align-items: center;
+                  flex-direction: column;
+                  padding-bottom: 20px;
+                  border-bottom: 1px solid rgba(0, 0, 0, 1);
+                  img {
+                    max-width: 100px;
+                    max-height: 30px;
+                  }
+                  span {
+                    font-size: 16px;
+                    color: #333;
+                  }
+                }
+                .flight__time__wrapper {
+                  display: flex;
+                  justify-content: center;
+                  margin-top: 0.5vw;
+                  position: relative;
+                  .flight__time {
+                    color: #686868;
+                    font-size: 14px;
+                  }
+                  & > div {
+                    position: absolute;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    .time__text {
+                      font-size: 25px;
+                      font-weight: 700;
+                    }
+                    .airport__text {
+                      font-size: 15px;
+                    }
+                    div {
+                      width: 0.625vw;
+                      height: 0.625vw;
+                      border: 1px solid rgba(0, 0, 0, 1);
+                      border-radius: 50%;
+                      background-color: rgba(255, 255, 255, 1);
+                      margin-bottom: 0.4vw;
+                    }
+                  }
+                  .depart__info {
+                    left: 0;
+                    transform: translate(-50%, -0.85vw);
+                  }
+                  .arrive__info {
+                    right: 0;
+                    transform: translate(50%, -0.85vw);
+                  }
+                }
+              }
+            }
+          }
+        }
+  
+        .schedule-cover {
           position: relative;
 
           .rowbox {

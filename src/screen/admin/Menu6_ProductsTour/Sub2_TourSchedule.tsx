@@ -54,6 +54,7 @@ export default function Sub2_TourSchedule (props:any) {
 	const [list, setList] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
+	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
   const fetchPosts = async () => {
     const res = await axios.get(`${MainURL}/tourproductschedule/getproductschedule/${currentPage}`)
     if (res.data.resultData) {
@@ -66,6 +67,11 @@ export default function Sub2_TourSchedule (props:any) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
       setNationList(copy);
+			const searchNationsResult = copy.map((item:any)=>
+        ({ value:`${item.nationKo}`,  label:`${item.nationKo}` })
+      );
+      searchNationsResult.unshift({ value: '전체', label: '전체' });
+			setSearchNationsOptions(searchNationsResult);
     }
   };
 
@@ -104,12 +110,14 @@ export default function Sub2_TourSchedule (props:any) {
 
 
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
+	const [searchNation, setSearchNation] = useState('전체');
 	const [searchSort, setSearchSort] = useState('전체');
 	const [searchWord, setSearchWord] = useState('');
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
 			const res = await axios.post(`${MainURL}/tourproductschedule/getproductschedulesearch`, {
+				nation : searchNation,
 				sort : searchSort,
 				word : searchWord
 			});
@@ -211,6 +219,15 @@ export default function Sub2_TourSchedule (props:any) {
 			<div className="searchbox">
 				<div className="cover">
 					<div className="content">
+						<DropdownBox
+							widthmain='150px'
+							height='35px'
+							selectedValue={searchNation}
+							options={searchNationsOptions}
+							handleChange={(e)=>{
+								setSearchNation(e.target.value);
+							}}
+						/>
 						<DropdownBox
 							widthmain='150px'
 							height='35px'

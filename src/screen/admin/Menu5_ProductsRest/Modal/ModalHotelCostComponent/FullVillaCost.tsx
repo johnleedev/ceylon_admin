@@ -139,12 +139,12 @@ export default function FullVillaCost (props : any) {
 
   const dollarOption = [
     { value: '선택', label: '선택' },
-    { value: '5', label: '5' },
-    { value: '10', label: '10' },
-    { value: '15', label: '15' },
-    { value: '20', label: '20' },
-    { value: '25', label: '25' },
-    { value: '30', label: '30' }
+    { value: '50', label: '50' },
+    { value: '100', label: '100' },
+    { value: '150', label: '150' },
+    { value: '200', label: '200' },
+    { value: '250', label: '250' },
+    { value: '300', label: '300' }
   ]
 
   // 화폐 적용 함수
@@ -1183,7 +1183,7 @@ export default function FullVillaCost (props : any) {
                                       <div className="dayBtn"
                                         onClick={()=>{
                                           const copy = [...inputCost];
-                                          copy[sectionIndex].inputDefault[index].period = [...copy[index].inputDefault[index].period, {start:"", end:""}];
+                                          copy[sectionIndex].inputDefault[index].period = [...copy[sectionIndex].inputDefault[index].period, {start:"", end:""}];
                                           setInputCost(copy);
                                         }}
                                       >

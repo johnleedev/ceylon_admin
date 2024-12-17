@@ -15,6 +15,8 @@ const Header: React.FC = () => {
     { title: "유럽", url:"/products/tourdetail", links: [] },
     { title: "여행지 미리가기", url:"/products/hotelresort", links: [] },
     { title: "여행후기", url:"/products", links: [] },
+    { title: "견적서만들기", url:"/estimate", links: [] },
+    { title: "견적서고객용", url:"/user", links: [] },
     { title: "관리자", url:"/admin", links: [] }
   ];
 
