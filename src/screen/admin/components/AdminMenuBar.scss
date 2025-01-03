@@ -12,13 +12,15 @@
   background-color: #303a51;
   z-index: 7;
   border-bottom: 2px solid #EAEAEA;
+  display: flex;
+  flex-direction: column;
 
   .mainmenu {
-    
-    
-  > .inner {
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 30px;
+
+    > .inner {
+      display: flex;
+      flex-direction: column;
 
       .mainbox {
         @include middle;
@@ -34,7 +36,7 @@
       }
 
       .box {
-        height: 60px;
+        height: 55px;
         padding-left: 30px;
         display: flex;
         align-items: center;
@@ -83,6 +85,39 @@
         cursor: pointer;
       }
     }  
+  }
+
+  .exchange-rate {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    z-index: 2;
+    @include middle;
+    
+    .exchange-rate-box {
+      width: 90%;
+      border: 1px solid #BDBDBD;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      box-sizing: border-box;
+      background-color: #303a51;
+
+      p {
+        font-size: 16px;
+        color: #fff;
+      }
+      .top-datebox {
+        margin-bottom: 10px;
+      }
+      .bottom-krwbox {
+        margin-top: 10px;
+      } 
+    }
+   
   }
 
 }

@@ -9,9 +9,10 @@ import { DropdownBox } from '../../../boxs/DropdownBox';
 import { DropDownLandCompany, DropDownTourLocation, DropDowncharger } from '../../DefaultData';
 import Loading from '../components/Loading';
 import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { TextBox } from '../../../boxs/TextBox';
 
 
-export default function Sub5_Notification (props:any) {
+export default function Sub6_CancelRefund (props:any) {
 
 	let navigate = useNavigate();
 
@@ -29,18 +30,16 @@ export default function Sub5_Notification (props:any) {
 		id: number;
 		serialNum : string;
 		date: string;
+		inputState: string;
 		name: string;
-		reserveLocation: string;
-		charger : string;
-		accepter : string;
+		phone : string;
+    charger : string;
+		visitPath: string;
+		visitPathDetail: string;
 		productName : string;
-		tourLocation : string;
-		tourLocationDetail : string;
-		airline : string;
-		tourStartAirport : string;
+    landCompany : string;
 		tourStartPeriod : string;
-		tourEndAirport : string;
-		tourEndPeriod : string;
+		productCost : string;
 	}
 	const [list, setList] = useState<ListProps[]>([]);
 	const [viewList, setViewList] = useState<ListProps[]>([]);
@@ -49,16 +48,15 @@ export default function Sub5_Notification (props:any) {
 	const [arrangeWord2, setArrangeWord2] = useState('');
 
 	const fetchPosts = async () => {
-		const res = await axios.get(`${MainURL}/adminreserve/getreserve`)
+		const res = await axios.get(`${MainURL}/adminlist/getlistreserve`)
 		if (res) {
 			setList(res.data);
-
 			setViewList(res.data);
 		}
 	};
 
 	useEffect(() => {
-		// fetchPosts();
+		fetchPosts();
 	}, []);  
 
 	return (
@@ -126,72 +124,40 @@ export default function Sub5_Notification (props:any) {
 			</div>
 
 			<div style={{height:'30px'}}></div>
-
 						
 			<div className="seachlist">
 
 				<div className="main-title">
 					<div className='title-box'>
-						<h1>고객안내문 발송</h1>
-						<DropdownBox
-							widthmain='100px'
-							height='35px'
-							selectedValue={arrangeWord1}
-							options={DropDownTourLocation}
-							handleChange={(text:any)=>{
-								const textCopy = text.target.value;
-								setArrangeWord1(textCopy);
-								if (textCopy === '선택') {
-									setViewList(list);
-								} else {
-									const copy = list.filter((e:any)=> e.tourLocation === textCopy);
-									if (copy.length === 0) {
-										setIsViewListZero(true);
-									} 
-									setViewList(copy);
-								}
-							}}
-						/>
-						<DropdownBox
-							widthmain='100px'
-							height='35px'
-							selectedValue={arrangeWord2}
-							options={DropDowncharger}
-							handleChange={(text:any)=>{
-								const textCopy = text.target.value;
-								setArrangeWord2(textCopy);
-								if (textCopy === '선택') {
-									setViewList(list);
-								} else {
-									const copy = list.filter((e:any)=> e.charger === textCopy);
-									if (copy.length === 0) {
-										setIsViewListZero(true);
-									} 
-									setViewList(copy);
-									console.log(copy);
-								}
-							}}
-						/>
+						<h1>취소환불 현황</h1>
 					</div>
 				</div>
 
 				<div className="main-list-cover">
 					<div className="titlebox">
 						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='10%' text='고유번호'/>
+						<TitleBox width='10%' text='취소일'/>
 						<TitleBox width='10%' text='예약일/출발일'/>
+						<TitleBox width='5%' text='등급'/>
 						<TitleBox width='8%' text='성함'/>
-						<TitleBox width='8%' text='연락처'/>
-						<TitleBox width='8%' text='여행지'/>
+						<TitleBox width='12%' text='연락처'/>
 						<TitleBox width='15%' text='여행상품'/>
-						<TitleBox width='7%' text='진행상황'/>
+						<TitleBox width='7%' text='랜드사'/>
+						<TitleBox width='7%' text='방문경로'/>
+						<TitleBox width='7%' text='총입금액'/>
+						<TitleBox width='5%' text='환불/날짜'/>
 						<TitleBox width='5%' text='담당자'/>
   				</div>
 					
-					{/* {
+					{
 						viewList.length > 0
 						?
 						viewList.map((item:any, index:any)=>{
+
+							const phoneCopy = item.phone.split('/');
+							const productCostCopy = JSON.parse(item.productCost);
+							const landCompanyCopy = JSON.parse(item.landCompany);
+
 							return (
 								<div key={index}
 									className="rowbox"
@@ -200,12 +166,16 @@ export default function Sub5_Notification (props:any) {
 									}}
 								>
 									<TextBox width='3%' text={index+1} />
-									<TextBox width='10%' text={item.serialNum} />
-									<TextBox width='10%' text={item.date} text2={item.tourStartPeriod}/>
+									<TextBox width='10%' text={item.date}/>
+									<TextBox width='10%' text={item.date}/>
+									<TextBox width='5%' text={item.level} />
 									<TextBox width='8%' text={item.name} />
-									<TextBox width='8%' text={item.tourLocation} />
+									<TextBox width='12%' text={phoneCopy[0]} text2={phoneCopy[1]}/>
 									<TextBox width='15%' text={item.productName} />
-									<TextBox width='7%' text={item.state} />
+									<TextBox width='7%' text={landCompanyCopy[0].companyName}/>
+									<TextBox width='7%' text={item.inputState} />
+									<TextBox width='7%' text={''} />
+									<TextBox width='5%' text={item.reviseDate} />
 									<TextBox width='5%' text={item.charger} />
 								</div>
 							)
@@ -224,7 +194,7 @@ export default function Sub5_Notification (props:any) {
 								</div>
 							}
 						</>
-					} */}
+					}
 				</div>
 
 			</div>

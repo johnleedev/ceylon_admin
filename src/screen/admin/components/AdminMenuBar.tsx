@@ -10,6 +10,9 @@ import icon6 from '../images/menu/icon6.png'
 import icon7 from '../images/menu/icon7.png'
 import icon8 from '../images/menu/icon8.png'
 import { useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from "recoil";
+import { recoilExchangeRate } from "../../../RecoilStore";
+import { DropdownBox } from "../../../boxs/DropdownBox";
 
 
 export default function AdminMenuBar () {
@@ -18,6 +21,30 @@ export default function AdminMenuBar () {
 
   const [currentTab, setCurrentTab] = useState(0);
   const [subCurrentTab, setSubCurrentTab] = useState(1);
+
+  const [date, setDate] = useState('');
+  const [base, setBase] = useState('USD');
+  const [KRW, setKRW] = useState('');
+  const setRecoilExchangeRateCopy = useSetRecoilState(recoilExchangeRate);
+
+  const fetchExchangeRate = async () => {
+    try {
+      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${base}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch exchange rate');
+      }
+      const data = await response.json();
+      setDate(data.date);
+      setKRW(data.rates.KRW);
+      setRecoilExchangeRateCopy([{base:data.base, KRW:data.rates.KRW}]);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchExchangeRate();
+  }, [base])
 
   interface MenuBoxProps {
     num: number;
@@ -92,12 +119,11 @@ export default function AdminMenuBar () {
           {
             currentTab === 2 &&
             <div className="sub-box">
-              <RowBox num={1} text='온라인DB' link="/admin/counsel"/>
-              <RowBox num={2} text='상담리스트' link="/admin/counsel/counsellist"/>
-              <RowBox num={3} text='견적리스트' link="/admin/counsel/estimatelist"/>
-              <RowBox num={4} text='상담종료' link="/admin/counsel/closelist"/>
-              <RowBox num={5} text='예약전환' link="/admin/counsel/switch"/>
-              <RowBox num={6} text='전체리스트' link="/admin/counsel/allList"/>
+              <RowBox num={1} text='New DB' link="/admin/counsel"/>
+              <RowBox num={2} text='견적 DB' link="/admin/counsel/estimatelist"/>
+              <RowBox num={3} text='방문 DB' link="/admin/counsel/counsellist"/>
+              <RowBox num={4} text='예약전환 DB' link="/admin/counsel/switchlist"/>
+              <RowBox num={5} text='상담종료 DB' link="/admin/counsel/closelist"/>
             </div>
           }
 
@@ -106,10 +132,11 @@ export default function AdminMenuBar () {
             currentTab === 3 &&
             <div className="sub-box">
               <RowBox num={1} text='예약리스트' link="/admin/reserve"/>
-              <RowBox num={2} text='수배현황' link="/admin/reserve/arrange"/>
-              <RowBox num={3} text='입출금현황' link="/admin/reserve/moneystate"/>
-              <RowBox num={4} text='취소환불현황' link="/admin/reserve/cancelrefund"/>
-              <RowBox num={5} text='공지사항 발송' link="/admin/reserve/notification"/>
+              <RowBox num={2} text='고객입금내역' link="/admin/reserve/depositlist"/>
+              <RowBox num={3} text='수배현황' link="/admin/reserve/arrangestate"/>
+              <RowBox num={4} text='지상비출금현황' link="/admin/reserve/withdrawstate"/>
+              {/* <RowBox num={5} text='고객안내문 발송' link="/admin/reserve/notification"/> */}
+              <RowBox num={5} text='취소환불현황' link="/admin/reserve/cancelrefund"/>
             </div>
           }
 
@@ -189,6 +216,29 @@ export default function AdminMenuBar () {
 
 
    
+        </div>
+      </div>
+
+      <div className="exchange-rate">
+        <div className="exchange-rate-box">
+          <div className="top-datebox">
+            <p>{date} 기준:</p>
+          </div>
+          <DropdownBox
+            widthmain='100%' height='35px' 
+            selectedValue={base}
+            options={[
+              { value: 'USD', label: '미국 1 USD' },
+              { value: 'EUR', label: '유럽 1 EUR' },
+              { value: 'JPY', label: '일본 1 JYP' },
+              { value: 'THB', label: '태국 1 THB' },
+            ]}   
+            marginHorisontal={10}
+            handleChange={(e)=>{setBase(e.target.value);}}
+          />
+          <div className="bottom-krwbox">
+            <p>= KRW {KRW} 원</p>
+          </div>
         </div>
       </div>
        

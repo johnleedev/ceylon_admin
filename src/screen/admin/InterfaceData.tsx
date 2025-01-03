@@ -1,133 +1,133 @@
+
+// 예약하기 ModalReserve -------------------------------------------------------------------------
+export interface ReserveStateProps {
+  contractCompleted : boolean, 
+  ticketIssued : boolean, 
+  reserveConfirm : boolean, 
+  fullPayReceived : boolean, 
+  departNoticeSent : boolean
+}
+
+export interface WorkStateProps {
+  progressNoticeSent : boolean,
+  passportVerify : boolean,
+  finalSchedule : boolean,
+  remainPayRequest : boolean,
+  tourInfoMaterial: boolean
+}
+
 export interface UserInfoProps {
-    no: number, 
+    userNum : number;
     sort : string, 
     nameKo: string, 
-    lastName: string, 
-    firstName: string,
+    nameLast: string, 
+    nameFirst: string,
     birth: string, 
-    male: string, 
+    gender: string, 
     nation: string, 
-    passPortNum: string, 
-    passPortDate: string,
+    passportNum: string, 
+    passportDate: string,
     residentNum : string, 
     phone: string
   }
-
-export interface ReserveInfoProps {
-  accepter: string;
-  ballance: string;
-  cashBillInfo: string;
-  charger: string;
-  costListSum: string;
-  date: string;
-  id: number;
-  inputState: string;
-  isCashBill: string;
-  landCompany: {
-      companyName: string;
-      notice: string;
-  }[];
-  name: string;
-  productName: null;
-  recommender: string;
-  reserveLocation: string;
-  serialNum: string;
-  totalCost: string;
-  tourEndAirport: null;
-  tourEndPeriod: null;
-  tourLocation: null;
-  tourLocationDetail: null;
-  tourStartAirport: null;
-  tourStartPeriod: null;
-  tourTotalContractCost: string;
-  visitPath: string;
-  visitPathDetail: string;
-}
-
-export interface AirlineProps {
-   airlineName: string;
-};
-
-export interface ProductCostProps {
-    costAdult: string | null;
-    costAdultNum: string;
-    costChild: string | null;
-    costChildNum: string;
-    costInfant: string | null;
-    costInfantNum: string;
+  
+export interface VisitPathInfoProps {
+    reserveLocation : string, 
+    charger: string, 
+    accepter: string,
+    visitPath : string, 
+    visitPathDetail : string,  
+    recommender: string
+  }
+  
+export interface ProductInfoProps { 
+    tourLocation : string,
+    tourLocationDetail : string,
+    productName : string,
+    airline : string[],
+    landCompany : {
+      companyName: string,
+      notice: string
+    }[],
+    tourStartAirport : string,
+    tourStartPeriod : string,
+    tourEndAirport : string,
+    tourEndPeriod : string,
+    costAdult: string;
+    costAdultNum: number;
+    costChild: string;
+    costChildNum : number;
+    costInfant: string;
+    costInfantNum: number;
     costAll: string;
-    reserveExchangeRate: string;
+    reserveExchangeRate : number;
     isNotice: boolean;
     isClientCheck: boolean;
-};
+  }
 
-export interface AirportStateProps {
-    date: string;
-    section: string;
-    airport: string;
-    timeDepart: string;
-    timeArrive: string;
-    state: string;
-}[];
-
-
-export interface TicketingStateProps {
-    company: string;
-    ticketBooth: string;
-    date: string;
-    state: string;
-}[];
+export interface AirlineReserveStateProps {
+  airlineState : {
+    airlineCompany : string;
+    airlineName : string;
+    departAirport : string;
+    departDate : string;
+    departTime : string;
+    arriveAirport : string;
+    arriveDate : string;
+    arriveTime : string;
+  }[]
+  ticketingState : {
+    company : string;
+    ticketBooth : string;
+    date : string;
+    state : string;
+  }[]
+}
 
 export interface HotelReserveStateProps {
-    date1: string;
-    date2: string;
-    location: string;
+    checkIn : string;
+    checkOut : string;
+    location : string;
     hotelName: string;
-    roomType: string;
+    roomType : string;
     days: string;
-}[];
-
-export interface LandCompanyProps {
-    companyName: string;
-    notice: string;
-}[];
+}[]
 
 export interface EtcStateProps {
-    includes: string;
-    insuranceCompany: string;
+    includes : string;
+    notIncludes : string;
     freeGift : string;
     freeGiftDetail : string;
-    insuranceCost: string;
-    notIncludes: string;
-    travelInsurance: string;
-};
+    travelInsurance : string;
+    insuranceCompany : string;
+    insuranceCost : string;
+  }
 
+export interface DepositCostInfoProps { 
+    tourTotalContractCost : string; 
+    costListSum : string;
+    contractCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
+    airportCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
+    reviseAirportCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
+    middleCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
+    restCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
+    additionCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
+    refundCost : {nameko: string, cost: string, date: string},
+    totalCost : string, 
+    ballance : string, 
+    isCashBill : boolean, 
+    cashBillInfo : { type: string, authNum: string, date: string}
+}
+  
 
-export interface DepositCostProps {
-    nameko: string;
-    cost: string;
-    date: string;
-    type: string;
-    deposit: string;
-};
-
-export interface RefundCostProps {
-    nameko: string;
-    cost: string;
-    date: string;
-};
-
-export interface CashBillInfoProps {
-    type: string;
-    AuthNum: string;
-    date: string;
-};
-
-
-export interface DeliveryProps {
+export interface DeliveryInfoProps {
     name: string;
     requestDate: string;
     completeDate: string;
     deliveryType: string;
     charger: string;
-};
+}[];
+
+
+
+

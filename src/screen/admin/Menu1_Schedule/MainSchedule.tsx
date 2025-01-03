@@ -3,7 +3,7 @@ import './MainSchedule.scss'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction';
-import ModalReserve from '../ModalReserve/ModalReserve';
+import ModalReserve from './ModalReserve/ModalReserve';
 import ModalCheckCounsel from './ModalCheck/ModalCheckCounsel';
 import ModalInputCounsel from './ModalInputCounsel';
 import axios from 'axios';
@@ -18,6 +18,20 @@ import Loading from '../components/Loading';
 import { useRecoilValue } from 'recoil';
 import { recoilExchangeRate } from '../../../RecoilStore';
 import { format } from 'date-fns';
+import { userInfo } from 'os';
+
+interface EventsProps {
+  date: string;
+  charger: string;
+  name: string;
+  visitTime : string;
+}
+
+interface SelectBoxProps {
+  num: number;
+  text: string;
+}
+
 
 export default function MainSchdule() {
 
@@ -33,11 +47,6 @@ export default function MainSchdule() {
   const [currentMonth, setCurrentMonth] = useState('');
 
 
-  interface SelectBoxProps {
-    num: number;
-    text: string;
-  }
-  
   const SelectBox: React.FC<SelectBoxProps> = ({ num, text }) => (
     <div 
       className="select-box" 
@@ -56,13 +65,6 @@ export default function MainSchdule() {
   )
 
   // 게시글 가져오기 ------------------------------------------------------
-  interface EventsProps {
-    date: string;
-    charger: string;
-    name: string;
-    visitTime : string;
-  }
-
   const fetchOnlinePosts = async () => {
     const resOnline = await axios.get(`${MainURL}/adminschedule/getonlinelist/all`)
     if (resOnline) {
@@ -79,7 +81,12 @@ export default function MainSchdule() {
   const fetchReservePosts = async () => {
     const resReserve = await axios.get(`${MainURL}/adminreserve/getreserve`)
     if (resReserve) {
-      setEvents(resReserve.data);
+      const copy = [...resReserve.data];
+      const result = copy.map((item) => ({
+        ...item,
+        userInfo: JSON.parse(item.userInfo).map((user:any) => user.nameKo).join('/')
+      }));
+      setEvents(result);
     }
   };
   const fetchReserveDepartPosts = async () => {
@@ -112,7 +119,7 @@ export default function MainSchdule() {
   const handleDatesSet = (dateInfo:any) => {
     const calendarApi = dateInfo.view.calendar;
     const startDate = calendarApi.getDate();
-    const month = startDate.getMonth() + 1; // getMonth()는 0부터 시작하므로 1을 더합니다.
+    const month = startDate.getMonth() + 1; 
     setCurrentMonth(month);
   };
 
@@ -148,7 +155,7 @@ export default function MainSchdule() {
         </>}
         { currentTab === 3 &&<>
           <h2>{eventInfo.event.extendedProps.charger}</h2>
-          <p>{eventInfo.event.extendedProps.name}</p>
+          <p>{eventInfo.event.extendedProps.userInfo}</p>
         </>}
         { currentTab === 4 &&<>
           <h2>{eventInfo.event.extendedProps.charger}</h2>
@@ -193,21 +200,17 @@ export default function MainSchdule() {
   };
   // function
   const handleReserveMain = async () => {
-    await axios
-    .post(`${MainURL}/adminreserve/savemain`, {
-      sort: sort,
-      date : selectDate,
-      exchangeRate : recoilExchangeRateCopy[0].KRW
-    })
-    .then((res)=>{
-      if (res.data.result) {
-        setSerialNum(res.data.serialNum);
-        setIsViewReserveModal(true);
-      }
-    })
-    .catch((err)=>{
-      alert('다시 시도해주세요.')
-    })
+    setModalSort('new');
+    const formattedDate = format(currentDate, 'yyyyMMdd');
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const charactersLength = characters.length;
+    for (let i = 0; i < 2; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    const uniqueNum = `${sort}${formattedDate.substring(2)}${result}`;
+    setSerialNum(uniqueNum);
+    setIsViewReserveModal(true);
   };
 
 
@@ -289,7 +292,7 @@ export default function MainSchdule() {
               onClick={()=>{
                 setIsViewCounselModal(true);
               }}
-            >상담등록</div>
+            >방문등록</div>
             <div 
               className="select-box" 
               style={{backgroundColor: '#242d3f', color: '#fff' }}
@@ -363,12 +366,12 @@ export default function MainSchdule() {
           <div className='modal-backcover' style={{height : height + 100}}></div>
           <div className='modal-maincover' ref={divAreaRef}>
              <ModalReserve 
-              sort={sort === 'H' ? '허니문' : '일반'}
               serialNum={serialNum}
               setIsViewModal={setIsViewReserveModal}
               refresh={refresh}
               setRefresh={setRefresh}
               modalSort={modalSort}
+              setModalSort={setModalSort}
               fetchReservePosts={fetchReservePosts}
              />
           </div>

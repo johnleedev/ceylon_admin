@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import '../SearchBox.scss'
-import '../SearchList.scss'
+import '../SearchBox.scss';
+import '../SearchList.scss';
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { formatDate, subDays } from 'date-fns';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import Loading from '../components/Loading';
+import { DropDowncharger } from '../../DefaultData';
 
 export default function Sub1_Online (props:any) {
 
@@ -132,143 +133,80 @@ export default function Sub1_Online (props:any) {
 				
 			<div className="searchbox">
 				<div className="cover">
-					<div className="title">
-						<h3>기간</h3>
-					</div>
 					<div className="content">
-						<DropdownBox
-                widthmain='80px'
-                height='35px'
-                selectedValue={dateSort}
-                options={[
-									{ value: '선택', label: '선택' },
-									{ value: '문의일', label: '문의일' },
-									{ value: '방문일', label: '방문일' },
-								]}
-                handleChange={(e)=>{setDateSort(e.target.value)}}
-              />
-						<div className="btn-row">
-						{
-							selectDays.map((item:any, index:any)=>{
-								return (
-									<div className='btnbox' key={index} style={{backgroundColor:dateSelect === item.name ? '#EAEAEA' : "#fff"}}
-										onClick={()=>{
-											setDateSelect(item.name);
-											handleDateSelect(item.period);
-										}}
-									>
-										<p>{item.name}</p>
-									</div>
-								)
-							})
-						}
-						</div>
 						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setStartDate} date={startDate} marginLeft={1}/>
 						<p>~</p>
-						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setEndDate} date={endDate} marginLeft={1}/>
-					</div>
-				</div>
-				<div className="cover">
-					<div className="title">
-						<h3>검색어</h3>
-					</div>
-					<div className="content">
-						<CheckBox title='예약자명'/>
-						<CheckBox title='전화번호'/>
-						{/* <CheckBox title='상품코드'/>
-						<CheckBox title='아이디'/> */}
+						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setEndDate} date={endDate} marginLeft={20}/>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={dateSort}
+							options={[
+								{ value: '선택', label: '선택' },
+								{ value: '여행지1', label: '여행지1' },
+								{ value: '여행지2', label: '여행지2' },
+							]}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
+						/>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={dateSort}
+							options={DropDowncharger}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
+						/>
 						<input className="inputdefault" type="text" style={{width:'20%', textAlign:'left'}} 
-              value={word} onChange={(e)=>{setWord(e.target.value)}}/>
-					</div>
-				</div>
-				<div className="buttons" style={{margin:'20px 0'}}>
-					<DropdownBox
-						widthmain='80px'
-						height='35px'
-						selectedValue={searchSort}
-						options={[
-							{ value: '기간', label: '기간' },
-							{ value: '검색어', label: '검색어' }
-						]}
-						handleChange={(e)=>{setSearchSort(e.target.value)}}
-					/>
-					<div className="buttons" style={{margin:'20px 0'}}>
-						<div className="btn searching"
-							onClick={()=>{
-								searchSort === '기간' ? handleDateSearching() : handleWordSearching();
-							}}
-						>
-							<p>검색</p>
+              value={word} placeholder='고객명/연락처'
+							onChange={(e)=>{setWord(e.target.value)}}
+						/>
+						<div className="buttons" style={{margin:'20px 0'}}>
+							<div className="btn searching"
+								onClick={()=>{
+									searchSort === '기간' ? handleDateSearching() : handleWordSearching();
+								}}
+							>
+								<p>검색</p>
+							</div>
+							<div className="btn reset"
+								onClick={()=>{
+									setDateSort('문의일');
+									setViewList(list);
+									setDateSelect('');
+									setStartDate('');
+									setEndDate('');
+									setSearchSelect('');
+									setWord('');
+								}}
+							>
+								<p>초기화</p>
+							</div>
 						</div>
-					</div>
-					<div className="btn reset"
-						onClick={()=>{
-							setDateSort('문의일');
-							setViewList(list);
-							setDateSelect('');
-							setStartDate('');
-							setEndDate('');
-							setSearchSelect('');
-							setWord('');
-						}}
-					>
-						<p>초기화</p>
 					</div>
 				</div>
 			</div>
+
+			<div style={{height:'30px'}}></div>
 
 			<div className="seachlist">
 
 				<div className="main-title">
 					<div className='title-box'>
-						<h1>온라인 문의</h1>
-						<DropdownBox
-							widthmain='100px'
-							height='35px'
-							selectedValue={arrangeWord}
-							options={[
-								{ value: '선택', label: '선택' },
-								{ value: '상담', label: '상담' },
-								{ value: '견적', label: '견적' },
-							]}
-							handleChange={(text:any)=>{
-								const textCopy = text.target.value;
-								setArrangeWord(textCopy);
-								if (textCopy === '선택') {
-									setViewList(list);
-								} else {
-									const copy = list.filter((e:any)=> e.sort === textCopy);
-									if (copy.length === 0) {
-										setIsViewListZero(true);
-									} 
-									setViewList(copy);
-								}
-							}}
-						/>
-					</div>
-					<div className='contactBtn-box'>
-						<div className="contactBtn">
-							<p>전화문의</p>
-						</div>
-						<div className="contactBtn">
-							<p>카카오문의</p>
-						</div>
+						<h1>New DB</h1>
 					</div>
 				</div>
 
 				<div className="main-list-cover">
 					<div className="titlebox">
 						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='12%' text='문의일'/>
+						<TitleBox width='12%' text='답변일/문의일'/>
 						<TitleBox width='5%' text='형태'/>
 						<TitleBox width='8%' text='성함'/>
 						<TitleBox width='12%' text='연락처'/>
-						<TitleBox width='12%' text='예식일'/>
-						<TitleBox width='10%' text='관심여행지'/>
-						<TitleBox width='10%' text='통화가능시간'/>
-						<TitleBox width='12%' text='방문일'/>
-						<TitleBox width='7%' text='방문시간'/>
-						<TitleBox width='7%' text='장소'/>
+						<TitleBox width='12%' text='여행지'/>
+						<TitleBox width='10%' text='여행예정일'/>
+						<TitleBox width='10%' text='방문경로'/>
+						<TitleBox width='12%' text='진행상황'/>
+						<TitleBox width='7%' text='담당자'/>
   				</div>
 					
 					{
@@ -287,16 +225,15 @@ export default function Sub1_Online (props:any) {
 								 }}
 								>
 									<TextBox width='3%' text={index+1} />
-									<TextBox width='12%' text={item.date} />
+									<TextBox width='12%' text={item.date} text2={item.date}/>
 									<TextBox width='5%' text={item.sort} />
 									<TextBox width='8%' text={item.name} />
 									<TextBox width='12%' text={item.phone} />
-									<TextBox width='12%' text={item.dateCeremony} />
-									<TextBox width='10%' text={item.tourLocation} />
-									<TextBox width='10%' text={item.callTime} />
-									<TextBox width='12%' text={item.visitDate} />
-									<TextBox width='7%' text={item.visitTime} />
-									<TextBox width='7%' text={item.stage} />
+									<TextBox width='12%' text={item.tourLocation} />
+									<TextBox width='10%' text={item.dateStart} />
+									<TextBox width='10%' text={item.visitPath} />
+									<TextBox width='12%' text={item.state} />
+									<TextBox width='7%' text={item.charger} />
 								</div>
 							)
 						})

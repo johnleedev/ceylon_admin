@@ -371,7 +371,7 @@ export default function EstimateSample (props:any) {
               <h5>상담하기</h5>
             </div>
             <div className="estimate-bottom-cost-Btnbox"
-              style={{background:'#007BFF', color:'#FFF'}}
+              style={{background:'#10a5d8', color:'#FFF'}}
             >
               <h5>예약하기</h5>
             </div>

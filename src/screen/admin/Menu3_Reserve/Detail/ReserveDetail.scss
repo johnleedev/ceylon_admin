@@ -73,29 +73,73 @@
     padding: 10px;
     display: flex;
   
-    // 상태 표시줄
-    .state-row {
+    // 예약 상태 표시줄
+    .reserveState-row {
       display: flex;
       border: 1px solid #EAEAEA;
-      padding: 5px;
+      align-items: center;
+      box-sizing: border-box;
       background-color: #DBDBDB;
 
-      .textbox {
-        height: 25px;
-        width: 24%;
+      .reserveState-box {
+        width: 20%;
+        height: 35px;
+        position: relative;
         @include middle();
-
-        p {
-          font-size: 14px;
+        .textbox {
+          p {
+            font-size: 14px;
+          }
+        }
+        .rotatebox {
+          position: absolute;
+          top: 0;
+          right: -13px;
+          bottom: 0;
+          margin: auto;
+          width: 25px;
+          height: 25px;
+          background-color: #DBDBDB;
+          transform: rotate(45deg);
+          border-right: 1px solid #fff;
+          border-top: 1px solid #fff;
         }
       }
-      .rotatebox {
-        width: 25px;
-        height: 25px;
-        background-color: #DBDBDB;
-        transform: rotate(45deg);
-        border-right: 1px solid #fff;
-        border-top: 1px solid #fff;
+      .selected {
+        background-color: #5fb7df;
+        .rotatebox {
+          background-color: #5fb7df;
+        }
+      }
+    }
+
+    // 업무 상태 표시줄
+    .workState-row {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+
+      .workState-box {
+        width: 19%;
+        height: 35px;
+        @include middle();
+        border: 1px solid #ccc;
+        border-radius: 5px;
+
+        .checkbox {
+          margin-left: 10px;
+          font-size: 14px;
+          color: #ccc;
+        }
+      }
+      .selected {
+        background-color: #5fb7df;
+        color: #fff;
+        .checkbox {
+          color: #333;
+        }
       }
     }
 
@@ -201,6 +245,26 @@
         padding: 20px;
         box-sizing: border-box;
 
+        .content-menu-btn-box {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          
+          .content-menu-btn {
+            width: 25%;
+            height: 40px;
+            @include middle();
+            border: 1px solid #EAEAEA;
+          }
+          .content-menu-btn:hover {
+            cursor: pointer;
+            border: 1px solid #333;
+          }
+        }
+        .selected {
+          background-color: #333;
+          color: #fff;
+        }
         .textarea {
           width: 100%;
           font-size: 15px;

@@ -6,77 +6,87 @@ import { DateBoxNum } from '../../../../boxs/DateBoxNum';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../../MainURL';
-import { AirportStateProps, CashBillInfoProps, DeliveryProps, DepositCostProps, EtcStateProps, HotelReserveStateProps, LandCompanyProps, RefundCostProps, ReserveInfoProps, 
-        TicketingStateProps, UserInfoProps, ProductCostProps, 
-        AirlineProps} from '../../InterfaceData';
+import { DeliveryInfoProps, DepositCostInfoProps, EtcStateProps, HotelReserveStateProps,
+        UserInfoProps, VisitPathInfoProps, ProductInfoProps,
+        AirlineReserveStateProps,
+        ReserveStateProps,
+        WorkStateProps} from '../../InterfaceData';
 import Loading from '../../components/Loading';
 import { DropdownBox } from '../../../../boxs/DropdownBox';
-import ModalReserve from '../../ModalReserve/ModalReserve';
+import ModalReserve from '../../Menu1_Schedule/ModalReserve/ModalReserve';
 import { TextBox } from '../../../../boxs/TextBox';
 import { FaCheck } from "react-icons/fa";
 import { format } from 'date-fns';
 
 export default function ReserveDetail (props : any) {
 
+   const DepositCostInfMapBox = ({ originitem, title, length}: { originitem: any; title:string, length:number,  }) => (
+    <>
+    { originitem.map((item:any, index:any)=>{
+        return (
+          <div className="coverbox" key={index}>
+            <div className="coverrow rightborder" style={{width:'40%'}}>
+              <TitleBox width='100px' text={length > 1 ? `${title}${index+1}` : `${title}`}/>
+              <TextBoxPL10 width="40%" text={item.cost} justify='flex-end'/>
+              <p>원</p>
+            </div>
+            <div className="coverrow" style={{width:'60%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+              <TextBoxPL10 width="80%" text={item.date} justify='center'/>
+              <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
+              <TextBoxPL10 width="80%" text={item.type} justify='center'/>
+              <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
+              <TextBoxPL10 width="80%" text={item.deposit ? "입금확인" : ""} justify='center'/>
+            </div>
+          </div>
+            )
+        })}
+    </>
+  )
+
+
   let navigate = useNavigate();
   const location = useLocation();
   const serialNum = location.state;
   const [refresh, setRefresh] = useState<boolean>(false);
+
+  const [reserveState, setReserveState] = useState<ReserveStateProps>();
+  const [workState, setWorkState] = useState<WorkStateProps>();
+  const [productName, setProductName] = useState('');
+  const [landCompany, setLandCompany] = useState('');
+  const [visitPath, setVisitPath] = useState('');
+  const [charger, setCharger] = useState('');
+
   const [userInfo, setUserInfo] = useState<UserInfoProps[]>([]);
-  const [reserveInfo, setReserveInfo] = useState<ReserveInfoProps>();
-  const [airline, setAirline] = useState<AirlineProps[]>([]);
-  const [productCost, setProductCost] = useState<ProductCostProps>();
-  const [airportState, setAirportState] = useState<AirportStateProps[]>([]);
-  const [ticketingState, setTicketingState] = useState<TicketingStateProps[]>([]);
+  const [visitPathInfo, setVisitPathInfo] = useState<VisitPathInfoProps>();
+  const [productInfo, setProductInfo] = useState<ProductInfoProps>();
+  const [airlineReserveState, setAirlineReserveState] = useState<AirlineReserveStateProps>();
   const [hotelReserveState, setHotelReserveState] = useState<HotelReserveStateProps[]>([]);
-  const [landCompany, setLandCompany] = useState<LandCompanyProps[]>([]);
   const [etcState, setEtcState] = useState<EtcStateProps>();
-  const [depositCostList, setDepositCostList] = useState<DepositCostProps[]>([]);
-  const [refundCost, setRefundCost] = useState<RefundCostProps>();
-  const [cashBillInfo, setCashBillInfo] = useState<CashBillInfoProps>();
-  const [deliveryList, setDeliveryList] = useState<DeliveryProps[]>([]);
+  const [depositCostInfo, setDepositCostInfo] = useState<DepositCostInfoProps>();
+  const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfoProps[]>([]);
   
   // 데이터 가져오기 --------------------------------------------------------------------------------------------
 	const fetchPosts = async () => {
-		const resuser = await axios.get(`${MainURL}/adminreserve/getreserveuser/${serialNum}`)
-		if (resuser) {
-			setUserInfo(resuser.data);
-		}
     const resinfo = await axios.get(`${MainURL}/adminreserve/getreserveinfo/${serialNum}`)
     if (resinfo) {
-			setReserveInfo(resinfo.data[0]);
-      setAirline(JSON.parse(resinfo.data[0].airline));
-      setProductCost(JSON.parse(resinfo.data[0].productCost));
-      setAirportState(JSON.parse(resinfo.data[0].airportState));
-      setTicketingState(JSON.parse(resinfo.data[0].ticketingState));
-      setHotelReserveState(JSON.parse(resinfo.data[0].hotelReserveState));
-      setLandCompany(JSON.parse(resinfo.data[0].landCompany));
-      setEtcState(JSON.parse(resinfo.data[0].etcState));
-      const costListCopy = [
-        JSON.parse(resinfo.data[0].contractCost),
-        JSON.parse(resinfo.data[0].airportCost),
-        JSON.parse(resinfo.data[0].reviseAirportCost),
-        JSON.parse(resinfo.data[0].middleCost),
-        JSON.parse(resinfo.data[0].restCost),
-        JSON.parse(resinfo.data[0].additionCost)
-      ]
-      setDepositCostList(costListCopy);
-      setRefundCost(JSON.parse(resinfo.data[0].refundCost));
-      const deliveryListCopy = [
-        JSON.parse(resinfo.data[0].eTicket),
-        JSON.parse(resinfo.data[0].visaEsta),
-        JSON.parse(resinfo.data[0].decideDoc),
-        JSON.parse(resinfo.data[0].prepare),
-        JSON.parse(resinfo.data[0].freeGift),
-        JSON.parse(resinfo.data[0].happyCall),
-        JSON.parse(resinfo.data[0].refund)
-      ];
-      setCashBillInfo(JSON.parse(resinfo.data[0].cashBillInfo));
-      setDeliveryList(deliveryListCopy)
+      const copy = {...resinfo.data[0]}
+      setReserveState(JSON.parse(copy.reserveState));
+      setWorkState(JSON.parse(copy.workState));
+      setProductName(copy.productName);
+      setLandCompany(copy.landCompany);
+      setVisitPath(copy.visitPath);
+      setCharger(copy.charger);
+      setUserInfo(JSON.parse(copy.userInfo));
+			setVisitPathInfo(JSON.parse(copy.visitPathInfo));
+      setProductInfo(JSON.parse(copy.productInfo));
+      setAirlineReserveState(JSON.parse(copy.airlineReserveState));
+      setHotelReserveState(JSON.parse(copy.hotelReserveState));
+      setEtcState(JSON.parse(copy.etcState));
+      setDepositCostInfo(JSON.parse(copy.depositCostInfo));
+      setDeliveryInfo(JSON.parse(copy.deliveryInfo));
 		}
 	};
-
-  
+ 
 	useEffect(() => {
 		fetchPosts();
   }, [refresh]);  
@@ -104,6 +114,7 @@ export default function ReserveDetail (props : any) {
     charger : string;
     content : string;
   };
+  const [isSelectedMenuBtn, setIsSelectedMenuBtn] = useState('');
 
   const [reserveCSList, setReserveCSList] = useState<ReserceCSProps[]>([]);
   const [refreshCS, setRefreshCS] = useState<boolean>(false);
@@ -169,17 +180,15 @@ export default function ReserveDetail (props : any) {
 
   return (
     (userInfo.length > 0 
-      && (reserveInfo !== undefined && reserveInfo !== null) 
-      && (airline.length > 0)
-      && (productCost !== undefined && productCost !== null)
-      && (airportState.length > 0)
-      && (ticketingState.length > 0)
+      && (reserveState !== undefined && reserveState !== null)
+      && (workState !== undefined && workState !== null)
+      && (visitPathInfo !== undefined && visitPathInfo !== null) 
+      && (productInfo !== undefined && productInfo !== null)
+      && (airlineReserveState !== undefined && airlineReserveState !== null)
       && (hotelReserveState.length > 0)
-      && (landCompany.length > 0)
       && (etcState !== undefined && etcState !== null)
-      // && (depositCostList.length > 0)
-      && (refundCost !== undefined && refundCost !== null)
-      && (cashBillInfo !== undefined && cashBillInfo !== null)
+      && (depositCostInfo !== undefined && depositCostInfo !== null)
+      && (deliveryInfo.length > 0)
     )
     ?
     <div className='reservedetail'>
@@ -191,26 +200,26 @@ export default function ReserveDetail (props : any) {
           <div className="menu-btn-box">
             <div className="menu-btn"
               onClick={()=>{
-                navigate('/admin/reserve/documentreserve', 
-                  {state: {userInfo : userInfo, reserveInfo: reserveInfo, 
-                    productCost: productCost, depositCostList: depositCostList}});
+                // navigate('/admin/reserve/documentreserve', 
+                //   {state: {userInfo : userInfo, visitPathInfo: visitPathInfo, 
+                //          depositCostInfo: depositCostInfo}});
               }}>
               <p>계약서 생성</p>
             </div>
             <div className="menu-btn"
               onClick={()=>{
-                navigate('/admin/reserve/documentarrange', 
-                  {state: {userInfo : userInfo, reserveInfo: reserveInfo,
-                          airportState: airportState, hotelReserveState: hotelReserveState}});
+                // navigate('/admin/reserve/documentarrange', 
+                //   {state: {userInfo : userInfo, visitPathInfo: visitPathInfo,
+                //          hotelReserveState: hotelReserveState}});
               }}
             >
               <p>수배서 보내기</p>
             </div>
             <div className="menu-btn"
               onClick={()=>{
-                navigate('/admin/reserve/documentcalculate',
-                  {state: {userInfo : userInfo, reserveInfo: reserveInfo, 
-                            airportState: airportState, productCost: productCost}});
+                // navigate('/admin/reserve/documentcalculate',
+                //   {state: {userInfo : userInfo, visitPathInfo: visitPathInfo, 
+                //            }});
               }}
             >
               <p>정산서</p>
@@ -249,28 +258,74 @@ export default function ReserveDetail (props : any) {
 
         <div className='left-cover'>
           
-          <section>
-            <h1>1. 진행상황</h1>
+        <section>
+          <h1>1. 진행상황</h1>
 
-            <div className='state-row' style={{width:'100%' , fontSize:'14px'}}>
+          <div className='reserveState-row'>
+            <div className={reserveState.contractCompleted ? "reserveState-box selected" : "reserveState-box"}>
               <div className='textbox'>
                 <p>계약완료</p>
               </div>
               <div className='rotatebox'></div>
+            </div>
+            <div className={reserveState.ticketIssued ? "reserveState-box selected" : "reserveState-box"}>
               <div className='textbox'>
                 <p>발권완료</p>
               </div>
-              <div className='rotatebox'></div>
+              <div className='rotatebox '></div>
+            </div>
+            <div className={reserveState.reserveConfirm ? "reserveState-box selected" : "reserveState-box"}>
               <div className='textbox'>
                 <p>예약확정</p>
               </div>
               <div className='rotatebox'></div>
+            </div>
+            <div className={reserveState.fullPayReceived ? "reserveState-box selected" : "reserveState-box"}>
               <div className='textbox'>
-                <p>출발준비</p>
+                <p>여행경비납부</p>
+              </div>
+              <div className='rotatebox'></div>
+            </div>
+            <div className={reserveState.departNoticeSent ? "reserveState-box selected" : "reserveState-box"}>
+              <div className='textbox'>
+                <p>출발안내문발송</p>
               </div>
             </div>
-            
-          </section>
+          </div>
+
+          <div className='workState-row'>
+            <div className={workState.progressNoticeSent ? "workState-box selected" : "workState-box"}>
+              <div className='textbox'>
+                <p>진행안내발송</p>
+              </div>
+              <FaCheck size={12} className='checkbox'/>
+            </div>
+            <div className={workState.passportVerify? "workState-box selected" : "workState-box"}>
+              <div className='textbox'>
+                <p>여권확인</p>
+              </div>
+              <FaCheck size={12} className='checkbox'/>
+            </div>
+            <div className={workState.finalSchedule ? "workState-box selected" : "workState-box"}>
+              <div className='textbox'>
+                <p>확정일정표발송</p>
+              </div>
+              <FaCheck size={12} className='checkbox'/>
+            </div>
+            <div className={workState.remainPayRequest ? "workState-box selected" : "workState-box"}>
+              <div className='textbox'>
+                <p>잔금입금요청</p>
+              </div>
+              <FaCheck size={12} className='checkbox'/>
+            </div>
+            <div className={workState.tourInfoMaterial ? "workState-box selected" : "workState-box"}>
+              <div className='textbox'>
+                <p>여행안내자료</p>
+              </div>
+              <FaCheck size={12} className='checkbox'/>
+            </div>
+          </div>
+        </section>
 
           <section className='userInfo'>
             <h1>2. 고객정보</h1>
@@ -319,13 +374,13 @@ export default function ReserveDetail (props : any) {
             <div className="coverbox">
               <div className="coverrow half">
                 <TitleBox width="100px" text='예약지점'/>
-                <TextBoxPL10 width="50%" text={reserveInfo.reserveLocation} />
+                <TextBoxPL10 width="50%" text={visitPathInfo.reserveLocation} />
               </div>
               <div className="coverrow half">
                 <TitleBox width="100px" text='담당자'/>
                 <div style={{display:'flex', alignItems:'center', width:'50%'}}>
                   <h3 style={{marginLeft:'10px', fontSize:'14px'}}>계약자</h3>
-                  <TextBoxPL10 width="30%" text={reserveInfo.charger} height={20} />
+                  <TextBoxPL10 width="30%" text={visitPathInfo.charger} height={20} />
                 </div>
               </div>
             </div>
@@ -333,50 +388,50 @@ export default function ReserveDetail (props : any) {
             <div className="coverbox">
               <div className="coverrow half">
                 <TitleBox width="100px" text='방문경로'/>
-                <TextBoxPL10 width="30%" text={reserveInfo.visitPath} />
-                <TextBoxPL10 width="30%" text={reserveInfo.visitPathDetail} />
+                <TextBoxPL10 width="30%" text={visitPathInfo.visitPath} />
+                <TextBoxPL10 width="30%" text={visitPathInfo.visitPathDetail} />
               </div>
               <div className="coverrow half">
                 <TitleBox width="100px" text='추천인'/>
-                <TextBoxPL10 width="50%" text={reserveInfo.recommender} />
+                <TextBoxPL10 width="50%" text={visitPathInfo.recommender} />
               </div>
             </div>
 
           </section>
 
-          <section>
+         <section>
             <h1>4. 예약상품</h1>
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow hole">
                 <TitleBox width="100px" text='여행지'/>
-                <TextBoxPL10 width="50%" text={reserveInfo.tourLocation}/>
+                <TextBoxPL10 width="50%" text={productInfo.tourLocation}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
                 <TitleBox width="100px" text='여행상품'/>
-                <TextBoxPL10 width="50%" text={reserveInfo.productName}/>
+                <TextBoxPL10 width="50%" text={productInfo.productName}/>
               </div>
             </div>
             { 
-              airline.map((item:any, index:any)=>{
+              productInfo.airline.map((item:any, index:any)=>{
                 return (
                   <div className="coverbox">
                     <div className="coverrow hole">
-                      <TitleBox width="100px" text={airline.length > 1 ? `항공사${index+1}` : '항공사'}/>
-                      <TextBoxPL10 width="50%" text={item.airlineName}/>
+                      <TitleBox width="100px" text={ productInfo.airline.length > 1 ? `항공사${index+1}` : '항공사'}/>
+                      <TextBoxPL10 width="50%" text={item.productInfoName}/>
                     </div>
                   </div>
                 )
               })
             }
             { 
-              landCompany.map((item:any, index:any)=>{
+              productInfo.landCompany.map((item:any, index:any)=>{
                 return (
                   <div className="coverbox">
                     <div className="coverrow hole">
-                      <TitleBox width="100px" text={landCompany.length > 1 ? `랜드사${index+1}` : '랜드사'}/>
+                      <TitleBox width="100px" text={productInfo.landCompany.length > 1 ? `랜드사${index+1}` : '랜드사'}/>
                       <TextBoxPL10 width="30%" text={item.companyName}/>
                       <TextBoxPL10 width="30%" text={item.notice}/>
                     </div>
@@ -388,44 +443,39 @@ export default function ReserveDetail (props : any) {
               <div className="coverrow hole">
                 <TitleBox width="100px" text='여행기간'/>
                 <TextBoxPL10 width="50%" 
-                  text={`${reserveInfo.tourStartAirport} ${reserveInfo.tourStartPeriod} ~ ${reserveInfo.tourEndAirport} ${reserveInfo.tourEndPeriod} `}/>
+                  text={`${productInfo.tourStartAirport} ${productInfo.tourStartPeriod} ~ ${productInfo.tourEndAirport} ${productInfo.tourEndPeriod} `}/>
               </div>
             </div>
-          </section>
-
-          <section>
-            <h1>5. 여행상품가</h1>
-            <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow half">
                 <TitleBox width="100px" text='1인요금' height={160}/>
                 <div style={{width:'60%'}}>
                   <div style={{display:'flex', alignItems:'center'}}>
                     <h3 style={{margin:'0 10px', width:'25%'}}>성인</h3>
-                    <TextBoxPL10 width="40%" text={productCost.costAdult} justify='flex-end'/>
+                    <TextBoxPL10 width="40%" text={productInfo.costAdult} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width="10%" text={productCost.costAdultNum} justify='flex-end'/>
+                    <TextBoxPL10 width="10%" text={JSON.stringify(productInfo.costAdultNum)} justify='flex-end'/>
                     <p>명</p>
                   </div>
                   <div style={{display:'flex', alignItems:'center'}}>
                     <h3 style={{margin:'0 10px', width:'25%'}}>소아</h3>
-                    <TextBoxPL10 width="40%" text={productCost.costChild} justify='flex-end'/>
+                    <TextBoxPL10 width="40%" text={productInfo.costChild} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width="10%" text={productCost.costChildNum} justify='flex-end'/>
+                    <TextBoxPL10 width="10%" text={JSON.stringify(productInfo.costChildNum)} justify='flex-end'/>
                     <p>명</p>
                   </div>
                   <div style={{display:'flex', alignItems:'center'}}>
                     <h3 style={{margin:'0 10px', width:'25%'}}>유아</h3>
-                    <TextBoxPL10 width="40%" text={productCost.costInfant} justify='flex-end'/>
+                    <TextBoxPL10 width="40%" text={productInfo.costInfant} justify='flex-end'/>
                     <p>원</p>
-                    <TextBoxPL10 width="10%" text={productCost.costInfantNum} justify='flex-end'/>
+                    <TextBoxPL10 width="10%" text={JSON.stringify(productInfo.costInfantNum)} justify='flex-end'/>
                     <p>명</p>
                   </div>
                 </div>
               </div>
               <div className="coverrow half">
                 <TitleBox width="100px" text='전체요금' height={160}/>
-                <TextBoxPL10 width="50%" text={productCost.costAll} justify='flex-end'/>
+                <TextBoxPL10 width="50%" text={productInfo.costAll} justify='flex-end'/>
                 <p>원</p>
               </div>
             </div>
@@ -435,16 +485,16 @@ export default function ReserveDetail (props : any) {
                 <div style={{width:'85%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
                   <div style={{display:'flex', alignItems:'center'}}>
                     <h3 style={{margin:'0 10px'}}>1USD</h3>
-                    <TextBoxPL10 width="30px" text={productCost.reserveExchangeRate} justify='center'/>
+                    <TextBoxPL10 width="30px" text={JSON.stringify(productInfo.reserveExchangeRate)} justify='center'/>
                   </div>
                   <div style={{display:'flex', alignItems:'center', marginLeft: '10px'}}>
                     <p># 잔금지불시 변동환율 적용여부 공지</p>
                     <div style={{margin:'0 10px'}}>
-                      <FaCheck color={productCost.isNotice ? '#1DDB16' : '#EAEAEA'}/>
+                      <FaCheck color={productInfo.isNotice ? '#1DDB16' : '#EAEAEA'}/>
                     </div>
                     <p>공지했음</p>
                     <div style={{margin:'0 10px'}}>
-                      <FaCheck color={productCost.isClientCheck ? '#1DDB16' : '#EAEAEA'}/>
+                      <FaCheck color={productInfo.isClientCheck ? '#1DDB16' : '#EAEAEA'}/>
                     </div>
                     <p>고객확인</p>
                   </div>
@@ -453,8 +503,8 @@ export default function ReserveDetail (props : any) {
             </div>
           </section>
 
-          <section>
-            <h1>6. 항공 예약현황</h1>
+         <section>
+            <h1>5. 항공 예약현황</h1>
             <div className="bottombar"></div>
             <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#E2E2E2' }}>
               <TitleBox width="20%" text='항공편'/>
@@ -465,8 +515,8 @@ export default function ReserveDetail (props : any) {
               <TitleBox width="150px" text='도착일'/>
               <TitleBox width="15%" text='도착시간'/>
             </div>
-            {
-              airportState.map((item:any, index:any)=>{
+            { 
+              airlineReserveState.airlineState.map((item:any, index:any)=>{
                 return (
                   <div className="coverbox" key={index}>
                     <div className="coverrow hole" style={{justifyContent:'space-between'}}>
@@ -482,13 +532,8 @@ export default function ReserveDetail (props : any) {
                 )
               })
             }
-          </section>
-
-          <section>
-            <h1>7. 발권현황</h1>
-            <div className="bottombar"></div>
             {
-              ticketingState.map((item:any, index:any)=>{
+              airlineReserveState.ticketingState.map((item:any, index:any)=>{
                 return (
                   <div className="coverbox" key={index}>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
@@ -514,7 +559,7 @@ export default function ReserveDetail (props : any) {
           </section>
           
           <section>
-            <h1>8. 호텔 예약현황</h1>
+            <h1>6. 호텔 예약현황</h1>
             <div className="bottombar"></div>
             <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#E2E2E2' }}>
               <TitleBox width="20%" text='체크인'/>
@@ -542,7 +587,7 @@ export default function ReserveDetail (props : any) {
      
 
           <section>
-            <h1>9. 여행상품 포함/불포함 사항, 여행자 보험 가입여부</h1>
+            <h1>7. 적립금/할인혜택/사은품/여행자보험 관리</h1>
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow hole">
@@ -582,88 +627,40 @@ export default function ReserveDetail (props : any) {
           </section>
 
           <section>
-            <h1>10. 입금내역</h1>
+            <h1>8. 입금내역</h1>
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow rightborder" style={{width:'40%'}}>
                 <TitleBox width="100px" text='계약금액'/>
-                <TextBoxPL10 width="40%" text={reserveInfo.tourTotalContractCost} justify='flex-end'/>
+                <TextBoxPL10 width="40%" text={depositCostInfo.tourTotalContractCost} justify='flex-end'/>
                 <p>원</p>
               </div>
               <div className="coverrow" style={{width:'60%' , fontSize:'14px', height:'50px', display:'flex', alignItems:'center', justifyContent:'center'}}>
                 <h3 style={{marginRight:'20px'}}>최종 여행 경비:</h3>
-                <TextBoxPL10 width="40%" text={reserveInfo.totalCost} justify='right'/>
+                <TextBoxPL10 width="40%" text={depositCostInfo.totalCost} justify='right'/>
                 <p>원</p>
               </div>
             </div>
-            { 
-              depositCostList.map((item:any, index:any)=>{
-                return (
-                  <div key={index}>
-                   {
-                    item.map((subItem:any, subIndex:any)=>{
-                      return (
-                        <div className="coverbox" key={subIndex}>
-                          <div className="coverrow rightborder" style={{width:'40%'}}>
-                            <TitleBox width="100px" text={item.length > 1 ? `${subItem.nameko}${subIndex+1}` : subItem.nameko}/>
-                            <TextBoxPL10 width="40%" text={subItem.cost} justify='flex-end'/>
-                            <p>원</p>
-                          </div>
-                          <div className="coverrow" style={{width:'60%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                            <TextBoxPL10 width="80%" text={subItem.date} justify='center'/>
-                            <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
-                            <TextBoxPL10 width="80%" text={subItem.type} justify='center'/>
-                            <div style={{width:'1px', height:'40px', backgroundColor:'#BDBDBD'}}></div>
-                            <TextBoxPL10 width="80%" text={subItem.deposit ? "입금확인" : ""} justify='center'/>
-                          </div>
-                        </div>
-                      )
-                    })
-                   }
-                  </div>
-                )
-              })
-            }
+            <DepositCostInfMapBox originitem={depositCostInfo.contractCost} title='계약금' length={depositCostInfo.contractCost.length}/>
+            <DepositCostInfMapBox originitem={depositCostInfo.airportCost} title='헝공료' length={depositCostInfo.airportCost.length}/>
+            <DepositCostInfMapBox originitem={depositCostInfo.reviseAirportCost} title='항공료변경' length={depositCostInfo.reviseAirportCost.length}/>
+            <DepositCostInfMapBox originitem={depositCostInfo.middleCost} title='중도금' length={depositCostInfo.middleCost.length}/>
+            <DepositCostInfMapBox originitem={depositCostInfo.restCost} title='잔금' length={depositCostInfo.restCost.length}/>
+            <DepositCostInfMapBox originitem={depositCostInfo.additionCost} title='추가경비' length={depositCostInfo.additionCost.length}/>
             <div className="coverbox">
               <div className="coverrow rightborder" style={{width:'40%'}}>
                 <TitleBox width="100px" text='환불'/>
-                <TextBoxPL10 width="40%" text={refundCost.cost} justify='flex-end'/>
+                <TextBoxPL10 width="40%" text={depositCostInfo.refundCost.cost} justify='flex-end'/>
                 <p>원</p>
               </div>
-              <div className="coverrow" style={{width:'60%'}}>
-                <TextBoxPL10 width="40%" text={refundCost.date} justify='flex-end'/>
-              </div>
-            </div>
-            <div className="coverbox">
-              <div className="coverrow hole">
-                <TitleBox width="100px" text='밸런스'/>
-                <TextBoxPL10 width="100px" text={`${reserveInfo.ballance} %`} justify='flex-end'/>
-              </div>
-            </div>
-            <div className="coverbox">
-              <div className="coverrow hole">
-                <TitleBox width="100px" text='현금영수증'/>
-                <TextBoxPL10 width="100px" text={reserveInfo.isCashBill ? '발급요청' : '요청없음'}/>
-                <div style={{display:'flex', alignItems:'center'}}>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <p style={{marginRight:'3px'}}>종류:</p>
-                    <TextBox width='' text={cashBillInfo.type}/>
-                  </div>
-                  <div style={{display:'flex', alignItems:'center', margin:'0 15px'}}>
-                    <p style={{marginRight:'3px'}}>인증번호:</p>
-                    <TextBox width='' text={cashBillInfo.AuthNum}/>
-                  </div>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <p style={{marginRight:'3px'}}>발급일:</p>
-                    <TextBox width='' text={cashBillInfo.date}/>
-                  </div>
-                </div>
+              <div className="coverrow" style={{width:'60%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                <TextBoxPL10 width="80%" text={depositCostInfo.refundCost.date} justify='center'/>
               </div>
             </div>
           </section>
 
          <section>
-            <h1>11. OT 및 고객전달 사항</h1>
+            <h1>9. OT 및 고객전달 사항</h1>
             <div className="bottombar"></div>
             <div className="coverbox titlerow" style={{backgroundColor:'#f6f6f6' }}>
               <TitleBox width="100px" text=''/>
@@ -675,7 +672,7 @@ export default function ReserveDetail (props : any) {
               </div>
             </div>
             {
-              deliveryList.map((item:any, index:any)=>{
+              deliveryInfo.map((item:any, index:any)=>{
                 return (
                   <div className="coverbox">
                     <div className="coverrow hole">
@@ -697,8 +694,25 @@ export default function ReserveDetail (props : any) {
         
         {/* 오른쪽 바 데이터 입력 ------------------------------------------------------------------------------------------------------------------------------ */}
         <div className='right-cover'>
-         <div className="content">
+          <div className="content">
             
+            <section>
+              <div className="content-menu-btn-box">
+                <div className={isSelectedMenuBtn === '진행상황' ? "content-menu-btn selected" : "content-menu-btn"}
+                 onClick={()=>{setIsSelectedMenuBtn('진행상황');}}
+                >진행상황</div>
+                <div className={isSelectedMenuBtn === '문의답변' ? "content-menu-btn selected" : "content-menu-btn"}
+                  onClick={()=>{setIsSelectedMenuBtn('문의답변');}}
+                >문의답변</div>
+                <div className={isSelectedMenuBtn === '변경내역' ? "content-menu-btn selected" : "content-menu-btn"}
+                  onClick={()=>{setIsSelectedMenuBtn('변경내역');}}
+                >변경내역</div>
+                <div className={isSelectedMenuBtn === '알림톡' ? "content-menu-btn selected" : "content-menu-btn"}
+                  onClick={()=>{setIsSelectedMenuBtn('알림톡');}}
+                >알림톡</div>
+              </div>
+            </section>
+
             <section>
               <h1>온라인 계약서 (전자서명, 동의서)</h1>
               <div className="bottombar"></div>
@@ -831,26 +845,28 @@ export default function ReserveDetail (props : any) {
           <div className='modal-backcover' style={{height : height + 100}}></div>
           <div className='modal-maincover' ref={divAreaRef}>
              <ModalReserve
+              modalSort='revise'
               serialNum={serialNum}
+              fetchPosts={fetchPosts}
               setIsViewModal={setIsViewReserveModal}
               refresh={refresh}
               setRefresh={setRefresh}
-              modalSort='revise'
-              // 공통
-              reserveInfo={reserveInfo}
-              // tab1
+              
+              reserveState={reserveState}
+              workState={workState}
+              productName={productName}
+              landCompany={landCompany}
+              visitPath={visitPath}
+              charger={charger}
+
               userInfo={userInfo}
-              // tab2
-              productCost={productCost}
-              airportState={airportState}
-              ticketingState={ticketingState}
+              visitPathInfo={visitPathInfo}
+              productInfo={productInfo}
+              airlineReserveState={airlineReserveState}
               hotelReserveState={hotelReserveState}
               etcState={etcState}
-              // tab3
-              depositCostList={depositCostList}
-              refundCost={refundCost}
-              // tab4
-              deliveryList={deliveryList}
+              depositCostInfo={depositCostInfo}
+              deliveryInfo={deliveryInfo}
              />
           </div>
         </div>

@@ -70,11 +70,13 @@ export default function Sub2_HotelRegister (props:any) {
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<ListProps[]>([]);
 	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
+	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
 
   const fetchPosts = async () => {
     const res = await axios.get(`${MainURL}/restproducthotel/gethotels/${currentPage}`)
 		if (res.data.resultData) {
       const copy = res.data.resultData;
+			copy.reverse();
       setList(copy);
       setListAllLength(res.data.totalCount);
     }
@@ -140,6 +142,7 @@ export default function Sub2_HotelRegister (props:any) {
 			});
 			if (res.data.resultData) {
 				const copy = [...res.data.resultData];
+				copy.reverse();
 				setList(copy);
 				setListAllLength(res.data.totalCount);
 			} else {
@@ -287,6 +290,9 @@ export default function Sub2_HotelRegister (props:any) {
 							options={searchNationsOptions}
 							handleChange={(e)=>{
 								setSearchNation(e.target.value);
+								const copy : any = [...nationlist];
+                const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+								setSearchCityOptions(filtered[0].cities)
 							}}
 						/>
 						<DropdownBox
@@ -294,15 +300,11 @@ export default function Sub2_HotelRegister (props:any) {
 							height='35px'
 							selectedValue={searchSort}
 							options={[
-								{ value: '전체', label: '전체' },
-								{ value: '풀빌라', label: '풀빌라' },
-								{ value: '리조트', label: '리조트' },
-								{ value: '호텔', label: '호텔' },
-								{ value: '박당', label: '박당' },
-								{ value: '선투숙', label: '선투숙' },
-								{ value: '후투숙', label: '후투숙' },
-								{ value: '경유호텔', label: '경유호텔' }
-							]}
+                { value: '선택', label: '선택' },
+                ...searchCityOptions.map((nation:any) => (
+                  { value: nation.cityKo, label: nation.cityKo }
+                ))
+              ]}    
 							handleChange={(e)=>{
 								setSearchSort(e.target.value);
 							}}

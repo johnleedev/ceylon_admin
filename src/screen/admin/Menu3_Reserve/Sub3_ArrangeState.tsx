@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import '../SearchList.scss'
-import {ko} from "date-fns/locale";
-import { format } from "date-fns";
+import '../SearchBox.scss';
 import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { DropdownBox } from '../../../boxs/DropdownBox';
-import { DropDownTourLocation, DropDowncharger } from '../../DefaultData';
-import { SearchBox } from './SearchBox';
+import { DropDownLandCompany, DropDownTourLocation, DropDowncharger } from '../../DefaultData';
 import Loading from '../components/Loading';
+import { DateBoxNum } from '../../../boxs/DateBoxNum';
 
 
-export default function Sub2_Arrange (props:any) {
+export default function Sub3_ArrangeState (props:any) {
 
 	let navigate = useNavigate();
+
+	const [dateSort, setDateSort] = useState('문의일');
+	const [dateSelect, setDateSelect] = useState('');
+	const [startDate, setStartDate] = useState('');
+	const [endDate, setEndDate] = useState('');
+	const [searchSelect, setSearchSelect] = useState('');
+	const [word, setWord] = useState('');
+	const [searchSort, setSearchSort] = useState('기간');
 
 
 	// 게시글 가져오기 ------------------------------------------------------
@@ -56,66 +63,89 @@ export default function Sub2_Arrange (props:any) {
 	return (
 		<div className='Menu3'>
 
-			<SearchBox list={list} setViewList={setViewList} setIsViewListZero={setIsViewListZero}/>
-				
+			<div className="searchbox">
+				<div className="cover">
+					<div className="content">
+						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setStartDate} date={startDate} marginLeft={1}/>
+						<p>~</p>
+						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setEndDate} date={endDate} marginLeft={20}/>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={dateSort}
+							options={[
+								{ value: '선택', label: '선택' },
+								{ value: '여행지1', label: '여행지1' },
+								{ value: '여행지2', label: '여행지2' },
+							]}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
+						/>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={dateSort}
+							options={DropDownLandCompany}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
+						/>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={dateSort}
+							options={DropDowncharger}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
+						/>
+						<input className="inputdefault" type="text" style={{width:'20%', textAlign:'left'}} 
+              value={word} placeholder='고객명/연락처'
+							onChange={(e)=>{setWord(e.target.value)}}
+						/>
+						<div className="buttons" style={{margin:'20px 0'}}>
+							<div className="btn searching"
+								onClick={()=>{
+									
+								}}
+							>
+								<p>검색</p>
+							</div>
+							<div className="btn reset"
+								onClick={()=>{
+									setDateSort('문의일');
+									setViewList(list);
+									setDateSelect('');
+									setStartDate('');
+									setEndDate('');
+									setSearchSelect('');
+									setWord('');
+								}}
+							>
+								<p>초기화</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div style={{height:'30px'}}></div>
+
+						
 			<div className="seachlist">
 
 				<div className="main-title">
 					<div className='title-box'>
 						<h1>수배현황</h1>
-						{/* <DropdownBox
-							widthmain='100px'
-							height='35px'
-							selectedValue={arrangeWord1}
-							options={DropDownTourLocation}
-							handleChange={(text:any)=>{
-								const textCopy = text.target.value;
-								setArrangeWord1(textCopy);
-								if (textCopy === '선택') {
-									setViewList(list);
-								} else {
-									const copy = list.filter((e:any)=> e.tourLocation === textCopy);
-									if (copy.length === 0) {
-										setIsViewListZero(true);
-									} 
-									setViewList(copy);
-								}
-							}}
-						/> */}
-						<DropdownBox
-							widthmain='100px'
-							height='35px'
-							selectedValue={arrangeWord2}
-							options={DropDowncharger}
-							handleChange={(text:any)=>{
-								const textCopy = text.target.value;
-								setArrangeWord2(textCopy);
-								if (textCopy === '선택') {
-									setViewList(list);
-								} else {
-									const copy = list.filter((e:any)=> e.charger === textCopy);
-									if (copy.length === 0) {
-										setIsViewListZero(true);
-									} 
-									setViewList(copy);
-								}
-							}}
-						/>
 					</div>
 				</div>
 
 				<div className="main-list-cover">
 					<div className="titlebox">
 						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='10%' text='예약번호'/>
 						<TitleBox width='10%' text='예약일/출발일'/>
+						<TitleBox width='5%' text='등급'/>
 						<TitleBox width='8%' text='성함'/>
-						<TitleBox width='10%' text='연락처'/>
+						<TitleBox width='12%' text='연락처'/>
 						<TitleBox width='15%' text='여행상품'/>
-						<TitleBox width='10%' text='발권일'/>
 						<TitleBox width='7%' text='랜드사'/>
-						<TitleBox width='7%' text='지상비/입금가'/>
-						<TitleBox width='10%' text='수배일/확정일'/>
+						<TitleBox width='7%' text='항공'/>
+						<TitleBox width='7%' text='수배일/확정일'/>
 						<TitleBox width='5%' text='담당자'/>
   				</div>
 					
@@ -136,15 +166,14 @@ export default function Sub2_Arrange (props:any) {
 									}}
 								>
 									<TextBox width='3%' text={index+1} />
-									<TextBox width='10%' text={item.serialNum} />
 									<TextBox width='10%' text={item.date} text2={item.tourStartPeriod}/>
+									<TextBox width='5%' text={item.level} />
 									<TextBox width='8%' text={item.name} />
-									<TextBox width='10%' text={phoneCopy[0]} text2={phoneCopy[1]}/>
+									<TextBox width='12%' text={phoneCopy[0]} text2={phoneCopy[1]}/>
 									<TextBox width='15%' text={item.productName} />
-									<TextBox width='10%' text={ticketingStateCopy[0].date} />
-									<TextBox width='7%' text={landCompanyCopy[0].companyName} text2={landCompanyCopy[0].notice}/>
-									<TextBox width='7%' text={item.arrangeEstimateCost} text2={item.arrangeDepositCost}/>
-									<TextBox width='10%' text={item.arrangeSendDate} text2={item.arrangeDecideDate}/>
+									<TextBox width='7%' text={landCompanyCopy[0].companyName}/>
+									<TextBox width='7%' text={item.inputState} />
+									<TextBox width='7%' text={item.reviseDate} text2={item.reviseDate} />
 									<TextBox width='5%' text={item.charger} />
 								</div>
 							)

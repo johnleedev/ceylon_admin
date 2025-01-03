@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../SearchList.scss'
 import '../SearchBox.scss';
 import { TitleBox } from '../../../boxs/TitleBox';
+import { TextBox } from '../../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
@@ -11,10 +12,10 @@ import Loading from '../components/Loading';
 import { DateBoxNum } from '../../../boxs/DateBoxNum';
 
 
-export default function Sub5_Notification (props:any) {
+export default function Sub2_DepositList (props:any) {
 
 	let navigate = useNavigate();
-
+	
 	const [dateSort, setDateSort] = useState('문의일');
 	const [dateSelect, setDateSelect] = useState('');
 	const [startDate, setStartDate] = useState('');
@@ -29,18 +30,21 @@ export default function Sub5_Notification (props:any) {
 		id: number;
 		serialNum : string;
 		date: string;
-		name: string;
-		reserveLocation: string;
-		charger : string;
-		accepter : string;
-		productName : string;
-		tourLocation : string;
-		tourLocationDetail : string;
-		airline : string;
-		tourStartAirport : string;
 		tourStartPeriod : string;
-		tourEndAirport : string;
-		tourEndPeriod : string;
+		name: string;
+		phone : string;
+    productName : string;
+    ticketingState : string;
+		landCompany : string;
+    arrangeDecideDate : string;
+    arrangeEstimateCost: string;
+		charger : string;
+		tourTotalContractCost : string;
+		contractCost:  string;
+		airportCost: string;
+		middleCost : string;
+    restCost : string;
+		additionCost: string;
 	}
 	const [list, setList] = useState<ListProps[]>([]);
 	const [viewList, setViewList] = useState<ListProps[]>([]);
@@ -49,16 +53,15 @@ export default function Sub5_Notification (props:any) {
 	const [arrangeWord2, setArrangeWord2] = useState('');
 
 	const fetchPosts = async () => {
-		const res = await axios.get(`${MainURL}/adminreserve/getreserve`)
+		const res = await axios.get(`${MainURL}/adminlist/getlistdeposit`)
 		if (res) {
 			setList(res.data);
-
 			setViewList(res.data);
 		}
 	};
 
 	useEffect(() => {
-		// fetchPosts();
+		fetchPosts();
 	}, []);  
 
 	return (
@@ -127,71 +130,44 @@ export default function Sub5_Notification (props:any) {
 
 			<div style={{height:'30px'}}></div>
 
-						
+							
 			<div className="seachlist">
 
 				<div className="main-title">
 					<div className='title-box'>
-						<h1>고객안내문 발송</h1>
-						<DropdownBox
-							widthmain='100px'
-							height='35px'
-							selectedValue={arrangeWord1}
-							options={DropDownTourLocation}
-							handleChange={(text:any)=>{
-								const textCopy = text.target.value;
-								setArrangeWord1(textCopy);
-								if (textCopy === '선택') {
-									setViewList(list);
-								} else {
-									const copy = list.filter((e:any)=> e.tourLocation === textCopy);
-									if (copy.length === 0) {
-										setIsViewListZero(true);
-									} 
-									setViewList(copy);
-								}
-							}}
-						/>
-						<DropdownBox
-							widthmain='100px'
-							height='35px'
-							selectedValue={arrangeWord2}
-							options={DropDowncharger}
-							handleChange={(text:any)=>{
-								const textCopy = text.target.value;
-								setArrangeWord2(textCopy);
-								if (textCopy === '선택') {
-									setViewList(list);
-								} else {
-									const copy = list.filter((e:any)=> e.charger === textCopy);
-									if (copy.length === 0) {
-										setIsViewListZero(true);
-									} 
-									setViewList(copy);
-									console.log(copy);
-								}
-							}}
-						/>
+						<h1>고객입금내역</h1>
 					</div>
 				</div>
 
 				<div className="main-list-cover">
 					<div className="titlebox">
 						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='10%' text='고유번호'/>
 						<TitleBox width='10%' text='예약일/출발일'/>
+						<TitleBox width='5%' text='등급'/>
 						<TitleBox width='8%' text='성함'/>
-						<TitleBox width='8%' text='연락처'/>
-						<TitleBox width='8%' text='여행지'/>
 						<TitleBox width='15%' text='여행상품'/>
-						<TitleBox width='7%' text='진행상황'/>
+						<TitleBox width='7%' text='랜드사'/>
+						<TitleBox width='7%' text='방문경로'/>
+						<div className="title" 
+							style={{width:`30%`, height: '50px', flexDirection:'column'}}
+						>
+							<h3 style={{width:'100%', fontSize : '16px', borderBottom:'1px solid #ccc', textAlign:'center' }}>입금내역</h3>
+							<div style={{width:'100%', display:'flex', justifyContent:'space-between'}}>
+								<h3 style={{width:'20%', textAlign:'center'}}>예약금</h3>
+								<h3 style={{width:'20%', textAlign:'center'}}>중도금</h3>
+								<h3 style={{width:'20%', textAlign:'center'}}>행사비</h3>
+								<h3 style={{width:'20%', textAlign:'center'}}>기타경비</h3>
+							</div>
+						</div>
 						<TitleBox width='5%' text='담당자'/>
   				</div>
 					
-					{/* {
+					{
 						viewList.length > 0
 						?
 						viewList.map((item:any, index:any)=>{
+
+					
 							return (
 								<div key={index}
 									className="rowbox"
@@ -200,12 +176,18 @@ export default function Sub5_Notification (props:any) {
 									}}
 								>
 									<TextBox width='3%' text={index+1} />
-									<TextBox width='10%' text={item.serialNum} />
 									<TextBox width='10%' text={item.date} text2={item.tourStartPeriod}/>
+									<TextBox width='5%' text={item.level} />
 									<TextBox width='8%' text={item.name} />
-									<TextBox width='8%' text={item.tourLocation} />
 									<TextBox width='15%' text={item.productName} />
-									<TextBox width='7%' text={item.state} />
+									<TextBox width='7%' text={''}/>
+									<TextBox width='7%' text={item.inputState} />
+									<div style={{width:'30%', display:'flex', justifyContent:'space-between'}}>
+										<TextBox width='20%' text={'1,000,000'}/>
+										<TextBox width='20%' text={'2,000,000'}/>
+										<TextBox width='20%' text={'3,000,000'}/>
+										<TextBox width='20%' text={'4,000,000'}/>
+									</div>
 									<TextBox width='5%' text={item.charger} />
 								</div>
 							)
@@ -224,7 +206,7 @@ export default function Sub5_Notification (props:any) {
 								</div>
 							}
 						</>
-					} */}
+					}
 				</div>
 
 			</div>

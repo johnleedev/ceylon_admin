@@ -364,7 +364,7 @@ export default function ModalAddHotel (props : any) {
     }
 
     axios 
-      .post(`${MainURL}/restproducthotel/registerhotel`, formData, {
+      .post(`${MainURL}/tourproducthotel/registerhotel`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -390,7 +390,7 @@ export default function ModalAddHotel (props : any) {
     const inputImagesNewItems = inputImagesCopy.filter((item, index) => item.imageName !== imageNameCopy);
 
     axios 
-      .post(`${MainURL}/restproducthotel/deletehotelimage`, {
+      .post(`${MainURL}/tourproducthotel/deletehotelimage`, {
         postId : hotelData.id,
         imageName : imageNameCopy,
         sort : sortCopy,
@@ -449,7 +449,7 @@ export default function ModalAddHotel (props : any) {
       reviseDate : revisetoday
     }
     axios 
-      .post(`${MainURL}/restproducthotel/revisehotel`, formData, {
+      .post(`${MainURL}/tourproducthotel/revisehotel`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
