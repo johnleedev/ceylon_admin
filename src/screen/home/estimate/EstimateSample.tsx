@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import "./EstimateSample.scss";
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
 import { FaCheck, FaRegCircle } from "react-icons/fa";
 import sampleImage1 from "../images/hotels/hotel_01.png"
 import sampleImage2 from "../images/hotels/hotel_02.png"
@@ -38,15 +38,12 @@ export default function EstimateSample (props:any) {
         <div className="estimate-toptextrow">
           <div className="left-maintext">여행예정일</div>
           <div className="right-contenttext">
-            <DateBoxNum width='120px' subWidth='120px' right={5} date={tourPeriodStart}
-              setSelectDate={(e:any)=>{ 
+            <DateBoxDouble dateStart={tourPeriodStart} dateEnd={tourPeriodEnd}
+              setSelectStartDate={(e:any)=>{ 
                 setTourPeriodStart(e);
                 setTourPeriodEnd(e);
               }} 
-            />
-            <p style={{marginLeft:'5px'}}>~</p>
-            <DateBoxNum width='120px' subWidth='120px' right={5} date={tourPeriodEnd}
-              setSelectDate={(e:any)=>{ 
+              setSelectEndDate={(e:any)=>{ 
                 setTourPeriodEnd(e);
               }} 
             />

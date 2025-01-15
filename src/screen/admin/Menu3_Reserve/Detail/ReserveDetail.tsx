@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import './ReserveDetail.scss'
 import { TitleBox } from '../../../../boxs/TitleBox';
 import { TextBoxPL10 } from '../../../../boxs/TextBoxPL10';
-import { DateBoxNum } from '../../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../../boxs/DateBoxDouble';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../../MainURL';
@@ -17,6 +17,7 @@ import ModalReserve from '../../Menu1_Schedule/ModalReserve/ModalReserve';
 import { TextBox } from '../../../../boxs/TextBox';
 import { FaCheck } from "react-icons/fa";
 import { format } from 'date-fns';
+import { DateBoxSingle } from '../../../../boxs/DateBoxSingle';
 
 export default function ReserveDetail (props : any) {
 
@@ -90,7 +91,6 @@ export default function ReserveDetail (props : any) {
 	useEffect(() => {
 		fetchPosts();
   }, [refresh]);  
-
   
   // 수정 모달 ------------------------------------------------------------------------------------------------
   const [isViewReserveModal, setIsViewReserveModal] = useState<boolean>(false);
@@ -114,7 +114,7 @@ export default function ReserveDetail (props : any) {
     charger : string;
     content : string;
   };
-  const [isSelectedMenuBtn, setIsSelectedMenuBtn] = useState('');
+  const [isSelectedMenuBtn, setIsSelectedMenuBtn] = useState('온라인계약서');
 
   const [reserveCSList, setReserveCSList] = useState<ReserceCSProps[]>([]);
   const [refreshCS, setRefreshCS] = useState<boolean>(false);
@@ -177,6 +177,13 @@ export default function ReserveDetail (props : any) {
     });
   };
 
+  const SelectWorkTabBox = ({ item, title}: { item: any; title: string }) => (
+    <div className={(workState as any)[item] ? "workState-box selected" : "workState-box"}>
+      <div className='textbox'>
+        <p>{title}</p>
+      </div>
+    </div>
+  )
 
   return (
     (userInfo.length > 0 
@@ -192,7 +199,6 @@ export default function ReserveDetail (props : any) {
     )
     ?
     <div className='reservedetail'>
-
       <div className="topcover">
 
         <div className="topmenu">
@@ -236,14 +242,33 @@ export default function ReserveDetail (props : any) {
             </div>
             <div className="btn" style={{backgroundColor: '#b8d257'}}
               onClick={()=>{
-                setIsViewReserveModal(true);
+                navigate('/admin/schedule/reservepage', {state : 
+                  { 
+                    serialNum: serialNum, 
+                    modalSort:'revise',
+                    reserveState:reserveState,
+                    workState:workState,
+                    productName:productName,
+                    landCompany:landCompany,
+                    visitPath:visitPath,
+                    charger:charger,
+                    userInfo:userInfo,
+                    visitPathInfo:visitPathInfo,
+                    productInfo:productInfo,
+                    airlineReserveState:airlineReserveState,
+                    hotelReserveState:hotelReserveState,
+                    etcState:etcState,
+                    depositCostInfo:depositCostInfo,
+                    deliveryInfo:deliveryInfo
+                  } 
+                });
               }}
             >
               <p>수정</p>
             </div>
-            <div className="btn" style={{backgroundColor: '#5fb7ef'}}>
+            {/* <div className="btn" style={{backgroundColor: '#5fb7ef'}}>
               <p>저장</p>
-            </div>
+            </div> */}
           </div>
 
           {/* <div className="search-box">
@@ -257,9 +282,12 @@ export default function ReserveDetail (props : any) {
       <div className="bottomcover">
 
         <div className='left-cover'>
-          
+                  
         <section>
-          <h1>1. 진행상황</h1>
+          <div style={{display:'flex', justifyContent:'space-between'}}>
+            <h1>1. 진행상황</h1>
+            <p style={{color:'#ccc', fontSize:'14px'}}>{serialNum}</p>
+          </div>
 
           <div className='reserveState-row'>
             <div className={reserveState.contractCompleted ? "reserveState-box selected" : "reserveState-box"}>
@@ -294,36 +322,16 @@ export default function ReserveDetail (props : any) {
           </div>
 
           <div className='workState-row'>
-            <div className={workState.progressNoticeSent ? "workState-box selected" : "workState-box"}>
-              <div className='textbox'>
-                <p>진행안내발송</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
-            <div className={workState.passportVerify? "workState-box selected" : "workState-box"}>
-              <div className='textbox'>
-                <p>여권확인</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
-            <div className={workState.finalSchedule ? "workState-box selected" : "workState-box"}>
-              <div className='textbox'>
-                <p>확정일정표발송</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
-            <div className={workState.remainPayRequest ? "workState-box selected" : "workState-box"}>
-              <div className='textbox'>
-                <p>잔금입금요청</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
-            <div className={workState.tourInfoMaterial ? "workState-box selected" : "workState-box"}>
-              <div className='textbox'>
-                <p>여행안내자료</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
+            <SelectWorkTabBox item={'progressNoticeSent'} title='진행순서안내'/>
+            <SelectWorkTabBox item={'eticketSent'} title='E-Ticket'/>
+            <SelectWorkTabBox item={'scheduleSent'} title='일정표'/>
+            <SelectWorkTabBox item={'passportVerify'} title='여권확인'/>
+            <SelectWorkTabBox item={'tourPrepare'} title='여행준비물'/>
+            <SelectWorkTabBox item={'visaEsta'} title='비자/ESTA'/>
+            <SelectWorkTabBox item={'voucherSent'} title='바우처발송'/>
+            <SelectWorkTabBox item={'remainPayRequest'} title='잔금요청'/>
+            <SelectWorkTabBox item={'confirmationSent'} title='확정서발송'/>
+            <SelectWorkTabBox item={'guideBook'} title='가이드북'/>
           </div>
         </section>
 
@@ -417,7 +425,7 @@ export default function ReserveDetail (props : any) {
             { 
               productInfo.airline.map((item:any, index:any)=>{
                 return (
-                  <div className="coverbox">
+                  <div className="coverbox" key={index}>
                     <div className="coverrow hole">
                       <TitleBox width="100px" text={ productInfo.airline.length > 1 ? `항공사${index+1}` : '항공사'}/>
                       <TextBoxPL10 width="50%" text={item.productInfoName}/>
@@ -429,7 +437,7 @@ export default function ReserveDetail (props : any) {
             { 
               productInfo.landCompany.map((item:any, index:any)=>{
                 return (
-                  <div className="coverbox">
+                  <div className="coverbox" key={index}>
                     <div className="coverrow hole">
                       <TitleBox width="100px" text={productInfo.landCompany.length > 1 ? `랜드사${index+1}` : '랜드사'}/>
                       <TextBoxPL10 width="30%" text={item.companyName}/>
@@ -591,37 +599,43 @@ export default function ReserveDetail (props : any) {
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width="100px" text='포함사항'/>
-                <TextBoxPL10 width="70%" text={etcState.includes}/>
+                <TitleBox width="120px" text='할인행사'/>
+                <TextBoxPL10 width="50%" text={etcState.salesEvent}/>
+                <TextBoxPL10 width="30%" text={etcState.salesEventCost}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width="100px" text='불포함사항'/>
-                <TextBoxPL10 width="70%" text={etcState.notIncludes}/>
+                <TitleBox width="120px" text='적립금'/>
+                <TextBoxPL10 width="50%" text={etcState.saveMoney}/>
+                <TextBoxPL10 width="30%" text={etcState.saveMoneyCost}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width="100px" text='사은품'/>
-                <TextBoxPL10 width="30%" text={etcState.freeGift}/>
-                <TextBoxPL10 width="30%" text={etcState.freeGiftDetail}/>
+                <TitleBox width="120px" text='계약혜택'/>
+                <TextBoxPL10 width="80%" text={etcState.contractBenefit}/>
               </div>
             </div>
             <div className="coverbox">
-              <div className="coverrow half">
-                <TitleBox width="100px" text='여행자보험'/>
-                <TextBoxPL10 width="50%" text={etcState.travelInsurance}/>
+              <div className="coverrow hole">
+                <TitleBox width="120px" text='사은품'/>
+                <TextBoxPL10 width="50%" text={etcState.freeGift}/>
+                <TextBoxPL10 width="30%" text={etcState.freeGiftCost}/>
               </div>
-              <div className="coverrow half">
-                <TitleBox width="100px" text='보험회사'/>
+            </div>
+            <div className="coverbox">
+              <div className="coverrow third">
+                <TitleBox width="120px" text='여행자보험'/>
+                <TextBoxPL10 width="50%" text={etcState.insuranceIncludes}/>
+              </div>
+              <div className="coverrow third">
+                <TitleBox width="120px" text='보험회사'/>
                 <TextBoxPL10 width="50%" text={etcState.insuranceCompany}/>
               </div>
-            </div>
-            <div className="coverbox">
-              <div className="coverrow hole">
-                <TitleBox width="100px" text='계약금액'/>
-                <TextBoxPL10 width="70%" text={etcState.insuranceCost}/>
+              <div className="coverrow third">
+                <TitleBox width="120px" text='계약금액'/>
+                <TextBoxPL10 width="50%" text={etcState.insuranceCost}/>
               </div>
             </div>
           </section>
@@ -629,6 +643,68 @@ export default function ReserveDetail (props : any) {
           <section>
             <h1>8. 입금내역</h1>
             <div className="bottombar"></div>
+            <div className="coverbox">
+              <div className="coverrow third rightborder">
+                <TitleBox width="120px" text='1인요금' height={160}/>
+                <div style={{flex:1}}>
+                  <div style={{display:'flex', alignItems:'center'}}>
+                    <h3 style={{margin:'0 10px'}}>성인</h3>
+                    <TextBoxPL10 width="50%" text={depositCostInfo.personalCost.costAdult} justify='flex-end'/>
+                    <p style={{marginRight:'10px'}}>원</p>
+                    <TextBoxPL10 width="50%" text={`${depositCostInfo.personalCost.costAdultNum}`} justify='flex-end'/>
+                    <p>명</p>
+                  </div>
+                  <div style={{display:'flex', alignItems:'center'}}>
+                    <h3 style={{margin:'0 10px'}}>소아</h3>
+                    <TextBoxPL10 width="50%" text={depositCostInfo.personalCost.costChild} justify='flex-end'/>
+                    <p style={{marginRight:'10px'}}>원</p>
+                    <TextBoxPL10 width="50%" text={`${depositCostInfo.personalCost.costChildNum}`} justify='flex-end'/>
+                    <p>명</p>
+                  </div>
+                  <div style={{display:'flex', alignItems:'center'}}>
+                    <h3 style={{margin:'0 10px'}}>유아</h3>
+                    <TextBoxPL10 width="50%" text={depositCostInfo.personalCost.costInfant} justify='flex-end'/>
+                    <p style={{marginRight:'10px'}}>원</p>
+                    <TextBoxPL10 width="50%" text={`${depositCostInfo.personalCost.costInfantNum}`} justify='flex-end'/>
+                    <p>명</p>
+                  </div>
+                </div>
+              </div>
+              <div className="coverrow third rightborder">
+                <TitleBox width="120px" text='총요금' height={160}/>
+                <TextBoxPL10 width="50%" text={depositCostInfo.personalCost.costAll} justify='flex-end'/>
+                <p>원</p>
+              </div>
+              <div className="coverrow third" style={{flexDirection:'column', alignItems:'start'}}>
+                <div style={{width:'100%',  display:'flex', alignItems:'center'}}>
+                  <TitleBox width="120px" text='할인요금' />
+                  <TextBoxPL10 width="50%" text={depositCostInfo.discountCost} justify='flex-end'/>
+                  <p>원</p>
+                </div>
+                <div style={{width:'100%', display:'flex', alignItems:'center'}}>
+                  <TitleBox width="120px" text='추가요금'/>
+                  <TextBoxPL10 width="50%" text={depositCostInfo.additionCostAll} justify='flex-end'/>
+                  <p>원</p>
+                </div>
+                <div style={{width:'100%', display:'flex', alignItems:'center'}}>
+                  <TitleBox width="120px" text='최종요금'/>
+                  <TextBoxPL10 width="50%" text={depositCostInfo.resultCost} justify='flex-end'/>
+                  <p>원</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="coverbox">
+              <div className="coverrow dubbleThird rightborder ">
+                <TitleBox width="120px" text='할인행사사은품'/>
+                <TextBoxPL10 width="50%" text={depositCostInfo.freeGift} justify='flex-start'/>
+              </div>
+              <div className="coverrow third">
+                <TitleBox width="120px" text='적립금'/>
+                <TextBoxPL10 width="50%" text={depositCostInfo.savedMoney} justify='flex-end'/>
+                <p>원</p>
+              </div>
+            </div>
             <div className="coverbox">
               <div className="coverrow rightborder" style={{width:'40%'}}>
                 <TitleBox width="100px" text='계약금액'/>
@@ -674,7 +750,7 @@ export default function ReserveDetail (props : any) {
             {
               deliveryInfo.map((item:any, index:any)=>{
                 return (
-                  <div className="coverbox">
+                  <div className="coverbox" key={index}>
                     <div className="coverrow hole">
                       <TitleBox width="100px" text={item.name}/>
                       <div style={{flex:1, display:'flex', justifyContent:'space-between'}}>
@@ -698,140 +774,161 @@ export default function ReserveDetail (props : any) {
             
             <section>
               <div className="content-menu-btn-box">
+                <div className={isSelectedMenuBtn === '온라인계약서' ? "content-menu-btn selected" : "content-menu-btn"}
+                  style={{width:'50%'}}
+                 onClick={()=>{setIsSelectedMenuBtn('온라인계약서');}}
+                >온라인계약서</div>
+                <div className={isSelectedMenuBtn === '수배내역' ? "content-menu-btn selected" : "content-menu-btn"}
+                  style={{width:'50%'}}
+                  onClick={()=>{setIsSelectedMenuBtn('수배내역');}}
+                >수배내역</div>
+              </div>
+              <div className="content-menu-btn-box">
                 <div className={isSelectedMenuBtn === '진행상황' ? "content-menu-btn selected" : "content-menu-btn"}
                  onClick={()=>{setIsSelectedMenuBtn('진행상황');}}
-                >진행상황</div>
+                >진행상황/Log</div>
                 <div className={isSelectedMenuBtn === '문의답변' ? "content-menu-btn selected" : "content-menu-btn"}
                   onClick={()=>{setIsSelectedMenuBtn('문의답변');}}
-                >문의답변</div>
+                >문의답변/Log</div>
                 <div className={isSelectedMenuBtn === '변경내역' ? "content-menu-btn selected" : "content-menu-btn"}
                   onClick={()=>{setIsSelectedMenuBtn('변경내역');}}
-                >변경내역</div>
+                >변경내역/Log</div>
                 <div className={isSelectedMenuBtn === '알림톡' ? "content-menu-btn selected" : "content-menu-btn"}
                   onClick={()=>{setIsSelectedMenuBtn('알림톡');}}
-                >알림톡</div>
+                >알림톡/Log</div>
               </div>
             </section>
 
-            <section>
-              <h1>온라인 계약서 (전자서명, 동의서)</h1>
-              <div className="bottombar"></div>
-              <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor: '#f6f6f6'}}>
-                <TitleBox width="130px" text='날짜'/>
-                <TitleBox width="20%" text='경로'/>
-                <TitleBox width="20%" text='상태'/>
-                <TitleBox width="25%" text='보기'/>
-              </div>
-              <div className="coverbox">
-                <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                  <DateBoxNum width='130px' subWidth='110px' right={25}   setSelectDate={''} date={''} marginLeft={5}/>
-                  <DropdownBox
-                    widthmain='20%' height='35px' selectedValue={''}
-                    options={[
-                      { value: '이메일', label: '이메일' },
-                      { value: '이메일', label: '이메일' }
-                    ]}    
-                    handleChange={(e)=>{}}
-                  />
-                  <DropdownBox
-                    widthmain='20%' height='35px' selectedValue={''}
-                    options={[
-                      { value: '대기', label: '대기' },
-                      { value: '전달', label: '전달' }
-                    ]}    
-                    handleChange={(e)=>{}}
-                  />
-                  <input style={{width:'25%', textAlign:'center'}}
-                    value={''} className="inputdefault" type="text" 
-                    onChange={(e) => {}}/>
+            {
+              isSelectedMenuBtn === '온라인계약서' &&
+              <section>
+                <h1>온라인 계약서 (전자서명, 동의서)</h1>
+                <div className="bottombar"></div>
+                <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor: '#f6f6f6'}}>
+                  <TitleBox width="130px" text='날짜'/>
+                  <TitleBox width="20%" text='경로'/>
+                  <TitleBox width="20%" text='상태'/>
+                  <TitleBox width="25%" text='보기'/>
                 </div>
-              </div>
-            </section>
-
-            <section>
-              <h1>수배 확정 내역</h1>
-              <div className="bottombar"></div>
-              <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor: '#f6f6f6'}}>
-                <TitleBox width="130px" text='날짜'/>
-                <TitleBox width="20%" text='경로'/>
-                <TitleBox width="20%" text='상태'/>
-                <TitleBox width="25%" text='보기'/>
-              </div>
-              {
-                [1,2,3].map((item:any, index:any)=>{
-                  return (
-                    <div className="coverbox" key={index}>
-                      <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                        <DateBoxNum width='130px' subWidth='110px' right={25}   setSelectDate={''} date={''} marginLeft={5}/>
-                        <DropdownBox
-                          widthmain='20%' height='35px' selectedValue={''}
-                          options={[
-                            { value: '이메일', label: '이메일' },
-                            { value: '이메일', label: '이메일' }
-                          ]}    
-                          handleChange={(e)=>{}}
-                        />
-                        <DropdownBox
-                          widthmain='20%' height='35px' selectedValue={''}
-                          options={[
-                            { value: '예약', label: '예약' },
-                            { value: '대기', label: '대기' },
-                            { value: '확정', label: '확정' }
-                          ]}    
-                          handleChange={(e)=>{}}
-                        />
-                        <input style={{width:'25%', textAlign:'center'}}
-                          value={''} className="inputdefault" type="text" 
-                          onChange={(e) => {}}/>
-                      </div>
+                <div className="coverbox">
+                  <div className="coverrow hole" style={{justifyContent:'space-between'}}>
+                    <DateBoxSingle setSelectDate={''} date={''} marginLeft={5}/>
+                    <DropdownBox
+                      widthmain='20%' height='35px' selectedValue={''}
+                      options={[
+                        { value: '이메일', label: '이메일' },
+                        { value: '이메일', label: '이메일' }
+                      ]}    
+                      handleChange={(e)=>{}}
+                    />
+                    <DropdownBox
+                      widthmain='20%' height='35px' selectedValue={''}
+                      options={[
+                        { value: '대기', label: '대기' },
+                        { value: '전달', label: '전달' }
+                      ]}    
+                      handleChange={(e)=>{}}
+                    />
+                    <input style={{width:'25%', textAlign:'center'}}
+                      value={''} className="inputdefault" type="text" 
+                      onChange={(e) => {}}/>
                   </div>
-                  )
-                })
-              }
-            </section>
-
-            <section>
-              <h1>고객 관리 내역</h1>
-              <textarea 
-                className="textarea"
-                value={inputContent}
-                onChange={(e)=>{setInputContent(e.target.value)}}
-              />
-              <div className='csbtn-box'>
-                <div className="btn" style={{backgroundColor: '#5fb7ef'}}
-                  onClick={handleReserveCSSave}
-                >
-                  <p>등록</p>
                 </div>
-              </div>
-            </section>
-
-            <section>
-            {  reserveCSList.length > 0 &&
-              reserveCSList.map((item:any, index:any)=>{
-                return (
-                  <div className="inputcontentbox" key={index}>
-                    <div className="date-name">
-                      <p className="date">{item.date} ({item.time})</p>
-                      <p className="name">{item.charger}</p>
+              </section>
+            }
+            
+            {
+              isSelectedMenuBtn === '수배내역' &&
+              <section>
+                <h1>수배 확정 내역</h1>
+                <div className="bottombar"></div>
+                <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor: '#f6f6f6'}}>
+                  <TitleBox width="130px" text='날짜'/>
+                  <TitleBox width="20%" text='경로'/>
+                  <TitleBox width="20%" text='상태'/>
+                  <TitleBox width="25%" text='보기'/>
+                </div>
+                {
+                  [1,2,3].map((item:any, index:any)=>{
+                    return (
+                      <div className="coverbox" key={index}>
+                        <div className="coverrow hole" style={{justifyContent:'space-between'}}>
+                          <DateBoxSingle setSelectDate={''} date={''} marginLeft={5}/>
+                          <DropdownBox
+                            widthmain='20%' height='35px' selectedValue={''}
+                            options={[
+                              { value: '이메일', label: '이메일' },
+                              { value: '이메일', label: '이메일' }
+                            ]}    
+                            handleChange={(e)=>{}}
+                          />
+                          <DropdownBox
+                            widthmain='20%' height='35px' selectedValue={''}
+                            options={[
+                              { value: '예약', label: '예약' },
+                              { value: '대기', label: '대기' },
+                              { value: '확정', label: '확정' }
+                            ]}    
+                            handleChange={(e)=>{}}
+                          />
+                          <input style={{width:'25%', textAlign:'center'}}
+                            value={''} className="inputdefault" type="text" 
+                            onChange={(e) => {}}/>
+                        </div>
                     </div>
-                    <div className="inputcontent">
-                      <p>{item.content}</p>
-                      <div className='csbtn-box'>
-                        <div className="btn" style={{backgroundColor: '#BDBDBD'}}
-                          onClick={()=>{
-                            handleReserveCSDelete(item.id);
-                          }}
-                        >
-                          <p>삭제</p>
+                    )
+                  })
+                }
+              </section>
+            }
+
+            {
+              isSelectedMenuBtn === '진행상황' &&
+              <>
+                <section>
+                  <h1>진행상황</h1>
+                  <textarea 
+                    className="textarea"
+                    value={inputContent}
+                    onChange={(e)=>{setInputContent(e.target.value)}}
+                  />
+                  <div className='csbtn-box'>
+                    <div className="btn" style={{backgroundColor: '#5fb7ef'}}
+                      onClick={handleReserveCSSave}
+                    >
+                      <p>등록</p>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                {  reserveCSList.length > 0 &&
+                  reserveCSList.map((item:any, index:any)=>{
+                    return (
+                      <div className="inputcontentbox" key={index}>
+                        <div className="date-name">
+                          <p className="date">{item.date} ({item.time})</p>
+                          <p className="name">{item.charger}</p>
+                        </div>
+                        <div className="inputcontent">
+                          <p>{item.content}</p>
+                          <div className='csbtn-box'>
+                            <div className="btn" style={{backgroundColor: '#BDBDBD'}}
+                              onClick={()=>{
+                                handleReserveCSDelete(item.id);
+                              }}
+                            >
+                              <p>삭제</p>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                )
-              })
+                    )
+                  })
+                }
+                </section>
+              </>
             }
-            </section>
 
           </div>
         </div>
@@ -839,18 +936,18 @@ export default function ReserveDetail (props : any) {
       </div>
 
         {/* 예약수정 모달창 */}
-            {
+            {/* {
         isViewReserveModal &&
         <div className='Modal'>
           <div className='modal-backcover' style={{height : height + 100}}></div>
           <div className='modal-maincover' ref={divAreaRef}>
              <ModalReserve
-              modalSort='revise'
-              serialNum={serialNum}
-              fetchPosts={fetchPosts}
-              setIsViewModal={setIsViewReserveModal}
-              refresh={refresh}
-              setRefresh={setRefresh}
+              // modalSort='revise'
+              // serialNum={serialNum}
+              // fetchPosts={fetchPosts}
+              // setIsViewModal={setIsViewReserveModal}
+              // refresh={refresh}
+              // setRefresh={setRefresh}
               
               reserveState={reserveState}
               workState={workState}
@@ -870,7 +967,7 @@ export default function ReserveDetail (props : any) {
              />
           </div>
         </div>
-      }
+      } */}
 
     </div>
     :

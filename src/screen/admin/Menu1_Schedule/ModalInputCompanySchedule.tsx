@@ -4,9 +4,9 @@ import { IoMdClose } from "react-icons/io";
 import { TitleBox } from '../../../boxs/TitleBox';
 import axios from 'axios'
 import MainURL from "../../../MainURL";
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 import { DropDowncharger, DropDownNum, DropDownTime, DropDownVisitPath } from '../../DefaultData';
+import { DateBoxSingleTime } from '../../../boxs/DateBoxSingleTime';
 
 
 export default function ModalCompanySchedule(props:any) {
@@ -14,13 +14,12 @@ export default function ModalCompanySchedule(props:any) {
   const [sort, setSort] = useState('');
   const [color, setColor] = useState('');
   const [title, setTitle] = useState('');
-  const [dateStart, setDateStart] = useState('');
-  const [dateEnd, setDateEnd] = useState('');
+  const [dateStart, setDateStart] = useState(props.selectStartDate);
+  const [dateEnd, setDateEnd] = useState(props.selectEndDate);
   const [writer, setWriter] = useState('');
   const [sharer, setSharer] = useState('');
   const [notice, setNotice] = useState('');
  
-
   interface CheckBoxProps {
     title: string;
     sortInput : string;
@@ -69,6 +68,7 @@ export default function ModalCompanySchedule(props:any) {
     })
   };
 
+
   return (
     <div className='modal-counsel'>
       <div className='close'
@@ -105,9 +105,9 @@ export default function ModalCompanySchedule(props:any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='기간'/>
-            <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setDateStart} date={dateStart}/>
-            <p style={{marginRight:'10px'}}>~</p>
-            <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setDateEnd} date={dateEnd}/>
+            <DateBoxSingleTime setSelectDate={setDateStart} date={dateStart}/>
+            <p>~</p>
+            <DateBoxSingleTime setSelectDate={setDateEnd} date={dateEnd}/>
           </div>
         </div>
         <div className="coverbox">

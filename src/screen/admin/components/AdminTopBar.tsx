@@ -17,9 +17,9 @@ export default function AdminTopBar () {
   };
 
   const notices = [
-    '공지사항 1: 새로운 업데이트가 적용되었습니다.',
-    '공지사항 2: 점검 일정이 변경되었습니다.',
-    '공지사항 3: 이벤트 참여 안내',
+    '1. 새로운 업데이트가 적용되었습니다.',
+    '2. 점검 일정이 변경되었습니다.',
+    '3. 이벤트 참여 안내',
   ];
 
   const [currentNotice, setCurrentNotice] = useState(0);
@@ -41,6 +41,8 @@ export default function AdminTopBar () {
     <header className="topbar">
 
       <div className="notice-box">
+        <p>공지사항</p>
+        <div className="notice-veticalbar"></div>
         <div className={`notice ${fade ? 'slide-in' : 'slide-out'}`}>
           {notices[currentNotice]}
         </div>

@@ -8,6 +8,7 @@
 .searchbox {
   @include middle();
   flex-direction: column;
+  margin-bottom: 5px;
 
   .cover {
     display: flex;
@@ -17,7 +18,7 @@
 
     .content {
       width: 100%;
-      height: 60px;
+      height: 50px;
       display: flex;
       align-items: center;
       padding: 0 10px;
@@ -75,6 +76,7 @@
           border: 1px solid #E9E9E9;
           margin: 0 5px;
           border-radius: 5px;
+          font-size:14px;
         }
         .searching {
           background-color: #4f5460;

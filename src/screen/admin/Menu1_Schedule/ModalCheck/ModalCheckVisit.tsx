@@ -19,7 +19,7 @@ export default function ModalCheckVisit (props : any) {
         <IoMdClose size={30}/>
       </div>
 
-      <div className="header">
+      <div className="modal-header">
         <h1>{`[${date}] ${propsData.visitTime}`}</h1>
       </div>
 

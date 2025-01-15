@@ -6,8 +6,8 @@
 
 .Menu1 {
   height: auto;
-  padding: 30px;
   background-color: #f6f6f6;
+  padding: 20px 30px;
   
   .top-row {
     height: 70px;
@@ -50,19 +50,38 @@
     }
 
     .rowbox {
+      width: 33%;
       display: flex;
       align-items: center;
       padding-left: 5px;
 
-      .select-box {
+      .calendar-btn {
         width: 100px;
-        height: 40px;
+        height: 35px;
+        border: 1px solid #EAEAEA;
+        background-color: #fff;
+        border-radius: 10px;
+        @include middle();
+        margin: 0 5px;
+        font-size:14px;
+      }
+      .calendar-btn:hover {
+        cursor: pointer;
+        border: 1px solid #333;
+      }
+      .selected {
+        border: 1px solid #333;
+      }
+      .select-box {
+        width: 90px;
+        height: 35px;
         background-color: #000;
         color: #fff;
         margin: 0 3px;
         border: 1px solid #EAEAEA;
         border-radius: 5px;
         @include middle;
+        font-size: 14px;
       }
       .select-box:hover {
         cursor: pointer;
@@ -78,17 +97,18 @@
     background-color: #fff;
     --fc-event-bg-color : #fff;
     --fc-event-border-color: #fff;
-    margin: 20px;
+    margin:10px 20px;
     box-sizing: border-box;
 
     .fc-header-toolbar.fc-toolbar {
       height: 100px;
       padding: 20px;
       background-color: #fff;
+      margin-bottom:0.5em;
 
       .fc-toolbar-chunk {
         .fc-toolbar-title {
-          font-size: 40px;
+          font-size: 28px;
           font-weight: 600;
         }
 
@@ -102,6 +122,9 @@
         }
       }
       
+    }
+    .fc-timegrid-slot {
+      height: 40px;
     }
 
     .fc-event-main {

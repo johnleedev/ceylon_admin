@@ -20,7 +20,7 @@ export default function ModalCheckEstimate (props : any) {
         <IoMdClose size={30}/>
       </div>
 
-      <div className="header">
+      <div className="modal-header">
         <h1>{`[${date}]`}</h1>
       </div>
 

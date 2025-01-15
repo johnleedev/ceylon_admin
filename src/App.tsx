@@ -3,20 +3,22 @@ import { Routes, Route } from 'react-router-dom';
 import AdminMenuBar from './screen/admin/components/AdminMenuBar';
 import AdminTopBar from './screen/admin/components/AdminTopBar';
 import MainAdmin from './screen/admin/MainAdmin';
-import MainSchdule from './screen/admin/Menu1_Schedule/MainSchedule';
+import MainScheduleRouter from './screen/admin/Menu1_Schedule/MainScheduleRouter';
 import MainCounsel from './screen/admin/Menu2_Counsel/MainCounsel';
-import ManinReserve from './screen/admin/Menu3_Reserve/MainReserve';
-import MainUser from './screen/admin/Menu4_User/MainUser';
-import MainProductsRest from './screen/admin/Menu5_ProductsRest/MainProductsRest';
-import MainMenual from './screen/admin/Menu7_Menual/MainMenual';
-import MainState from './screen/admin/Menu8_State/MainState';
-import MainSystem from './screen/admin/Menu9_System/MainSystem';
+import MainReserve from './screen/admin/Menu3_Reserve/MainReserve';
+import MainUser from './screen/admin/Menu5_User/MainUser';
+import MainProductsRest from './screen/admin/Menu6_ProductsRest/MainProductsRest';
+import MainMenual from './screen/admin/Menu8_Menual/MainMenual';
+import MainState from './screen/admin/Menu9_State/MainState';
+import MainSystem from './screen/admin/Menu10_System/MainSystem';
 import Main from './screen/home/main/Main';
 import Footer from './screen/home/component/Footer';
 import MainProduct from './screen/home/Product/MainProduct';
-import MainProductsTour from './screen/admin/Menu6_ProductsTour/MainProductsTour';
+import MainProductsTour from './screen/admin/Menu7_ProductsTour/MainProductsTour';
 import MainEstimate from './screen/home/estimate/MainEstimate';
 import MainUserPage from './screen/home/user/MainUserPage';
+import MainSent from './screen/admin/Menu4_SentManage/MainSent';
+
 
 
 function App() {
@@ -46,9 +48,10 @@ function App() {
             <div className='adminmainarea'>
               <Routes>
                 <Route path="/" element={<MainAdmin/>}/>
-                <Route path="/schedule/*" element={<MainSchdule/>}/>
+                <Route path="/schedule/*" element={<MainScheduleRouter/>}/>
                 <Route path="/counsel/*" element={<MainCounsel/>}/>
-                <Route path="/reserve/*" element={<ManinReserve/>}/>
+                <Route path="/reserve/*" element={<MainReserve/>}/>
+                <Route path="/sent/*" element={<MainSent/>}/>
                 <Route path="/user/*" element={<MainUser/>}/>
                 <Route path="/productsrest/*" element={<MainProductsRest/>}/>
                 <Route path="/productstour/*" element={<MainProductsTour/>}/>

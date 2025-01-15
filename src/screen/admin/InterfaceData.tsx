@@ -10,10 +10,15 @@ export interface ReserveStateProps {
 
 export interface WorkStateProps {
   progressNoticeSent : boolean,
+  eticketSent : boolean,
+  scheduleSent : boolean,
   passportVerify : boolean,
-  finalSchedule : boolean,
+  tourPrepare : boolean,
+  visaEsta  : boolean,
+  voucherSent : boolean,
   remainPayRequest : boolean,
-  tourInfoMaterial: boolean
+  confirmationSent : boolean,
+  guideBook : boolean
 }
 
 export interface UserInfoProps {
@@ -66,6 +71,7 @@ export interface ProductInfoProps {
   }
 
 export interface AirlineReserveStateProps {
+  isCustomerTicketing : boolean;
   airlineState : {
     airlineCompany : string;
     airlineName : string;
@@ -75,12 +81,13 @@ export interface AirlineReserveStateProps {
     arriveAirport : string;
     arriveDate : string;
     arriveTime : string;
+    state : string;
   }[]
   ticketingState : {
-    company : string;
     ticketBooth : string;
+    ticketCost : string;
     date : string;
-    state : string;
+    isTicketing : boolean
   }[]
 }
 
@@ -94,11 +101,14 @@ export interface HotelReserveStateProps {
 }[]
 
 export interface EtcStateProps {
-    includes : string;
-    notIncludes : string;
+    salesEvent : string;
+    salesEventCost : string;
+    saveMoney : string;
+    saveMoneyCost : string;
+    contractBenefit  : string;
     freeGift : string;
-    freeGiftDetail : string;
-    travelInsurance : string;
+    freeGiftCost : string;
+    insuranceIncludes : string;
     insuranceCompany : string;
     insuranceCost : string;
   }
@@ -106,6 +116,12 @@ export interface EtcStateProps {
 export interface DepositCostInfoProps { 
     tourTotalContractCost : string; 
     costListSum : string;
+    personalCost : {costAdult: string, costAdultNum: number, costChild: string, costChildNum : number, costInfant: string, costInfantNum: number, costAll: string},
+    freeGift : string,
+    savedMoney : string, 
+    discountCost: string, 
+    additionCostAll: string, 
+    resultCost: string,
     contractCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
     airportCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
     reviseAirportCost : {nameko: string, cost: string, date: string, type: string, deposit: boolean}[],
@@ -115,8 +131,7 @@ export interface DepositCostInfoProps {
     refundCost : {nameko: string, cost: string, date: string},
     totalCost : string, 
     ballance : string, 
-    isCashBill : boolean, 
-    cashBillInfo : { type: string, authNum: string, date: string}
+    cashBillInfo : { type: string, userNum:string, authNum: string, date: string}
 }
   
 

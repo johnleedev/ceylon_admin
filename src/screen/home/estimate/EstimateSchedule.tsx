@@ -4,7 +4,7 @@ import { DropdownBox } from '../../../boxs/DropdownBox';
 import { ImLocation } from 'react-icons/im';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
-import ModalSelectScheduleBox from '../../admin/Menu5_ProductsRest/Modal/ModalSelectScheduleBox';
+import ModalSelectScheduleBox from '../../admin/Menu6_ProductsRest/Modal/ModalSelectScheduleBox';
 import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci';
 
 

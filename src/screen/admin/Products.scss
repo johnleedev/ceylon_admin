@@ -4,10 +4,10 @@
   align-items: center;
 };
 
-.Menu5 {
+.Main-cover {
   height: auto;
   background-color: #f6f6f6;
-  padding: 30px 30px;
+  padding: 20px 30px;
   min-height: 100vh;
 
   .main-title {
@@ -21,7 +21,7 @@
 
     .title-box {
        h1 {
-        font-size: 27px;
+        font-size: 24px;
         font-weight: bold;
       }
     }
@@ -36,6 +36,8 @@
 
       p {
         margin-left: 5px;
+        font-size: 14px;
+        font-weight: 400;
       }
     }
     .addBtn:hover {
@@ -47,16 +49,18 @@
 
   .continentBtnbox {
     display: flex;
-    margin: 30px 0px;
-    
+    margin: 15px 0;
 
     .continentNtn {
-      width: 10%;
-      padding: 5px 5px;
       border: 1px solid #dadada;
       border-radius: 5px;
       margin-right: 10px;
       @include middle();
+      margin-right:5px;
+      padding: 5px;
+      width: 9%;
+      font-size: 14px;
+      font-weight: 400;
     }
     .continentNtn:hover {
       cursor: pointer;
@@ -67,9 +71,15 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
-   
+    margin-top: 25px;
+
+    .nation {
+      width: 62%;
+    }
+    .city {
+      width: 34%;
+    }
     .nation_city_box {
-      width: 48%;
 
       .nation_city_title_box {
         display: flex;
@@ -98,9 +108,13 @@
         padding: 10px;
         background-color: #fff;
         border-top: 2px solid #333;
+        display: grid;
+        justify-content: space-between;
+        grid-template-columns: 48% 48%;
     
         .nation {
-          padding: 7px;
+          width: 100%;
+          padding: 6px 7px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -111,7 +125,7 @@
   
             .nation__title {
               font-size: 14px;
-              font-weight: 600;
+              font-weight: 400;
             }
             
           }
@@ -120,7 +134,7 @@
   
             .nation__title_addBtn {
               @include middle();
-              padding: 3px;
+              padding: 2px;
               border: 1px solid #c2c2c2;
               border-radius: 3px;
               background-color: #fff;
@@ -166,6 +180,11 @@
           align-items: center;
           justify-content: space-between;
   
+          .cities__text {
+            font-size: 14px;
+            margin-left: 10px;
+            font-weight: 400;
+          }
           .reviseBtn {
             .divider {
               width: 2px;
@@ -174,7 +193,8 @@
               margin: 0 10px;
             }
             p {
-              font-size: 14px;
+              font-size: 13px;
+              font-weight: 400;
             }
             p:hover {
               cursor: pointer;
@@ -199,16 +219,16 @@
     align-items: center; 
     
 
-    .main-list-cover-hotel {
+    .main-list-cover {
       width: 100%;
 
-      .titlebox {
+      .TitleList {
         display: flex;
         justify-content: space-between;
         background-color: #f6f6f6;;
         padding: 0 5px;
-        border-top: 2px solid #333;
-        border-bottom: 2px solid #acacac;
+        border-top: 1px solid #333;
+        border-bottom: 1px solid #acacac;
       }
       .rowbox {
         display: flex;
@@ -251,20 +271,6 @@
       }
     }
 
-    .btn-row {
-      width: 100%;
-      margin: 20px 0;
-      @include middle();
-
-      .btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 5px; 
-        cursor: pointer; 
-        margin: 7px;
-        @include middle();
-      }
-    }
   }
   .Modal {
 

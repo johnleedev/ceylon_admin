@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import '../SearchBox.scss';
 import '../SearchList.scss';
-import { TitleBox } from '../../../boxs/TitleBox';
 import { TextBox } from '../../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 import { formatDate, subDays } from 'date-fns';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import Loading from '../components/Loading';
 import { DropDowncharger } from '../../DefaultData';
+import { TitleList } from '../../../boxs/TitleList';
 
 export default function Sub1_Online (props:any) {
 
@@ -65,7 +65,6 @@ export default function Sub1_Online (props:any) {
 	}
 	const [list, setList] = useState<ListProps[]>([]);
 	const [viewList, setViewList] = useState<ListProps[]>([]);
-	const [isVewListZero, setIsViewListZero] = useState<boolean>(false);
 	const [arrangeWord, setArrangeWord] = useState('');
 
 	const fetchPosts = async () => {
@@ -96,15 +95,9 @@ export default function Sub1_Online (props:any) {
 			if (dateSort === '문의일') {
 				const copy = list.filter(e => new Date(e.date) >= new Date(startDate) && new Date(e.date) <= new Date(endDate));
 				setViewList(copy);
-				if (copy.length === 0) {
-					setIsViewListZero(true);
-				} 
 			} else if (dateSort === '방문일') {
 				const copy = list.filter(e => new Date(e.visitDate) >= new Date(startDate) && new Date(e.visitDate) <= new Date(endDate));
 				setViewList(copy);
-				if (copy.length === 0) {
-					setIsViewListZero(true);
-				} 
 			}
 		} 
 	};
@@ -115,28 +108,26 @@ export default function Sub1_Online (props:any) {
 			if (searchSelect === '예약자명') {
 				const copy =list.filter(e => e.name.includes(word));
 				setViewList(copy);
-				if (copy.length === 0) {
-					setIsViewListZero(true);
-				} 
 			} else if (searchSelect === '전화번호') {
 				const copy =list.filter(e => e.phone.includes(word));
 				setViewList(copy);
-				if (copy.length === 0) {
-					setIsViewListZero(true);
-				} 
 			}
 		}
 	};
 
 	return ( 
-		<div className='Menu2'>
+		<div className='Main-cover'>
+
+			<div className="main-title">
+				<div className='title-box'>
+					<h1>New DB</h1>
+				</div>
+			</div>
 				
 			<div className="searchbox">
 				<div className="cover">
 					<div className="content">
-						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setStartDate} date={startDate} marginLeft={1}/>
-						<p>~</p>
-						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setEndDate} date={endDate} marginLeft={20}/>
+						<DateBoxDouble setSelectStartDate={setStartDate} setSelectEndDate={setEndDate} dateStart={startDate} dateEnd={endDate} marginLeft={1}/>
 						<DropdownBox
 							widthmain='100px'
 							height='35px'
@@ -185,28 +176,21 @@ export default function Sub1_Online (props:any) {
 				</div>
 			</div>
 
-			<div style={{height:'30px'}}></div>
 
 			<div className="seachlist">
 
-				<div className="main-title">
-					<div className='title-box'>
-						<h1>New DB</h1>
-					</div>
-				</div>
-
 				<div className="main-list-cover">
-					<div className="titlebox">
-						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='12%' text='답변일/문의일'/>
-						<TitleBox width='5%' text='형태'/>
-						<TitleBox width='8%' text='성함'/>
-						<TitleBox width='12%' text='연락처'/>
-						<TitleBox width='12%' text='여행지'/>
-						<TitleBox width='10%' text='여행예정일'/>
-						<TitleBox width='10%' text='방문경로'/>
-						<TitleBox width='12%' text='진행상황'/>
-						<TitleBox width='7%' text='담당자'/>
+					<div className="TitleList">
+						<TitleList width='3%' text='NO'/>
+						<TitleList width='12%' text='답변일/문의일'/>
+						<TitleList width='5%' text='구분'/>
+						<TitleList width='8%' text='성함'/>
+						<TitleList width='12%' text='연락처'/>
+						<TitleList width='12%' text='여행지'/>
+						<TitleList width='10%' text='여행예정일'/>
+						<TitleList width='10%' text='방문경로'/>
+						<TitleList width='12%' text='진행상황'/>
+						<TitleList width='7%' text='담당자'/>
   				</div>
 					
 					{
@@ -238,19 +222,9 @@ export default function Sub1_Online (props:any) {
 							)
 						})
 						:
-						<>
-							{
-								isVewListZero
-								?
-								<div style={{textAlign:'center'}}>
-									<p style={{marginTop:'50px'}}>검색결과가 없습니다.</p>
-								</div>
-								:
-								<div className='Menu2' style={{paddingTop:'200px'}}>
-									<Loading />
-								</div>
-							}
-						</>
+						<div style={{textAlign:'center'}}>
+							<p style={{marginTop:'50px'}}>검색결과가 없습니다.</p>
+						</div>
 					}
 				</div>
 

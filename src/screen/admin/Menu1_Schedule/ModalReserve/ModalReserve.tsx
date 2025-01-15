@@ -9,7 +9,7 @@ import { TitleBox } from '../../../../boxs/TitleBox';
 import { DropdownBox } from '../../../../boxs/DropdownBox';
 import { DropDownAirline, DropDowncharger, DropDownDeliveryType, DropDownDepositType, DropDownLandCompany, DropDownNum, DropDownTourLocation, DropDownVisitPath } from '../../../DefaultData';
 import { FaPlus } from "react-icons/fa";
-import { DateBoxNum } from '../../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../../boxs/DateBoxDouble';
 import { useRecoilState } from 'recoil';
 import { recoilExchangeRate } from '../../../../RecoilStore';
 import { AirlineReserveStateProps, DeliveryInfoProps, DepositCostInfoProps, EtcStateProps, HotelReserveStateProps,
@@ -17,6 +17,7 @@ import { AirlineReserveStateProps, DeliveryInfoProps, DepositCostInfoProps, EtcS
          WorkStateProps} from '../../InterfaceData';
 import { differenceInDays, format, parseISO } from 'date-fns';
 import { FaCheck } from "react-icons/fa";
+import { DateBoxSingle } from '../../../../boxs/DateBoxSingle';
 
 export default function ModalReserve (props : any) {
 
@@ -73,7 +74,7 @@ export default function ModalReserve (props : any) {
 예약 등록을 취소하시겠습니까? 
 `);
       if (result) {
-        handleCancel();
+        props.setIsViewModal(false);
       } else {
         return
       }
@@ -81,10 +82,6 @@ export default function ModalReserve (props : any) {
       props.setIsViewModal(false);
       props.setRefresh(!props.refresh);
     }
-  };
-
-  const handleCancel = async () => {
-    props.setIsViewModal(false);
   };
   
 
@@ -102,11 +99,13 @@ export default function ModalReserve (props : any) {
     reserveExchangeRate : recoilExchangeRateCopy[0].KRW, isNotice: false, isClientCheck: false
   }
   const airlineReserveStateData = {
-    airlineState : [{ airlineCompany : '', airlineName : '', departAirport : '', departDate: '', departTime : '', arriveAirport:'', arriveDate:'', arriveTime:'' }],
+    airlineState : [{ airlineCompany : '', airlineName : '', departAirport : '', departDate: '', departTime : '', arriveAirport:'', arriveDate:'', arriveTime:'', state:'' }],
     ticketingState : [{ company: '', ticketBooth: '', date: '', state: '예약/대기' }]
   }
   const depositCostInfoData = {
     tourTotalContractCost : '', costListSum : '',
+    personalCost : {costAdult: '', costAdultNum: 1, costChild: '', costChildNum : 1, costInfant: '', costInfantNum: 1, costAll: ''},
+    freeGift : '', savedMoney : '', discountCost: '', additionCostAll: '', resultCost:'',
     contractCost : [{nameko: '계약금', cost: '', date: '', type: '', deposit: false}],
     airportCost : [{nameko: '항공료', cost: '', date: '', type: '', deposit: false}],
     reviseAirportCost : [{nameko: '항공료변경', cost: '', date: '', type: '', deposit: false}],
@@ -114,7 +113,7 @@ export default function ModalReserve (props : any) {
     restCost : [{nameko: '잔금', cost: '', date: '', type: '', deposit: false}],
     additionCost : [{nameko: '추가경비', cost: '', date: '', type: '', deposit: false}],
     refundCost : {nameko: '환불', cost: '', date: ''},
-    totalCost :'', ballance : '', isCashBill : false, cashBillInfo : { type: '', authNum: '', date: ''}
+    totalCost :'', ballance : '', cashBillInfo : { type: '', userNum:'', authNum: '', date: ''}
   }
   const deliveryInfoData = [
     {name:'e-Ticket', requestDate:'', completeDate:'', deliveryType:'카톡', charger:''},
@@ -129,7 +128,8 @@ export default function ModalReserve (props : any) {
   const [reserveState, setReserveState] = useState<ReserveStateProps>(props.modalSort === 'revise' ? props.reserveState 
     : {contractCompleted : false, ticketIssued : false, reserveConfirm : false, fullPayReceived : false, departNoticeSent : false});
   const [workState, setWorkState] = useState<WorkStateProps>(props.modalSort === 'revise' ? props.workState 
-    : {progressNoticeSent : false, passportVerify : false, finalSchedule : false, remainPayRequest : false, tourInfoMaterial: false});
+    : {progressNoticeSent : false, eticketSent : false, scheduleSent : false, passportVerify : false, tourPrepare : false,
+      visaEsta  : false, voucherSent : false, remainPayRequest : false, confirmationSent : false, guideBook : false});
   const [productName, setProductName] = useState(props.modalSort === 'revise' ? props.productName : '');
   const [landCompany, setLandCompany] = useState(props.modalSort === 'revise' ? props.landCompany : '');
   const [visitPath, setVisitPath] = useState(props.modalSort === 'revise' ? props.visitPath : '');
@@ -142,7 +142,8 @@ export default function ModalReserve (props : any) {
   const [hotelReserveState, setHotelReserveState] = useState<HotelReserveStateProps[]>(props.modalSort === 'revise' ? props.hotelReserveState
     : [{ checkIn : '', checkOut : '', location : '', hotelName: '', roomType : '', days: '' }])
   const [etcState, setEtcState] = useState<EtcStateProps>(props.modalSort === 'revise' ? props.etcState
-    : { includes : '', notIncludes : '', freeGift : '', freeGiftDetail : '', travelInsurance : '', insuranceCompany : '동부화재', insuranceCost : '' })
+    : { salesEvent : '', salesEventCost : '', saveMoney : '', saveMoneyCost : '', contractBenefit  : '',
+      freeGift : '', freeGiftCost : '', insuranceIncludes : '', insuranceCompany : '동부화재', insuranceCost : '' })
   const [depositCostInfo, setDepositCostInfo] = useState<DepositCostInfoProps>(props.modalSort === 'revise' ? props.depositCostInfo : depositCostInfoData )
   const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfoProps[]>(props.modalSort === 'revise' ? props.deliveryInfo : deliveryInfoData );
 
@@ -246,7 +247,60 @@ export default function ModalReserve (props : any) {
   // 입금내역 ---------------------------------------------------------------------------------------------------------------------------------------
 
   // 입력된숫자 금액으로 변경
-  const handleDepositCostChange = async (e: React.ChangeEvent<HTMLInputElement>, index:number, category:keyof DepositCostInfoProps)  => {
+  const handleDepositPersonalCostChange = async (e: React.ChangeEvent<HTMLInputElement>, name:string)  => {
+    const text = e.target.value;
+    const copy = {...depositCostInfo}
+    if (text === '') {
+      (copy.personalCost as any)[name] = ''; 
+      setDepositCostInfo(copy);
+    }
+    const inputNumber = parseInt(text.replace(/,/g, ''));
+    if (isNaN(inputNumber)) {
+      return;
+    }
+    const formattedNumber = inputNumber.toLocaleString('en-US');
+    (copy.personalCost as any)[name] = formattedNumber;
+    setDepositCostInfo(copy);
+  };
+
+  // 인원 변경
+  const handleDepositNumChange = async (e:any, name:string) => {
+    const copy = {...depositCostInfo}
+    const text = e.target.value; 
+    const num = parseInt(text);
+    (copy.personalCost as any)[name] = num; 
+    setDepositCostInfo(copy);
+  };
+
+  useEffect(() => {
+    const copy = {...depositCostInfo};
+    const costAdultCopy = depositCostInfo.personalCost.costAdult === '' ? 0 : parseInt(depositCostInfo.personalCost.costAdult.replace(/,/g, ''));
+    const costChildCopy = depositCostInfo.personalCost.costChild === '' ? 0 : parseInt(depositCostInfo.personalCost.costChild.replace(/,/g, ''));
+    const costInfantCopy = depositCostInfo.personalCost.costInfant === '' ? 0 : parseInt(depositCostInfo.personalCost.costInfant.replace(/,/g, ''));
+    const allCost = (costAdultCopy * depositCostInfo.personalCost.costAdultNum) + (costChildCopy * depositCostInfo.personalCost.costChildNum) + (costInfantCopy * depositCostInfo.personalCost.costInfantNum);
+    const formattedAllCost = allCost.toLocaleString('en-US');
+    copy.personalCost.costAll = formattedAllCost;
+    setDepositCostInfo(copy);
+  }, [depositCostInfo.personalCost.costAdult, depositCostInfo.personalCost.costAdultNum, depositCostInfo.personalCost.costChild, depositCostInfo.personalCost.costChildNum, depositCostInfo.personalCost.costInfant, depositCostInfo.personalCost.costInfantNum]);
+
+  const handleDepositCostChange = async (e: React.ChangeEvent<HTMLInputElement>, category:keyof DepositCostInfoProps)  => {
+    const copy = {...depositCostInfo};
+    const text = e.target.value;
+    if (text === '') {
+      (copy as any)[category] = '';
+      setDepositCostInfo(copy);
+    }
+    const inputNumber = parseInt(text.replace(/,/g, ''));
+    if (isNaN(inputNumber)) {
+      return;
+    }
+    const formattedNumber = inputNumber.toLocaleString('en-US');
+    (copy as any)[category] = formattedNumber;
+    setDepositCostInfo(copy);
+  }
+
+  // 각 항목 입력된숫자 cost 금액으로 변경
+  const handleDepositRowCostChange = async (e: React.ChangeEvent<HTMLInputElement>, index:number, category:keyof DepositCostInfoProps)  => {
     const inputs = {...depositCostInfo};
     const text = e.target.value;
     if (text === '') {
@@ -288,8 +342,6 @@ export default function ModalReserve (props : any) {
     }
     setDepositCostInfo(updatedData);
   };
-  
-  
   
 
   // costList(계약금+항공료+중도금+잔금) 합계 계산
@@ -406,7 +458,8 @@ export default function ModalReserve (props : any) {
     } 
   };
   
-  const [visitPathDetailOptions, setVisitPathDetailOptions] = useState([{ value: '선택', label: '선택' }])
+  const [visitPathDetailOptions, setVisitPathDetailOptions] = useState(
+    [{ value: '선택', label: '선택' },{ value: '웹', label: '웹' },{ value: '앱', label: '앱' },{ value: '랜딩페이지', label: '랜딩페이지' },{ value: '직접방문', label: '직접방문' }])
   const handleVisitPathDetail = (text:string) => {
     if (text === '고객소개' || text === '직원소개/지인'){
       const copy = {...visitPathInfo}
@@ -419,11 +472,13 @@ export default function ModalReserve (props : any) {
       copy.visitPath = text;
       setVisitPathInfo(copy);
       setVisitPath(text);
-      if (text === '워킹') {
+      if (text === '워킹-견적' || text === '워킹-방문') {
         const copy = [
           { value: '선택', label: '선택' },
-          { value: '견적', label: '견적' },
-          { value: '방문', label: '방문' }
+          { value: '웹', label: '웹' },
+          { value: '앱', label: '앱' },
+          { value: '랜딩페이지', label: '랜딩페이지' },
+          { value: '직접방문', label: '직접방문' }
         ]
         setVisitPathDetailOptions(copy);
       } else if (text === '웨딩컨설팅') {
@@ -431,8 +486,10 @@ export default function ModalReserve (props : any) {
           { value: '선택', label: '선택' },
           { value: '웨딩쿨-일반', label: '웨딩쿨-일반' },
           { value: '웨딩쿨-박람회', label: '웨딩쿨-박람회' },
-          { value: '웨딩세이', label: '웨딩세이' },
-          { value: '감공', label: '감공' },
+          { value: '웨딩세이-일반', label: '웨딩세이-일반' },
+          { value: '웨딩세이-박람회', label: '웨딩세이-박람회' },
+          { value: '감공-일반', label: '감공-일반' },
+          { value: '감공-박람회', label: '감공-박람회' },
           { value: '커스텀', label: '커스텀' }
         ]
         setVisitPathDetailOptions(copy);
@@ -446,14 +503,50 @@ export default function ModalReserve (props : any) {
       } 
     }
   }
+
+  // work State Btn Row -----------------------------------------------------------------------------------------
+  const SelectWorkTabBox = ({ item, title }: { item: any; title: string }) => (
+    <div className={(workState as any)[item] ? "workState-box selected" : "workState-box"}
+      onClick={()=>{
+        const copy = {...workState};
+        (copy as any)[item] = !(copy as any)[item];
+        setWorkState(copy);
+      }}
+    >
+      <div className='textbox'>
+        <p>{title}</p>
+      </div>
+      <FaCheck size={12} className='checkbox'/>
+    </div>
+  )
   
+  // EtcSelectBtn -----------------------------------------------------------------------------------------
+  const EtcSelectBtn = ({ item, title }: { item: any; title: string }) => ( 
+  <>
+    <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+      <input className="input" type="checkbox"
+        checked={(etcState as any)[item] === title}
+        onChange={()=>{
+          setEtcState(prev => ({
+            ...prev, [item]: title
+          }));
+        }}
+        style={{width:'20px', height:'20px'}}
+      />
+    </div>
+    <p>{title}</p>
+  </>
+  )
 
   return (
     <div className='modal-reserve'>
       
       <div className="reserve-top">
         <div className='reserve-top-titleBox'>
-          <h1>예약하기</h1>
+          <div style={{display:'flex', alignItems:'center'}}>
+            <h1>예약하기</h1>
+            <p style={{marginLeft:'10px', color:'#ccc', fontSize:'14px'}}>{props.serialNum}</p>
+          </div>
           <div className='close-btn'
             onClick={()=>{
               if (props.modalSort === 'new' ) {
@@ -504,66 +597,16 @@ export default function ModalReserve (props : any) {
           </div>
 
           <div className='workState-row'>
-            <div className={workState.progressNoticeSent ? "workState-box selected" : "workState-box"}
-              onClick={()=>{
-                const copy = {...workState};
-                copy.progressNoticeSent = !copy.progressNoticeSent;
-                setWorkState(copy);
-              }}
-            >
-              <div className='textbox'>
-                <p>진행안내발송</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
-            <div className={workState.passportVerify? "workState-box selected" : "workState-box"}
-             onClick={()=>{
-              const copy = {...workState};
-              copy.passportVerify = !copy.passportVerify;
-              setWorkState(copy);
-            }}
-            >
-              <div className='textbox'>
-                <p>여권확인</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
-            <div className={workState.finalSchedule ? "workState-box selected" : "workState-box"}
-             onClick={()=>{
-              const copy = {...workState};
-              copy.finalSchedule = !copy.finalSchedule;
-              setWorkState(copy);
-            }}
-            >
-              <div className='textbox'>
-                <p>확정일정표발송</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
-            <div className={workState.remainPayRequest ? "workState-box selected" : "workState-box"}
-             onClick={()=>{
-              const copy = {...workState};
-              copy.remainPayRequest = !copy.remainPayRequest;
-              setWorkState(copy);
-            }}
-            >
-              <div className='textbox'>
-                <p>잔금입금요청</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
-            <div className={workState.tourInfoMaterial ? "workState-box selected" : "workState-box"}
-             onClick={()=>{
-              const copy = {...workState};
-              copy.tourInfoMaterial = !copy.tourInfoMaterial;
-              setWorkState(copy);
-            }}
-            >
-              <div className='textbox'>
-                <p>여행안내자료</p>
-              </div>
-              <FaCheck size={12} className='checkbox'/>
-            </div>
+            <SelectWorkTabBox item={'progressNoticeSent'} title='진행순서안내'/>
+            <SelectWorkTabBox item={'eticketSent'} title='E-Ticket'/>
+            <SelectWorkTabBox item={'scheduleSent'} title='일정표'/>
+            <SelectWorkTabBox item={'passportVerify'} title='여권확인'/>
+            <SelectWorkTabBox item={'tourPrepare'} title='여행준비물'/>
+            <SelectWorkTabBox item={'visaEsta'} title='비자/ESTA'/>
+            <SelectWorkTabBox item={'voucherSent'} title='바우처발송'/>
+            <SelectWorkTabBox item={'remainPayRequest'} title='잔금요청'/>
+            <SelectWorkTabBox item={'confirmationSent'} title='확정서발송'/>
+            <SelectWorkTabBox item={'guideBook'} title='가이드북'/>
           </div>
         </section>
 
@@ -721,6 +764,7 @@ export default function ModalReserve (props : any) {
                   const copy = {...visitPathInfo}
                   copy.charger = e.target.value;
                   setVisitPathInfo(copy);
+                  setCharger(copy);
                 }}
               />
               <h3 style={{marginLeft:'20px'}}>인수자</h3>
@@ -746,7 +790,9 @@ export default function ModalReserve (props : any) {
                 height='35px'
                 selectedValue={visitPath}
                 options={[
-                  { value: '워킹', label: '워킹' },
+                  { value: '선택', label: '선택' },
+                  { value: '워킹-견적', label: '워킹-견적' },
+                  { value: '워킹-방문', label: '워킹-방문' },
                   { value: '웨딩컨설팅', label: '웨딩컨설팅' },
                   { value: '협력업체', label: '협력업체' },
                   { value: '고객소개', label: '고객소개' },
@@ -757,7 +803,7 @@ export default function ModalReserve (props : any) {
                 }}
               />
               {
-                (visitPathInfo.visitPath === '워킹' || visitPathInfo.visitPath === '웨딩컨설팅' || visitPathInfo.visitPath === '협력업체' ) &&
+                (visitPathInfo.visitPath === '워킹-견적' || visitPathInfo.visitPath === '워킹-방문' || visitPathInfo.visitPath === '웨딩컨설팅' || visitPathInfo.visitPath === '협력업체' ) &&
                 <DropdownBox
                   widthmain='30%'
                   height='35px'
@@ -891,31 +937,14 @@ export default function ModalReserve (props : any) {
                   setProductInfo(copy);
                 }}
               />
-              <DateBoxNum width='150px' subWidth='130px' right={25} date={productInfo.tourStartPeriod} marginLeft={1}
-                setSelectDate={(e:any)=>{
+              <DateBoxDouble dateStart={productInfo.tourStartPeriod} dateEnd={productInfo.tourEndPeriod}
+                setSelectStartDate={(e:any)=>{
                   const copy = {...productInfo}
                   copy.tourStartPeriod = e;
                   copy.tourEndPeriod = e;
                   setProductInfo(copy);
                 }} 
-              />
-              <p>~</p>
-              <DropdownBox
-                widthmain='10%' height='35px' selectedValue={productInfo.tourEndAirport}
-                options={[
-                  { value: '도착공항', label: '도착공항' },
-                  { value: '인천', label: '인천' },
-                  { value: '부산', label: '부산' },
-                  { value: '대구', label: '대구' },
-                ]}    
-                handleChange={(e)=>{
-                  const copy = {...productInfo}
-                  copy.tourEndAirport = e.target.value;
-                  setProductInfo(copy);
-                }}
-              />
-              <DateBoxNum width='150px' subWidth='130px' right={25} date={productInfo.tourEndPeriod} marginLeft={1}
-                 setSelectDate={(e:any)=>{
+                setSelectEndDate={(e:any)=>{
                   const copy = {...productInfo}
                   copy.tourEndPeriod = e;
                   setProductInfo(copy);
@@ -1056,6 +1085,8 @@ export default function ModalReserve (props : any) {
           </div>
         </section>
 
+        {/* 항공 예약현황 ------------------------------------------------------------------------------------------------------------------------ */}
+
         <section>
           <h1>5. 항공 예약현황</h1>
           <div className="bottombar"></div>
@@ -1088,7 +1119,7 @@ export default function ModalReserve (props : any) {
                       ]}    
                       handleChange={(e)=>{const inputs = {...airlineReserveState}; inputs.airlineState[index].departAirport = e.target.value; setAirlineReserveState(inputs);}}
                     />
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.departDate} marginLeft={5}
+                    <DateBoxSingle date={item.departDate} marginLeft={5}
                       setSelectDate={(e:any) =>{
                         const inputs = {...airlineReserveState};
                         inputs.airlineState[index].departDate = e;
@@ -1109,12 +1140,12 @@ export default function ModalReserve (props : any) {
                       ]}    
                       handleChange={(e)=>{const inputs = {...airlineReserveState}; inputs.airlineState[index].arriveAirport = e.target.value; setAirlineReserveState(inputs);}}
                     />
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.arriveDate} marginLeft={5}
-                        setSelectDate={(e:any) =>{
-                          const inputs = {...airlineReserveState};
-                          inputs.airlineState[index].departDate = e;
-                          setAirlineReserveState(inputs);
-                        }} 
+                    <DateBoxSingle date={item.arriveDate} marginLeft={5}
+                      setSelectDate={(e:any) =>{
+                        const inputs = {...airlineReserveState};
+                        inputs.airlineState[index].arriveDate = e;
+                        setAirlineReserveState(inputs);
+                      }} 
                     />
                     <input style={{width:'8%', textAlign:'left'}}
                       value={item.arriveTime} className="inputdefault" type="text" 
@@ -1140,7 +1171,7 @@ export default function ModalReserve (props : any) {
                         onClick={()=>{
                           const copy = {...airlineReserveState};
                           copy.airlineState = [...copy.airlineState, 
-                            { airlineCompany : '', airlineName:'',  departAirport : '', departDate: '', departTime : '', arriveAirport:'', arriveDate:'', arriveTime:'' }]
+                            { airlineCompany : '', airlineName:'',  departAirport : '', departDate: '', departTime : '', arriveAirport:'', arriveDate:'', arriveTime:'', state:'' }]
                           setAirlineReserveState(copy)
                         }}
                       >
@@ -1172,7 +1203,7 @@ export default function ModalReserve (props : any) {
                     <TitleBox width="30%" text={`항공사${index+1}`}/>
                     <input style={{width:'68%', textAlign:'center', marginRight:'3px'}}
                       value={item.company} className="inputdefault" type="text" 
-                      onChange={(e) => {const inputs = {...airlineReserveState}; inputs.ticketingState[index].company = e.target.value; setAirlineReserveState(inputs);}}/>
+                      onChange={(e) => {const inputs = {...airlineReserveState}; inputs.ticketingState[index].ticketCost = e.target.value; setAirlineReserveState(inputs);}}/>
                   </div>
                   <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
                     <TitleBox width="30%" text='발권처'/>
@@ -1182,7 +1213,7 @@ export default function ModalReserve (props : any) {
                   </div>
                   <div className="coverrow quarter" style={{justifyContent:''}} >
                     <TitleBox width="30%" text='날짜'/>
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.date} marginLeft={5}
+                    <DateBoxSingle date={item.date} marginLeft={5}
                       setSelectDate={(e:any) => {
                         const inputs = {...airlineReserveState};
                         inputs.ticketingState[index].date = e;
@@ -1192,7 +1223,7 @@ export default function ModalReserve (props : any) {
                   </div>
                   <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
                     <TitleBox width="30%" text='상태'/>
-                    <DropdownBox
+                    {/* <DropdownBox
                       widthmain='40%' height='35px' selectedValue={item.state}
                       options={[
                         { value: '예약', label: '예약' },
@@ -1203,13 +1234,13 @@ export default function ModalReserve (props : any) {
                         { value: '개별발권', label: '개별발권' },
                       ]}    
                       handleChange={(e)=>{const inputs = {...airlineReserveState}; inputs.ticketingState[index].state = e.target.value; setAirlineReserveState(inputs);}}
-                    />
+                    /> */}
                     <div style={{width:'20%', display:'flex', justifyContent:'center'}}>
                       <div className='btn-row' style={{marginRight:'5px'}}
                         onClick={()=>{
                           const copy = {...airlineReserveState};
                           copy.ticketingState = [...copy.ticketingState, 
-                          { company: '', ticketBooth: '', date: '', state: '예약' }]
+                          { ticketBooth: '', ticketCost:'', date: '', isTicketing: false }]
                           setAirlineReserveState(copy)
                         }}
                       >
@@ -1235,12 +1266,13 @@ export default function ModalReserve (props : any) {
           }
         </section>
 
+        {/* 호텔 예약현황 ------------------------------------------------------------------------------------------------------------------------ */}
         <section>
           <h1>6. 호텔 예약현황</h1>
           <div className="bottombar"></div>
           <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#f6f6f6' }}>
             <TitleBox width="3%" text=''/>
-            <div style={{display:'flex', alignItems:'center', width:'30%', justifyContent:'center'}}>
+            <div style={{display:'flex', alignItems:'center', width:'300px', justifyContent:'center'}}>
               <TitleBox width="150px" text='체크인'/>
               <p style={{width:'20px'}}></p>
               <TitleBox width="150px" text='체크아웃'/>
@@ -1256,18 +1288,15 @@ export default function ModalReserve (props : any) {
                 <div className="coverbox" key={index}>
                   <div className="coverrow hole" style={{justifyContent:'space-between'}}>
                     <p style={{width:'3%'}}></p>
-                    <div style={{display:'flex', alignItems:'center', width:'30%', justifyContent:'center'}}>
-                      <DateBoxNum width='150px' subWidth='130px' right={25} date={item.checkIn} marginLeft={5}
-                        setSelectDate={(e:any) => {
+                    <div style={{display:'flex', alignItems:'center', width:'300px', justifyContent:'center'}}>
+                      <DateBoxDouble  dateStart={item.checkIn} dateEnd={item.checkOut} marginLeft={5}
+                        setSelectStartDate={(e:any) => {
                           const inputs = [...hotelReserveState];
                           inputs[index].checkIn = e;
                           inputs[index].checkOut = e;
                           setHotelReserveState(inputs);
                         }} 
-                      />
-                      <p style={{width:'20px'}}>~</p>
-                      <DateBoxNum width='150px' subWidth='130px' right={25} date={item.checkOut} marginLeft={5}
-                        setSelectDate={(e:any) =>{
+                        setSelectEndDate={(e:any) =>{
                           const inputs = [...hotelReserveState];
                           inputs[index].checkOut = e;
                           const date1copy = inputs[index].checkIn;
@@ -1310,137 +1339,73 @@ export default function ModalReserve (props : any) {
           </div>
         </section>
 
+        {/* 적립금/할인혜택/사은품/여행자보험 관리 ------------------------------------------------------------------------------------------------------------------------ */}
+
         <section>
           <h1>7. 적립금/할인혜택/사은품/여행자보험 관리</h1>
           <div className="bottombar"></div>
           <div className="coverbox">
             <div className="coverrow hole">
-              <TitleBox width="120px" text='포함사항'/>
-              <input style={{width:'80%', textAlign:'left', marginLeft:'5px'}}
-                value={etcState.includes} className="inputdefault" type="text" 
-                onChange={(e) => {const inputs = {...etcState}; inputs.includes = e.target.value; setEtcState(inputs);}}
-                />
+              <TitleBox width="120px" text='할인행사'/>
+              <div style={{marginLeft: '30px', display:'flex', alignItems:'center'}}>
+                <EtcSelectBtn item='salesEvent' title='첫계약혜택'/>
+                <EtcSelectBtn item='salesEvent' title='인스타피드'/>
+                <EtcSelectBtn item='salesEvent' title='블로그피드'/>
+              </div>
+              <input style={{width:'20%', textAlign:'left', marginLeft:'15px'}}
+                value={etcState.salesEventCost} className="inputdefault" type="text" 
+                onChange={(e) => {const inputs = {...etcState}; inputs.salesEventCost = e.target.value; setEtcState(inputs);}}/>
+              <p>원</p>
             </div>
           </div>
           <div className="coverbox">
             <div className="coverrow hole">
-              <TitleBox width="120px" text='불포함사항'/>
-              <input style={{width:'80%', textAlign:'left', marginLeft:'5px'}}
-                value={etcState.notIncludes} className="inputdefault" type="text" 
-                onChange={(e) => {const inputs = {...etcState}; inputs.notIncludes = e.target.value; setEtcState(inputs);}}/>
+              <TitleBox width="120px" text='적립금'/>
+              <input style={{width:'20%', textAlign:'left', marginLeft:'15px'}}
+                value={etcState.saveMoneyCost} className="inputdefault" type="text" 
+                onChange={(e) => {const inputs = {...etcState}; inputs.saveMoneyCost = e.target.value; setEtcState(inputs);}}/>
+              <p>원</p>
+            </div>
+          </div>
+          <div className="coverbox">
+            <div className="coverrow hole">
+              <TitleBox width="120px" text='계약혜택'/>
+              <input style={{width:'80%', textAlign:'left', marginLeft:'15px'}}
+                value={etcState.contractBenefit} className="inputdefault" type="text" 
+                onChange={(e) => {const inputs = {...etcState}; inputs.contractBenefit = e.target.value; setEtcState(inputs);}}/>
             </div>
           </div>
           <div className="coverbox">
             <div className="coverrow hole">
               <TitleBox width="120px" text='사은품'/>
               <div style={{marginLeft: '30px', display:'flex', alignItems:'center'}}>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={etcState.freeGift=== '박람회사은품'}
-                    onChange={()=>{
-                      setEtcState(prev => ({
-                        ...prev, freeGift: '박람회사은품'
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>박람회사은품</p>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={etcState.freeGift=== '룰렛사은품'}
-                    onChange={()=>{
-                      setEtcState(prev => ({
-                        ...prev, freeGift: '룰렛사은품'
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>룰렛사은품</p>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={etcState.freeGift=== '특별사은품'}
-                    onChange={()=>{
-                      setEtcState(prev => ({
-                        ...prev, freeGift: '특별사은품'
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>특별사은품</p>
+                <EtcSelectBtn item='freeGift' title='물품/상품권선물'/>
+                <EtcSelectBtn item='freeGift' title='현금할인'/>
               </div>
-              <input style={{width:'40%', textAlign:'left', marginLeft:'15px'}}
-                value={etcState.freeGiftDetail} className="inputdefault" type="text" 
-                onChange={(e) => {const inputs = {...etcState}; inputs.freeGiftDetail = e.target.value; setEtcState(inputs);}}/>
+              <input style={{width:'20%', textAlign:'left', marginLeft:'15px'}}
+                value={etcState.freeGiftCost} className="inputdefault" type="text" 
+                onChange={(e) => {const inputs = {...etcState}; inputs.freeGiftCost = e.target.value; setEtcState(inputs);}}/>
+              <p>원</p>
             </div>
           </div>
           <div className="coverbox">
-            <div className="coverrow half">
+            <div className="coverrow third">
               <TitleBox width="120px" text='여행자보험'/>
               <div style={{marginLeft: '30px', display:'flex', alignItems:'center'}}>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={etcState.travelInsurance === '포함'}
-                    onChange={()=>{
-                      setEtcState(prev => ({
-                        ...prev, travelInsurance : '포함'
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>포함</p>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={etcState.travelInsurance === '불포함'}
-                    onChange={()=>{
-                      setEtcState(prev => ({
-                        ...prev, travelInsurance : '불포함'
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>불포함</p>
+                <EtcSelectBtn item='insuranceIncludes' title='포함'/>
+                <EtcSelectBtn item='insuranceIncludes' title='불포함'/>
               </div>
             </div>
-            <div className="coverrow half">
+            <div className="coverrow third">
               <TitleBox width="120px" text='보험회사'/>
               <input style={{width:'70%', textAlign:'left', marginLeft:'5px'}}
                 value={etcState.insuranceCompany} className="inputdefault" type="text" 
                 onChange={(e) => {const inputs = {...etcState}; inputs.insuranceCompany = e.target.value; setEtcState(inputs);}}/>
             </div>
-          </div>
-          <div className="coverbox">
-            <div className="coverrow hole">
+            <div className="coverrow third">
               <TitleBox width="120px" text='계약금액'/>
               <div style={{marginLeft: '30px', display:'flex', alignItems:'center'}}>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={etcState.insuranceCost === '해외1억'}
-                    onChange={()=>{
-                      setEtcState(prev => ({
-                        ...prev, insuranceCost : '해외1억'
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>해외1억</p>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={etcState.insuranceCost === '해외2억'}
-                    onChange={()=>{
-                      setEtcState(prev => ({
-                        ...prev, insuranceCost : '해외2억'
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>해외2억</p>
+                <EtcSelectBtn item='insuranceCost' title='해외2억'/>
               </div>
             </div>
           </div>
@@ -1455,28 +1420,99 @@ export default function ModalReserve (props : any) {
         <section className='depositState'>
           <h1>8. 입금내역</h1>
           <div className="bottombar"></div>
+
+          <div className="coverbox">
+            <div className="coverrow third rightborder">
+              <TitleBox width="120px" text='1인요금' height={160}/>
+              <div style={{flex:1}}>
+                <div style={{display:'flex', alignItems:'center'}}>
+                  <h3 style={{margin:'0 10px'}}>성인</h3>
+                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={depositCostInfo.personalCost.costAdult} className="inputdefault" type="text" 
+                    onChange={(e) => {handleDepositPersonalCostChange(e, 'costAdult')}}/>
+                  <p style={{marginRight:'10px'}}>원</p>
+                  <DropdownBox
+                    widthmain='20%' height='35px' selectedValue={depositCostInfo.personalCost.costAdultNum}
+                    options={DropDownNum}    
+                    handleChange={(e)=>{handleDepositNumChange(e, 'costAdultNum')}}
+                  />
+                  <p>명</p>
+                </div>
+                <div style={{display:'flex', alignItems:'center'}}>
+                  <h3 style={{margin:'0 10px'}}>소아</h3>
+                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={depositCostInfo.personalCost.costChild} className="inputdefault" type="text" 
+                    onChange={(e) => {handleDepositPersonalCostChange(e, 'costChild')}}/>
+                  <p style={{marginRight:'10px'}}>원</p>
+                  <DropdownBox
+                    widthmain='20%' height='35px' selectedValue={depositCostInfo.personalCost.costChildNum}
+                    options={DropDownNum}    
+                    handleChange={(e)=>{handleDepositNumChange(e, 'costChildNum')}}
+                  />
+                  <p>명</p>
+                </div>
+                <div style={{display:'flex', alignItems:'center'}}>
+                  <h3 style={{margin:'0 10px'}}>유아</h3>
+                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={depositCostInfo.personalCost.costInfant} className="inputdefault" type="text" 
+                    onChange={(e) => {handleDepositPersonalCostChange(e, 'costInfant')}}/>
+                  <p style={{marginRight:'10px'}}>원</p>
+                  <DropdownBox
+                    widthmain='20%' height='35px' selectedValue={depositCostInfo.personalCost.costInfantNum}
+                    options={DropDownNum}    
+                    handleChange={(e)=>{handleDepositNumChange(e, 'costInfantNum')}}
+                  />
+                  <p>명</p>
+                </div>
+              </div>
+            </div>
+            <div className="coverrow third rightborder">
+              <TitleBox width="120px" text='총요금' height={160}/>
+              <input style={{width:'50%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={depositCostInfo.personalCost.costAll} className="inputdefault" type="text" 
+                  onChange={(e) => {handleDepositPersonalCostChange(e, 'costAll')}}/>
+              <p>원</p>
+            </div>
+            <div className="coverrow third" style={{flexDirection:'column', alignItems:'start'}}>
+              <div style={{width:'100%',  display:'flex', alignItems:'center'}}>
+                <TitleBox width="120px" text='할인요금' />
+                <input style={{width:'50%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={depositCostInfo.discountCost} className="inputdefault" type="text" 
+                  onChange={(e) => {handleDepositCostChange(e, 'discountCost')}}/>
+                <p>원</p>
+              </div>
+              <div style={{width:'100%', display:'flex', alignItems:'center'}}>
+                <TitleBox width="120px" text='추가요금'/>
+                <input style={{width:'50%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={depositCostInfo.additionCostAll} className="inputdefault" type="text" 
+                  onChange={(e) => {handleDepositCostChange(e, 'additionCostAll')}}/>
+                <p>원</p>
+              </div>
+              <div style={{width:'100%', display:'flex', alignItems:'center'}}>
+                <TitleBox width="120px" text='최종요금'/>
+                <input style={{width:'50%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={depositCostInfo.resultCost} className="inputdefault" type="text" 
+                  onChange={(e) => {handleDepositCostChange(e, 'resultCost')}}/>
+                <p>원</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="coverbox">
+            <div className="coverrow dubbleThird rightborder ">
+              <TitleBox width="120px" text='할인행사사은품'/>
+              <input style={{width:'80%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={depositCostInfo.freeGift} className="inputdefault" type="text" 
+                  onChange={(e) => {
+
+                  }}/>
+            </div>
+            <div className="coverrow third">
+              <TitleBox width="120px" text='적립금'/>
+              <input style={{width:'50%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={depositCostInfo.savedMoney} className="inputdefault" type="text" 
+                  onChange={(e) => {handleDepositCostChange(e, 'savedMoney')}}/>
+              <p>원</p>
+            </div>
+          </div>
           
           {/* 전체여행계약금 ------------------------------------------------------- */}
           <div className="coverbox">
             <div className="coverrow third rightborder">
               <TitleBox width='120px' text='계약금액'/>
               <input value={depositCostInfo.tourTotalContractCost} className="inputdefault costInput" type="text" 
-                  onChange={(e) => {
-                    const text = e.target.value;
-                    if (text === '') {
-                      const copy = {...depositCostInfo}
-                      copy.tourTotalContractCost = '';
-                      setDepositCostInfo(copy);
-                    }
-                    const inputNumber = parseInt(text.replace(/,/g, ''));
-                    if (isNaN(inputNumber)) {
-                      return;
-                    }
-                    const formattedNumber = inputNumber.toLocaleString('en-US');
-                    const copy = {...depositCostInfo}
-                    copy.tourTotalContractCost = formattedNumber;
-                    setDepositCostInfo(copy);
-                  }}/>
+                  onChange={(e) => {handleDepositCostChange(e, 'savedMoney')}}/>
               <p>원</p>
             </div>
             <div className="coverrow third rightborder defaultBox">
@@ -1497,7 +1533,7 @@ export default function ModalReserve (props : any) {
                   <div className="coverrow third rightborder">
                     <TitleBox width='120px' text={depositCostInfo.contractCost.length > 1 ? `계약금${index+1}` : '계약금'}/>
                     <input value={item.cost} className="inputdefault costInput" type="text" 
-                      onChange={(e) => {handleDepositCostChange(e, index, 'contractCost')}}/>
+                      onChange={(e) => {handleDepositRowCostChange(e, index, 'contractCost')}}/>
                     <p>원</p>
                     {
                       depositCostInfo.contractCost.length === index+1 &&
@@ -1514,8 +1550,8 @@ export default function ModalReserve (props : any) {
                   </div>
                   <div className="coverrow third rightborder defaultBox">
                     <p style={{marginRight:'5px'}}>날짜:</p>
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.date} marginLeft={1}
-                        setSelectDate={(e:any) => handleCostDateChange(e, index, 'contractCost', 'date')}/>
+                    <DateBoxSingle date={item.date} marginLeft={1}
+                      setSelectDate={(e:any) => handleCostDateChange(e, index, 'contractCost', 'date')}/>
                   </div>
                   <div className="coverrow third defaultBox">
                     <DropdownBox
@@ -1544,7 +1580,7 @@ export default function ModalReserve (props : any) {
                   <div className="coverrow third rightborder">
                     <TitleBox width='120px' text={depositCostInfo.airportCost.length > 1 ? `항공료${index+1}` : '항공료'}/>
                     <input value={item.cost} className="inputdefault costInput" type="text" 
-                      onChange={(e) => {handleDepositCostChange(e, index, 'airportCost')}}/>
+                      onChange={(e) => {handleDepositRowCostChange(e, index, 'airportCost')}}/>
                     <p>원</p>
                     {
                       depositCostInfo.airportCost.length === index+1 &&
@@ -1561,7 +1597,7 @@ export default function ModalReserve (props : any) {
                   </div>
                   <div className="coverrow third rightborder defaultBox">
                     <p style={{marginRight:'5px'}}>날짜:</p>
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.date} marginLeft={1}
+                    <DateBoxSingle date={item.date} marginLeft={1}
                         setSelectDate={(e:any) => handleCostDateChange(e, index, 'airportCost', 'date')}/>
                   </div>
                   <div className="coverrow third defaultBox">
@@ -1592,7 +1628,7 @@ export default function ModalReserve (props : any) {
                   <div className="coverrow third rightborder">
                     <TitleBox width='120px' text={depositCostInfo.reviseAirportCost.length > 1 ? `항공료변경${index+1}` : '항공료변경'}/>
                     <input value={item.cost} className="inputdefault costInput" type="text" 
-                      onChange={(e) => {handleDepositCostChange(e, index, 'reviseAirportCost')}}/>
+                      onChange={(e) => {handleDepositRowCostChange(e, index, 'reviseAirportCost')}}/>
                     <p>원</p>
                     {
                       depositCostInfo.reviseAirportCost.length === index+1 &&
@@ -1609,7 +1645,7 @@ export default function ModalReserve (props : any) {
                   </div>
                   <div className="coverrow third rightborder defaultBox">
                     <p style={{marginRight:'5px'}}>날짜:</p>
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.date} marginLeft={1}
+                    <DateBoxSingle date={item.date} marginLeft={1}
                         setSelectDate={(e:any) => handleCostDateChange(e, index, 'reviseAirportCost', 'date')}/>
                   </div>
                   <div className="coverrow third defaultBox">
@@ -1639,7 +1675,7 @@ export default function ModalReserve (props : any) {
                   <div className="coverrow third rightborder">
                     <TitleBox width='120px' text={depositCostInfo.middleCost.length > 1 ? `중도금${index+1}` : '중도금'}/>
                     <input value={item.cost} className="inputdefault costInput" type="text" 
-                      onChange={(e) => {handleDepositCostChange(e, index, 'middleCost')}}/>
+                      onChange={(e) => {handleDepositRowCostChange(e, index, 'middleCost')}}/>
                     <p>원</p>
                     {
                       depositCostInfo.middleCost.length === index+1 &&
@@ -1656,7 +1692,7 @@ export default function ModalReserve (props : any) {
                   </div>
                   <div className="coverrow third rightborder defaultBox">
                     <p style={{marginRight:'5px'}}>날짜:</p>
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.date} marginLeft={1}
+                    <DateBoxSingle date={item.date} marginLeft={1}
                         setSelectDate={(e:any) => handleCostDateChange(e, index, 'middleCost', 'date')}/>
                   </div>
                   <div className="coverrow third defaultBox">
@@ -1687,7 +1723,7 @@ export default function ModalReserve (props : any) {
                   <div className="coverrow third rightborder">
                     <TitleBox width='120px' text={depositCostInfo.restCost.length > 1 ? `잔금${index+1}` : '잔금'}/>
                     <input value={item.cost} className="inputdefault costInput" type="text" 
-                      onChange={(e) => {handleDepositCostChange(e, index, 'restCost')}}/>
+                      onChange={(e) => {handleDepositRowCostChange(e, index, 'restCost')}}/>
                     <p>원</p>
                     {
                       depositCostInfo.restCost.length === index+1 &&
@@ -1704,7 +1740,7 @@ export default function ModalReserve (props : any) {
                   </div>
                   <div className="coverrow third rightborder defaultBox">
                     <p style={{marginRight:'5px'}}>날짜:</p>
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.date} marginLeft={1}
+                    <DateBoxSingle date={item.date} marginLeft={1}
                         setSelectDate={(e:any) => handleCostDateChange(e, index, 'restCost', 'date')}/>
                   </div>
                   <div className="coverrow third defaultBox">
@@ -1735,7 +1771,7 @@ export default function ModalReserve (props : any) {
                   <div className="coverrow third rightborder">
                     <TitleBox width='120px' text={depositCostInfo.additionCost.length > 1 ? `추가경비${index+1}` : '추가경비'}/>
                     <input value={item.cost} className="inputdefault costInput" type="text" 
-                      onChange={(e) => {handleDepositCostChange(e, index, 'additionCost')}}/>
+                      onChange={(e) => {handleDepositRowCostChange(e, index, 'additionCost')}}/>
                     <p>원</p>
                     {
                       depositCostInfo.additionCost.length === index+1 &&
@@ -1752,7 +1788,7 @@ export default function ModalReserve (props : any) {
                   </div>
                   <div className="coverrow third rightborder defaultBox">
                     <p style={{marginRight:'5px'}}>날짜:</p>
-                    <DateBoxNum width='150px' subWidth='130px' right={25} date={item.date} marginLeft={1}
+                    <DateBoxSingle date={item.date} marginLeft={1}
                         setSelectDate={(e:any) => handleCostDateChange(e, index, 'additionCost', 'date')}/>
                   </div>
                   <div className="coverrow third defaultBox">
@@ -1781,7 +1817,7 @@ export default function ModalReserve (props : any) {
               <TitleBox width='120px' text='환불'/>
               <input value={depositCostInfo.refundCost.cost} className="inputdefault costInput" type="text" 
                 onChange={(e) => {
-                  // handleDepositCostChange(e, index, 'refundCost')
+                  // handleDepositRowCostChange(e, index, 'refundCost')
                 }}/>
               <p>원</p>
             </div>
@@ -1802,82 +1838,54 @@ export default function ModalReserve (props : any) {
           </div>
 
           <div className="coverbox">
-            <div className="coverrow third rightborder">
+            <div className="coverrow hole">
               <TitleBox width='120px' text='현금영수증'/>
               <div style={{marginLeft: '30px', display:'flex', alignItems:'center'}}>
                 <div className='depositCheck'>
                   <input className="input" type="checkbox"
-                    checked={depositCostInfo.isCashBill}
+                    checked={depositCostInfo.cashBillInfo.type === '소득공제'}
                     onChange={()=>{
                       const copy = {...depositCostInfo}
-                      copy.isCashBill = true;
+                      copy.cashBillInfo.type = '소득공제'
                       setDepositCostInfo(copy);
                     }}
                   />
                 </div>
-                <p>발급요청</p>
+                <p>소득공제</p>
                 <div className='depositCheck'>
                   <input className="input" type="checkbox"
-                    checked={!depositCostInfo.isCashBill}
+                    checked={depositCostInfo.cashBillInfo.type === '지출증빙'}
                     onChange={()=>{
                       const copy = {...depositCostInfo}
-                      copy.isCashBill = false;
-                      copy.cashBillInfo.type = '';
-                      copy.cashBillInfo.authNum = '';
-                      copy.cashBillInfo.date = '';
+                      copy.cashBillInfo.type = '지출증빙'
                       setDepositCostInfo(copy);
                     }}
                   />
                 </div>
-                <p>요청없음</p>
+                <p>지출증빙</p>
               </div>
-            </div>
-            
-            <div className="coverrow " style={{width:'66.6%'}}>
-              {
-                depositCostInfo.isCashBill && 
-                <>
-                <div style={{marginLeft: '30px', display:'flex', alignItems:'center'}}>
-                  <div className='depositCheck'>
-                    <input className="input" type="checkbox"
-                      checked={depositCostInfo.cashBillInfo.type === '소득공제'}
-                      onChange={()=>{
-                        const copy = {...depositCostInfo}
-                        copy.cashBillInfo.type = '소득공제'
-                        setDepositCostInfo(copy);
-                      }}
-                    />
-                  </div>
-                  <p>소득공제</p>
-                  <div className='depositCheck'>
-                    <input className="input" type="checkbox"
-                      checked={depositCostInfo.cashBillInfo.type === '지출증빙'}
-                      onChange={()=>{
-                        const copy = {...depositCostInfo}
-                        copy.cashBillInfo.type = '지출증빙'
-                        setDepositCostInfo(copy);
-                      }}
-                    />
-                  </div>
-                  <p>지출증빙</p>
-                </div>
-                <h3 style={{marginLeft:'50px'}}>인증번호:</h3>
-                <input style={{width:'20%', marginLeft:'5px'}}  value={depositCostInfo.cashBillInfo.authNum} className="inputdefault" type="text" 
-                  onChange={(e) => {
+              <h3 style={{marginLeft:'50px'}}>전화/사업자번호:</h3>
+              <input style={{width:'15%', marginLeft:'5px'}}  value={depositCostInfo.cashBillInfo.userNum} className="inputdefault" type="text" 
+                onChange={(e) => {
+                  const copy = {...depositCostInfo}
+                  copy.cashBillInfo.userNum = e.target.value;
+                  setDepositCostInfo(copy);
+                }}/>
+              <h3 style={{marginLeft:'50px'}}>인증번호:</h3>
+              <input style={{width:'15%', marginLeft:'5px'}}  value={depositCostInfo.cashBillInfo.authNum} className="inputdefault" type="text" 
+                onChange={(e) => {
+                  const copy = {...depositCostInfo}
+                  copy.cashBillInfo.authNum = e.target.value;
+                  setDepositCostInfo(copy);
+                }}/>  
+              <h3 style={{marginLeft:'30px'}}>발급일:</h3>
+                <DateBoxSingle date={depositCostInfo.cashBillInfo.date} marginLeft={1}
+                  setSelectDate={(e:any)=>{
                     const copy = {...depositCostInfo}
-                    copy.cashBillInfo.authNum = e.target.value;
+                    copy.cashBillInfo.date = e;
                     setDepositCostInfo(copy);
-                  }}/>
-                <h3 style={{marginLeft:'30px'}}>발급일:</h3>
-                  <DateBoxNum width='150px' subWidth='130px' right={25} date={depositCostInfo.cashBillInfo.date} marginLeft={1}
-                    setSelectDate={(e:any)=>{
-                      const copy = {...depositCostInfo}
-                      copy.cashBillInfo.date = e;
-                      setDepositCostInfo(copy);
-                    }} 
-                  />
-                </>
-              }
+                  }} 
+                />
             </div>
           </div>
         </section> 
@@ -1907,13 +1915,13 @@ export default function ModalReserve (props : any) {
                     <TitleBox width="150px" text={item.name}/>
                     <div style={{flex:1, display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                       <div style={{width:'20%', display:'flex', justifyContent:'center'}}>
-                        <DateBoxNum width='150px' subWidth='130px' right={25} date={item.requestDate} marginLeft={1}
+                        <DateBoxSingle date={item.requestDate} marginLeft={1}
                           setSelectDate={(e:any) => {
                             handleRequestChange(e, index, 'requestDate');
                           }} />
                       </div>
                       <div style={{width:'20%', display:'flex', justifyContent:'center'}}>
-                        <DateBoxNum width='150px' subWidth='130px' right={25} date={item.completeDate} marginLeft={1}
+                        <DateBoxSingle date={item.completeDate} marginLeft={1}
                           setSelectDate={(e:any) => {
                             handleRequestChange(e, index, 'completeDate');
                           }} />

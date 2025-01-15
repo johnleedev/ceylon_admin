@@ -4,14 +4,14 @@
   align-items: center;
 };
 
-.Menu2,
-.Menu3,
-.Menu4 {
+.Main-cover {
   padding: 30px;
   min-height: 100vh;
   background-color: #f6f6f6;
+  padding-bottom: 50px;
   
   .seachlist {
+    margin-top: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,19 +21,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
-  
-      .title-box {
-        display: flex;
-        align-items: center;
-
-        h1 {
-          font-size: 30px;
-          font-weight: bold;
-          margin-right: 15px;
-        }
-      }
-      
+      margin: 5px auto 10px;
+     
       .contactBtn-box {
         display: flex;
         align-items: center;
@@ -52,6 +41,7 @@
       width: 100%;
 
       .titlebox {
+        height: 45px;
         display: flex;
         justify-content: space-between;
         background-color: #f6f6f6;
@@ -62,7 +52,7 @@
       .rowbox {
         display: flex;
         align-items: center;
-        height: 60px;
+        height: 45px;
         justify-content: space-between;
         background-color: #fff;;
         border-bottom: 1px solid #E2E2E2;
@@ -74,6 +64,29 @@
       }
     }
 
+
+    .btn-row {
+      width: 100%;
+      margin: 20px 0;
+      @include middle();
+
+      .btn {
+        font-size: 13px;
+        width: 20px;
+        height: 20px;
+        margin: 7px;
+        color: #979797;
+        @include middle();
+      }
+      .current {
+        color: #2c3d54;
+        border-bottom: 2px solid #2c3d54;;
+      }
+      .btn:hover {
+        cursor: pointer;
+        color: #2c3d54;
+      }
+    }
   }
  
  

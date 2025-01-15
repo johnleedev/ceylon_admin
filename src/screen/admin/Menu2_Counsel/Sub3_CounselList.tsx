@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { TitleBox } from '../../../boxs/TitleBox';
+import { TitleList } from '../../../boxs/TitleList';
 import { TextBox } from '../../../boxs/TextBox';
 import '../SearchList.scss';
 import '../SearchBox.scss';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 import { DropDowncharger } from '../../DefaultData';
 
@@ -56,14 +56,18 @@ export default function Sub3_CounselList (props:any) {
 
 
 	return (
-		<div className='Menu2'>
+		<div className='Main-cover'>
+
+			<div className="main-title">
+				<div className='title-box'>
+					<h1>방문 DB</h1>	
+				</div>
+			</div>
 
 			<div className="searchbox">
 				<div className="cover">
 					<div className="content">
-						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setStartDate} date={startDate} marginLeft={1}/>
-						<p>~</p>
-						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setEndDate} date={endDate} marginLeft={20}/>
+						<DateBoxDouble  setSelectStartDate={setStartDate} setSelectEndDate={setEndDate} dateStart={startDate} dateEnd={endDate}  marginLeft={1}/>
 						<DropdownBox
 							widthmain='100px'
 							height='35px'
@@ -112,40 +116,28 @@ export default function Sub3_CounselList (props:any) {
 				</div>
 			</div>
 
-			<div style={{height:'30px'}}></div>
-				
+			
 			<div className="seachlist">
 
-				<div className="main-title">
-					<div className='title-box'>
-						<h1>방문 DB</h1>	
-					</div>
-				</div>
-
 				<div className="main-list-cover">
-					<div className="titlebox">
-						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='12%' text='답변일/문의일'/>
-						<TitleBox width='8%' text='성함'/>
-						<TitleBox width='12%' text='연락처'/>
-						<TitleBox width='12%' text='여행지'/>
-						<TitleBox width='10%' text='여행예정일'/>
-						<TitleBox width='10%' text='방문경로'/>
-						<TitleBox width='10%' text='방문예정일'/>
-						<TitleBox width='10%' text='방문시간'/>
-						<TitleBox width='7%' text='상담자/담당자'/>
+					<div className="TitleList">
+						<TitleList width='3%' text='NO'/>
+						<TitleList width='12%' text='답변일/문의일'/>
+						<TitleList width='8%' text='성함'/>
+						<TitleList width='12%' text='연락처'/>
+						<TitleList width='12%' text='여행지'/>
+						<TitleList width='10%' text='여행예정일'/>
+						<TitleList width='10%' text='방문경로'/>
+						<TitleList width='10%' text='방문시간'/>
+						<TitleList width='7%' text='상담자/담당자'/>
   				</div>
 					
 					{
+						list.length > 0
+						?
 						list.map((item:any, index:any)=>{
 							return (
-								<div key={index}
-									className="rowbox"
-									onClick={()=>{
-										navigate('/admin/counsel/counseldetail', {state : {data: item, pathType:"revise"}});
-										window.scrollTo(0, 0);
-									}}
-								>
+								<div key={index} className="rowbox">
 									<TextBox width='3%' text={index+1} />
 									<TextBox width='12%' text={item.date} text2={item.date}/>
 									<TextBox width='8%' text={item.name} />
@@ -153,12 +145,15 @@ export default function Sub3_CounselList (props:any) {
 									<TextBox width='12%' text={item.tourLocation} />
 									<TextBox width='10%' text={item.dateStart} />
 									<TextBox width='10%' text={item.visitPath} />
-									<TextBox width='10%' text={item.visitDate} />
 									<TextBox width='10%' text={item.visitTime} />
 									<TextBox width='7%' text={item.charger} />
 								</div>
 							)
 						})
+						:
+						<div style={{textAlign:'center'}}>
+							<p style={{marginTop:'50px'}}>검색결과가 없습니다.</p>
+						</div>
 					}
 				</div>
 

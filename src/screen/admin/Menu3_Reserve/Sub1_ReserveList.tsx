@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../SearchList.scss'
 import '../SearchBox.scss';
-import { TitleBox } from '../../../boxs/TitleBox';
+import { TitleList } from '../../../boxs/TitleList';
 import { TextBox } from '../../../boxs/TextBox';
 import { useNavigate } from 'react-router-dom';
 import { DropdownBox } from '../../../boxs/DropdownBox';
@@ -9,7 +9,7 @@ import { DropDownLandCompany, DropDownTourLocation, DropDowncharger } from '../.
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import Loading from '../components/Loading';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
 
 export default function Sub1_ReserveList (props:any) {
 
@@ -42,15 +42,14 @@ export default function Sub1_ReserveList (props:any) {
 	}
 	const [list, setList] = useState<ListProps[]>([]);
 	const [viewList, setViewList] = useState<ListProps[]>([]);
-	const [isVewListZero, setIsViewListZero] = useState<boolean>(false);
 	const [arrangeWord1, setArrangeWord1] = useState('');
 	const [arrangeWord2, setArrangeWord2] = useState('');
 
 	const fetchPosts = async () => {
 		const res = await axios.get(`${MainURL}/adminreserve/getreserve`)
 		if (res) {
-
 			const copy = [...res.data];
+			copy.reverse();
       const result = copy.map((item) => ({
         ...item,
         userName: JSON.parse(item.userInfo).map((user:any) => user.nameKo),
@@ -66,14 +65,18 @@ export default function Sub1_ReserveList (props:any) {
 	}, []);  
 
 	return (
-		<div className='Menu3'>
+		<div className='Main-cover'>
+
+			<div className="main-title">
+				<div className='title-box'>
+					<h1>예약리스트</h1>
+				</div>
+			</div>
 
 			<div className="searchbox">
 				<div className="cover">
 					<div className="content">
-						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setStartDate} date={startDate} marginLeft={1}/>
-						<p>~</p>
-						<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setEndDate} date={endDate} marginLeft={20}/>
+						<DateBoxDouble  setSelectStartDate={setStartDate} setSelectEndDate={setEndDate} dateStart={startDate} dateEnd={endDate}  marginLeft={1}/>
 						<DropdownBox
 							widthmain='100px'
 							height='35px'
@@ -129,29 +132,22 @@ export default function Sub1_ReserveList (props:any) {
 				</div>
 			</div>
 
-			<div style={{height:'30px'}}></div>
 
 				
 			<div className="seachlist">
 
-				<div className="main-title">
-					<div className='title-box'>
-						<h1>예약리스트</h1>
-					</div>
-				</div>
-
 				<div className="main-list-cover">
-					<div className="titlebox">
-						<TitleBox width='3%' text='NO'/>
-						<TitleBox width='10%' text='예약일/출발일'/>
-						<TitleBox width='5%' text='등급'/>
-						<TitleBox width='8%' text='성함'/>
-						<TitleBox width='12%' text='연락처'/>
-						<TitleBox width='15%' text='여행상품'/>
-						<TitleBox width='7%' text='랜드사'/>
-						<TitleBox width='7%' text='방문경로'/>
-						<TitleBox width='5%' text='담당자'/>
-						<TitleBox width='5%' text='수정일'/>
+					<div className="TitleList">
+						<TitleList width='3%' text='NO'/>
+						<TitleList width='10%' text='예약일/출발일'/>
+						<TitleList width='5%' text='등급'/>
+						<TitleList width='8%' text='성함'/>
+						<TitleList width='12%' text='연락처'/>
+						<TitleList width='15%' text='여행상품'/>
+						<TitleList width='7%' text='랜드사'/>
+						<TitleList width='7%' text='방문경로'/>
+						<TitleList width='5%' text='담당자'/>
+						<TitleList width='5%' text='수정일'/>
   				</div>
 					
 					{
@@ -166,7 +162,7 @@ export default function Sub1_ReserveList (props:any) {
 										navigate('/admin/reserve/reservedetail', {state : item.serialNum});
 									}}
 								>
-									<TextBox width='3%' text={index+1} />
+									<TextBox width='3%' text={item.id} />
 									<TextBox width='10%' text={item.date} text2={item.tourStartPeriod}/>
 									<TextBox width='5%' text={item.level} />
 									<TextBox width='8%' text={item.userName[0]} text2={item.userName[1]} />
@@ -180,19 +176,9 @@ export default function Sub1_ReserveList (props:any) {
 							)
 						})
 						:
-						<>
-							{
-								isVewListZero
-								?
-								<div style={{textAlign:'center'}}>
-									<p style={{marginTop:'50px'}}>검색결과가 없습니다.</p>
-								</div>
-								:
-								<div className='Menu3' style={{paddingTop:'200px'}}>
-									<Loading />
-								</div>
-							}
-						</>
+						<div style={{textAlign:'center'}}>
+							<p style={{marginTop:'50px'}}>검색결과가 없습니다.</p>
+						</div>
 					}
 				</div>
 

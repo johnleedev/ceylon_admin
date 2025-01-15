@@ -12,11 +12,11 @@ export const TextBox : React.FC<TextBoxProps> = ({text, text2, width, height, fo
     {
       text2 ? 
       <div>
-        <p  style={{fontSize: fontSize ? `${fontSize}px` : '15px', color:'#1e99d6', marginBottom:'3px'}}>{text}</p>
-        <p style={{fontSize: fontSize ? `${fontSize}px` : '15px'}}>{text2}</p>
+        <p  style={{fontSize: fontSize ? `${fontSize}px` : '14px', color:'#1e99d6', marginBottom:'3px'}}>{text}</p>
+        <p style={{fontSize: fontSize ? `${fontSize}px` : '14px'}}>{text2}</p>
       </div>
       :
-      <p style={{fontSize: fontSize ? `${fontSize}px` : '15px'}}>{text}</p>
+      <p style={{fontSize: fontSize ? `${fontSize}px` : '14px'}}>{text}</p>
     }
     
   </div>

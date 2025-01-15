@@ -5,6 +5,8 @@
 };
 
 .modal-check {
+  position: absolute;
+  top: 200px;
   width: 800px;
   min-height: 500px;
   background-color: #fff;
@@ -63,6 +65,28 @@
   }
   .bigHeight {
     height: 100px;
+  }
+
+  > .btn-box {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+
+    .btn {
+      padding: 5px 25px;
+      border: 1px solid #b1b1b1;
+      margin: 0 5px;
+      border-radius: 5px;
+      background-color: #fff;
+
+      p {
+        color: #fff;
+      }
+    }  
+    .btn:hover {
+      cursor: pointer;
+      border: 1px solid #333;
+    }
   }
 }
 

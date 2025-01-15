@@ -2,14 +2,15 @@ import React, { useState } from 'react'
 import './CounselDetail.scss'
 import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
-import { format } from "date-fns";
+import { format, setDate } from "date-fns";
 import { TitleBox } from '../../../boxs/TitleBox';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DropDownNum, DropDownTime, DropDownVisitPath, DropDowncharger } from '../../DefaultData';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
+import { DateBoxSingle } from '../../../boxs/DateBoxSingle';
 
 
 
@@ -72,7 +73,7 @@ export default function CounselDetail (props : any) {
   // 수정저장 함수
   const handleCounselRevise = async () => {
     await axios
-    .post(`${MainURL}/admin/schedule/revisecounsel`, {
+    .post(`${MainURL}/adminschedule/revisecounsel`, {
       id : propsData.id,
       sort : sort,
       name : name,
@@ -93,8 +94,6 @@ export default function CounselDetail (props : any) {
     .then((res)=>{
       if (res.data) {
         alert('수정되었습니다.');
-        navigate('/admin/counsel/counsellist');
-        window.scrollTo(0, 0);
       }
     })
     .catch((err)=>{
@@ -105,7 +104,7 @@ export default function CounselDetail (props : any) {
   // 수정저장 함수
   const handleCounselDelete = async () => {
     await axios
-    .post(`${MainURL}/admin/schedule/deletecounsel`, {
+    .post(`${MainURL}/adminschedule/deletecounsel`, {
       id : propsData.id,
     })
     .then((res)=>{
@@ -123,7 +122,7 @@ export default function CounselDetail (props : any) {
   return (
     <div className='counsel-detail'>
       
-      <h1>상담접수</h1>
+      <h1>방문접수</h1>
 
       <div className="modal-header">
         <h1>[{propsData.date}]</h1>
@@ -169,15 +168,13 @@ export default function CounselDetail (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='예식일'/>
-            <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setDateCeremony} date={dateCeremony}/>
+            <DateBoxSingle setSelectDate={setDateCeremony} date={dateCeremony}/>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='여행기간'/>
-            <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setDateStart} date={dateStart}/>
-            <p style={{marginRight:'10px'}}>~</p>
-            <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setDateEnd} date={dateEnd}/>
+            <DateBoxDouble setSelectStartDate={setDateStart} setSelectEndDate={setDateEnd} dateStart={dateStart} dateEnd={dateEnd}/>
           </div>
         </div>
         <div className="coverbox">
@@ -188,7 +185,13 @@ export default function CounselDetail (props : any) {
           </div>
           <div className="coverrow half">
             <TitleBox width="120px" text='방문경로'/>
-            <p>{propsData.visitPath}</p>
+            <DropdownBox
+              widthmain='20%'
+              height='35px'
+              selectedValue={propsData.visitPath}
+              options={DropDownVisitPath}   
+              handleChange={(e)=>{setVisitPath(e.target.value)}}
+            />
           </div>
         </div>
         <div className="coverbox">
@@ -216,7 +219,7 @@ export default function CounselDetail (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='방문일'/>
-            <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setVisitDate} date={visitDate}/>
+            <DateBoxSingle setSelectDate={setVisitDate} date={visitDate}/>
           </div>
         </div>
         <div className="coverbox">

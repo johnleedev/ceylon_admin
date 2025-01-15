@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './EstimateDetail.scss'
 import { TitleBox } from '../../../boxs/TitleBox';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 import { DropDownNum, DropDownTourLocation, DropDownVisitPath } from '../../DefaultData';
@@ -117,9 +117,9 @@ export default function EstimateDetail (props : any) {
               <div className="coverrow hole">
                 <TitleBox width="100px" text='여행기간'/>
                 <div style={{paddingLeft:'5px', display:'flex', alignItems:'center'}}>
-                  <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setTestDate} date={testDate}  marginLeft={1}/>
+                  {/* <DateBoxDouble  setSelectDate={setTestDate} date={testDate}  marginLeft={1}/>
                   <p>~</p>
-                  <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setTestDate} date={testDate}  marginLeft={1}/>
+                  <DateBoxDouble  setSelectDate={setTestDate} date={testDate}  marginLeft={1}/> */}
                 </div>
               </div>
             </div>
@@ -196,7 +196,7 @@ export default function EstimateDetail (props : any) {
               <div className="coverrow hole">
                 <TitleBox width="100px" text='견적유효기간'/>
                 <div style={{paddingLeft:'5px', display:'flex', alignItems:'center'}}>
-                  <DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setTestDate} date={testDate}  marginLeft={1}/>
+                  {/* <DateBoxDouble  setSelectDate={setTestDate} date={testDate}  marginLeft={1}/> */}
                   <p>까지</p>
                 </div>
               </div>
@@ -427,7 +427,7 @@ export default function EstimateDetail (props : any) {
               </div>
               <div className="coverbox">
                 <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                  <DateBoxNum width='130px' subWidth='110px' right={25}   setSelectDate={setTestDate} date={testDate} marginLeft={5}/>
+                  {/* <DateBoxDouble width='130px' subWidth='110px' right={25}   setSelectDate={setTestDate} date={testDate} marginLeft={5}/> */}
                   <DropdownBox
                     widthmain='20%' height='35px' selectedValue={''}
                     options={[

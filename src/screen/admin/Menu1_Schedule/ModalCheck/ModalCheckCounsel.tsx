@@ -20,7 +20,7 @@ export default function ModalCheckCounsel (props : any) {
         <IoMdClose size={30}/>
       </div>
 
-      <div className="header">
+      <div className="modal-header">
         <h1>{`[${date}] ${propsData.visitTime}`}</h1>
       </div>
 
@@ -105,7 +105,6 @@ export default function ModalCheckCounsel (props : any) {
           </div>
         </div>
       </section>
-      
       
     </div>     
   )

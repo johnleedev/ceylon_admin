@@ -4,16 +4,18 @@ import { IoMdClose } from "react-icons/io";
 import {ko} from "date-fns/locale";
 import { format } from "date-fns";
 import { TitleBox } from '../../../../boxs/TitleBox';
+import { DateBoxDouble } from '../../../../boxs/DateBoxDouble';
+import { DateBoxSingleTime } from '../../../../boxs/DateBoxSingleTime';
 
 
 export default function ModalCheckCompanySchedule (props : any) {
 
-  const dateStart = props.checkContent.start;
-  const dateEnd = props.checkContent.end;
-  const start = format(dateStart, 'yyyy-MM-dd', { locale: ko });
-  const end = format(dateEnd, 'yyyy-MM-dd', { locale: ko });
+  const [dateStart, setDateStart] = useState(props.checkContent.start);
+  const [dateEnd, setDateEnd] = useState(props.checkContent.end);
+  
   const propsData = props.checkContent.extendedProps;
   
+
   return (
     <div className='modal-check'>
       <div className='close'
@@ -21,8 +23,8 @@ export default function ModalCheckCompanySchedule (props : any) {
         <IoMdClose size={30}/>
       </div>
 
-      <div className="header">
-        <h1>{`[${start}] ~ [${end}]`} </h1>
+      <div className="modal-header">
+        <h1>{props.checkContent.title}</h1>
       </div>
 
       <section>
@@ -35,14 +37,10 @@ export default function ModalCheckCompanySchedule (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
-            <TitleBox width="120px" text='타이틀'/>
-            <p>{props.checkContent.title}</p>
-          </div>
-        </div>
-        <div className="coverbox">
-          <div className="coverrow hole">
             <TitleBox width="120px" text='기간'/>
-            <p>{start} ~ {end}</p>
+            <DateBoxSingleTime setSelectDate={setDateStart} date={dateStart}/>
+            <p>~</p>
+            <DateBoxSingleTime setSelectDate={setDateEnd} date={dateEnd}/>
           </div>
         </div>
         <div className="coverbox">

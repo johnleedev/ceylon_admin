@@ -6,9 +6,9 @@
 
 .topbar {
   width: inherit;
-  height: 80px;
+  height: 65px;
   background-color: #fff;
-  padding: 10px;
+  padding: 10px 30px;
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
@@ -16,32 +16,39 @@
   
   .notice-box {
     width: 40%;
-    height: 60px;
+    height: 45px;
     border: 1px solid #BDBDBD;
     border-radius: 5px;
     overflow: hidden;
-    height: 50px;
     border: 1px solid #ccc;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background-color: #f9f9f9;
+    padding: 0px 20px;
+    font-weight: 400;
+    font-size: 14px;
 
+    .notice-veticalbar {
+      margin-left: 10px;
+      width: 2px;
+      height: 15px;
+      background-color: #ccc;
+    }
     .notice {
+      margin-left: 10px;
       position: relative;
       transition: transform 0.5s ease, opacity 0.5s ease;
       opacity: 1;
-  
+    
       &.slide-in {
-        transform: translateY(-100%);
+        transform: translateY(100%); /* 아래에서 시작 */
         opacity: 1;
-        animation: slide-down 0.5s forwards;
+        animation: slide-up 0.5s forwards; /* 위로 올라가는 애니메이션 */
       }
-  
+    
       &.slide-out {
-        transform: translateY(0);
+        transform: translateY(0); /* 제자리에서 시작 */
         opacity: 1;
-        animation: slide-up 0.5s forwards;
+        animation: slide-down 0.5s forwards; /* 아래로 내려가는 애니메이션 */
       }
     }
     .notice:hover {
@@ -49,24 +56,24 @@
     }
   }
 
-  @keyframes slide-down {
+  @keyframes slide-up {
     from {
-      transform: translateY(-100%);
+      transform: translateY(100%); /* 아래에서 시작 */
       opacity: 0;
     }
     to {
-      transform: translateY(0);
+      transform: translateY(0); /* 제자리에서 멈춤 */
       opacity: 1;
     }
   }
   
-  @keyframes slide-up {
+  @keyframes slide-down {
     from {
-      transform: translateY(0);
+      transform: translateY(0); /* 제자리에서 시작 */
       opacity: 1;
     }
     to {
-      transform: translateY(100%);
+      transform: translateY(-100%); /* 위로 사라짐 */
       opacity: 0;
     }
   }
@@ -74,7 +81,7 @@
 
   .menubtn-box {
     width: 50%;
-    height: 60px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -92,6 +99,8 @@
       }
       p {
         color: #717171;
+        font-size: 14px;
+        font-weight: 400;
       }
       p:hover {
         color: #3a3a3a;

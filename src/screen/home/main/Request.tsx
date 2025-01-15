@@ -5,9 +5,10 @@ import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { format } from "date-fns";
 import Footer from '../component/Footer';
-import { DateBoxNum } from '../../../boxs/DateBoxNum';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 import { DropDownNum, DropDownTime, DropDownTime2 } from '../../DefaultData';
+import { DateBoxSingle } from '../../../boxs/DateBoxSingle';
 
 export default function Main(props:any) {
 
@@ -120,7 +121,7 @@ export default function Main(props:any) {
 							<p>예식일</p>
 						</div>
 						<div className="request--content">
-							<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setDateCeremony} date={dateCeremony}/>
+							<DateBoxSingle  setSelectDate={setDateCeremony} date={dateCeremony}/>
 							<div className='request--btn'
 								onClick={()=>{setDateCeremony('')}}
 							>
@@ -179,9 +180,7 @@ export default function Main(props:any) {
 								<p>여행기간</p>
 							</div>
 							<div className="request--content">
-								<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setDateStart} date={dateStart}/>
-								<p>~</p>
-								<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setDateEnd} date={dateEnd}/>
+								<DateBoxDouble  setSelectStartDate={setDateStart} setSelectEndDate={setDateEnd} dateStart={dateStart} dateEnd={dateEnd}/>
 							</div>
 						</div>
 					}
@@ -257,7 +256,7 @@ export default function Main(props:any) {
 								<p>방문상담예약</p>
 							</div>
 							<div className="request--content">
-								<DateBoxNum width='150px' subWidth='130px' right={25} setSelectDate={setVisitDate} date={visitDate}/>
+								<DateBoxSingle setSelectDate={setVisitDate} date={visitDate}/>
 								<DropdownBox
 									widthmain='150px'
 									height='35px'
