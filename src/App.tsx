@@ -8,9 +8,9 @@ import MainCounsel from './screen/admin/Menu2_Counsel/MainCounsel';
 import MainReserve from './screen/admin/Menu3_Reserve/MainReserve';
 import MainUser from './screen/admin/Menu5_User/MainUser';
 import MainProductsRest from './screen/admin/Menu6_ProductsRest/MainProductsRest';
-import MainMenual from './screen/admin/Menu8_Menual/MainMenual';
-import MainState from './screen/admin/Menu9_State/MainState';
-import MainSystem from './screen/admin/Menu10_System/MainSystem';
+import MainMenual from './screen/admin/Menu9_Menual/MainMenual';
+import MainManage from './screen/admin/Menu10_Manage/MainManage';
+import MainSystem from './screen/admin/Menu11_System/MainSystem';
 import Main from './screen/home/main/Main';
 import Footer from './screen/home/component/Footer';
 import MainProduct from './screen/home/Product/MainProduct';
@@ -18,7 +18,7 @@ import MainProductsTour from './screen/admin/Menu7_ProductsTour/MainProductsTour
 import MainEstimate from './screen/home/estimate/MainEstimate';
 import MainUserPage from './screen/home/user/MainUserPage';
 import MainSent from './screen/admin/Menu4_SentManage/MainSent';
-
+import MainLandCompany from './screen/admin/Menu8_LandCompany/MainLandCompany';
 
 
 function App() {
@@ -55,8 +55,9 @@ function App() {
                 <Route path="/user/*" element={<MainUser/>}/>
                 <Route path="/productsrest/*" element={<MainProductsRest/>}/>
                 <Route path="/productstour/*" element={<MainProductsTour/>}/>
+                <Route path="/landcompany/*" element={<MainLandCompany/>}/>
                 <Route path="/menual/*" element={<MainMenual/>}/>
-                <Route path="/state/*" element={<MainState/>}/>
+                <Route path="/manage/*" element={<MainManage/>}/>
                 <Route path="/system/*" element={<MainSystem/>}/>
               </Routes>
             </div>

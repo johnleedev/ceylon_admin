@@ -116,6 +116,13 @@ export default function AdminMenuBar () {
           </div>
           
           <MenuBox num={1} text='스케줄관리' icon={icon1} link="/admin/schedule"/>
+          {
+            currentTab === 1 &&
+            <div className="sub-box">
+              <RowBox num={1} text='스케줄관리' link="/admin/schedule"/>
+              <RowBox num={2} text='고객피드백 리스트' link="/admin/schedule/feedback"/>
+            </div>
+          }
 
           <MenuBox num={2} text='상담/견적관리' icon={icon2} link="/admin/counsel"/>
           {
@@ -156,14 +163,14 @@ export default function AdminMenuBar () {
           {
             currentTab === 5 &&
             <div className="sub-box">
-              <RowBox num={1} text='전체회원' link="/admin/user"/>
-              <RowBox num={2} text='신규회원' link="/admin/user/newuser"/>
-              <RowBox num={3} text='실버' link="/admin/user/silveruser"/>
-              <RowBox num={4} text='골드' link="/admin/user/golduser"/>
-              <RowBox num={5} text='VIP' link="/admin/user/vipuser"/>
-              <RowBox num={6} text='VVIP' link="/admin/user/vvipuser"/>
-              <RowBox num={7} text='탈퇴회원' link="/admin/user/leaveuser"/>
-              <RowBox num={8} text='혜택관리' link="/admin/user/benefit"/>
+              <RowBox num={1} text='신규회원' link="/admin/user"/>
+              <RowBox num={2} text='실버' link="/admin/user/silveruser"/>
+              <RowBox num={3} text='골드' link="/admin/user/golduser"/>
+              <RowBox num={4} text='VIP' link="/admin/user/vipuser"/>
+              <RowBox num={5} text='VVIP' link="/admin/user/vvipuser"/>
+              <RowBox num={6} text='탈퇴회원' link="/admin/user/leaveuser"/>
+              <RowBox num={7} text='적립금/혜택관리' link="/admin/user/benefit"/>
+              <RowBox num={8} text='선물관리' link="/admin/user/gift"/>
               <RowBox num={9} text='공지사항발송' link="/admin/user/notification"/>
             </div>
           }
@@ -174,7 +181,7 @@ export default function AdminMenuBar () {
             <div className="sub-box">
               <RowBox num={1} text='도시&항공관리' link="/admin/productsrest"/>
               <RowBox num={2} text='호텔&요금관리' link="/admin/productsrest/hotelregister"/>
-              <RowBox num={3} text='여행일정관리' link="/admin/productsrest/schedule"/>
+              <RowBox num={3} text='일정표관리' link="/admin/productsrest/schedule"/>
               <RowBox num={4} text='여행지상품관리' link="/admin/productsrest/tourproduct"/>
               <RowBox num={5} text='일정박스관리' link="/admin/productsrest/schedulebox"/>
               <RowBox num={6} text='랜드사관리' link="/admin/productsrest/landcompany"/>
@@ -194,35 +201,54 @@ export default function AdminMenuBar () {
             </div>
           }
 
-          <MenuBox num={8} text='업무메뉴얼' icon={icon8} link="/admin/menual"/>
+          <MenuBox num={8} text='랜드사관리' icon={icon8} link="/admin/landcompany"/>
           {
             currentTab === 8 &&
             <div className="sub-box">
-              <RowBox num={1} text='예약진행프로세스' link="/admin/menual"/>
-              <RowBox num={2} text='고객응대프로세스' link="/admin/menual/receptionprocess"/>
-              <RowBox num={3} text='사내문서' link="/admin/menual/companydocument"/>
-              <RowBox num={4} text='내규' link="/admin/menual/internalrule"/>
+              <RowBox num={1} text='랜드사리스트' link="/admin/landcompany"/>
+              <RowBox num={2} text='수배리스트' link="/admin/landcompany/arrangelist"/>
+              <RowBox num={3} text='수배대기리스트' link="/admin/landcompany/arrangewaiting"/>
+              <RowBox num={4} text='지상비 입금내역' link="/admin/landcompany/costdeposit"/>
+              <RowBox num={5} text='이슈관리' link="/admin/landcompany/issues"/>
             </div>
           }
 
-          <MenuBox num={9} text='운영현황' icon={icon9} link="/admin/state"/>
+          <MenuBox num={9} text='업무메뉴얼' icon={icon8} link="/admin/menual"/>
           {
             currentTab === 9 &&
             <div className="sub-box">
-              <RowBox num={1} text='예약현황' link="/admin/state"/>
-              <RowBox num={2} text='출발현황' link="/admin/state/departstate"/>
-              <RowBox num={3} text='정산' link="/admin/state/calculate"/>
+              <RowBox num={1} text='출퇴근/근태 관리' link="/admin/menual"/>
+              <RowBox num={2} text='직원간 메뉴얼' link="/admin/menual/staffmenual"/>
+              <RowBox num={3} text='고객응대 메뉴얼' link="/admin/menual/costomerreception"/>
+              <RowBox num={4} text='업체응대 메뉴얼' link="/admin/menual/companyreception"/>
+              <RowBox num={5} text='사내문서' link="/admin/menual/internaldocument"/>
             </div>
           }
 
-          <MenuBox num={10} text='시스템관리' icon={icon10} link="/admin/system"/>
+          <MenuBox num={10} text='운영현황' icon={icon9} link="/admin/manage"/>
           {
             currentTab === 10 &&
             <div className="sub-box">
+              <RowBox num={1} text='예약-지사/직원' link="/admin/manage"/>
+              <RowBox num={2} text='예약-예약경로' link="/admin/manage/reservepath"/>
+              <RowBox num={3} text='예약-예약분석' link="/admin/manage/reservecalculate"/>
+              <RowBox num={4} text='예약-송출현황' link="/admin/manage/reservesents"/>
+              <RowBox num={5} text='정산-지사/직원' link="/admin/manage/adjuststaff"/>
+              <RowBox num={6} text='정산-예약경로' link="/admin/manage/adjustpath"/>
+              <RowBox num={7} text='정산-랜드사정산' link="/admin/manage/adjustlc"/>
+              <RowBox num={8} text='업체 리베이트' link="/admin/manage/rebate"/>
+              <RowBox num={9} text='인센관리' link="/admin/manage/incentive"/>
+            </div>
+          }
+
+          <MenuBox num={11} text='시스템관리' icon={icon10} link="/admin/system"/>
+          {
+            currentTab === 11 &&
+            <div className="sub-box">
               <RowBox num={1} text='권한관리' link="/admin/system"/>
-              <RowBox num={2} text='임직원관리' link="/admin/system/executive"/>
-              <RowBox num={3} text='IP관리' link="/admin/system/iplist"/>
-              <RowBox num={4} text='로그인내역' link="/admin/system/loginhistory"/>
+              <RowBox num={2} text='정보관리' link="/admin/system/infomation"/>
+              <RowBox num={3} text='로그인내역' link="/admin/system/loginhistory"/>
+              <RowBox num={4} text='IP관리' link="/admin/system/iplist"/>
             </div>
           }
 
@@ -233,11 +259,8 @@ export default function AdminMenuBar () {
 
       <div className="exchange-rate">
         <div className="exchange-rate-box">
-          <div className="top-datebox">
-            <p>{date} 기준:</p>
-          </div>
           <DropdownBox
-            widthmain='100%' height='35px' 
+            widthmain='60%' height='35px' 
             selectedValue={base}
             options={[
               { value: 'USD', label: '미국 1 USD' },
@@ -249,7 +272,7 @@ export default function AdminMenuBar () {
             handleChange={(e)=>{setBase(e.target.value);}}
           />
           <div className="bottom-krwbox">
-            <p>= KRW {KRW} 원</p>
+            <p>= {KRW}원</p>
           </div>
         </div>
       </div>

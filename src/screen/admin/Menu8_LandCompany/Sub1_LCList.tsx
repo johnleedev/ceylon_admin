@@ -12,7 +12,7 @@ import Loading from '../components/Loading';
 import { DropDowncharger } from '../../DefaultData';
 import { TitleList } from '../../../boxs/TitleList';
 
-export default function Sub1_Online (props:any) {
+export default function Sub1_LCList (props:any) {
 
 	let navigate = useNavigate();
 
@@ -75,7 +75,7 @@ export default function Sub1_Online (props:any) {
 	};
 
 	useEffect(() => {
-		fetchPosts();
+		// fetchPosts();
 	}, [refresh]);  
 
 
@@ -143,7 +143,7 @@ export default function Sub1_Online (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>New DB</h1>
+					<h1>랜드사 리스트</h1>
 				</div>
 			</div>
 				

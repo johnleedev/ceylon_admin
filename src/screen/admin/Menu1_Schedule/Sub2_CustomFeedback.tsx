@@ -12,7 +12,7 @@ import Loading from '../components/Loading';
 import { DropDowncharger } from '../../DefaultData';
 import { TitleList } from '../../../boxs/TitleList';
 
-export default function Sub1_Online (props:any) {
+export default function Sub2_CustomFeedback (props:any) {
 
 	let navigate = useNavigate();
 
@@ -75,7 +75,7 @@ export default function Sub1_Online (props:any) {
 	};
 
 	useEffect(() => {
-		fetchPosts();
+		// fetchPosts();
 	}, [refresh]);  
 
 
@@ -143,7 +143,7 @@ export default function Sub1_Online (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>New DB</h1>
+					<h1>고객피드백 리스트</h1>
 				</div>
 			</div>
 				
@@ -196,20 +196,25 @@ export default function Sub1_Online (props:any) {
 				</div>
 			</div>
 
+			<div className="main-title" style={{marginTop:'30px'}}>
+				<div className='title-box'>
+					<h1>대기</h1>
+				</div>
+			</div>
 
 			<div className="seachlist">
 
 				<div className="main-list-cover">
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
-						<TitleList width='12%' text='답변일/문의일'/>
-						<TitleList width='5%' text='구분'/>
+						<TitleList width='12%' text='예약일/출발일'/>
+						<TitleList width='5%' text='등급'/>
 						<TitleList width='8%' text='성함'/>
 						<TitleList width='12%' text='연락처'/>
-						<TitleList width='12%' text='여행지'/>
-						<TitleList width='10%' text='여행예정일'/>
+						<TitleList width='12%' text='여행상품'/>
 						<TitleList width='10%' text='방문경로'/>
-						<TitleList width='12%' text='진행상황'/>
+						<TitleList width='15%' text='요청사항'/>
+						<TitleList width='10%' text='문의일/처리일'/>
 						<TitleList width='7%' text='담당자'/>
   				</div>
 					
@@ -220,12 +225,83 @@ export default function Sub1_Online (props:any) {
 							return (
 								<div key={index} className="rowbox"
 								 onClick={()=>{
-									if (item.sort === '상담') {
-										navigate('/admin/counsel/counseldetail', {state : {data: item, pathType:"new"}});
-										window.scrollTo(0, 0);
-									} else {
-										return
-									}
+									
+								 }}
+								>
+									<TextBox width='3%' text={item.id} />
+									<TextBox width='12%' text={item.date} text2={item.date}/>
+									<TextBox width='5%' text={item.sort} />
+									<TextBox width='8%' text={item.name} />
+									<TextBox width='12%' text={item.phone} />
+									<TextBox width='12%' text={item.tourLocation} />
+									<TextBox width='10%' text={item.dateStart} />
+									<TextBox width='10%' text={item.visitPath} />
+									<TextBox width='12%' text={item.state} />
+									<TextBox width='7%' text={item.charger} />
+								</div>
+							)
+						})
+						:
+						<div style={{textAlign:'center'}}>
+							<p style={{marginTop:'50px'}}>검색결과가 없습니다.</p>
+						</div>
+					}
+				</div>
+
+				<div className='btn-row'>
+					<div onClick={() => changePage(1)} className='btn'>
+						<p>{"<<"}</p>
+					</div>
+					<div onClick={() => changePage(currentPage - 1)} className='btn'>
+						<p>{"<"}</p>
+					</div>
+					{getPageNumbers().map((page) => (
+						<div key={page} onClick={() => changePage(page)} 
+						 className={currentPage === page ? 'current btn' : 'btn'}
+						>
+							<p>{page}</p>
+						</div>
+					))}
+					<div onClick={() => changePage(currentPage + 1)} className='btn'>
+						<p>{">"}</p>
+					</div>
+					<div onClick={() => changePage(totalPages)} className='btn'>
+						<p>{">>"}</p>
+					</div>
+				</div>
+
+			</div>
+
+			<div className="main-title" style={{marginTop:'30px'}}>
+				<div className='title-box'>
+					<h1>처리</h1>
+				</div>
+			</div>
+
+			<div className="seachlist">
+
+				<div className="main-list-cover">
+					<div className="TitleList">
+						<TitleList width='3%' text='NO'/>
+						<TitleList width='12%' text='예약일/출발일'/>
+						<TitleList width='5%' text='등급'/>
+						<TitleList width='8%' text='성함'/>
+						<TitleList width='12%' text='연락처'/>
+						<TitleList width='12%' text='여행상품'/>
+						<TitleList width='10%' text='방문경로'/>
+						<TitleList width='15%' text='요청사항/문의/변경/취소'/>
+						<TitleList width='10%' text='문의일/처리일'/>
+						<TitleList width='7%' text='담당자'/>
+  				</div>
+					
+					{
+						list.length > 0
+						?
+						list.map((item:any, index:any)=>{
+							return (
+								<div key={index} className="rowbox"
+								 onClick={()=>{
+									
 								 }}
 								>
 									<TextBox width='3%' text={item.id} />

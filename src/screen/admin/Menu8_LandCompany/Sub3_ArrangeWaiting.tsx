@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import '../SearchList.scss'
+import '../SearchBox.scss';
 import { TitleList } from '../../../boxs/TitleList';
 import { TextBox } from '../../../boxs/TextBox';
-import '../SearchList.scss';
-import '../SearchBox.scss';
 import { useNavigate } from 'react-router-dom';
-import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
-import { DropdownBox } from '../../../boxs/DropdownBox';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
+import { DropdownBox } from '../../../boxs/DropdownBox';
+import { DropDownLandCompany, DropDownTourLocation, DropDowncharger } from '../../DefaultData';
 import Loading from '../components/Loading';
-import { DropDowncharger } from '../../DefaultData';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
 
 
-export default function Sub2_EstimateList (props:any) {
+export default function Sub3_ArrangeWaiting (props:any) {
 
 	let navigate = useNavigate();
 
@@ -28,53 +28,59 @@ export default function Sub2_EstimateList (props:any) {
 	// 게시글 가져오기 ------------------------------------------------------
 	interface ListProps {
 		id: number;
+		serialNum : string;
 		date: string;
+		tourStartPeriod : string;
 		name: string;
-		phone: string;
-		tourLocation: string;
-		callTime : string;
-		dateCeremony: string;
-		sort: string;
-		stage: string
-		visitDate : string;
-		visitTime: string;
+		phone : string;
+    productName : string;
+    ticketingState : string;
+		landCompany : string;
+    arrangeDecideDate : string;
+    arrangeDepositCost : string;
+    arrangeEstimateCost: string;
+    arrangeSendDate : string;
+		charger : string;
 	}
-
 	const [list, setList] = useState<ListProps[]>([]);
-	const [listAllLength, setListAllLength] = useState<number>(0);
-	const [currentPage, setCurrentPage] = useState<number>(1);
-
+	const [viewList, setViewList] = useState<ListProps[]>([]);
+	const [arrangeWord1, setArrangeWord1] = useState('');
+	const [arrangeWord2, setArrangeWord2] = useState('');
 
 	const fetchPosts = async () => {
-		const res = await axios.get(`${MainURL}/adminschedule/getonlinelist/stay`);
-		if (res.data.resultData) {
-			const copy = res.data.resultData;
-			const copy2 = copy.filter((e:any)=> e.sort === '견적');
-      setList(copy2);   
-      setListAllLength(copy2.totalCount);
-
-		
+		try {
+			const res = await axios.get(`${MainURL}/adminlist/getlistarrange`)
+			if (res) {
+					setList(res.data);
+					setViewList(res.data);
+			} else {
+					setList([]);
+					setViewList([]);
+			}
+		} catch (error) {
+				console.error("Error fetching posts:", error);
+				setList([]);
+				setViewList([]);
 		}
 	};
 
 	useEffect(() => {
-		fetchPosts();
+		// fetchPosts();
 	}, []);  
-
 
 	return (
 		<div className='Main-cover'>
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>견적 DB</h1>
+					<h1>수배대기리스트</h1>
 				</div>
 			</div>
 
 			<div className="searchbox">
 				<div className="cover">
 					<div className="content">
-						<DateBoxDouble  setSelectStartDate={setStartDate} setSelectEndDate={setEndDate} dateStart={startDate} dateEnd={endDate}   marginLeft={1}/>
+						<DateBoxDouble  setSelectStartDate={setStartDate} setSelectEndDate={setEndDate} dateStart={startDate} dateEnd={endDate}  marginLeft={1}/>
 						<DropdownBox
 							widthmain='100px'
 							height='35px'
@@ -84,6 +90,13 @@ export default function Sub2_EstimateList (props:any) {
 								{ value: '여행지1', label: '여행지1' },
 								{ value: '여행지2', label: '여행지2' },
 							]}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
+						/>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={dateSort}
+							options={DropDownLandCompany}
 							handleChange={(e)=>{setDateSort(e.target.value)}}
 						/>
 						<DropdownBox
@@ -108,7 +121,7 @@ export default function Sub2_EstimateList (props:any) {
 							<div className="btn reset"
 								onClick={()=>{
 									setDateSort('문의일');
-									
+									setViewList(list);
 									setDateSelect('');
 									setStartDate('');
 									setEndDate('');
@@ -123,46 +136,44 @@ export default function Sub2_EstimateList (props:any) {
 				</div>
 			</div>
 
-			
+						
 			<div className="seachlist">
 
 				<div className="main-list-cover">
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
-						<TitleList width='12%' text='발송일/문의일'/>
+						<TitleList width='10%' text='예약일/출발일'/>
+						<TitleList width='5%' text='등급'/>
 						<TitleList width='8%' text='성함'/>
 						<TitleList width='12%' text='연락처'/>
-						<TitleList width='12%' text='여행지'/>
-						<TitleList width='10%' text='여행예정일'/>
-						<TitleList width='10%' text='방문경로'/>
-						<TitleList width='12%' text='진행상황'/>
-						<TitleList width='7%' text='담당자'/>
+						<TitleList width='15%' text='여행상품'/>
+						<TitleList width='7%' text='랜드사'/>
+						<TitleList width='7%' text='항공'/>
+						<TitleList width='7%' text='수배일/확정일'/>
+						<TitleList width='5%' text='담당자'/>
   				</div>
 					
 					{
-						list.length > 0
+						viewList.length > 0
 						?
-						list.map((item:any, index:any)=>{
+						viewList.map((item:any, index:any)=>{
+
+							const phoneCopy = item.phone.split('/');
+							const landCompanyCopy = JSON.parse(item.landCompany);
+							const ticketingStateCopy = JSON.parse(item.ticketingState);
+
 							return (
-								<div key={index} className="rowbox"
-								 onClick={()=>{
-									if (item.sort === '상담') {
-										navigate('/admin/counsel/counseldetail', {state : {data: item, pathType:"new"}});
-										window.scrollTo(0, 0);
-									} else {
-										return
-									}
-								 }}
-								>
+								<div key={index} className="rowbox">
 									<TextBox width='3%' text={index+1} />
-									<TextBox width='12%' text={item.date} text2={item.date}/>
+									<TextBox width='10%' text={item.date} text2={item.tourStartPeriod}/>
+									<TextBox width='5%' text={item.level} />
 									<TextBox width='8%' text={item.name} />
-									<TextBox width='12%' text={item.phone} />
-									<TextBox width='12%' text={item.tourLocation} />
-									<TextBox width='10%' text={item.dateStart} />
-									<TextBox width='10%' text={item.visitPath} />
-									<TextBox width='12%' text={item.state} />
-									<TextBox width='7%' text={item.charger} />
+									<TextBox width='12%' text={phoneCopy[0]} text2={phoneCopy[1]}/>
+									<TextBox width='15%' text={item.productName} />
+									<TextBox width='7%' text={landCompanyCopy[0].companyName}/>
+									<TextBox width='7%' text={item.inputState} />
+									<TextBox width='7%' text={item.reviseDate} text2={item.reviseDate} />
+									<TextBox width='5%' text={item.charger} />
 								</div>
 							)
 						})
@@ -175,7 +186,7 @@ export default function Sub2_EstimateList (props:any) {
 
 			</div>
 
-
+			<div style={{height:'100px'}}></div>
 		</div>
 	);
 }

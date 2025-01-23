@@ -221,6 +221,21 @@
           background-color: #333;
         }
       }
+      .airline-save-btn {
+        background-color: #5fb7ef;
+        border-radius: 5px;
+        width: 90%;
+        p {
+          color: #fff;
+          padding: 5px 3px;
+          margin: 0;
+          text-align: center;
+        }
+      }
+      .airline-save-btn:hover {
+        cursor: pointer;
+        opacity: 0.8;
+      }
     }
 
     .autoComplete {

@@ -32,9 +32,11 @@ export default function ModalAddCity (props : any) {
   const [cityEn, setCityEn] = useState(isAddOrRevise === 'revise' ? cityData.cityEn : '');
   const [weather, setWeather] = useState(isAddOrRevise === 'revise' ? cityData.weather : '');
   const [tourNotice, setTourNotice] = useState(isAddOrRevise === 'revise' ? cityData.tourNotice : '');
-  const [productCategory, setProductCategory] = useState(isAddOrRevise === 'revise' ? cityData.productCategory : '');
-  const [scheduleSelect, setScheduleSelect] = useState(isAddOrRevise === 'revise' ? JSON.parse(cityData.scheduleSelect) : ['']);
-
+  
+  const [resortCategory, setResortCategory] = useState(isAddOrRevise === 'revise' ? JSON.parse(cityData.resortCategory) : [""]);
+  const [scheduleCategory, setScheduleCategory] = useState(isAddOrRevise === 'revise' ? JSON.parse(cityData.scheduleCategory) : [""]);
+  const [hotelCategory, setHotelCategory] = useState(isAddOrRevise === 'revise' ? JSON.parse(cityData.hotelCategory) : [""]);
+  
   const [lastImages, setLastImages]  = 
     useState((props.isAddOrRevise === 'revise' && (cityData.inputImage !== null && cityData.inputImage !== '')) ? JSON.parse(cityData.inputImage) : []);
   const [inputImage, setInputImage] = 
@@ -118,30 +120,6 @@ export default function ModalAddCity (props : any) {
 
 
 
-  interface SelectBoxConvenienceProps {
-    text : any;
-  }
-  const SelectBoxConvenience : React.FC<SelectBoxConvenienceProps> = ({ text }) => (
-    <>
-      <div className='checkInput'>
-        <input className="input" type="checkbox"
-          checked={scheduleSelect.includes(text)}
-          onChange={()=>{
-            const copy = [...scheduleSelect];
-            if (scheduleSelect.includes(text)) {
-              const result = copy.filter(e => e !== text);
-              setScheduleSelect(result);
-            } else {
-              copy.push(text); 
-              setScheduleSelect(copy);
-            }
-          }}
-        />
-      </div>
-      <p>{text}</p>
-    </>
-  )
-
   // 저장 함수 ------------------------------------------------------------------------------------------------------------------------------------------
   const registerCity = async () => {
     if (cityListCopy.includes(cityKo)) {
@@ -158,8 +136,9 @@ export default function ModalAddCity (props : any) {
         cityEn : cityEn,
         weather : weather,
         tourNotice : tourNotice,
-        productCategory : productCategory,
-        scheduleSelect : JSON.stringify(scheduleSelect),
+        resortCategory: JSON.stringify(resortCategory),
+        scheduleCategory : JSON.stringify(scheduleCategory),
+        hotelCategory : JSON.stringify(hotelCategory),
         inputImage : JSON.stringify(inputImage)
       }
       axios 
@@ -171,7 +150,7 @@ export default function ModalAddCity (props : any) {
         })
         .then((res) => {
           if (res.data) {
-            alert('등록되었습니다.');
+            alert('저장되었습니다.');
             props.setRefresh(!props.refresh);
           }
         })
@@ -221,8 +200,9 @@ export default function ModalAddCity (props : any) {
       cityEn : cityEn,
       weather : weather,
       tourNotice : tourNotice,
-      productCategory : productCategory,
-      scheduleSelect : JSON.stringify(scheduleSelect),
+      resortCategory: JSON.stringify(resortCategory),
+      scheduleCategory : JSON.stringify(scheduleCategory),
+      hotelCategory : JSON.stringify(hotelCategory),
       inputImage : JSON.stringify(inputImage),
     }
     axios 
@@ -279,58 +259,38 @@ export default function ModalAddCity (props : any) {
   };
 
   // 항공편 저장 함수 ----------------------------------------------
-  const registerAirline = async (sort:string) => {
-    const inputAirlineOrigin = sort === 'direct' ? [...directAirline] : [...viaAirline];
-    for (let index = 0; index < inputAirlineOrigin.length; index++) {
-      const airlineItem = inputAirlineOrigin[index];
-      if (!airlineItem.departAirline || airlineItem.departAirline.trim() === '') {
-        alert(`${index + 1}번째 항목의 출발편명이 입력되지 않았습니다.`);
-        return;
-      }
-    }
-    const promises = [];
-    for (let index = 0; index < inputAirlineOrigin.length; index++) {
-      const postPromise = axios.post(`${MainURL}/restnationcity/registerairline`, {
-        postId : inputAirlineOrigin[index].id,
-        nation : nation,
-        city : cityKo,
-        sort : sort,
-        tourPeriodNight : inputAirlineOrigin[index].tourPeriodNight,
-        tourPeriodDay : inputAirlineOrigin[index].tourPeriodDay,
-        departAirportMain : inputAirlineOrigin[index].departAirportMain,
-        departAirline : inputAirlineOrigin[index].departAirline,
-        airlineData : JSON.stringify(inputAirlineOrigin[index].airlineData)
+  const registerAirline = async (sort:string, item:any) => {
+
+    axios.post(`${MainURL}/restnationcity/registerairline`, {
+      nation : nation,
+      city : cityKo,
+      sort : sort,
+      tourPeriodNight : item.tourPeriodNight,
+      tourPeriodDay : item.tourPeriodDay,
+      departAirportMain : item.departAirportMain,
+      departAirline : item.departAirline,
+      airlineData : JSON.stringify(item.airlineData)
+    })
+      .then((res) => {
+        if (res.data) {
+          alert(res.data)
+        }
       })
-        .then((response) => {
-          return { success: true, data: response.data };
-        })
-        .catch((error) => {
-          console.error(`에러 발생 : ${inputAirlineOrigin[index]}`, error);
-          return { success: false };
-        });
-      promises.push(postPromise);
-    }
-  
-    try {
-      const results = await Promise.all(promises);
-      const allSuccess = results.every(result => result.success);
-      if (allSuccess) {
-        alert('모두 정상적으로 저장되었습니다.');
-        props.setRefresh(!props.refresh);
-        props.setIsViewAddCityModal(false);
-      } else {
-        alert('정상적으로 저장되지 않았습니다.');
-      }
-    } catch (error) {
-      alert('실패');
-      console.error('전체적인 오류 발생', error);
-    }
+      .catch((error) => {
+        console.error(`에러 발생 :`, error);
+      });
   };
 
   // 항공편 삭제
   const deleteAirline = async (item:any, sort:string) => {
 		const getParams = {
-			postId : item.id,
+      nation : nation,
+      city : cityKo,
+      sort : sort,
+      tourPeriodNight : item.tourPeriodNight,
+      tourPeriodDay : item.tourPeriodDay,
+      departAirportMain : item.departAirportMain,
+      departAirline : item.departAirline
 		}
 		axios 
 			.post(`${MainURL}/restnationcity/deleteairline`, getParams)
@@ -451,52 +411,80 @@ export default function ModalAddCity (props : any) {
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
-            <TitleBox width="120px" text='상품카테고리'/>
-            <div className='checkInputCover'>
-              <div className='checkInput'>
-                <input className="input" type="checkbox"
-                  checked={productCategory === '추천풀빌라'}
-                  onChange={()=>{setProductCategory('추천풀빌라')}}
-                />
+            <TitleBox width="120px" text='리조트분류'/>
+            {
+              resortCategory.map((item:any, index:any)=>(
+                <input key={index} value={item} 
+                  className="inputdefault" type="text" style={{width:'120px', marginLeft:'5px'}} 
+                  onChange={(e)=>{
+                    const copy = [...resortCategory];
+                    copy[index] = e.target.value;
+                    setResortCategory(copy);
+                  }}/>
+              ))
+            }
+            <div className="dayBox">
+              <div className="dayBtn"
+                onClick={()=>{
+                  const copy = [...resortCategory, ""];
+                  setResortCategory(copy);
+                }}
+              >
+                <p>+</p>
               </div>
-              <p>추천풀빌라</p>
-              <div className='checkInput'>
-                <input className="input" type="checkbox"
-                  checked={productCategory === '얼리버드'}
-                  onChange={()=>{setProductCategory('얼리버드')}}
-                />
-              </div>
-              <p>얼리버드</p>
-              <div className='checkInput'>
-                <input className="input" type="checkbox"
-                  checked={productCategory === '가족여행추천리조트'}
-                  onChange={()=>{setProductCategory('가족여행추천리조트')}}
-                />
-              </div>
-              <p>가족여행추천리조트</p>
-              <div className='checkInput'>
-                <input className="input" type="checkbox"
-                  checked={productCategory === '우붓스테이'}
-                  onChange={()=>{setProductCategory('우붓스테이')}}
-                />
-              </div>
-              <p>우붓스테이</p>
-            </div>
+            </div>  
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
-            <TitleBox width="120px" text='일정선택'/>
-            <div className='checkInputCover'>
-              <SelectBoxConvenience text='경유지일정'/>
-              <SelectBoxConvenience text='선택일정'/>
-              <SelectBoxConvenience text='우붓일정'/>
-              <SelectBoxConvenience text='해양스포츠'/>
-              <SelectBoxConvenience text='스파마사지'/>
-              <SelectBoxConvenience text='리조트부대시설'/>
-              <SelectBoxConvenience text='레스토랑/바/클럽'/>
-              <SelectBoxConvenience text='VIP서비스'/>
-            </div>
+            <TitleBox width="120px" text='일정커스텀품목'/>
+            {
+              scheduleCategory.map((item:any, index:any)=>(
+                <input key={index} value={item} 
+                  className="inputdefault" type="text" style={{width:'120px', marginLeft:'5px'}} 
+                  onChange={(e)=>{
+                    const copy = [...scheduleCategory];
+                    copy[index] = e.target.value;
+                    setScheduleCategory(copy);
+                  }}/>
+              ))
+            }
+            <div className="dayBox">
+              <div className="dayBtn"
+                onClick={()=>{
+                  const copy = [...scheduleCategory, ""];
+                  setScheduleCategory(copy);
+                }}
+              >
+                <p>+</p>
+              </div>
+            </div>  
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='호텔커스텀분류'/>
+            {
+              hotelCategory.map((item:any, index:any)=>(
+                <input key={index} value={item} 
+                  className="inputdefault" type="text" style={{width:'120px', marginLeft:'5px'}} 
+                  onChange={(e)=>{
+                    const copy = [...hotelCategory];
+                    copy[index] = e.target.value;
+                    setHotelCategory(copy);
+                  }}/>
+              ))
+            }
+            <div className="dayBox">
+              <div className="dayBtn"
+                onClick={()=>{
+                  const copy = [...hotelCategory, ""];
+                  setHotelCategory(copy);
+                }}
+              >
+                <p>+</p>
+              </div>
+            </div>  
           </div>
         </div>
         <div className="coverbox">
@@ -696,23 +684,21 @@ export default function ModalAddCity (props : any) {
             <div className="chart-divider"></div>
             <div className='chartbox' style={{width:'7%'}} ><p>출발편명</p></div>
             <div className="chart-divider"></div>
-            <div style={{width:'73%', display:'flex'}}>
+            <div style={{width:'68%', display:'flex'}}>
               <div className='chartbox' style={{width:'3%'}} ><p></p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>항공사</p></div>
+              <div className='chartbox' style={{width:'15%'}} ><p>항공사</p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'25%'}} ><p>출발요일</p></div>
+              <div className='chartbox' style={{width:'32%'}} ><p>출발요일</p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>편명</p></div>
+              <div className='chartbox' style={{width:'10%'}} ><p>편명</p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>출발공항</p></div>
+              <div className='chartbox' style={{width:'20%'}} ><p>구간</p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>출발시간</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>도착공항</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>도착시간</p></div>
+              <div className='chartbox' style={{width:'20%'}} ><p>시간</p></div>
             </div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'5%'}} ><p>저장</p></div>
           </div>
           
           {
@@ -788,7 +774,7 @@ export default function ModalAddCity (props : any) {
                         }}/>
                     </div>
                     <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'73%'}} >
+                    <div style={{width:'68%'}} >
                     {
                       item.airlineData.map((subItem:any, subIndex:any)=>{
                         return (
@@ -798,7 +784,7 @@ export default function ModalAddCity (props : any) {
                               { subItem.sort === 'arrive' && <BiSolidLeftArrowAlt /> }
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
+                            <div style={{width:'15%'}} >
                               <DropdownBox
                                 widthmain='90%'
                                 height='35px'
@@ -808,7 +794,7 @@ export default function ModalAddCity (props : any) {
                               />
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'25%'}} >
+                            <div style={{width:'32%'}} >
                               <div className="dayBox">
                                 {
                                   ['월', '화', '수', '목', '금', '토', '일'].map((dateItem:any, dateIndex:any)=>{
@@ -841,7 +827,7 @@ export default function ModalAddCity (props : any) {
                               </div>
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
+                            <div style={{width:'10%'}} >
                               <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
                                 value={subItem.planeName}
                                 onChange={(e)=>{
@@ -853,26 +839,22 @@ export default function ModalAddCity (props : any) {
                                 }}/>
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
                                 value={subItem.departAirport} 
                                 onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'departAirport');}}/>
+                              <p style={{margin:'0px'}}>-</p>
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.arriveAirport} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'arriveAirport');}}/>                              
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
                                 value={subItem.departTime} 
                                 onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'departTime');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
-                                value={subItem.arriveAirport} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'arriveAirport');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                              <p style={{margin:'0px'}}>-</p>
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
                                 value={subItem.arriveTime} 
                                 onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'arriveTime');}}/>
                             </div>
@@ -880,6 +862,20 @@ export default function ModalAddCity (props : any) {
                         )
                       })
                     }
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                      <div className="airline-save-btn"
+                        onClick={()=>{
+                          if (item.tourPeriodNight === '' || item.tourPeriodDay === '' || item.departAirportMain === '' || item.departAirline === '') {
+                            alert('기간, 출발공항, 출발편명을 선택해주세요.');
+                          } else {
+                            registerAirline('direct', item);
+                          }
+                        }}
+                      >
+                        <p>저장</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -901,23 +897,21 @@ export default function ModalAddCity (props : any) {
             <div className="chart-divider"></div>
             <div className='chartbox' style={{width:'7%'}} ><p>출발편명</p></div>
             <div className="chart-divider"></div>
-            <div style={{width:'73%', display:'flex'}}>
+            <div style={{width:'68%', display:'flex'}}>
               <div className='chartbox' style={{width:'3%'}} ><p></p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>항공사</p></div>
+              <div className='chartbox' style={{width:'15%'}} ><p>항공사</p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'25%'}} ><p>출발요일</p></div>
+              <div className='chartbox' style={{width:'32%'}} ><p>출발요일</p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>편명</p></div>
+              <div className='chartbox' style={{width:'10%'}} ><p>편명</p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>출발공항</p></div>
+              <div className='chartbox' style={{width:'20%'}} ><p>구간</p></div>
               <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>출발시간</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>도착공항</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'12%'}} ><p>도착시간</p></div>
+              <div className='chartbox' style={{width:'20%'}} ><p>시간</p></div>
             </div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'5%'}} ><p>저장</p></div>
           </div>
           
           {
@@ -993,7 +987,7 @@ export default function ModalAddCity (props : any) {
                         }}/>
                     </div>
                     <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'73%'}} >
+                    <div style={{width:'68%'}} >
                     {
                       item.airlineData.map((subItem:any, subIndex:any)=>{
                         return (
@@ -1005,7 +999,7 @@ export default function ModalAddCity (props : any) {
                               { subItem.sort === 'arrive' && <BiSolidArrowFromRight /> }
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
+                            <div style={{width:'15%'}} >
                               <DropdownBox
                                 widthmain='90%'
                                 height='35px'
@@ -1015,7 +1009,7 @@ export default function ModalAddCity (props : any) {
                               />
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'25%'}} >
+                            <div style={{width:'32%'}} >
                               <div className="dayBox">
                                 {
                                   ['월', '화', '수', '목', '금', '토', '일'].map((dateItem:any, dateIndex:any)=>{
@@ -1048,7 +1042,7 @@ export default function ModalAddCity (props : any) {
                               </div>
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
+                            <div style={{width:'10%'}} >
                               <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
                                 value={subItem.planeName} 
                                 onChange={(e)=>{
@@ -1060,26 +1054,22 @@ export default function ModalAddCity (props : any) {
                                 }}/>
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
                                 value={subItem.departAirport} 
                                 onChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'departAirport');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                              <p style={{margin:'0px'}}>-</p>
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
                                 value={subItem.departTime} 
                                 onChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'departTime');}}/>
                             </div>
                             <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
                                 value={subItem.arriveAirport} 
                                 onChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'arriveAirport');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'12%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                              <p style={{margin:'0px'}}>-</p>
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
                                 value={subItem.arriveTime} 
                                 onChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'arriveTime');}}/>
                             </div>
@@ -1087,6 +1077,20 @@ export default function ModalAddCity (props : any) {
                         )
                       })
                     }
+                    </div>
+                    <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                      <div className="airline-save-btn"
+                        onClick={()=>{
+                          if (item.tourPeriodNight === '' || item.tourPeriodDay === '' || item.departAirportMain === '' || item.departAirline === '') {
+                            alert('기간, 출발공항, 출발편명을 선택해주세요.');
+                          } else {
+                            registerAirline('via', item);
+                          }
+                        }}
+                      >
+                        <p>저장</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1106,18 +1110,62 @@ export default function ModalAddCity (props : any) {
         >
           <p style={{color:'#333'}}>취소</p>
         </div>
-        <div className="btn" style={{backgroundColor:'#5fb7ef'}}
+        <div className="btn"
           onClick={()=>{
             if (airlineSelectInput === 'direct') {
-              registerAirline('direct');
-            } else {
-              registerAirline('via');
+              const copy = [...directAirline]
+              if (copy.length === 0) {
+                setDirectAirline([...directAirline, 
+                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
+                    ]
+                  }]
+                )
+              } else {
+                const lastItem = copy[copy.length - 1];
+                setDirectAirline([...directAirline, 
+                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
+                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""}
+                    ]
+                  }]
+                )
+              }
+            } else if (airlineSelectInput === 'via') {
+              const copy = [...viaAirline];
+              if (copy.length === 0) { 
+                setViaAirline([...viaAirline,
+                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+                      { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+                      { sort:"viaDepart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+                    ]
+                  }
+                ])
+              } else {
+                const lastItem = copy[copy.length - 1];
+                setViaAirline([...viaAirline,
+                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
+                      { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""},
+                      { sort:"viaDepart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[2].departAirport, departTime:"", arriveAirport:lastItem.airlineData[2].arriveAirport, arriveTime:""},
+                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[3].departAirport, departTime:"", arriveAirport:lastItem.airlineData[3].arriveAirport, arriveTime:""},
+                    ]
+                  }
+                ])
+              }
+              
             }
           }}
         >
-          <p>{airlineSelectInput === 'direct' ? '직항' : '경유'} 저장</p>
+           <p style={{color:'#333'}}>항공편추가</p>
         </div>
-       
       </div>
 
       

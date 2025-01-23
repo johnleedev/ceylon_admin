@@ -12,9 +12,9 @@ import Loading from '../components/Loading';
 import { DropDowncharger, DropDownUserLevel } from '../../DefaultData';
 import { TitleList } from '../../../boxs/TitleList';
 
-export default function Sub9_Notification (props:any) {
 
-	
+export default function Sub1_NewUser (props:any) {
+
 	let navigate = useNavigate();
 
 
@@ -57,33 +57,33 @@ export default function Sub9_Notification (props:any) {
 	}, [refresh]);  
 
 
-	// State 변수 추가
-	const itemsPerPage = 10; // 한 페이지당 표시될 게시글 수
-	const totalPages = Math.ceil(listAllLength / itemsPerPage);
+  // State 변수 추가
+  const itemsPerPage = 10; // 한 페이지당 표시될 게시글 수
+  const totalPages = Math.ceil(listAllLength / itemsPerPage);
 
-	// 페이지 변경 함수
-	const changePage = (newPage: number) => {
-		setCurrentPage(newPage);
-	};
+  // 페이지 변경 함수
+  const changePage = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
-	// 페이지네이션 범위 계산
-	const getPageNumbers = () => {
-		const pageNumbers = [];
-		const maxPagesToShow = 4;
-		const half = Math.floor(maxPagesToShow / 2);
-		let start = Math.max(1, currentPage - half);
-		let end = Math.min(totalPages, currentPage + half);
-		if (currentPage - half < 1) {
-			end = Math.min(totalPages, end + (half - currentPage + 1));
-		}
-		if (currentPage + half > totalPages) {
-			start = Math.max(1, start - (currentPage + half - totalPages));
-		}
-		for (let i = start; i <= end; i++) {
-			pageNumbers.push(i);
-		}
-		return pageNumbers;
-	};
+  // 페이지네이션 범위 계산
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 4;
+    const half = Math.floor(maxPagesToShow / 2);
+    let start = Math.max(1, currentPage - half);
+    let end = Math.min(totalPages, currentPage + half);
+    if (currentPage - half < 1) {
+      end = Math.min(totalPages, end + (half - currentPage + 1));
+    }
+    if (currentPage + half > totalPages) {
+      start = Math.max(1, start - (currentPage + half - totalPages));
+    }
+    for (let i = start; i <= end; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
 
 
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
@@ -118,7 +118,7 @@ export default function Sub9_Notification (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>공지사항발송</h1>
+					<h1>신규회원</h1>
 				</div>
 			</div>			
 
@@ -133,7 +133,7 @@ export default function Sub9_Notification (props:any) {
 							handleChange={(e)=>{setSearchUserLevel(e.target.value)}}
 						/>
 						<input className="inputdefault" type="text" style={{width:'20%', textAlign:'left'}} 
-							value={searchWord} placeholder='고객명/연락처'
+              value={searchWord} placeholder='고객명/연락처'
 							onChange={(e)=>{
 								setSearchWord(e.target.value);
 								
@@ -162,7 +162,7 @@ export default function Sub9_Notification (props:any) {
 			
 			<div className="seachlist">
 
-				<div className="main-list-cover">
+  			<div className="main-list-cover">
 					<div className="TitleList">
 						<TitleList width="5%" text='NO'/>
 						<TitleList width="7%" text='등급'/>
@@ -199,4 +199,3 @@ export default function Sub9_Notification (props:any) {
 		</div>
 	);
 }
-		

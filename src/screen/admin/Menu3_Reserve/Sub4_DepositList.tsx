@@ -160,8 +160,8 @@ export default function Sub4_DepositList (props:any) {
 								<h3 style={{width:'20%', fontSize : '14px', textAlign:'center'}}>예약금</h3>
 								<h3 style={{width:'20%', fontSize : '14px', textAlign:'center'}}>항공료</h3>
 								<h3 style={{width:'20%', fontSize : '14px', textAlign:'center'}}>중도금</h3>
-								<h3 style={{width:'20%', fontSize : '14px', textAlign:'center'}}>행사비</h3>
-								<h3 style={{width:'20%', fontSize : '14px', textAlign:'center'}}>기타경비</h3>
+								<h3 style={{width:'20%', fontSize : '14px', textAlign:'center'}}>잔금</h3>
+								<h3 style={{width:'20%', fontSize : '14px', textAlign:'center'}}>추가경비</h3>
 							</div>
 						</div>
 						<TitleList width='5%' text='담당자'/>

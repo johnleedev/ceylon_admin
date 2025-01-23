@@ -381,3 +381,13 @@ export const DropDownSeasonType = [
   { value: '픽시즌', label: '픽시즌' },
   { value: '블랫아웃', label: '블랫아웃' }
 ]
+
+export const DropDownUserLevel = [
+  { value: '선택', label: '선택' },
+  { value: '신규', label: '신규' },
+  { value: '실버', label: '실버' },
+  { value: '골드', label: '골드' },
+  { value: 'VIP', label: 'VIP' },
+  { value: 'VVIP', label: 'VVIP' },
+  { value: '탈퇴', label: '탈퇴' }
+]

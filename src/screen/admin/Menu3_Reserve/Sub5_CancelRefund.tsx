@@ -141,7 +141,7 @@ export default function Sub6_CancelRefund (props:any) {
 				<div className="main-list-cover">
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
-						<TitleList width='10%' text='취소일'/>
+						<TitleList width='10%' text='취소일/환불일'/>
 						<TitleList width='10%' text='예약일/출발일'/>
 						<TitleList width='5%' text='등급'/>
 						<TitleList width='8%' text='성함'/>
@@ -150,7 +150,7 @@ export default function Sub6_CancelRefund (props:any) {
 						<TitleList width='7%' text='랜드사'/>
 						<TitleList width='7%' text='방문경로'/>
 						<TitleList width='7%' text='총입금액'/>
-						<TitleList width='5%' text='환불/날짜'/>
+						<TitleList width='5%' text='환불금'/>
 						<TitleList width='5%' text='담당자'/>
   				</div>
 					

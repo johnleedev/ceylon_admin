@@ -172,7 +172,7 @@ export default function Sub3_Schedule (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>여행일정 관리</h1>	
+					<h1>일정표 관리</h1>	
 				</div>
 				<div className="addBtn"
 					onClick={()=>{

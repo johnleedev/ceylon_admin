@@ -76,8 +76,7 @@ export default function Sub2_HotelRegister (props:any) {
     const res = await axios.get(`${MainURL}/restproducthotel/gethotels/${currentPage}`)
 		if (res.data.resultData) {
       const copy = res.data.resultData;
-			copy.reverse();
-      setList(copy);
+      setList(copy);   
       setListAllLength(res.data.totalCount);
     }
 		const nationCityRes = await axios.get(`${MainURL}/restnationcity/getnationcity`)
@@ -99,7 +98,7 @@ export default function Sub2_HotelRegister (props:any) {
 
 
   // State 변수 추가
-  const itemsPerPage = 15; // 한 페이지당 표시될 게시글 수
+  const itemsPerPage = 10; // 한 페이지당 표시될 게시글 수
   const totalPages = Math.ceil(listAllLength / itemsPerPage);
 
   // 페이지 변경 함수

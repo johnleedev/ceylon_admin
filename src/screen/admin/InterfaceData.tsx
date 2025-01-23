@@ -145,4 +145,14 @@ export interface DeliveryInfoProps {
 
 
 
+// 도시 입력 모달 -------------------------------------------------------------------------
+
+
+export interface TaxFreeLimitProps {
+  alcohol: string;
+  cigarette: string;
+  cash: string;
+  all: string;
+  notice : string;
+};
 

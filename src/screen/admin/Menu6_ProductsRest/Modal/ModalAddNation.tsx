@@ -15,6 +15,7 @@ import imageCompression from "browser-image-compression";
 import Loading from '../../components/Loading';
 import { IoClose } from 'react-icons/io5';
 import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti';
+import { TaxFreeLimitProps } from '../../InterfaceData';
 
 
 export default function ModalAddNation (props : any) {
@@ -32,9 +33,8 @@ export default function ModalAddNation (props : any) {
   const [language, setLanguage] = useState(props.isAddOrRevise === 'revise' ? nationData.language : '');
   const [currency, setCurrency] = useState(props.isAddOrRevise === 'revise' ? nationData.currency : '');
   const [voltage, setVoltage] = useState(props.isAddOrRevise === 'revise' ? nationData.voltage : '');
-  const [plugType, setPlugType] = useState(props.isAddOrRevise === 'revise' ? nationData.plugType : '');
   const [caution, setCaution] = useState(props.isAddOrRevise === 'revise' ? nationData.caution : '');
-  const [taxFreeLimit, setTaxFreeLimit] = useState(props.isAddOrRevise === 'revise' ? nationData.taxFreeLimit : '');
+  const [taxFreeLimit, setTaxFreeLimit] = useState<TaxFreeLimitProps>(props.isAddOrRevise === 'revise' ? JSON.parse(nationData.taxFreeLimit) : {alcohol:'', cigarette:'', cash:'', all:'', notice:''});
   const [lastImages, setLastImages]  = 
     useState((props.isAddOrRevise === 'revise' && (nationData.inputImage !== null && nationData.inputImage !== '')) ? JSON.parse(nationData.inputImage) : []);
   const [inputImage, setInputImage] = 
@@ -136,9 +136,8 @@ export default function ModalAddNation (props : any) {
         language : language,
         currency : currency,
         voltage : voltage,
-        plugType : plugType,
         caution : caution,
-        taxFreeLimit : taxFreeLimit,
+        taxFreeLimit : JSON.stringify(taxFreeLimit),
         inputImage : JSON.stringify(inputImage)
       }
       axios 
@@ -202,9 +201,8 @@ export default function ModalAddNation (props : any) {
       language : language,
       currency : currency,
       voltage : voltage,
-      plugType : plugType,
       caution : caution,
-      taxFreeLimit : taxFreeLimit,
+      taxFreeLimit : JSON.stringify(taxFreeLimit),
       inputImage : JSON.stringify(inputImage)
     }
     axios 
@@ -218,7 +216,6 @@ export default function ModalAddNation (props : any) {
         if (res.data) {
           alert('수정되었습니다.');
           props.setRefresh(!props.refresh);
-          props.setIsViewAddNationModal(false);
         }
       })
       .catch(() => {
@@ -337,15 +334,13 @@ export default function ModalAddNation (props : any) {
           </div>
         </div>
         <div className="coverbox">
-          <div className="coverrow half">
-            <TitleBox width="120px" text='전압'/>
-            <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
-              value={voltage} onChange={(e)=>{setVoltage(e.target.value)}}/>
-          </div>
-          <div className="coverrow half">
-            <TitleBox width="120px" text='플러그타입'/>
-            <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
-              value={plugType} onChange={(e)=>{setPlugType(e.target.value)}}/>
+          <div className="coverrow hole bigHeight">
+            <TitleBox width="120px" text='전압/플러그타입' height={200}/>
+            <textarea 
+              className="textarea"
+              value={voltage}
+              onChange={(e)=>{setVoltage(e.target.value)}}
+            />
           </div>
         </div>
         <div className="coverbox">
@@ -359,10 +354,56 @@ export default function ModalAddNation (props : any) {
           </div>
         </div>
         <div className="coverbox">
-          <div className="coverrow hole">
-            <TitleBox width="120px" text='면세한도'/>
-            <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
-              value={taxFreeLimit} onChange={(e)=>{setTaxFreeLimit(e.target.value)}}/>
+          <div className="coverrow hole bigHeight">
+            <TitleBox width="120px" text='면세한도' height={200}/>
+            <div style={{width:'30%'}}>
+              <div style={{width:'90%', display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                <p style={{width:'30%', textAlign:'center'}}>주류</p>
+                <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
+                  value={taxFreeLimit.alcohol} onChange={(e)=>{
+                    const copy = {...taxFreeLimit};
+                    copy.alcohol = e.target.value;
+                    setTaxFreeLimit(copy);
+                  }}/>
+              </div>
+              <div style={{width:'90%', display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                <p style={{width:'30%', textAlign:'center'}}>담배</p>
+                <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
+                  value={taxFreeLimit.cigarette} onChange={(e)=>{
+                    const copy = {...taxFreeLimit};
+                    copy.cigarette = e.target.value;
+                    setTaxFreeLimit(copy);
+                  }}/>
+              </div>
+              <div style={{width:'90%', display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                <p style={{width:'30%', textAlign:'center'}}>현금</p>
+                <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
+                  value={taxFreeLimit.cash} onChange={(e)=>{
+                    const copy = {...taxFreeLimit};
+                    copy.cash = e.target.value;
+                    setTaxFreeLimit(copy);
+                  }}/>
+              </div>
+              <div style={{width:'90%', display:'flex', alignItems:'center', marginBottom:'5px'}}>
+                <p style={{width:'30%', textAlign:'center'}}>총면세한도</p>
+                <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
+                  value={taxFreeLimit.all} onChange={(e)=>{
+                    const copy = {...taxFreeLimit};
+                    copy.all = e.target.value;
+                    setTaxFreeLimit(copy);
+                  }}/>
+              </div>
+            </div>
+            <textarea 
+              style={{width:'60%'}}
+                className="textarea"
+                value={taxFreeLimit.notice}
+                onChange={(e)=>{
+                  const copy = {...taxFreeLimit};
+                  copy.notice = e.target.value;
+                  setTaxFreeLimit(copy);
+                }}
+              />
           </div>
         </div>
         <div className="coverbox">

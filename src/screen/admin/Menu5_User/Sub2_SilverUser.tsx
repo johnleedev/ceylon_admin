@@ -12,9 +12,8 @@ import Loading from '../components/Loading';
 import { DropDowncharger, DropDownUserLevel } from '../../DefaultData';
 import { TitleList } from '../../../boxs/TitleList';
 
-export default function Sub9_Notification (props:any) {
+export default function Sub2_SilverUser (props:any) {
 
-	
 	let navigate = useNavigate();
 
 
@@ -118,7 +117,7 @@ export default function Sub9_Notification (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>공지사항발송</h1>
+					<h1>실버</h1>
 				</div>
 			</div>			
 
@@ -168,11 +167,10 @@ export default function Sub9_Notification (props:any) {
 						<TitleList width="7%" text='등급'/>
 						<TitleList width="10%" text='성함'/>
 						<TitleList width="15%" text='연락처'/>
-						<TitleList width="10%" text='최근여행일'/>
-						<TitleList width="25%" text='여행상품'/>
-						<TitleList width="7%" text='이용횟수'/>
-						<TitleList width="10%" text='이용금액'/>
-						<TitleList width="7%" text='혜택'/>
+						<TitleList width="10%" text='가입일'/>
+						<TitleList width="10%" text='가입동기'/>
+						<TitleList width="20%" text='문의내용/관심상품'/>
+						<TitleList width="7%" text='포인트'/>
 					</div>
 					
 					{
@@ -199,4 +197,4 @@ export default function Sub9_Notification (props:any) {
 		</div>
 	);
 }
-		
+	
