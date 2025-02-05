@@ -643,6 +643,7 @@ export default function FullVillaCost (props : any) {
                       }} 
                       setSelectEndDate={(e:any)=>{ 
                         const copy = [...commission];
+                        copy[index].period.start = e;
                         copy[index].period.end = e;
                         setCommission(copy);
                       }} 
@@ -856,6 +857,7 @@ export default function FullVillaCost (props : any) {
                       }} 
                       setSelectEndDate={(e:any)=>{ 
                         const inputs = [...seasonCost];
+                        inputs[index].periodStart = e;
                         inputs[index].periodEnd = e;
                         setSeasonCost(inputs);
                       }} 
@@ -1018,6 +1020,7 @@ export default function FullVillaCost (props : any) {
                         }} 
                         setSelectEndDate={(e:any)=>{ 
                           const inputs = [...inputCost];
+                          inputs[sectionIndex].reservePeriod.start = e;
                           inputs[sectionIndex].reservePeriod.end = e;
                           setInputCost(inputs);
                         }} 
@@ -1163,6 +1166,7 @@ export default function FullVillaCost (props : any) {
                                       }} 
                                       setSelectEndDate={(e:any)=>{ 
                                         const inputs = [...inputCost];
+                                        inputs[sectionIndex].inputDefault[index].period[subIndex].start = e;
                                         inputs[sectionIndex].inputDefault[index].period[subIndex].end = e;
                                         setInputCost(inputs);
                                       }} 

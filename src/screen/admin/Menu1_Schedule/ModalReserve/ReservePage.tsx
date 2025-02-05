@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './ReservePage.scss'
-import { IoMdClose } from "react-icons/io";
 import axios from 'axios';
 import MainURL from '../../../../MainURL';
-import { FaRegCheckCircle } from "react-icons/fa";
 import { CiCircleMinus } from "react-icons/ci";
 import { TitleBox } from '../../../../boxs/TitleBox';
 import { DropdownBox } from '../../../../boxs/DropdownBox';
-import { DropDownAirline, DropDowncharger, DropDownDeliveryType, DropDownDepositType, DropDownLandCompany, DropDownNum, DropDownTourLocation, DropDownVisitPath } from '../../../DefaultData';
+import { DropDownAirline, DropDowncharger, DropDownDeliveryType, DropDownDepositType, DropDownLandCompany, DropDownNum, DropDownTourLocation } from '../../../DefaultData';
 import { FaPlus } from "react-icons/fa";
 import { DateBoxDouble } from '../../../../boxs/DateBoxDouble';
 import { useRecoilState } from 'recoil';
-import { recoilExchangeRate } from '../../../../RecoilStore';
+import { recoilNoticeExchangeRate, recoilRestDepositExchangeRate } from '../../../../RecoilStore';
 import { AirlineReserveStateProps, DeliveryInfoProps, DepositCostInfoProps, EtcStateProps, HotelReserveStateProps,
-         ProductInfoProps, ReserveStateProps, UserInfoProps, VisitPathInfoProps, 
+         ProductInfoProps, ReserveStateProps, UserInfoProps, UserSubInfoProps, VisitPathInfoProps, 
          WorkStateProps} from '../../InterfaceData';
 import { differenceInDays, format, parseISO } from 'date-fns';
 import { FaCheck } from "react-icons/fa";
 import { DateBoxSingle } from '../../../../boxs/DateBoxSingle';
-import { useLocation } from 'react-router-dom';
+
 
 export default function ReservePage (props : any) {
 
+  let navigate = useNavigate();
   const originDate = new Date();
   const todayDate = format(originDate, 'yyyy-MM-dd');
   const location = useLocation(); 
@@ -29,33 +29,46 @@ export default function ReservePage (props : any) {
   const modalSort = location.state.modalSort;
 
   const [inputState, setInputState] = useState(modalSort);
-    
-  // 환율 정보 ---------------------------------------------------------------------------------------------------------------------
-  const [recoilExchangeRateCopy, setRecoilExchangeRateCopy]  = useRecoilState(recoilExchangeRate);
 
-  const [date, setDate] = useState('');
-  const [base, setBase] = useState('USD');
-  const [KRW, setKRW] = useState('');
-  
-  const fetchExchangeRate = async () => {
+   // 환율 정보 ---------------------------------------------------------------------------------------------------------------------
+   const [recoilNoticeExchangeRateCopy, setRecoilNoticeExchangeRateCopy]  = useRecoilState(recoilNoticeExchangeRate);
+   const [recoilRestDepositExchangeRateCopy, setRecoilRestDepositExchangeRateCopy]  = useRecoilState(recoilRestDepositExchangeRate);
+   const [noticeBase, setNoticeBase] = useState('USD');
+   const [restDepositBase, setRestDepositBase] = useState('USD');
+
+   
+  // 고지 환율 바꾸기 함수
+  const fetchNoticeExchangeRate = async () => {
     try {
-      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${base}`);
+      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${noticeBase}`);
       if (!response.ok) {
         throw new Error('Failed to fetch exchange rate');
       }
       const data = await response.json();
-      setDate(data.date);
-      setKRW(data.rates.KRW);
-      setRecoilExchangeRateCopy([{base:data.base, KRW:data.rates.KRW}]);
+      setRecoilNoticeExchangeRateCopy([{base:data.base, KRW:data.rates.KRW}]);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
+  // 잔금 지급시 환율 바꾸기 함수
+  const fetchRestDepositExchangeRate = async () => {
+    try {
+      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${restDepositBase}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch exchange rate');
+      }
+      const data = await response.json();
+      setRecoilRestDepositExchangeRateCopy([{base:data.base, KRW:data.rates.KRW}]);
     } catch (error) {
       console.error('Error fetching exchange rate:', error);
     }
   };
 
   useEffect(() => {
-    fetchExchangeRate();
-  }, [base])
-  
+    fetchNoticeExchangeRate();
+    fetchRestDepositExchangeRate();
+  }, []);
 
   // 예약최초 등록 및 삭제 함수 -----------------------------------------------------------------------------------------------------------
   const isCancel = async () => {
@@ -80,24 +93,25 @@ export default function ReservePage (props : any) {
   // useState -----------------------------------------------------------------------------------------------------------
 
   const userInfoData = [
-    { userNum: 1, sort : '성인', nameKo: '', nameLast: '', nameFirst: '', birth: '', gender: '남', nation: '한국', passportNum: '', passportDate: '', residentNum : '', phone: ''},
-    { userNum: 2, sort : '성인', nameKo: '', nameLast: '', nameFirst: '', birth: '', gender: '남', nation: '한국', passportNum: '', passportDate: '', residentNum : '', phone: ''}
+    { isContact: true, sort : '성인', nameKo: '', nameLast: '', nameFirst: '', birth: '', gender: '남', nation: '한국', passportNum: '', passportDate: '', residentNum : '', phone: ''},
+    { isContact: false, sort : '성인', nameKo: '', nameLast: '', nameFirst: '', birth: '', gender: '남', nation: '한국', passportNum: '', passportDate: '', residentNum : '', phone: ''}
   ]
   const visitPathInfoData = {reserveLocation : '', charger:'', accepter: '', visitPath:'', visitPathDetail : '', recommender:''}
-  const productInfoData = { tourLocation : '', tourLocationDetail : '', productName : '', 
-    airline : [""], landCompany : [{companyName: "", notice: ""}],
-    tourStartAirport : '', tourStartPeriod : '', tourEndAirport : '', tourEndPeriod : '',
-    costAdult: '', costAdultNum: 1, costChild: '', costChildNum : 1, costInfant: '', costInfantNum: 1, costAll: '',
-    reserveExchangeRate : recoilExchangeRateCopy[0].KRW, isNotice: false, isClientCheck: false
+  const productInfoData = { tourLocation : '', tourLocationDetail : '', productName : '', productType : '',
+    tourStartAirport : '', tourStartPeriod : '', tourEndPeriod : '',
+    airline : [""], landCompany : [{companyName: "", costList: [{currency:"원", cost:""}]}],
+    personalCost : [{sort:"성인", num : 1, cost:"", currency:"원" },{sort:"아동", num : 1, cost:"", currency:"원" },{sort:"유아", num : 1, cost:"", currency:"원" }], personalCostAll: '',
+    exchangeRate : {rateType:"", isNotice: false, isClientCheck: false, 
+                   noticeRate : recoilNoticeExchangeRateCopy[0].KRW, restDepositDate : "", restDepositRate: recoilRestDepositExchangeRateCopy[0].KRW }
   }
   const airlineReserveStateData = {
     isCustomerTicketing : false,
     airlineState : [{ departDate: '', arriveDate:'', airlineCompany : '', airlineName : '', departAirport : '', departTime : '', arriveAirport:'', arriveTime:'', state:'' }],
-    ticketingState : [{ ticketBooth: '', ticketCost: '', date: '', isTicketing: false }]
+    ticketingState : [{ ticketBooth: '', ticketCost: '', date: '', ticketing: '' }]
   }
   const depositCostInfoData = {
     tourTotalContractCost : '', costListSum : '',
-    personalCost : {costAdult: '', costAdultNum: 1, costChild: '', costChildNum : 1, costInfant: '', costInfantNum: 1, costAll: ''},
+    personalCost : [{sort:"성인", num : 1, cost:"", currency:"원" },{sort:"아동", num : 1, cost:"", currency:"원" },{sort:"유아", num : 1, cost:"", currency:"원" }],
     freeGift : '', savedMoney : '', discountCost: '', additionCostAll: '', resultCost:'',
     contractCost : [{nameko: '계약금', cost: '', date: '', type: '', deposit: false}],
     airportCost : [{nameko: '항공료', cost: '', date: '', type: '', deposit: false}],
@@ -129,6 +143,7 @@ export default function ReservePage (props : any) {
   const [charger, setCharger] = useState(modalSort === 'revise' ? location.state.charger : '');
   
   const [userInfo, setUserInfo] = useState<UserInfoProps[]>(modalSort === 'revise' ? location.state.userInfo : userInfoData );
+  const [userSubInfo, setUserSubInfo] = useState<UserSubInfoProps>(modalSort === 'revise' ? location.state.userSubInfo : { brideName: '', birthDate: '', weddingDate: ''});
   const [visitPathInfo, setVisitPathInfo] = useState<VisitPathInfoProps>(modalSort === 'revise' ? location.state.visitPathInfo : visitPathInfoData );
   const [productInfo, setProductInfo] = useState<ProductInfoProps>(modalSort === 'revise' ? location.state.productInfo : productInfoData );
   const [airlineReserveState, setAirlineReserveState] = useState<AirlineReserveStateProps>( modalSort === 'revise' ? location.state.airlineReserveState : airlineReserveStateData)
@@ -198,53 +213,55 @@ export default function ReservePage (props : any) {
   // 상품정보 ---------------------------------------------------------------------------------------------------------------------------------------
 
   // 입력된숫자 금액으로 변경
-  const handleProductInfoCostChange = async (e: React.ChangeEvent<HTMLInputElement>, name:string)  => {
+  const handleProductInfoCostChange = async (e: React.ChangeEvent<HTMLInputElement>, index:number)  => {
     const text = e.target.value;
+    const copy = {...productInfo}
     if (text === '') {
-      setProductInfo(prevState => ({...prevState, [name]: ''}))
+      copy.personalCost[index].cost = '';
+      setProductInfo(copy);
     }
     const inputNumber = parseInt(text.replace(/,/g, ''));
     if (isNaN(inputNumber)) {
       return;
     }
     const formattedNumber = inputNumber.toLocaleString('en-US');
-    setProductInfo(prevState => ({
-      ...prevState,
-      [name]: formattedNumber,
-    }));
+    copy.personalCost[index].cost = formattedNumber;
+    setProductInfo(copy);
   };
 
   // 인원 변경
-  const handlePersonNumChange = async (e:any, name:string) => {
+  const handleProductInfoNumChange = async (e:any, index:number) => {
     const text = e.target.value; 
-    const num = parseInt(text)
-    setProductInfo(prev => ({
-      ...prev, [name]: num,
-    }));
+    const num = parseInt(text);
+    const copy = {...productInfo};
+    copy.personalCost[index].num = num;
+    setProductInfo(copy);
   };
  
   useEffect(() => {
-    const costAdultCopy = productInfo.costAdult === '' ? 0 : parseInt(productInfo.costAdult.replace(/,/g, ''));
-    const costChildCopy = productInfo.costChild === '' ? 0 : parseInt(productInfo.costChild.replace(/,/g, ''));
-    const costInfantCopy = productInfo.costInfant === '' ? 0 : parseInt(productInfo.costInfant.replace(/,/g, ''));
-    const allCost = (costAdultCopy * productInfo.costAdultNum) + (costChildCopy * productInfo.costChildNum) + (costInfantCopy * productInfo.costInfantNum);
+    const copy = {...productInfo};
+    const costAdultCopy = copy.personalCost[0].cost === '' ? 0 : parseInt(copy.personalCost[0].cost.replace(/,/g, ''));
+    const costChildCopy = copy.personalCost[1].cost === '' ? 0 : parseInt(copy.personalCost[1].cost.replace(/,/g, ''));
+    const costInfantCopy = copy.personalCost[2].cost === '' ? 0 : parseInt(copy.personalCost[2].cost.replace(/,/g, ''));
+    const allCost = (costAdultCopy * copy.personalCost[0].num) + (costChildCopy * copy.personalCost[1].num) + (costInfantCopy * copy.personalCost[2].num);
     const formattedAllCost = allCost.toLocaleString('en-US');
     setProductInfo(prevState => ({
       ...prevState,
-      costAll: formattedAllCost,
+      personalCostAll: formattedAllCost,
     }));
     
-  }, [productInfo.costAdult, productInfo.costAdultNum, productInfo.costChild, productInfo.costChildNum, productInfo.costInfant, productInfo.costInfantNum]);
+  }, [productInfo.personalCost[0].cost, productInfo.personalCost[1].cost, productInfo.personalCost[2].cost,
+     productInfo.personalCost[0].num, productInfo.personalCost[1].num, productInfo.personalCost[2].num]);
 
 
   // 입금내역 ---------------------------------------------------------------------------------------------------------------------------------------
 
   // 입력된숫자 금액으로 변경
-  const handleDepositPersonalCostChange = async (e: React.ChangeEvent<HTMLInputElement>, name:string)  => {
+  const handleDepositPersonalCostChange = async (e: React.ChangeEvent<HTMLInputElement>, index:number)  => {
     const text = e.target.value;
     const copy = {...depositCostInfo}
     if (text === '') {
-      (copy.personalCost as any)[name] = ''; 
+      copy.personalCost[index].cost = '';
       setDepositCostInfo(copy);
     }
     const inputNumber = parseInt(text.replace(/,/g, ''));
@@ -252,29 +269,35 @@ export default function ReservePage (props : any) {
       return;
     }
     const formattedNumber = inputNumber.toLocaleString('en-US');
-    (copy.personalCost as any)[name] = formattedNumber;
+    copy.personalCost[index].cost = formattedNumber;
     setDepositCostInfo(copy);
   };
 
   // 인원 변경
-  const handleDepositNumChange = async (e:any, name:string) => {
+  const handleDepositPersonalNumChange = async (e:any, index:number) => {
     const copy = {...depositCostInfo}
     const text = e.target.value; 
     const num = parseInt(text);
-    (copy.personalCost as any)[name] = num; 
+    copy.personalCost[index].num = num;
     setDepositCostInfo(copy);
   };
 
   useEffect(() => {
     const copy = {...depositCostInfo};
-    const costAdultCopy = depositCostInfo.personalCost.costAdult === '' ? 0 : parseInt(depositCostInfo.personalCost.costAdult.replace(/,/g, ''));
-    const costChildCopy = depositCostInfo.personalCost.costChild === '' ? 0 : parseInt(depositCostInfo.personalCost.costChild.replace(/,/g, ''));
-    const costInfantCopy = depositCostInfo.personalCost.costInfant === '' ? 0 : parseInt(depositCostInfo.personalCost.costInfant.replace(/,/g, ''));
-    const allCost = (costAdultCopy * depositCostInfo.personalCost.costAdultNum) + (costChildCopy * depositCostInfo.personalCost.costChildNum) + (costInfantCopy * depositCostInfo.personalCost.costInfantNum);
+    const costAdultCopy = copy.personalCost[0].cost === '' ? 0 : parseInt(copy.personalCost[0].cost.replace(/,/g, ''));
+    const costChildCopy = copy.personalCost[1].cost === '' ? 0 : parseInt(copy.personalCost[1].cost.replace(/,/g, ''));
+    const costInfantCopy = copy.personalCost[2].cost === '' ? 0 : parseInt(copy.personalCost[2].cost.replace(/,/g, ''));
+    const allCost = (costAdultCopy * copy.personalCost[0].num) + (costChildCopy * copy.personalCost[1].num) + (costInfantCopy * copy.personalCost[2].num);
     const formattedAllCost = allCost.toLocaleString('en-US');
-    copy.personalCost.costAll = formattedAllCost;
-    setDepositCostInfo(copy);
-  }, [depositCostInfo.personalCost.costAdult, depositCostInfo.personalCost.costAdultNum, depositCostInfo.personalCost.costChild, depositCostInfo.personalCost.costChildNum, depositCostInfo.personalCost.costInfant, depositCostInfo.personalCost.costInfantNum]);
+    setDepositCostInfo(prevState => ({
+      ...prevState,
+      personalCostAll: formattedAllCost,
+    }));
+    
+  }, [depositCostInfo.personalCost[0].cost, depositCostInfo.personalCost[1].cost, depositCostInfo.personalCost[2].cost,
+     depositCostInfo.personalCost[0].num, depositCostInfo.personalCost[1].num, depositCostInfo.personalCost[2].num]);
+
+
 
   const handleDepositCostChange = async (e: React.ChangeEvent<HTMLInputElement>, category:keyof DepositCostInfoProps)  => {
     const copy = {...depositCostInfo};
@@ -415,6 +438,7 @@ export default function ReservePage (props : any) {
       visitPath : visitPath,
       charger : charger,
       userInfo : JSON.stringify(userInfo),
+      userSubInfo : JSON.stringify(userSubInfo),
       visitPathInfo : JSON.stringify(visitPathInfo),
       productInfo : JSON.stringify(productInfo),
       airlineReserveState : JSON.stringify(airlineReserveState),
@@ -529,6 +553,47 @@ export default function ReservePage (props : any) {
   </>
   )
 
+  // 고지 환율 바꾸기 함수
+  const handleNoticeExchangeRate = async (noticeBaseCopy:any) => {
+    try {
+      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${noticeBaseCopy}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch exchange rate');
+      }
+      const data = await response.json();
+      setRecoilNoticeExchangeRateCopy([{base:data.base, KRW:data.rates.KRW}]);
+      const rate = data.rates.KRW;
+      const copy = {...productInfo};
+      copy.exchangeRate.noticeRate = rate.toString();
+      setProductInfo(copy);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
+  // 잔금 지급시 환율 바꾸기 함수
+  const handleRestDepositExchangeRate = async (restDepositBaseCopy:any) => {
+    try {
+      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${restDepositBaseCopy}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch exchange rate');
+      }
+      const data = await response.json();
+      setRecoilRestDepositExchangeRateCopy([{base:data.base, KRW:data.rates.KRW}]);
+      const rate = data.rates.KRW;
+      const copy = {...productInfo};
+      copy.exchangeRate.restDepositRate = rate.toString();
+      setProductInfo(copy);
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNoticeExchangeRate();
+    fetchRestDepositExchangeRate();
+  }, []);
+
   return (
     <div className='reserve-page'>
       
@@ -593,6 +658,13 @@ export default function ReservePage (props : any) {
 
       <section>
         <div style={{width:'100%', display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
+          <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#BDBDBD'}}
+            onClick={()=>{
+              navigate('/admin/reserve');
+            }}
+          >
+            <p>목록</p>
+          </div>
           <div className='btn-row' style={{marginRight:'5px', width:'120px', backgroundColor:'#5fb7df'}}
             onClick={()=>{
               handleReserveSave();
@@ -611,7 +683,7 @@ export default function ReservePage (props : any) {
             <div  className='plusBtnBox'
               onClick={()=>{
                 setUserInfo([...userInfo, 
-                  { userNum: userInfo.length+1, sort : '성인', nameKo: '', nameLast: '', nameFirst: '', 
+                  { isContact: false, sort : '성인', nameKo: '', nameLast: '', nameFirst: '', 
                     birth: '', gender: '남', nation: '한국', passportNum: '', passportDate: '', residentNum : '', phone: ''
                   }]);
               }}
@@ -622,7 +694,7 @@ export default function ReservePage (props : any) {
           <div className="bottombar"></div>
           <div className='content'>
             <div className="coverbox titlerow">
-              <TitleBox width='3%' text='NO'/>
+              <TitleBox width='3%' text='컨택공제'/>
               <TitleBox width='5%' text='구분'/>
               <TitleBox width='7%' text='이름'/>
               <TitleBox width='5%' text={`Last.N`}/>
@@ -641,7 +713,17 @@ export default function ReservePage (props : any) {
 
                 return(
                   <div className="coverbox info" key={index}>
-                    <p style={{width:'3%'}}>{item.userNum}</p>
+                    <div style={{width:'3%'}}>
+                      <input className="input" type="checkbox"
+                        checked={item.isContact}
+                        onChange={()=>{
+                          const copy = [...userInfo];
+                          copy[index].isContact = !copy[index].isContact;
+                          setUserInfo(copy);
+                        }}
+                        style={{width:'20px', height:'20px'}}
+                      />
+                    </div>
                     <DropdownBox
                       widthmain='5%'
                       height='35px'
@@ -681,7 +763,7 @@ export default function ReservePage (props : any) {
                     <div style={{width:'3%', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}
                       className='minus-btn-box' onClick={()=>{
                           const copy = [...userInfo];
-                          const filter = copy.filter((e:any)=> e.userNum !== item.userNum );
+                          const filter = copy.filter((e:any)=> e.nameKo !== item.nameKo );
                           setUserInfo(filter);  
                         }} >
                       <CiCircleMinus className='minus-btn'/>
@@ -690,9 +772,40 @@ export default function ReservePage (props : any) {
                 )
               })
             }
-            
           </div>
-
+          <div className='content' style={{marginTop:'20px'}}>
+            <div className="coverbox titlerow">
+              <TitleBox width='33%' text='신부성함'/>
+              <TitleBox width='33%' text='생일'/>
+              <TitleBox width='33%' text='결혼기념일'/>
+            </div>
+            <div className="coverbox info">
+              <input style={{width:'33%'}}  value={userSubInfo.brideName} className="inputdefault" type="text" 
+                onChange={(e) => {
+                    const inputs = {...userSubInfo};
+                    inputs.brideName = e.target.value;
+                    setUserSubInfo(inputs);
+                }}/>
+              <div style={{width:'33%', display:'flex', justifyContent:'center'}}>
+                <DateBoxSingle date={userSubInfo.birthDate}
+                  setSelectDate={(e:any) => {
+                    const inputs = {...userSubInfo};
+                    inputs.birthDate = e;
+                    setUserSubInfo(inputs);
+                  }} 
+                />
+              </div>
+              <div style={{width:'33%', display:'flex', justifyContent:'center'}}>
+                <DateBoxSingle date={userSubInfo.weddingDate}
+                  setSelectDate={(e:any) => {
+                    const inputs = {...userSubInfo};
+                    inputs.weddingDate = e;
+                    setUserSubInfo(inputs);
+                  }} 
+                />  
+              </div>
+            </div>
+          </div>
         </section>
 
         <section>
@@ -722,7 +835,7 @@ export default function ReservePage (props : any) {
             </div>
             <div className="coverrow half">
               <TitleBox width='120px' text='담당자'/>
-              <h3 style={{marginLeft:'10px'}}>계약자</h3>
+              <p style={{marginLeft:'10px'}}>계약자</p>
               <DropdownBox
                 widthmain='20%'
                 height='35px'
@@ -735,7 +848,7 @@ export default function ReservePage (props : any) {
                   setCharger(copy);
                 }}
               />
-              <h3 style={{marginLeft:'20px'}}>인수자</h3>
+              <p style={{marginLeft:'20px'}}>인수자</p>
               <DropdownBox
                 widthmain='20%'
                 height='35px'
@@ -814,7 +927,7 @@ export default function ReservePage (props : any) {
                   setProductInfo(copy);
                 }}
               />
-              <input style={{width:'40%'}}  value={productInfo.tourLocationDetail} className="inputdefault" type="text" 
+              <input style={{width:'20%'}}  value={productInfo.tourLocationDetail} className="inputdefault" type="text" 
                 onChange={(e) => {
                   const copy = {...productInfo}
                   copy.tourLocationDetail = e.target.value;
@@ -822,55 +935,8 @@ export default function ReservePage (props : any) {
                 }}/>
             </div>
           </div>
-          {       
-            productInfo.landCompany.map((item:any, index:any)=>{
-              return (
-                <div className="coverbox">
-                  <div className="coverrow hole">
-                    <TitleBox width="120px" text={landCompany.length > 1 ? `랜드사${index+1}` : '랜드사'}/>
-                    <DropdownBox
-                      widthmain='30%' height='35px' selectedValue={item.companyName}
-                      options={DropDownLandCompany}    
-                      handleChange={(e)=>{
-                        const copy = {...productInfo}
-                        copy.landCompany[index].companyName = e.target.value;
-                        setProductInfo(copy);
-                        const inputs = [...landCompany]; 
-                        inputs[index].companyName = e.target.value; 
-                        setLandCompany(inputs);
-                      }}
-                    />
-                    <input style={{width:'20%', textAlign:'left', marginRight:'5px'}}
-                      value={item.notice} className="inputdefault" type="text" 
-                      onChange={(e) => {
-                        const copy = {...productInfo}
-                        copy.landCompany[index].notice = e.target.value;
-                        setProductInfo(copy);
-                        const inputs = [...landCompany]; 
-                        inputs[index].notice = e.target.value; 
-                        setLandCompany(inputs);
-                      }}/>      
-                    {
-                      productInfo.landCompany.length === index+1 &&
-                      <div className='addBtn'
-                        onClick={()=>{
-                          const copy = {...productInfo}
-                          copy.landCompany = [copy.landCompany[index], { companyName:'', notice:'' }];
-                          setProductInfo(copy);
-                          const copy2 = [...landCompany, { companyName:'', notice:'' }];
-                          setLandCompany(copy2);
-                        }}
-                      >
-                        랜드사추가
-                      </div>  
-                    }  
-                  </div>
-                </div>
-              )
-            })
-          }
           <div className="coverbox">
-            <div className="coverrow hole">
+            <div className="coverrow half">
               <TitleBox width="120px" text='여행상품'/>
               <input style={{width:'60%', marginLeft:'5px'}}  value={productName} className="inputdefault" type="text" 
                 onChange={(e) => {
@@ -878,6 +944,24 @@ export default function ReservePage (props : any) {
                   copy.productName = e.target.value;
                   setProductInfo(copy);
                   setProductName(e.target.value)
+                }}
+              />
+            </div>
+            <div className="coverrow half">
+              <TitleBox width="120px" text='상품타입'/>
+              <DropdownBox
+                widthmain='30%' height='35px' selectedValue={productInfo.productType}
+                options={[
+                  { value: '선택', label: '선택' },
+                  { value: '기본상품', label: '기본상품' },
+                  { value: '견적', label: '견적' },
+                  { value: '커스텀메이드', label: '커스텀메이드' },
+                  { value: '커스텀오더', label: '커스텀오더' }
+                ]}       
+                handleChange={(e)=>{
+                  const copy = {...productInfo}
+                  copy.productType = e.target.value;
+                  setProductInfo(copy);
                 }}
               />
             </div>
@@ -908,6 +992,7 @@ export default function ReservePage (props : any) {
                 }} 
                 setSelectEndDate={(e:any)=>{
                   const copy = {...productInfo}
+                  copy.tourStartPeriod = e;
                   copy.tourEndPeriod = e;
                   setProductInfo(copy);
                 }} 
@@ -922,7 +1007,7 @@ export default function ReservePage (props : any) {
                   <div className="coverrow hole">
                     <TitleBox width="120px" text={productInfo.airline.length > 1 ? `항공사${index+1}` : '항공사'}/>
                     <DropdownBox
-                      widthmain='30%' height='35px' 
+                      widthmain='20%' height='35px' 
                       selectedValue={item}
                       options={DropDownAirline}    
                       handleChange={(e)=>{
@@ -948,61 +1033,218 @@ export default function ReservePage (props : any) {
               )
             })
           }
+          {       
+            productInfo.landCompany.map((item:any, index:any)=>{
+              return (
+                <div className="coverbox">
+                  <div className="coverrow hole">
+                    <TitleBox width="120px" text={productInfo.landCompany.length > 1 ? `랜드사${index+1}` : '랜드사'}/>
+                    <DropdownBox
+                      widthmain='20%' height='35px' selectedValue={item.companyName}
+                      options={DropDownLandCompany}    
+                      handleChange={(e)=>{
+                        const copy = {...productInfo}
+                        copy.landCompany[index].companyName = e.target.value;
+                        setProductInfo(copy);
+                        const inputs = [...landCompany]; 
+                        inputs[index] = e.target.value; 
+                        setLandCompany(inputs);
+                      }}
+                    />
+                    {
+                      productInfo.landCompany.length === index+1 &&
+                      <div className='addBtn'
+                        onClick={()=>{
+                          const copy = {...productInfo}
+                          copy.landCompany = [...copy.landCompany, { companyName:'', costList:[{currency:"원", cost:""}]}];
+                          setProductInfo(copy);
+                          const copy2 = [...landCompany, { companyName:'', notice:'' }];
+                          setLandCompany(copy2);
+                        }}
+                      >
+                        랜드사추가
+                      </div>  
+                    }  
+                  </div>
+                  <div className="coverrow hole">
+                    <TitleBox width="120px" text='지상비'/>
+                    <div style={{width:'80%'}}>
+                    {
+                      item.costList.map((subItem:any, subIndex:any)=>{
+                        return (
+                          <div style={{width:'80%', display:'flex', alignItems:'center' }} key={subIndex}>
+                            <p style={{marginLeft:'10px'}}>{`지상비${subIndex+1}:`}</p>
+                            <DropdownBox
+                              widthmain='15%' height='35px' selectedValue={subItem.currency}
+                              options={[
+                                { value: '원', label: '원' },
+                                { value: '달러', label: '달러' }
+                              ]}
+                              handleChange={(e)=>{
+                                const copy = {...productInfo};
+                                copy.landCompany[index].costList[subIndex].currency = e.target.value;
+                                setProductInfo(copy);
+                              }}
+                            />
+                            <input style={{width:'30%', textAlign:'right', marginRight:'5px'}}
+                              value={subItem.cost} className="inputdefault" type="text" 
+                              onChange={(e) => {
+                                const copy = {...productInfo}
+                                const text = e.target.value;
+                                const inputNumber = parseInt(text.replace(/,/g, ''));
+                                const formattedNumber = inputNumber.toLocaleString('en-US');
+                                if (isNaN(inputNumber)) {
+                                  return;
+                                }
+                                copy.landCompany[index].costList[subIndex].cost = formattedNumber;
+                                setProductInfo(copy);
+                              }}/>
+                            {
+                              productInfo.landCompany[index].costList.length === subIndex+1 &&
+                              <div className='addBtn'
+                                onClick={()=>{
+                                  const copy = {...productInfo};
+                                  copy.landCompany[index].costList = [...copy.landCompany[index].costList, {currency:"원", cost:""}]
+                                  setProductInfo(copy);
+                                }}
+                              >
+                                지상비추가
+                              </div>  
+                            } 
+                          </div>
+                        )
+                      })
+                    }
+                    </div> 
+                  </div>
+                </div>
+              )
+            })
+          }
           <div className="coverbox">
             <div className="coverrow half">
               <TitleBox width="120px" text='1인요금' height={160}/>
               <div style={{flex:1}}>
-                <div style={{display:'flex', alignItems:'center'}}>
-                  <h3 style={{margin:'0 10px'}}>성인</h3>
-                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={productInfo.costAdult} className="inputdefault" type="text" 
-                    onChange={(e) => {handleProductInfoCostChange(e, 'costAdult')}}/>
-                  <p style={{marginRight:'10px'}}>원</p>
-                  <DropdownBox
-                    widthmain='20%' height='35px' selectedValue={productInfo.costAdultNum}
-                    options={DropDownNum}    
-                    handleChange={(e)=>{handlePersonNumChange(e, 'costAdultNum')}}
-                  />
-                  <p>명</p>
-                </div>
-                <div style={{display:'flex', alignItems:'center'}}>
-                  <h3 style={{margin:'0 10px'}}>소아</h3>
-                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={productInfo.costChild} className="inputdefault" type="text" 
-                    onChange={(e) => {handleProductInfoCostChange(e, 'costChild')}}/>
-                  <p style={{marginRight:'10px'}}>원</p>
-                  <DropdownBox
-                    widthmain='20%' height='35px' selectedValue={productInfo.costChildNum}
-                    options={DropDownNum}    
-                    handleChange={(e)=>{handlePersonNumChange(e, 'costChildNum')}}
-                  />
-                  <p>명</p>
-                </div>
-                <div style={{display:'flex', alignItems:'center'}}>
-                  <h3 style={{margin:'0 10px'}}>유아</h3>
-                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={productInfo.costInfant} className="inputdefault" type="text" 
-                    onChange={(e) => {handleProductInfoCostChange(e, 'costInfant')}}/>
-                  <p style={{marginRight:'10px'}}>원</p>
-                  <DropdownBox
-                    widthmain='20%' height='35px' selectedValue={productInfo.costInfantNum}
-                    options={DropDownNum}    
-                    handleChange={(e)=>{handlePersonNumChange(e, 'costInfantNum')}}
-                  />
-                  <p>명</p>
-                </div>
+                {
+                  productInfo.personalCost.map((item:any, index:any)=>{
+                    return (
+                    <div style={{display:'flex', alignItems:'center'}} key={index}>
+                      <DropdownBox
+                        widthmain='15%' height='35px' selectedValue={item.currency}
+                        options={[
+                          { value: '원', label: '원' },
+                          { value: '달러', label: '달러' }
+                        ]}
+                        handleChange={(e)=>{
+                          const copy = {...productInfo};
+                          copy.personalCost[index].currency = e.target.value;
+                          setProductInfo(copy);
+                        }}
+                      />
+                      <p style={{margin:'0 10px'}}>{item.sort}</p>
+                      <input style={{width:'30%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={item.cost} className="inputdefault" type="text" 
+                        onChange={(e) => {handleProductInfoCostChange(e, index)}}/>
+                      <p style={{marginRight:'10px'}}>원</p>
+                      <DropdownBox
+                        widthmain='15%' height='35px' selectedValue={item.num}
+                        options={DropDownNum}    
+                        handleChange={(e)=>{handleProductInfoNumChange(e, index)}}
+                      />
+                      <p>명</p>
+                    </div>
+                    )
+                  })
+                }
               </div>
             </div>
             <div className="coverrow half">
               <TitleBox width="120px" text='전체요금' height={160}/>
-              <input style={{width:'40%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={productInfo.costAll} className="inputdefault" type="text" 
-                  onChange={(e) => {handleProductInfoCostChange(e, 'costAll')}}/>
+              <input style={{width:'40%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={productInfo.personalCostAll} className="inputdefault" type="text" 
+                  onChange={(e) => {
+                    const text = e.target.value;
+                    const copy = {...productInfo}
+                    if (text === '') {
+                      copy.personalCostAll = '';
+                      setProductInfo(copy);
+                    }
+                    const inputNumber = parseInt(text.replace(/,/g, ''));
+                    if (isNaN(inputNumber)) {
+                      return;
+                    }
+                    const formattedNumber = inputNumber.toLocaleString('en-US');
+                    copy.personalCostAll = formattedNumber;
+                    setProductInfo(copy);
+                  }}/>
               <p>원</p>
             </div>
           </div>
           <div className="coverbox">
-            <div className="coverrow hole">
-              <TitleBox width="120px" text='계약당시 환율'/>
+            <div className="coverrow half">
+              <TitleBox width="120px" text='환율타입구분'/>
+              <div style={{marginLeft: '1px', display:'flex', alignItems:'center'}}>
+                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                  <input className="input" type="checkbox"
+                    checked={productInfo.exchangeRate.rateType === '환율변동상품'}
+                    onChange={()=>{
+                      const copy = {...productInfo};
+                      copy.exchangeRate.rateType = '환율변동상품';
+                      setProductInfo(copy);
+                    }}
+                    style={{width:'20px', height:'20px'}}
+                  />
+                </div>
+                <p style={{marginRight:'10px'}}>환율변동상품</p>
+                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                  <input className="input" type="checkbox"
+                    checked={productInfo.exchangeRate.rateType === '환율고정상품'}
+                    onChange={()=>{
+                      const copy = {...productInfo};
+                      copy.exchangeRate.rateType = '환율고정상품';
+                      setProductInfo(copy);
+                    }}
+                    style={{width:'20px', height:'20px'}}
+                  />
+                </div>
+                <p>환율고정상품</p>
+              </div>
+            </div>
+            <div className="coverrow half">
+              <TitleBox width="120px" text='환율공지'/>
+              <p style={{marginLeft:'20px'}}># 잔금지불시 변동환율 적용여부 공지</p>
+              <div style={{marginLeft: '10px', display:'flex', alignItems:'center'}}>
+                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                  <input className="input" type="checkbox"
+                    checked={productInfo.exchangeRate.isNotice}
+                    onChange={()=>{
+                      const copy = {...productInfo};
+                      copy.exchangeRate.isNotice = !productInfo.exchangeRate.isNotice;
+                      setProductInfo(copy);
+                    }}
+                    style={{width:'20px', height:'20px'}}
+                  />
+                </div>
+                <p>공지했음</p>
+                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                  <input className="input" type="checkbox"
+                    checked={productInfo.exchangeRate.isClientCheck}
+                    onChange={()=>{
+                      const copy = {...productInfo};
+                      copy.exchangeRate.isClientCheck = !productInfo.exchangeRate.isClientCheck;
+                      setProductInfo(copy);
+                    }}
+                    style={{width:'20px', height:'20px'}}
+                  />
+                </div>
+                <p>고객확인</p>
+              </div>
+            </div>
+          </div>
+          <div className="coverbox">
+            <div className="coverrow half">
+              <TitleBox width="120px" text='고지환율'/>
               <DropdownBox 
-                widthmain='10%' height='35px' 
-                selectedValue={base}
+                widthmain='20%' height='35px' 
+                selectedValue={noticeBase}
                 options={[
                   { value: 'USD', label: '미국 1 USD' },
                   { value: 'EUR', label: '유럽 1 EUR' },
@@ -1011,38 +1253,35 @@ export default function ReservePage (props : any) {
                 ]}   
                 marginHorisontal={10}
                 handleChange={(e)=>{
-                  setBase(e.target.value);
+                  handleNoticeExchangeRate(e.target.value);
                 }}
               />
-              <input style={{width:'10%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={recoilExchangeRateCopy[0].KRW} className="inputdefault" type="text" 
-                    onChange={()=>{}}/>
-              <p style={{marginLeft:'20px'}}># 잔금지불시 변동환율 적용여부 공지</p>
-              <div style={{marginLeft: '30px', display:'flex', alignItems:'center'}}>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={productInfo.isNotice}
-                    onChange={()=>{
-                      setProductInfo(prev => ({
-                        ...prev, isNotice : !productInfo.isNotice,
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>공지했음</p>
-                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                  <input className="input" type="checkbox"
-                    checked={productInfo.isClientCheck}
-                    onChange={()=>{
-                      setProductInfo(prev => ({
-                        ...prev, isClientCheck : !productInfo.isClientCheck,
-                      }));
-                    }}
-                    style={{width:'20px', height:'20px'}}
-                  />
-                </div>
-                <p>고객확인</p>
-              </div>
+              <input style={{width:'20%', textAlign:'right', paddingRight:'5px'}}  value={productInfo.exchangeRate.noticeRate} className="inputdefault" type="text" />
+            </div>
+            <div className="coverrow half">
+              <TitleBox width="120px" text='잔금지급시환율'/>
+              <DateBoxSingle date={productInfo.exchangeRate.restDepositDate} marginLeft={5}
+                setSelectDate={(e:any) => {
+                  const copy = {...productInfo};
+                  copy.exchangeRate.restDepositDate = e;
+                  setProductInfo(copy);
+                }} 
+              />
+              <DropdownBox 
+                widthmain='20%' height='35px' 
+                selectedValue={restDepositBase}
+                options={[
+                  { value: 'USD', label: '미국 1 USD' },
+                  { value: 'EUR', label: '유럽 1 EUR' },
+                  { value: 'JPY', label: '일본 1 JYP' },
+                  { value: 'THB', label: '태국 1 THB' },
+                ]}   
+                marginHorisontal={10}
+                handleChange={(e)=>{
+                  handleRestDepositExchangeRate(e.target.value);
+                }}
+              />
+              <input style={{width:'20%', textAlign:'right', paddingRight:'5px'}}  value={productInfo.exchangeRate.restDepositRate} className="inputdefault" type="text" />
             </div>
           </div>
         </section>
@@ -1245,30 +1484,28 @@ export default function ReservePage (props : any) {
                   </div>
                   <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
                     <TitleBox width="30%" text='발권완료확인'/>
-                    <div style={{marginLeft: '30px', display:'flex', alignItems:'center', justifyContent:'flex-start'}}>
-                      <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                        <input className="input" type="checkbox"
-                          checked={item.isTicketing}
-                          onChange={()=>{
-                            const inputs = {...airlineReserveState}; 
-                            if (item.isTicketing) {
-                              inputs.ticketingState[index].isTicketing = false;
-                              setAirlineReserveState(inputs);
-                            } else {
-                              inputs.ticketingState[index].isTicketing = true;
-                              setAirlineReserveState(inputs);
-                            }
-                          }}
-                          style={{width:'20px', height:'20px'}}
-                        />
-                      </div>
+                    <div style={{width:'50%', marginLeft: '30px', display:'flex', alignItems:'center', justifyContent:'flex-start'}}>
+                      <DropdownBox 
+                        widthmain='100%' height='35px' 
+                        selectedValue={item.ticketing}
+                        options={[
+                          { value: '예약', label: '예약' },
+                          { value: '발권', label: '발권' }
+                        ]}   
+                        marginHorisontal={10}
+                        handleChange={(e)=>{
+                          const inputs = {...airlineReserveState}; 
+                          inputs.ticketingState[index].ticketing = e.target.value;
+                          setAirlineReserveState(inputs);
+                        }}
+                      />
                     </div>
                     <div style={{width:'20%', display:'flex', justifyContent:'center'}}>
                       <div className='btn-row' style={{marginRight:'5px'}}
                         onClick={()=>{
                           const copy = {...airlineReserveState};
                           copy.ticketingState = [...copy.ticketingState, 
-                          { ticketBooth: '', ticketCost:'', date: '', isTicketing: false }]
+                          { ticketBooth: '', ticketCost:'', date: '', ticketing: '' }]
                           setAirlineReserveState(copy)
                         }}
                       >
@@ -1449,48 +1686,56 @@ export default function ReservePage (props : any) {
             <div className="coverrow third rightborder">
               <TitleBox width="120px" text='1인요금' height={160}/>
               <div style={{flex:1}}>
-                <div style={{display:'flex', alignItems:'center'}}>
-                  <h3 style={{margin:'0 10px'}}>성인</h3>
-                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={depositCostInfo.personalCost.costAdult} className="inputdefault" type="text" 
-                    onChange={(e) => {handleDepositPersonalCostChange(e, 'costAdult')}}/>
-                  <p style={{marginRight:'10px'}}>원</p>
-                  <DropdownBox
-                    widthmain='20%' height='35px' selectedValue={depositCostInfo.personalCost.costAdultNum}
-                    options={DropDownNum}    
-                    handleChange={(e)=>{handleDepositNumChange(e, 'costAdultNum')}}
-                  />
-                  <p>명</p>
-                </div>
-                <div style={{display:'flex', alignItems:'center'}}>
-                  <h3 style={{margin:'0 10px'}}>소아</h3>
-                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={depositCostInfo.personalCost.costChild} className="inputdefault" type="text" 
-                    onChange={(e) => {handleDepositPersonalCostChange(e, 'costChild')}}/>
-                  <p style={{marginRight:'10px'}}>원</p>
-                  <DropdownBox
-                    widthmain='20%' height='35px' selectedValue={depositCostInfo.personalCost.costChildNum}
-                    options={DropDownNum}    
-                    handleChange={(e)=>{handleDepositNumChange(e, 'costChildNum')}}
-                  />
-                  <p>명</p>
-                </div>
-                <div style={{display:'flex', alignItems:'center'}}>
-                  <h3 style={{margin:'0 10px'}}>유아</h3>
-                  <input style={{width:'40%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={depositCostInfo.personalCost.costInfant} className="inputdefault" type="text" 
-                    onChange={(e) => {handleDepositPersonalCostChange(e, 'costInfant')}}/>
-                  <p style={{marginRight:'10px'}}>원</p>
-                  <DropdownBox
-                    widthmain='20%' height='35px' selectedValue={depositCostInfo.personalCost.costInfantNum}
-                    options={DropDownNum}    
-                    handleChange={(e)=>{handleDepositNumChange(e, 'costInfantNum')}}
-                  />
-                  <p>명</p>
-                </div>
+                {
+                  depositCostInfo.personalCost.map((item:any, index:any)=>{
+                    return (
+                    <div style={{display:'flex', alignItems:'center'}} key={index}>
+                      <DropdownBox
+                        widthmain='15%' height='35px' selectedValue={item.currency}
+                        options={[
+                          { value: '원', label: '원' },
+                          { value: '달러', label: '달러' }
+                        ]}
+                        handleChange={(e)=>{
+                          const copy = {...depositCostInfo};
+                          copy.personalCost[index].currency = e.target.value;
+                          setDepositCostInfo(copy);
+                        }}
+                      />
+                      <p style={{margin:'0 10px'}}>{item.sort}</p>
+                      <input style={{width:'35%', textAlign:'right', paddingRight:'5px', marginRight:'3px'}}  value={item.cost} className="inputdefault" type="text" 
+                        onChange={(e) => {handleDepositPersonalCostChange(e, index)}}/>
+                      <p style={{marginRight:'10px'}}>원</p>
+                      <DropdownBox
+                        widthmain='15%' height='35px' selectedValue={item.num}
+                        options={DropDownNum}    
+                        handleChange={(e)=>{handleDepositPersonalNumChange(e, index)}}
+                      />
+                      <p>명</p>
+                    </div>
+                    )
+                  })
+                }
               </div>
             </div>
             <div className="coverrow third rightborder">
               <TitleBox width="120px" text='총요금' height={160}/>
-              <input style={{width:'50%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={depositCostInfo.personalCost.costAll} className="inputdefault" type="text" 
-                  onChange={(e) => {handleDepositPersonalCostChange(e, 'costAll')}}/>
+              <input style={{width:'50%', textAlign:'right', paddingRight:'5px', margin:'0 5px'}}  value={depositCostInfo.personalCostAll} className="inputdefault" type="text" 
+                  onChange={(e) => {
+                    const text = e.target.value;
+                    const copy = {...depositCostInfo}
+                    if (text === '') {
+                      copy.personalCostAll = '';
+                      setDepositCostInfo(copy);
+                    }
+                    const inputNumber = parseInt(text.replace(/,/g, ''));
+                    if (isNaN(inputNumber)) {
+                      return;
+                    }
+                    const formattedNumber = inputNumber.toLocaleString('en-US');
+                    copy.personalCostAll = formattedNumber;
+                    setDepositCostInfo(copy);
+                  }}/>
               <p>원</p>
             </div>
             <div className="coverrow third" style={{flexDirection:'column', alignItems:'start'}}>
@@ -1540,12 +1785,12 @@ export default function ReservePage (props : any) {
               <p>원</p>
             </div>
             <div className="coverrow third rightborder defaultBox">
-              <h3 style={{marginRight:'20px'}}>추가경비:</h3>
-              <h3 style={{fontSize:'20px'}}>{depositCostInfo.additionCost[0].cost} 원</h3>
+              <p style={{marginRight:'20px'}}>추가경비:</p>
+              <p style={{fontSize:'20px'}}>{depositCostInfo.additionCost[0].cost} 원</p>
             </div>
             <div className="coverrow third defaultBox" >
-              <h3 style={{marginRight:'20px'}}>최종 여행경비:</h3>
-              <h3 style={{fontSize:'20px'}}>{depositCostInfo.totalCost} 원</h3>
+              <p style={{marginRight:'20px'}}>최종 여행경비:</p>
+              <p style={{fontSize:'20px'}}>{depositCostInfo.totalCost} 원</p>
             </div>
           </div>
         
@@ -1855,7 +2100,7 @@ export default function ReservePage (props : any) {
             <div className="coverrow hole">
               <TitleBox width='120px' text='밸런스'/>
               <div style={{margin:'0 10px', display:'flex', alignItems:'center'}}>
-                <h3 style={{marginRight:'10px', color:"#3a9fe5"}}>{depositCostInfo.ballance === 'NaN' ? 0 : depositCostInfo.ballance}%</h3>
+                <p style={{marginRight:'10px', color:"#3a9fe5"}}>{depositCostInfo.ballance === 'NaN' ? 0 : depositCostInfo.ballance}%</p>
                 <p style={{fontSize:'12px'}}>= (계약금+항공료+중도금+잔금) / 계약금액 x 100</p>
               </div>
             </div>
@@ -1888,21 +2133,21 @@ export default function ReservePage (props : any) {
                 </div>
                 <p>지출증빙</p>
               </div>
-              <h3 style={{marginLeft:'50px'}}>전화/사업자번호:</h3>
+              <p style={{marginLeft:'50px'}}>전화/사업자번호:</p>
               <input style={{width:'15%', marginLeft:'5px'}}  value={depositCostInfo.cashBillInfo.userNum} className="inputdefault" type="text" 
                 onChange={(e) => {
                   const copy = {...depositCostInfo}
                   copy.cashBillInfo.userNum = e.target.value;
                   setDepositCostInfo(copy);
                 }}/>
-              <h3 style={{marginLeft:'50px'}}>인증번호:</h3>
+              <p style={{marginLeft:'50px'}}>인증번호:</p>
               <input style={{width:'15%', marginLeft:'5px'}}  value={depositCostInfo.cashBillInfo.authNum} className="inputdefault" type="text" 
                 onChange={(e) => {
                   const copy = {...depositCostInfo}
                   copy.cashBillInfo.authNum = e.target.value;
                   setDepositCostInfo(copy);
                 }}/>  
-              <h3 style={{marginLeft:'30px'}}>발급일:</h3>
+              <p style={{marginLeft:'30px'}}>발급일:</p>
                 <DateBoxSingle date={depositCostInfo.cashBillInfo.date} marginLeft={1}
                   setSelectDate={(e:any)=>{
                     const copy = {...depositCostInfo}

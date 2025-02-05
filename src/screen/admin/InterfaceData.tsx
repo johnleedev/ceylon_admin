@@ -22,7 +22,7 @@ export interface WorkStateProps {
 }
 
 export interface UserInfoProps {
-    userNum : number;
+    isContact : boolean;
     sort : string, 
     nameKo: string, 
     nameLast: string, 
@@ -34,6 +34,12 @@ export interface UserInfoProps {
     passportDate: string,
     residentNum : string, 
     phone: string
+  }
+
+export interface UserSubInfoProps {
+    brideName : string;
+    birthDate : string;
+    weddingDate : string;
   }
   
 export interface VisitPathInfoProps {
@@ -49,25 +55,18 @@ export interface ProductInfoProps {
     tourLocation : string,
     tourLocationDetail : string,
     productName : string,
+    productType : string,
     airline : string[],
     landCompany : {
       companyName: string,
-      notice: string
+      costList: {currency:string, cost:string}[],
     }[],
     tourStartAirport : string,
     tourStartPeriod : string,
-    tourEndAirport : string,
     tourEndPeriod : string,
-    costAdult: string;
-    costAdultNum: number;
-    costChild: string;
-    costChildNum : number;
-    costInfant: string;
-    costInfantNum: number;
-    costAll: string;
-    reserveExchangeRate : number;
-    isNotice: boolean;
-    isClientCheck: boolean;
+    personalCost : {sort:string, num : number, cost:string, currency:string }[],
+    personalCostAll: string,
+    exchangeRate : {rateType:string, isNotice: boolean, isClientCheck: boolean, noticeRate : string, restDepositDate : string, restDepositRate: string }
   }
 
 export interface AirlineReserveStateProps {
@@ -87,7 +86,7 @@ export interface AirlineReserveStateProps {
     ticketBooth : string;
     ticketCost : string;
     date : string;
-    isTicketing : boolean
+    ticketing : string;
   }[]
 }
 
@@ -116,7 +115,8 @@ export interface EtcStateProps {
 export interface DepositCostInfoProps { 
     tourTotalContractCost : string; 
     costListSum : string;
-    personalCost : {costAdult: string, costAdultNum: number, costChild: string, costChildNum : number, costInfant: string, costInfantNum: number, costAll: string},
+    personalCost : {sort:string, num : number, cost:string, currency:string }[],
+    personalCostAll: string,
     freeGift : string,
     savedMoney : string, 
     discountCost: string, 
@@ -156,3 +156,42 @@ export interface TaxFreeLimitProps {
   notice : string;
 };
 
+// 휴양지 항공
+interface RestAirlineDataProps {
+  sort : string;
+  airlineName: string;
+  departDate: string[];
+  planeName: string;
+  departAirport: string;
+  departTime: string;
+  arriveAirport: string;
+  arriveTime: string;
+}
+export interface RestAirlineProps {
+  id : string;
+  tourPeriodNight: string;
+  tourPeriodDay: string;
+  departAirportMain : string;
+  departAirline: string;
+  airlineData: RestAirlineDataProps[];
+}   
+
+// 관광지 항공
+interface TourAirlineDataProps {
+  sort : string;
+  airlineName: string;
+  departDate: string[];
+  planeName: string;
+  departAirport: string;
+  departTime: string;
+  arriveAirport: string;
+  arriveTime: string;
+}
+export interface TourAirlineProps {
+  id : string;
+  departAirportMain : string;
+  departAirline: string;
+  departTime: string;
+  codeShare: string;
+  airlineData: TourAirlineDataProps[];
+}   

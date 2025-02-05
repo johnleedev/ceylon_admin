@@ -41,6 +41,7 @@ export const DateBoxDouble : React.FC<DateBoxDoubleProps> = ({dateStart, dateEnd
 
       setSelectStartDate(reformmedStartText);
       setSelectEndDate(reformmedEndText);
+
     }
 
   }

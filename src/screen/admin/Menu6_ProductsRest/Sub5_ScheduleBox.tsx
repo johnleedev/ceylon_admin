@@ -187,11 +187,10 @@ export default function Sub5_ScheduleBox (props:any) {
 				<div className="main-list-cover">
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
-						<TitleList width='7%' text='구분'/>
-						<TitleList width='7%' text='선택일정'/>
+						<TitleList width='10%' text='종류'/>
 						<TitleList width='10%' text='국가'/>
 						<TitleList width='10%' text='도시'/>
-						<TitleList width='16%' text='여행지명'/>
+						<TitleList width='10%' text='여행지명'/>
 						<TitleList width='10%' text='여행지명(서브)'/>
 						<TitleList width='10%' text='수정일'/>
 						<TitleList width='10%' text=''/>
@@ -206,11 +205,10 @@ export default function Sub5_ScheduleBox (props:any) {
 									}}
 								>
 									<TextBox width='3%' text={item.id} />
-									<TextBox width='7%' text={item.isViaSort} />
-									<TextBox width='7%' text={item.sort} />
+									<TextBox width='10%' text={item.sort} />
 									<TextBox width='10%' text={item.nation} />
 									<TextBox width='10%' text={item.city} />
-									<TextBox width='16%' text={item.location} />
+									<TextBox width='10%' text={item.location} />
 									<TextBox width='10%' text={item.subLocation}/>
 									<TextBox width='10%' text={item.date.slice(0,10)} />
 									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>

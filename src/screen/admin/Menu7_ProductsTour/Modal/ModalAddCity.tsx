@@ -16,6 +16,7 @@ import { IoClose } from 'react-icons/io5';
 import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti';
 import { BiSolidRightArrowAlt, BiSolidLeftArrowAlt, BiSolidArrowToRight, BiSolidArrowFromLeft, BiSolidArrowToLeft, BiSolidArrowFromRight } from "react-icons/bi";
 import { FiMinusCircle } from "react-icons/fi";
+import { TourAirlineProps } from '../../InterfaceData';
 
 export default function ModalAddCity (props : any) {
 	
@@ -222,35 +223,9 @@ export default function ModalAddCity (props : any) {
   };
 
   // 항공편 입력 ------------------------------------------------------------------------------------------------------------------------------------------
-  const [airlineSelectInput, setAirlineSelectInput] = useState('direct');
-  interface AirlineProps {
-    sort : string;
-    airlineName: string;
-    departDate: string[];
-    planeName: string;
-    departAirport: string;
-    departTime: string;
-    arriveAirport: string;
-    arriveTime: string;
-  }
-  interface DirectProps {
-    id : string;
-    tourPeriodNight: string;
-    tourPeriodDay: string;
-    departAirportMain : string;
-    departAirline: string;
-    airlineData: AirlineProps[];
-  }   
-  interface ViaProps {
-    id : string;
-    tourPeriodNight: string;
-    tourPeriodDay: string;
-    departAirportMain : string;
-    departAirline: string;
-    airlineData: AirlineProps[];
-  }   
-  const [directAirline, setDirectAirline] = useState<DirectProps[]>( isAddOrRevise === 'revise' ? props.directAirlineData : [] )
-  const [viaAirline, setViaAirline] = useState<ViaProps[]>( isAddOrRevise === 'revise' ? props.viaAirlineData : [] )
+  const [airlineSelectInput, setAirlineSelectInput] = useState('oneway');
+  const [onewayAirline, setOnewayAirline] = useState<TourAirlineProps[]>( isAddOrRevise === 'revise' ? props.onewayAirlineData : [] )
+  const [roundAirline, setRoundAirline] = useState<TourAirlineProps[]>( isAddOrRevise === 'revise' ? props.roundAirlineData : [] )
 
   // 항공편 내용변경
   const handleAirlineContentChange = (text:any, useState:any, setUseState:any, index:any, subIndex:any, name:any) => {
@@ -261,7 +236,7 @@ export default function ModalAddCity (props : any) {
 
   // 항공편 (직항) 저장 함수 ----------------------------------------------
   const registerAirline = async (sort:string, item:any) => {
-    const postPromise = axios.post(`${MainURL}/tournationcity/registerairline`, {
+    axios.post(`${MainURL}/tournationcity/registerairline`, {
       nation : nation,
       city : cityKo,
       sort : sort,
@@ -297,14 +272,14 @@ export default function ModalAddCity (props : any) {
 			.then((res) => {
 				if (res.data) {
 					alert('삭제되었습니다.');
-          if (sort === 'direct') {
-            const copy = [...directAirline];
+          if (sort === 'oneway') {
+            const copy = [...onewayAirline];
             const filtered = copy.filter((e:any)=> e.departAirline !== item.departAirline);
-            setDirectAirline(filtered);
+            setOnewayAirline(filtered);
           } else {
-            const copy = [...viaAirline];
+            const copy = [...roundAirline];
             const filtered = copy.filter((e:any)=> e.departAirline !== item.departAirline);
-            setViaAirline(filtered);
+            setRoundAirline(filtered);
           }
 					props.setRefresh(!props.refresh);
           props.setIsViewAddCityModal(false);
@@ -367,7 +342,6 @@ export default function ModalAddCity (props : any) {
       axios.post(`${MainURL}/tournationcity/registertraffic`, {
         nation : nation,
         city : cityKo,
-        cityId : cityData.id,
         airport : JSON.stringify(airportCopy[0].trafficList),
         station : JSON.stringify(stationCopy[0].trafficList),
         terminal : JSON.stringify(terminalCopy[0].trafficList),
@@ -390,14 +364,14 @@ export default function ModalAddCity (props : any) {
 
   // common style
   const verticalBar40 = {width:'1px', minHeight:'40px', backgroundColor:'#d4d4d4'};
-  
+
+   
   return (
     <div className='modal-addinput'>
 
       <div className='close'>
         <div className='close-btn'
           onClick={()=>{
-            props.setRefresh(!props.refresh);
             props.setIsViewAddCityModal(false);
           }} 
         >
@@ -619,7 +593,6 @@ export default function ModalAddCity (props : any) {
       <div className='btn-box'>
         <div className="btn" 
           onClick={()=>{
-            props.setRefresh(!props.refresh);
             props.setIsViewAddCityModal(false);
           }}
         >
@@ -627,7 +600,11 @@ export default function ModalAddCity (props : any) {
         </div>
         <div className="btn" style={{backgroundColor:'#5fb7ef'}}
           onClick={()=>{
-            isAddOrRevise === 'revise' ? reviseCity() : registerCity();
+            if (cityKo === '') {
+              alert('도시 이름을 입력해주세요.')
+            } else {
+              isAddOrRevise === 'revise' ? reviseCity() : registerCity();
+            }
           }}
         >
           <p>도시 정보 저장</p>
@@ -637,585 +614,13 @@ export default function ModalAddCity (props : any) {
 
       <div style={{height:'50px'}}></div>
 
-      {/* 항공편 입력 --------------------------------------------------------------------------------------------------------------- */}
-      <div className="modal-header">
-        <h1>항공편 입력</h1>
-      </div>
-      
-      <div className="selectInputBtnBox">
-        <div className="selectInputBtn"
-          onClick={()=>{setAirlineSelectInput('direct')}}
-          style={{backgroundColor: airlineSelectInput === 'direct' ? '#242d3f' : '#fff', 
-            color: airlineSelectInput === 'direct' ? '#fff' : '#333' }}
-        >직항</div>
-        <div className="selectInputBtn"
-          onClick={()=>{setAirlineSelectInput('via')}}
-          style={{backgroundColor: airlineSelectInput === 'via' ? '#242d3f' : '#fff', 
-            color: airlineSelectInput === 'via' ? '#fff' : '#333' }}
-        >경유</div>
-        <div className="selectInputBtn"
-          onClick={()=>{
-            if (airlineSelectInput === 'direct') {
-              const copy = [...directAirline]
-              if (copy.length === 0) {
-                setDirectAirline([...directAirline, 
-                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
-                    airlineData : [
-                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
-                    ]
-                  }]
-                )
-              } else {
-                const lastItem = copy[copy.length - 1];
-                setDirectAirline([...directAirline, 
-                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
-                    airlineData : [
-                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
-                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""}
-                    ]
-                  }]
-                )
-              }
-            } else if (airlineSelectInput === 'via') {
-              const copy = [...viaAirline];
-              if (copy.length === 0) { 
-                setViaAirline([...viaAirline,
-                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
-                    airlineData : [
-                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                      { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                      { sort:"viaDepart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                    ]
-                  }
-                ])
-              } else {
-                const lastItem = copy[copy.length - 1];
-                setViaAirline([...viaAirline,
-                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
-                    airlineData : [
-                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
-                      { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""},
-                      { sort:"viaDepart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[2].departAirport, departTime:"", arriveAirport:lastItem.airlineData[2].arriveAirport, arriveTime:""},
-                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[3].departAirport, departTime:"", arriveAirport:lastItem.airlineData[3].arriveAirport, arriveTime:""},
-                    ]
-                  }
-                ])
-              }
-              
-            }
-          }}
-          style={{width:'50px', backgroundColor: '#fff', color: '#333' }}
-        >+</div>
-      </div>
-
-      <div style={{marginBottom:'50px'}}>
-      {/* 직항 ----------------- */}
-      { 
-        airlineSelectInput === 'direct' &&
-        <section>
-          <div className="bottombar"></div>
-          <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-            <div className='chartbox' style={{width:'13%'}} ><p>기간</p></div>
-            <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'7%'}} ><p>출발공항</p></div>
-            <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'7%'}} ><p>출발편명</p></div>
-            <div className="chart-divider"></div>
-            <div style={{width:'68%', display:'flex'}}>
-              <div className='chartbox' style={{width:'3%'}} ><p></p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'15%'}} ><p>항공사</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'32%'}} ><p>출발요일</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'10%'}} ><p>편명</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'20%'}} ><p>구간</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'20%'}} ><p>시간</p></div>
-            </div>
-            <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'5%'}} ><p>저장</p></div>
-          </div>
-          
-          {
-            directAirline.map((item:any, index:any)=>{
-              return (
-                <div className="coverbox">
-                  <div className="coverrow hole">
-                    <div style={{width:'13%', display:'flex', alignItems:'center'}} >
-                      <div className='deleteRowBtn'
-                        onClick={()=>{
-                          if (item.id === '') {
-                            const copy = [...directAirline];
-                            const filtered = copy.filter((e:any, copyindex:any)=> copyindex !== index);
-                            setDirectAirline(filtered);
-                          } else {
-                            handleDeleteAlert(item, 'direct')
-                          }
-                        }}
-                        ><FiMinusCircle  color='#FF0000'/>
-                      </div>
-                      <DropdownBox
-                        widthmain='45%'
-                        height='35px'
-                        selectedValue={item.tourPeriodNight}
-                        options={DropDownTourPeriodNightType}    
-                        handleChange={(e)=>{
-                          const copy = [...directAirline];
-                          copy[index].tourPeriodNight = e.target.value;
-                          setDirectAirline(copy);
-                        }}
-                      />
-                      <DropdownBox
-                        widthmain='45%'
-                        height='35px'
-                        selectedValue={item.tourPeriodDay}
-                        options={DropDownTourPeriodDayType}    
-                        handleChange={(e)=>{
-                          const copy = [...directAirline];
-                          copy[index].tourPeriodDay = e.target.value;
-                          setDirectAirline(copy);
-                        }}
-                      />
-                    </div>
-                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'7%'}} >
-                      <DropdownBox
-                        widthmain='90%'
-                        height='35px'
-                        selectedValue={item.departAirportMain}
-                        options={[
-                          { value: '선택', label: '선택' },
-                          { value: '인천공항', label: '인천공항' },
-                          { value: '대구공항', label: '대구공항' },
-                          { value: '김해공항', label: '김해공항' }
-                        ]}    
-                        handleChange={(e)=>{
-                          const copy = [...directAirline];
-                          copy[index].departAirportMain = e.target.value;
-                          setDirectAirline(copy);
-                        }}
-                      />
-                    </div>
-                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'7%'}} >
-                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
-                        value={item.departAirline}
-                        onChange={(e)=>{
-                          const inputtext = e.target.value;
-                          const copy = [...directAirline];
-                          copy[index].departAirline = inputtext;
-                          copy[index].airlineData[0].planeName = inputtext;
-                          setDirectAirline(copy);
-                        }}/>
-                    </div>
-                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'68%'}} >
-                    {
-                      item.airlineData.map((subItem:any, subIndex:any)=>{
-                        return (
-                          <div style={{width:'100%', display:'flex', alignItems:'center'}} >
-                            <div style={{width:'3%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                              { subItem.sort === 'depart' && <BiSolidRightArrowAlt /> }
-                              { subItem.sort === 'arrive' && <BiSolidLeftArrowAlt /> }
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'15%'}} >
-                              <DropdownBox
-                                widthmain='90%'
-                                height='35px'
-                                selectedValue={subItem.airlineName}
-                                options={DropDownAirline}    
-                                handleChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'airlineName');}}
-                              />
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'32%'}} >
-                              <div className="dayBox">
-                                {
-                                  ['월', '화', '수', '목', '금', '토', '일'].map((dateItem:any, dateIndex:any)=>{
-                                    return (
-                                      <div className="dayBtn" key={dateIndex}
-                                      style={{backgroundColor:subItem.departDate.includes(dateItem) ? '#5fb7ef' : '#fff'}}
-                                        onClick={()=>{
-                                          const copy = [...directAirline]; 
-                                          if (copy[index].airlineData[subIndex].departDate.includes(dateItem)) {
-                                            const filteredDates = copy[index].airlineData[subIndex].departDate.filter(filterItem => filterItem !== dateItem);
-                                            copy[index].airlineData[subIndex].departDate = filteredDates;
-                                            setDirectAirline(copy);
-                                          } else {
-                                            copy[index].airlineData[subIndex].departDate.push(dateItem);
-                                            setDirectAirline(copy);
-                                          }
-                                        }}
-                                      ><p>{dateItem}</p></div>
-                                    )
-                                  })
-                                }
-                                <div className="dayBtn" 
-                                  style={{backgroundColor:'#ccc'}}
-                                  onClick={()=>{
-                                    const copy = [...directAirline]; 
-                                      copy[index].airlineData[subIndex].departDate = ['월', '화', '수', '목', '금', '토', '일'];
-                                      setDirectAirline(copy);
-                                  }}
-                                ><p>All</p></div>
-                              </div>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'10%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
-                                value={subItem.planeName}
-                                onChange={(e)=>{
-                                  const inputtext = e.target.value;
-                                  const copy = [...directAirline];
-                                  copy[index].departAirline = inputtext;
-                                  copy[index].airlineData[subIndex].planeName = inputtext;
-                                  setDirectAirline(copy);
-                                }}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'45%'}} 
-                                value={subItem.departAirport} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'departAirport');}}/>
-                              <p style={{margin:'0px'}}>-</p>
-                              <input className="inputdefault" type="text" style={{width:'45%'}} 
-                                value={subItem.departTime} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'departTime');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'45%'}} 
-                                value={subItem.arriveAirport} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'arriveAirport');}}/>
-                              <p style={{margin:'0px'}}>-</p>
-                              <input className="inputdefault" type="text" style={{width:'45%'}} 
-                                value={subItem.arriveTime} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, directAirline, setDirectAirline, index, subIndex, 'arriveTime');}}/>
-                            </div>
-                          </div>
-                        )
-                      })
-                    }
-                    </div>
-                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                      <div className="airline-save-btn"
-                        onClick={()=>{
-                          if (item.tourPeriodNight === '' || item.tourPeriodDay === '' || item.departAirportMain === '' || item.departAirline === '') {
-                            alert('기간, 출발공항, 출발편명을 선택해주세요.')
-                          } else {
-                            registerAirline('direct', item);
-                          }
-                        }}
-                      >
-                        <p>저장</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })
-          }
-        </section>
-      }
-      
-      {/* 경유 ----------------- */}
-      {
-        airlineSelectInput === 'via' &&
-        <section>
-          <div className="bottombar"></div>
-          <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-            <div className='chartbox' style={{width:'13%'}} ><p>기간</p></div>
-            <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'7%'}} ><p>출발공항</p></div>
-            <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'7%'}} ><p>출발편명</p></div>
-            <div className="chart-divider"></div>
-            <div style={{width:'68%', display:'flex'}}>
-              <div className='chartbox' style={{width:'3%'}} ><p></p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'15%'}} ><p>항공사</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'32%'}} ><p>출발요일</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'10%'}} ><p>편명</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'20%'}} ><p>구간</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'20%'}} ><p>시간</p></div>
-            </div>
-            <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'5%'}} ><p>저장</p></div>
-          </div>
-          
-          {
-            viaAirline.map((item:any, index:any)=>{
-              return (
-                <div className="coverbox">
-                  <div className="coverrow hole">
-                    <div style={{width:'13%', display:'flex', alignItems:'center'}} >
-                      <div className='deleteRowBtn'
-                        onClick={()=>{
-                          if (item.id === '') {
-                            const copy = [...viaAirline];
-                            const filtered = copy.filter((e:any, copyindex:any)=> copyindex !== index);
-                            setViaAirline(filtered);
-                          } else {
-                            handleDeleteAlert(item, 'via')
-                          }
-                        }}
-                        ><FiMinusCircle  color='#FF0000'/>
-                      </div>
-                      <DropdownBox
-                        widthmain='45%'
-                        height='35px'
-                        selectedValue={item.tourPeriodNight}
-                        options={DropDownTourPeriodNightType}    
-                        handleChange={(e)=>{
-                          const copy = [...viaAirline];
-                          copy[index].tourPeriodNight = e.target.value;
-                          setViaAirline(copy);
-                        }}
-                      />
-                      <DropdownBox
-                        widthmain='45%'
-                        height='35px'
-                        selectedValue={item.tourPeriodDay}
-                        options={DropDownTourPeriodDayType}    
-                        handleChange={(e)=>{
-                          const copy = [...viaAirline];
-                          copy[index].tourPeriodDay = e.target.value;
-                          setViaAirline(copy);
-                        }}
-                      />
-                    </div>
-                    <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'7%'}} >
-                      <DropdownBox
-                        widthmain='90%'
-                        height='35px'
-                        selectedValue={item.departAirportMain}
-                        options={[
-                          { value: '선택', label: '선택' },
-                          { value: '인천공항', label: '인천공항' },
-                          { value: '대구공항', label: '대구공항' },
-                          { value: '김해공항', label: '김해공항' }
-                        ]}    
-                        handleChange={(e)=>{
-                          const copy = [...viaAirline];
-                          copy[index].departAirportMain = e.target.value;
-                          setViaAirline(copy);
-                        }}
-                      />
-                    </div>
-                    <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'7%'}} >
-                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
-                        value={item.departAirline}
-                        onChange={(e)=>{
-                          const inputtext = e.target.value;
-                          const copy = [...viaAirline];
-                          copy[index].departAirline = inputtext;
-                          copy[index].airlineData[0].planeName = inputtext;
-                          setViaAirline(copy);
-                        }}/>
-                    </div>
-                    <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'68%'}} >
-                    {
-                      item.airlineData.map((subItem:any, subIndex:any)=>{
-                        return (
-                          <div style={{width:'100%', display:'flex', alignItems:'center'}} >
-                            <div style={{width:'3%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                              { subItem.sort === 'depart' && <BiSolidArrowToRight /> }
-                              { subItem.sort === 'viaArrive' && <BiSolidArrowFromLeft /> }
-                              { subItem.sort === 'viaDepart' && <BiSolidArrowToLeft /> }
-                              { subItem.sort === 'arrive' && <BiSolidArrowFromRight /> }
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'15%'}} >
-                              <DropdownBox
-                                widthmain='90%'
-                                height='35px'
-                                selectedValue={subItem.airlineName}
-                                options={DropDownAirline}    
-                                handleChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'airlineName');}}
-                              />
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'32%'}} >
-                              <div className="dayBox">
-                                {
-                                  ['월', '화', '수', '목', '금', '토', '일'].map((dateItem:any, dateIndex:any)=>{
-                                    return (
-                                      <div className="dayBtn" key={dateIndex}
-                                      style={{backgroundColor:subItem.departDate.includes(dateItem) ? '#5fb7ef' : '#fff'}}
-                                        onClick={()=>{
-                                          const copy = [...viaAirline]; 
-                                          if (copy[index].airlineData[subIndex].departDate.includes(dateItem)) {
-                                            const filteredDates = copy[index].airlineData[subIndex].departDate.filter(filterItem => filterItem !== dateItem);
-                                            copy[index].airlineData[subIndex].departDate = filteredDates;
-                                            setViaAirline(copy);
-                                          } else {
-                                            copy[index].airlineData[subIndex].departDate.push(dateItem);
-                                            setViaAirline(copy);
-                                          }
-                                        }}
-                                      ><p>{dateItem}</p></div>
-                                    )
-                                  })
-                                }
-                                <div className="dayBtn" 
-                                  style={{backgroundColor:'#ccc'}}
-                                  onClick={()=>{
-                                    const copy = [...viaAirline]; 
-                                    copy[index].airlineData[subIndex].departDate = ['월', '화', '수', '목', '금', '토', '일'];
-                                    setViaAirline(copy);
-                                  }}
-                                ><p>All</p></div>
-                              </div>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'10%'}} >
-                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
-                                value={subItem.planeName} 
-                                onChange={(e)=>{
-                                  const inputtext = e.target.value;
-                                  const copy = [...viaAirline];
-                                  copy[index].departAirline = inputtext;
-                                  copy[index].airlineData[subIndex].planeName = inputtext;
-                                  setViaAirline(copy);
-                                }}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'45%'}} 
-                                value={subItem.departAirport} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'departAirport');}}/>
-                              <p style={{margin:'0px'}}>-</p>
-                              <input className="inputdefault" type="text" style={{width:'45%'}} 
-                                value={subItem.departTime} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'departTime');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'45%'}} 
-                                value={subItem.arriveAirport} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'arriveAirport');}}/>
-                              <p style={{margin:'0px'}}>-</p>
-                              <input className="inputdefault" type="text" style={{width:'45%'}} 
-                                value={subItem.arriveTime} 
-                                onChange={(e)=>{handleAirlineContentChange(e.target.value, viaAirline, setViaAirline, index, subIndex, 'arriveTime');}}/>
-                            </div>
-                          </div>
-                        )
-                      })
-                    }
-                    </div>
-                    <div style={{width:'1px', minHeight:'160px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                      <div className="airline-save-btn"
-                        onClick={()=>{
-                          if (item.tourPeriodNight === '' || item.tourPeriodDay === '' || item.departAirportMain === '' || item.departAirline === '') {
-                            alert('기간, 출발공항, 출발편명을 선택해주세요.');
-                          } else {
-                            registerAirline('via', item);
-                          }
-                        }}
-                      >
-                        <p>저장</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })
-          }
-        </section>
-      }
-      </div>
-
-      <div className='btn-box'>
-        <div className="btn" 
-          onClick={()=>{
-            props.setRefresh(!props.refresh);
-            props.setIsViewAddCityModal(false);
-          }}
-        >
-          <p style={{color:'#333'}}>취소</p>
-        </div>
-        <div className="btn"
-          onClick={()=>{
-            if (airlineSelectInput === 'direct') {
-              const copy = [...directAirline]
-              if (copy.length === 0) {
-                setDirectAirline([...directAirline, 
-                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
-                    airlineData : [
-                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
-                    ]
-                  }]
-                )
-              } else {
-                const lastItem = copy[copy.length - 1];
-                setDirectAirline([...directAirline, 
-                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
-                    airlineData : [
-                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
-                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""}
-                    ]
-                  }]
-                )
-              }
-            } else if (airlineSelectInput === 'via') {
-              const copy = [...viaAirline];
-              if (copy.length === 0) { 
-                setViaAirline([...viaAirline,
-                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : "",  departAirline : "",
-                    airlineData : [
-                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                      { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                      { sort:"viaDepart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
-                    ]
-                  }
-                ])
-              } else {
-                const lastItem = copy[copy.length - 1];
-                setViaAirline([...viaAirline,
-                  {id: "", tourPeriodNight: "", tourPeriodDay: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
-                    airlineData : [
-                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
-                      { sort:"viaArrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""},
-                      { sort:"viaDepart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[2].departAirport, departTime:"", arriveAirport:lastItem.airlineData[2].arriveAirport, arriveTime:""},
-                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[3].departAirport, departTime:"", arriveAirport:lastItem.airlineData[3].arriveAirport, arriveTime:""},
-                    ]
-                  }
-                ])
-              }
-              
-            }
-          }}
-        >
-           <p style={{color:'#333'}}>항공편추가</p>
-        </div>
-      </div>
-
-      <div style={{height:'30px'}}></div>
-
-      {/* 항공편 입력 --------------------------------------------------------------------------------------------------------------- */}
+      {/* 교통 정보 입력 --------------------------------------------------------------------------------------------------------------- */}
       <div className="modal-header">
         <h1>역내 교통</h1>
       </div>
 
       { 
-        airlineSelectInput === 'direct' &&
+        airlineSelectInput === 'oneway' &&
         <section>
           <div className="bottombar"></div>
           <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
@@ -1259,7 +664,7 @@ export default function ModalAddCity (props : any) {
                       item.trafficList.map((subItem:any, subIndex:any)=>{
 
                         return (
-                          <div style={{width:'100%', display:'flex', alignItems:'center'}} >
+                          <div style={{width:'100%', display:'flex', alignItems:'center'}} key={subIndex}>
                             <div style={verticalBar40}></div>
                             <div style={{width:'19%', textAlign:'center'}} >
                               <input className="inputdefault" type="text" style={{width:'95%'}} 
@@ -1323,21 +728,612 @@ export default function ModalAddCity (props : any) {
       <div className='btn-box'>
         <div className="btn" 
           onClick={()=>{
-            props.setRefresh(!props.refresh);
             props.setIsViewAddCityModal(false);
           }}
         >
           <p style={{color:'#333'}}>취소</p>
         </div>
+        {
+          trafficData.length === 0 &&
+          <div className="btn"
+            onClick={()=>{
+              const copy = [
+                {sort : '공항/항공', trafficList : [{terminal: "", trafficName : "", operateDay : "", connectCity : "", moveTime : ""}]},
+                {sort : '역/기차', trafficList : [{terminal: "", trafficName : "", operateDay : "", connectCity : "", moveTime : ""}]},
+                {sort : '터미널/시외버스', trafficList : [{terminal: "", trafficName : "", operateDay : "", connectCity : "", moveTime : ""}]},
+                {sort : '항구/선박', trafficList : [{terminal: "", trafficName : "", operateDay : "", connectCity : "", moveTime : ""}]}
+              ]
+              setTrafficData(copy);
+            }}
+          >
+            <p style={{color:'#333'}}>교통편 입력란 추가</p>
+          </div>
+        }
         <div className="btn" style={{backgroundColor:'#5fb7ef'}}
           onClick={()=>{
-            registerTraffic();
+            if (cityKo === '') {
+              alert('도시 이름을 입력해주세요.')
+            } else {
+              registerTraffic();
+            }
           }}
         >
           <p>교통 정보 저장</p>
         </div>
        
       </div>
+
+      <div style={{height:'30px'}}></div>
+
+      {/* 항공편 입력 --------------------------------------------------------------------------------------------------------------- */}
+      <div className="modal-header">
+        <h1>항공편 입력</h1>
+      </div>
+      
+      <div className="selectInputBtnBox">
+        <div className="selectInputBtn"
+          onClick={()=>{setAirlineSelectInput('oneway')}}
+          style={{backgroundColor: airlineSelectInput === 'oneway' ? '#242d3f' : '#fff', 
+            color: airlineSelectInput === 'oneway' ? '#fff' : '#333' }}
+        >편도</div>
+        <div className="selectInputBtn"
+          onClick={()=>{setAirlineSelectInput('round')}}
+          style={{backgroundColor: airlineSelectInput === 'round' ? '#242d3f' : '#fff', 
+            color: airlineSelectInput === 'round' ? '#fff' : '#333' }}
+        >왕복</div>
+        <div className="selectInputBtn"
+          onClick={()=>{
+            if (airlineSelectInput === 'oneway') {
+              const copy = [...onewayAirline]
+              if (copy.length === 0) {
+                setOnewayAirline([...onewayAirline, 
+                  {id: "", departTime: "", codeShare: "", departAirportMain : "",  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
+                    ]
+                  }]
+                )
+              } else {
+                const lastItem = copy[copy.length - 1];
+                setOnewayAirline([...onewayAirline, 
+                  {id: "", departTime: "", codeShare: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""}
+                    ]
+                  }]
+                )
+              }
+            } else if (airlineSelectInput === 'round') {
+              const copy = [...roundAirline];
+              if (copy.length === 0) { 
+                setRoundAirline([...roundAirline,
+                  {id: "", departTime: "", codeShare: "", departAirportMain : "",  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
+                    ]
+                  }
+                ])
+              } else {
+                const lastItem = copy[copy.length - 1];
+                setRoundAirline([...roundAirline,
+                  {id: "", departTime: "", codeShare: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
+                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""},
+                    ]
+                  }
+                ])
+              }
+              
+            }
+          }}
+          style={{width:'50px', backgroundColor: '#fff', color: '#333' }}
+        >+</div>
+      </div>
+
+      <div style={{marginBottom:'50px'}}>
+      {/* 편도 ----------------- */}
+      { 
+        airlineSelectInput === 'oneway' &&
+        <section>
+          <div className="bottombar"></div>
+          <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발공항</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발편명</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발시간</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'6%'}} ><p>코드쉐어</p></div>
+            <div className="chart-divider"></div>
+            <div style={{width:'68%', display:'flex'}}>
+              <div className='chartbox' style={{width:'3%'}} ><p></p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'15%'}} ><p>항공사</p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'32%'}} ><p>출발요일</p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'10%'}} ><p>편명</p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'20%'}} ><p>구간</p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'20%'}} ><p>시간</p></div>
+            </div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'5%'}} ><p>저장</p></div>
+          </div>
+          {
+            onewayAirline.map((item:any, index:any)=>{
+              return (
+                <div className="coverbox">
+                  <div className="coverrow hole">
+                    <div style={{width:'7%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                      <div className='deleteRowBtn'
+                        onClick={()=>{
+                          if (item.id === '') {
+                            const copy = [...onewayAirline];
+                            const filtered = copy.filter((e:any, copyindex:any)=> copyindex !== index);
+                            setOnewayAirline(filtered);
+                          } else {
+                            handleDeleteAlert(item, 'oneway')
+                          }
+                        }}
+                        ><FiMinusCircle  color='#FF0000'/>
+                      </div>
+                      <DropdownBox
+                        widthmain='90%'
+                        height='35px'
+                        selectedValue={item.departAirportMain}
+                        options={[
+                          { value: '선택', label: '선택' },
+                          { value: '인천공항', label: '인천공항' },
+                          { value: '대구공항', label: '대구공항' },
+                          { value: '김해공항', label: '김해공항' }
+                        ]}    
+                        handleChange={(e)=>{
+                          const copy = [...onewayAirline];
+                          copy[index].departAirportMain = e.target.value;
+                          setOnewayAirline(copy);
+                        }}
+                      />
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'7%'}} >
+                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
+                        value={item.departAirline}
+                        onChange={(e)=>{
+                          const inputtext = e.target.value;
+                          const copy = [...onewayAirline];
+                          copy[index].departAirline = inputtext;
+                          copy[index].airlineData[0].planeName = inputtext;
+                          setOnewayAirline(copy);
+                        }}/>
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'7%'}} >
+                      <DropdownBox
+                        widthmain='90%'
+                        height='35px'
+                        selectedValue={item.departTime}
+                        options={[
+                          { value: '선택', label: '선택' },
+                          { value: '오전/낮', label: '오전/낮' },
+                          { value: '밤/새벽', label: '밤/새벽' }
+                        ]}    
+                        handleChange={(e)=>{
+                          const copy = [...onewayAirline];
+                          copy[index].departTime = e.target.value;
+                          setOnewayAirline(copy);
+                        }}
+                      />
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'6%'}} >
+                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
+                        value={item.codeShare}
+                        onChange={(e)=>{
+                          const inputtext = e.target.value;
+                          const copy = [...onewayAirline];
+                          copy[index].codeShare = inputtext;
+                          setOnewayAirline(copy);
+                        }}/>
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'68%'}} >
+                    {
+                      item.airlineData.map((subItem:any, subIndex:any)=>{
+                        return (
+                          <div style={{width:'100%', display:'flex', alignItems:'center'}} >
+                            <div style={{width:'3%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              { subItem.sort === 'depart' && <BiSolidRightArrowAlt /> }
+                              { subItem.sort === 'arrive' && <BiSolidLeftArrowAlt /> }
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'15%'}} >
+                              <DropdownBox
+                                widthmain='90%'
+                                height='35px'
+                                selectedValue={subItem.airlineName}
+                                options={DropDownAirline}    
+                                handleChange={(e)=>{handleAirlineContentChange(e.target.value, onewayAirline, setOnewayAirline, index, subIndex, 'airlineName');}}
+                              />
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'32%'}} >
+                              <div className="dayBox">
+                                {
+                                  ['월', '화', '수', '목', '금', '토', '일'].map((dateItem:any, dateIndex:any)=>{
+                                    return (
+                                      <div className="dayBtn" key={dateIndex}
+                                      style={{backgroundColor:subItem.departDate.includes(dateItem) ? '#5fb7ef' : '#fff'}}
+                                        onClick={()=>{
+                                          const copy = [...onewayAirline]; 
+                                          if (copy[index].airlineData[subIndex].departDate.includes(dateItem)) {
+                                            const filteredDates = copy[index].airlineData[subIndex].departDate.filter(filterItem => filterItem !== dateItem);
+                                            copy[index].airlineData[subIndex].departDate = filteredDates;
+                                            setOnewayAirline(copy);
+                                          } else {
+                                            copy[index].airlineData[subIndex].departDate.push(dateItem);
+                                            setOnewayAirline(copy);
+                                          }
+                                        }}
+                                      ><p>{dateItem}</p></div>
+                                    )
+                                  })
+                                }
+                                <div className="dayBtn" 
+                                  style={{backgroundColor:'#ccc'}}
+                                  onClick={()=>{
+                                    const copy = [...onewayAirline]; 
+                                      copy[index].airlineData[subIndex].departDate = ['월', '화', '수', '목', '금', '토', '일'];
+                                      setOnewayAirline(copy);
+                                  }}
+                                ><p>All</p></div>
+                              </div>
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'10%'}} >
+                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                                value={subItem.planeName}
+                                onChange={(e)=>{
+                                  const inputtext = e.target.value;
+                                  const copy = [...onewayAirline];
+                                  copy[index].departAirline = inputtext;
+                                  copy[index].airlineData[subIndex].planeName = inputtext;
+                                  setOnewayAirline(copy);
+                                }}/>
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.departAirport} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, onewayAirline, setOnewayAirline, index, subIndex, 'departAirport');}}/>
+                              <p style={{margin:'0px'}}>-</p>
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.departTime} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, onewayAirline, setOnewayAirline, index, subIndex, 'departTime');}}/>
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.arriveAirport} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, onewayAirline, setOnewayAirline, index, subIndex, 'arriveAirport');}}/>
+                              <p style={{margin:'0px'}}>-</p>
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.arriveTime} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, onewayAirline, setOnewayAirline, index, subIndex, 'arriveTime');}}/>
+                            </div>
+                          </div>
+                        )
+                      })
+                    }
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                      <div className="airline-save-btn"
+                        onClick={()=>{
+                          if (item.departTime === '' || item.codeShare === '' || item.departAirportMain === '' || item.departAirline === '') {
+                            alert('출발공항, 출발편명, 출발시간, 코드쉐어 칸을 채워주세요.');
+                          } else {
+                            registerAirline('oneway', item);
+                          }
+                        }}
+                      >
+                        <p>저장</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </section>
+      }
+      
+      {/* 왕복 ----------------- */}
+      {
+        airlineSelectInput === 'round' &&
+        <section>
+          <div className="bottombar"></div>
+          <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발공항</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발편명</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'7%'}} ><p>출발시간</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'6%'}} ><p>코드쉐어</p></div>
+            <div className="chart-divider"></div>
+            <div style={{width:'68%', display:'flex'}}>
+              <div className='chartbox' style={{width:'3%'}} ><p></p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'15%'}} ><p>항공사</p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'32%'}} ><p>출발요일</p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'10%'}} ><p>편명</p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'20%'}} ><p>구간</p></div>
+              <div className="chart-divider"></div>
+              <div className='chartbox' style={{width:'20%'}} ><p>시간</p></div>
+            </div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'5%'}} ><p>저장</p></div>
+          </div>
+          {
+            roundAirline.map((item:any, index:any)=>{
+              return (
+                <div className="coverbox">
+                  <div className="coverrow hole">
+                  <div style={{width:'7%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                      <div className='deleteRowBtn'
+                        onClick={()=>{
+                          if (item.id === '') {
+                            const copy = [...roundAirline];
+                            const filtered = copy.filter((e:any, copyindex:any)=> copyindex !== index);
+                            setRoundAirline(filtered);
+                          } else {
+                            handleDeleteAlert(item, 'round')
+                          }
+                        }}
+                        ><FiMinusCircle  color='#FF0000'/>
+                      </div>
+                      <DropdownBox
+                        widthmain='90%'
+                        height='35px'
+                        selectedValue={item.departAirportMain}
+                        options={[
+                          { value: '선택', label: '선택' },
+                          { value: '인천공항', label: '인천공항' },
+                          { value: '대구공항', label: '대구공항' },
+                          { value: '김해공항', label: '김해공항' }
+                        ]}    
+                        handleChange={(e)=>{
+                          const copy = [...roundAirline];
+                          copy[index].departAirportMain = e.target.value;
+                          setRoundAirline(copy);
+                        }}
+                      />
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'7%'}} >
+                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
+                        value={item.departAirline}
+                        onChange={(e)=>{
+                          const inputtext = e.target.value;
+                          const copy = [...roundAirline];
+                          copy[index].departAirline = inputtext;
+                          copy[index].airlineData[0].planeName = inputtext;
+                          setRoundAirline(copy);
+                        }}/>
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'7%'}} >
+                      <DropdownBox
+                        widthmain='90%'
+                        height='35px'
+                        selectedValue={item.departTime}
+                        options={[
+                          { value: '선택', label: '선택' },
+                          { value: '오전/낮', label: '오전/낮' },
+                          { value: '밤/새벽', label: '밤/새벽' }
+                        ]}    
+                        handleChange={(e)=>{
+                          const copy = [...roundAirline];
+                          copy[index].departTime = e.target.value;
+                          setRoundAirline(copy);
+                        }}
+                      />
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'6%'}} >
+                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
+                        value={item.codeShare}
+                        onChange={(e)=>{
+                          const inputtext = e.target.value;
+                          const copy = [...roundAirline];
+                          copy[index].codeShare = inputtext;
+                          setRoundAirline(copy);
+                        }}/>
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'68%'}} >
+                    {
+                      item.airlineData.map((subItem:any, subIndex:any)=>{
+                        return (
+                          <div style={{width:'100%', display:'flex', alignItems:'center'}} >
+                            <div style={{width:'3%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              { subItem.sort === 'depart' && <BiSolidArrowToRight /> }
+                              { subItem.sort === 'viaArrive' && <BiSolidArrowFromLeft /> }
+                              { subItem.sort === 'viaDepart' && <BiSolidArrowToLeft /> }
+                              { subItem.sort === 'arrive' && <BiSolidArrowFromRight /> }
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'15%'}} >
+                              <DropdownBox
+                                widthmain='90%'
+                                height='35px'
+                                selectedValue={subItem.airlineName}
+                                options={DropDownAirline}    
+                                handleChange={(e)=>{handleAirlineContentChange(e.target.value, roundAirline, setRoundAirline, index, subIndex, 'airlineName');}}
+                              />
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'32%'}} >
+                              <div className="dayBox">
+                                {
+                                  ['월', '화', '수', '목', '금', '토', '일'].map((dateItem:any, dateIndex:any)=>{
+                                    return (
+                                      <div className="dayBtn" key={dateIndex}
+                                      style={{backgroundColor:subItem.departDate.includes(dateItem) ? '#5fb7ef' : '#fff'}}
+                                        onClick={()=>{
+                                          const copy = [...roundAirline]; 
+                                          if (copy[index].airlineData[subIndex].departDate.includes(dateItem)) {
+                                            const filteredDates = copy[index].airlineData[subIndex].departDate.filter(filterItem => filterItem !== dateItem);
+                                            copy[index].airlineData[subIndex].departDate = filteredDates;
+                                            setRoundAirline(copy);
+                                          } else {
+                                            copy[index].airlineData[subIndex].departDate.push(dateItem);
+                                            setRoundAirline(copy);
+                                          }
+                                        }}
+                                      ><p>{dateItem}</p></div>
+                                    )
+                                  })
+                                }
+                                <div className="dayBtn" 
+                                  style={{backgroundColor:'#ccc'}}
+                                  onClick={()=>{
+                                    const copy = [...roundAirline]; 
+                                    copy[index].airlineData[subIndex].departDate = ['월', '화', '수', '목', '금', '토', '일'];
+                                    setRoundAirline(copy);
+                                  }}
+                                ><p>All</p></div>
+                              </div>
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'10%'}} >
+                              <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px'}} 
+                                value={subItem.planeName} 
+                                onChange={(e)=>{
+                                  const inputtext = e.target.value;
+                                  const copy = [...roundAirline];
+                                  copy[index].departAirline = inputtext;
+                                  copy[index].airlineData[subIndex].planeName = inputtext;
+                                  setRoundAirline(copy);
+                                }}/>
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.departAirport} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, roundAirline, setRoundAirline, index, subIndex, 'departAirport');}}/>
+                              <p style={{margin:'0px'}}>-</p>
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.departTime} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, roundAirline, setRoundAirline, index, subIndex, 'departTime');}}/>
+                            </div>
+                            <div style={verticalBar40}></div>
+                            <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.arriveAirport} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, roundAirline, setRoundAirline, index, subIndex, 'arriveAirport');}}/>
+                              <p style={{margin:'0px'}}>-</p>
+                              <input className="inputdefault" type="text" style={{width:'45%'}} 
+                                value={subItem.arriveTime} 
+                                onChange={(e)=>{handleAirlineContentChange(e.target.value, roundAirline, setRoundAirline, index, subIndex, 'arriveTime');}}/>
+                            </div>
+                          </div>
+                        )
+                      })
+                    }
+                    </div>
+                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
+                    <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                      <div className="airline-save-btn"
+                        onClick={()=>{
+                          if (item.departTime === '' || item.codeShare === ''  || item.departAirportMain === '' || item.departAirline === '') {
+                            alert('출발공항, 출발편명, 출발시간, 코드쉐어 칸을 채워주세요.');
+                          } else {
+                            registerAirline('round', item);
+                          }
+                        }}
+                      >
+                        <p>저장</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </section>
+      }
+      </div>
+
+      <div className='btn-box'>
+        <div className="btn" 
+          onClick={()=>{
+            props.setRefresh(!props.refresh);
+            props.setIsViewAddCityModal(false);
+          }}
+        >
+          <p style={{color:'#333'}}>취소</p>
+        </div>
+        <div className="btn"
+          onClick={()=>{
+            if (airlineSelectInput === 'oneway') {
+              const copy = [...onewayAirline]
+              if (copy.length === 0) {
+                setOnewayAirline([...onewayAirline, 
+                  {id: "", departTime: "", codeShare: "", departAirportMain : "",  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
+                    ]
+                  }]
+                )
+              } else {
+                const lastItem = copy[copy.length - 1];
+                setOnewayAirline([...onewayAirline, 
+                  {id: "", departTime: "", codeShare: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""}
+                    ]
+                  }]
+                )
+              }
+            } else if (airlineSelectInput === 'round') {
+              const copy = [...roundAirline];
+              if (copy.length === 0) { 
+                setRoundAirline([...roundAirline,
+                  {id: "", departTime: "", codeShare: "", departAirportMain : "",  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
+                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
+                    ]
+                  }
+                ])
+              } else {
+                const lastItem = copy[copy.length - 1];
+                setRoundAirline([...roundAirline,
+                  {id: "", departTime: "", codeShare: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                    airlineData : [
+                      { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
+                      { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""},
+                    ]
+                  }
+                ])
+              }
+              
+            }
+          }}
+        >
+           <p style={{color:'#333'}}>항공편추가</p>
+        </div>
+      </div>
+
+    
       
     </div>     
   )

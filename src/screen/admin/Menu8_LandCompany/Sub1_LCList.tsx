@@ -1,86 +1,74 @@
-import React, { useEffect, useState } from 'react';
-import '../SearchBox.scss';
-import '../SearchList.scss';
+import { useEffect, useState } from 'react';
+import { TitleList } from '../../../boxs/TitleList';
 import { TextBox } from '../../../boxs/TextBox';
-import { useNavigate } from 'react-router-dom';
-import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
-import { DropdownBox } from '../../../boxs/DropdownBox';
-import { formatDate, subDays } from 'date-fns';
+import '../Products.scss'
+import { PiPencilSimpleLineFill } from 'react-icons/pi';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
-import Loading from '../components/Loading';
-import { DropDowncharger } from '../../DefaultData';
-import { TitleList } from '../../../boxs/TitleList';
+import { DropdownBox } from '../../../boxs/DropdownBox';
+import { FaCircle } from 'react-icons/fa';
+import { IoCloseOutline } from 'react-icons/io5';
+import ModalAddLandCompany from './ModalAddLandCompany';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
+import { DropDowncharger, DropDownLandCompany } from '../../DefaultData';
+
+
+interface ListProps {
+	id: string,
+	nation : string,
+	city : string,
+	landCompanyName : string,
+	businessDate : string,
+	owner : string,
+	ownerPhone : string,
+	opcharger : string,
+	opchargerPhone : string,
+	localTourCompany : string,
+	localPhone : string,
+	localOwner : string,
+	localOwnerPhone : string,
+	notice : string,
+	registeredHotels : string,
+	registeredProducts : string,
+	discount : string,
+	isCostApply : string,
+	issue : string,
+	benefits : string,
+	reviseDate : string
+}
+
 
 export default function Sub1_LCList (props:any) {
 
-	let navigate = useNavigate();
-
-	// interface CheckBoxProps {
-  //   title: string;
-  // }
-
-  // const CheckBox: React.FC<CheckBoxProps> = ({ title }) => (
-  //   <div className='checkInputCover'>
-  //     <div className='checkInput'>
-  //       <input className="input" type="checkbox"
-  //         checked={searchSelect === title}
-  //         onChange={()=>{
-  //           setSearchSelect(title);
-  //         }}
-  //       />
-  //     </div>
-  //     <p>{title}</p>
-  //   </div>
-  // )
-
-	// const selectDays = [
-	// 	{name: "오늘", period: 0}, {name: "어제", period: 1}, {name: "3일", period: 3}, {name: "7일", period: 7}, 
-	// 	{name: "1개월", period: 30}, {name: "3개월", period: 90}, {name: "6개월", period: 180}
-	// ]
-
-
-	// 게시글 가져오기 ------------------------------------------------------
-	interface ListProps {
-		id: number;
-		date: string;
-		name: string;
-		phone: string;
-		tourLocation: string;
-		callTime : string;
-		dateCeremony: string;
-		sort: string;
-		stage: string
-		visitDate : string;
-		visitTime: string;
-	}
-	const [refresh, setRefresh] = useState(true);
+	const [refresh, setRefresh] = useState<boolean>(false);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
 	const [list, setList] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
-	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [searchLocationOption, setSearchLocationOption] = useState([]);
-
-	const fetchPosts = async () => {
-		const res = await axios.get(`${MainURL}/adminlist/getonlinelist/${currentPage}`);
-		if (res.data.resultData) {
-			const copy = res.data.resultData;
-      setList(copy);   
+  const fetchPosts = async () => {
+    const res = await axios.get(`${MainURL}/landcompany/getlandcompany/${currentPage}`)
+    if (res.data.resultData) {
+      const copy = res.data.resultData;
+      setList(copy);
+			setListOrigin(copy);
       setListAllLength(res.data.totalCount);
-			const result = copy.map((item:any)=>
-        ({ value: item.tourLocation,  label:item.tourLocation })
-      );
-			result.unshift({ value: '선택', label: '선택' });
-			setSearchLocationOption(result);
-		}
-	};
+    }
+  };
 
 	useEffect(() => {
-		// fetchPosts();
-	}, [refresh]);  
+		fetchPosts();
+	}, [refresh, currentPage]);  
+
+	const [dateSort, setDateSort] = useState('문의일');
+	const [dateSelect, setDateSelect] = useState('');
+	const [startDate, setStartDate] = useState('');
+	const [endDate, setEndDate] = useState('');
+	const [searchSelect, setSearchSelect] = useState('');
+	const [word, setWord] = useState('');
 
 
   // State 변수 추가
-  const itemsPerPage = 10; // 한 페이지당 표시될 게시글 수
+  const itemsPerPage = 15; // 한 페이지당 표시될 게시글 수
   const totalPages = Math.ceil(listAllLength / itemsPerPage);
 
   // 페이지 변경 함수
@@ -109,24 +97,17 @@ export default function Sub1_LCList (props:any) {
 
 
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
-	const [startDate, setStartDate] = useState('');
-	const [endDate, setEndDate] = useState('');
-	const [searchLocation, setSearchLocation] = useState('');
-	const [searchCharger, setSearchCharger] = useState('');
+	const [searchSort, setSearchSort] = useState('전체');
 	const [searchWord, setSearchWord] = useState('');
-	
-	const handleSearching = async () => {
+	const handleWordSearching = async () => {
+		setList([]);
 		try {
-			const res = await axios.post(`${MainURL}/adminlist/getonlinelistsearch`, {
-				startDate : startDate,
-				endDate : endDate,
-				location : searchLocation,
-				charger : searchCharger,
+			const res = await axios.post(`${MainURL}/landcompany/getlandcompanysearch`, {
+				sort : searchSort,
 				word : searchWord
 			});
 			if (res.data.resultData) {
 				const copy = [...res.data.resultData];
-				copy.reverse();
 				setList(copy);
 				setListAllLength(res.data.totalCount);
 			} else {
@@ -137,6 +118,12 @@ export default function Sub1_LCList (props:any) {
 			console.error("Failed to fetch search results:", error);
 		}	
 	};
+	
+	
+	// 모달 ---------------------------------------------------------
+	const [isViewLandCompanyModal, setIsViewLandCompanyModal] = useState<boolean>(false);
+	const [isAddOrRevise, setIsAddOrRevise] = useState('');
+	const [landCompanyInfo, setLandCompanyInfo] = useState<ListProps>();
 
 	return ( 
 		<div className='Main-cover'>
@@ -150,43 +137,52 @@ export default function Sub1_LCList (props:any) {
 			<div className="searchbox">
 				<div className="cover">
 					<div className="content">
-						<DateBoxDouble setSelectStartDate={setStartDate} setSelectEndDate={setEndDate} dateStart={startDate} dateEnd={endDate} marginLeft={1}/>
+						<DateBoxDouble  setSelectStartDate={setStartDate} setSelectEndDate={setEndDate} dateStart={startDate} dateEnd={endDate}  marginLeft={1}/>
 						<DropdownBox
 							widthmain='100px'
 							height='35px'
-							selectedValue={searchLocation}
-							options={searchLocationOption}
-							handleChange={(e)=>{setSearchLocation(e.target.value)}}
+							selectedValue={dateSort}
+							options={[
+								{ value: '선택', label: '선택' },
+								{ value: '여행지1', label: '여행지1' },
+								{ value: '여행지2', label: '여행지2' },
+							]}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
 						/>
 						<DropdownBox
 							widthmain='100px'
 							height='35px'
-							selectedValue={searchCharger}
+							selectedValue={dateSort}
+							options={DropDownLandCompany}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
+						/>
+						<DropdownBox
+							widthmain='100px'
+							height='35px'
+							selectedValue={dateSort}
 							options={DropDowncharger}
-							handleChange={(e)=>{setSearchCharger(e.target.value)}}
+							handleChange={(e)=>{setDateSort(e.target.value)}}
 						/>
 						<input className="inputdefault" type="text" style={{width:'20%', textAlign:'left'}} 
-              value={searchWord} placeholder='고객명/연락처'
-							onChange={(e)=>{
-								setSearchWord(e.target.value);
-								
-							}}
-							onKeyDown={(e)=>{if (e.key === 'Enter') {handleSearching();}}}
+              value={word} placeholder='고객명/연락처'
+							onChange={(e)=>{setWord(e.target.value)}}
 						/>
 						<div className="buttons" style={{margin:'20px 0'}}>
 							<div className="btn searching"
-								onClick={()=>{handleSearching();}}
+								onClick={()=>{
+									
+								}}
 							>
 								<p>검색</p>
 							</div>
 							<div className="btn reset"
 								onClick={()=>{
+									setDateSort('문의일');
+									setDateSelect('');
 									setStartDate('');
 									setEndDate('');
-									setSearchLocation('');
-									setSearchCharger('');
-									setSearchWord('');
-									setRefresh(!refresh);
+									setSearchSelect('');
+									setWord('');
 								}}
 							>
 								<p>초기화</p>
@@ -196,48 +192,61 @@ export default function Sub1_LCList (props:any) {
 				</div>
 			</div>
 
-
 			<div className="seachlist">
-
 				<div className="main-list-cover">
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
-						<TitleList width='12%' text='답변일/문의일'/>
-						<TitleList width='5%' text='구분'/>
-						<TitleList width='8%' text='성함'/>
-						<TitleList width='12%' text='연락처'/>
-						<TitleList width='12%' text='여행지'/>
-						<TitleList width='10%' text='여행예정일'/>
-						<TitleList width='10%' text='방문경로'/>
-						<TitleList width='12%' text='진행상황'/>
-						<TitleList width='7%' text='담당자'/>
+						<TitleList width='5%' text='노출'/>
+						<TitleList width='15%' text='랜드사'/>
+						<TitleList width='15%' text='등록상품'/>
+						<TitleList width='15%' text='등록호텔'/>
+						<TitleList width='10%' text='여행사베네핏'/>
+						<TitleList width='10%' text='예약'/>
+						<TitleList width='10%' text='참고사항'/>
+						<TitleList width='10%' text=''/>
   				</div>
 					
 					{
 						list.length > 0
 						?
 						list.map((item:any, index:any)=>{
+							const registeredProductsCopy = JSON.parse(item.registeredProducts);
+							const benefitsCopy = JSON.parse(item.benefits);
+
 							return (
-								<div key={index} className="rowbox"
-								 onClick={()=>{
-									if (item.sort === '상담') {
-										navigate('/admin/counsel/counseldetail', {state : {data: item, pathType:"new"}});
-										window.scrollTo(0, 0);
-									} else {
-										return
-									}
-								 }}
+								<div key={index}
+									className="rowbox"
+									onClick={()=>{
+									}}
 								>
 									<TextBox width='3%' text={item.id} />
-									<TextBox width='12%' text={item.date} text2={item.date}/>
-									<TextBox width='5%' text={item.sort} />
-									<TextBox width='8%' text={item.name} />
-									<TextBox width='12%' text={item.phone} />
-									<TextBox width='12%' text={item.tourLocation} />
-									<TextBox width='10%' text={item.dateStart} />
-									<TextBox width='10%' text={item.visitPath} />
-									<TextBox width='12%' text={item.state} />
-									<TextBox width='7%' text={item.charger} />
+									<div className="text" style={{width:`5%`, textAlign:'center'}}>
+										{ item.isView === 'true'  
+											? <FaCircle color='#5fb7ef' size={13}/>
+											: <IoCloseOutline />
+										}
+									</div>
+									<TextBox width='15%' text={item.landCompanyName} />
+									<TextBox width='15%' text={item.registeredHotels} />
+									<TextBox width='15%' text={registeredProductsCopy} />
+									<TextBox width='10%' text={benefitsCopy.content} />
+									<TextBox width='10%' text={''} />
+									<TextBox width='10%' text={item.notice} />
+									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
+										<div className="hotelControlBtn2"
+											onClick={()=>{
+												setLandCompanyInfo(item);
+												setIsAddOrRevise('revise');
+												setIsViewLandCompanyModal(true);
+											}}
+										>
+											<p>수정</p>
+										</div>
+										<div className="divider"></div>
+										<div className="hotelControlBtn2">
+											<p>삭제</p>
+										</div>
+									</div>
 								</div>
 							)
 						})
@@ -247,7 +256,6 @@ export default function Sub1_LCList (props:any) {
 						</div>
 					}
 				</div>
-
 				<div className='btn-row'>
 					<div onClick={() => changePage(1)} className='btn'>
 						<p>{"<<"}</p>
@@ -269,10 +277,28 @@ export default function Sub1_LCList (props:any) {
 						<p>{">>"}</p>
 					</div>
 				</div>
-
 			</div>
 
-			<div style={{height:'100px'}}></div>
+			
+
+			{/* 선택일정등록 모달창 */}
+      {
+        isViewLandCompanyModal &&
+        <div className='Modal'>
+          <div className='modal-backcover'></div>
+          <div className='modal-maincover'>
+             <ModalAddLandCompany
+								refresh={refresh}
+								setRefresh={setRefresh}
+								isAddOrRevise={isAddOrRevise}
+								landCompanyInfo={landCompanyInfo}
+								setIsViewLandCompanyModal={setIsViewLandCompanyModal}
+						 />
+          </div>
+        </div>
+      }
+
+			<div style={{height:'200px'}}></div>
 		</div>
 		
 	);

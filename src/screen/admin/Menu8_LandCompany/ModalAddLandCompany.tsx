@@ -1,13 +1,13 @@
 
 import React, { useCallback, useState } from 'react'
-import '../../ProductsModalAdd.scss'
+import '../ProductsModalAdd.scss'
 import { IoMdClose } from "react-icons/io";
-import { TitleBox } from '../../../../boxs/TitleBox';
+import { TitleBox } from '../../../boxs/TitleBox';
 import axios from 'axios';
-import MainURL from '../../../../MainURL';
+import MainURL from '../../../MainURL';
 import { formatDate } from 'date-fns';
-import { DateBoxDouble } from '../../../../boxs/DateBoxDouble';
-import { DateBoxSingle } from '../../../../boxs/DateBoxSingle';
+import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
+import { DateBoxSingle } from '../../../boxs/DateBoxSingle';
 
 
 export default function ModalAddLandCompany (props : any) {
@@ -419,6 +419,7 @@ export default function ModalAddLandCompany (props : any) {
                       }} 
                       setSelectEndDate={(e:any)=>{ 
                         const copy = {...benefits};
+                        copy.periodStart = e;
                         copy.periodEnd = e;
                         setBenefits(copy);
                       }} 

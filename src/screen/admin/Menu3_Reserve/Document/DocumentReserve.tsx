@@ -12,11 +12,15 @@ export default function DocumentReserve() {
   let navigate = useNavigate();
   const location = useLocation();
   const userInfo = location.state.userInfo;
-  const reserveInfo = location.state.reserveInfo;
-  const productCost = location.state.productCost;
-  const depositCostList = location.state.depositCostList;
-  const hotelReserveState = JSON.parse(reserveInfo.hotelReserveState);
-  const etcState = JSON.parse(reserveInfo.etcState);
+
+  // const hotelReserveState = JSON.parse(location.state.hotelReserveState);
+
+
+  // const reserveInfo = location.state.reserveInfo;
+  // const productCost = location.state.productCost;
+  // const depositCostList = location.state.depositCostList;
+  
+  // const etcState = JSON.parse(reserveInfo.etcState);
 
   const [selectTab1, setSelectTab1] = useState('selected');
   const [selectTab2, setSelectTab2] = useState('')
@@ -121,38 +125,38 @@ export default function DocumentReserve() {
         
         <div className="d-textrow">
           <D_Title text='여행상품' />
-          <D_text_p width={520} value={reserveInfo.productName} func={()=>{}}/>
+          {/* <D_text_p width={520} value={reserveInfo.productName} func={()=>{}}/> */}
         </div>
         <div className="d-textrow">
           <D_Title text='여행기간' />
           <div style={{display:'flex', flexDirection:'column', flex:1}}>
             <div style={{display:'flex', alignItems:'center'}}>
               <TextBox text='출발' />
-              <D_text_p width={70} value={reserveInfo.tourStartAirport} func={()=>{}}/>
-              <D_text_p width={100} value={reserveInfo.tourStartPeriod} func={()=>{}}/>
+              {/* <D_text_p width={70} value={reserveInfo.tourStartAirport} func={()=>{}}/>
+              <D_text_p width={100} value={reserveInfo.tourStartPeriod} func={()=>{}}/> */}
             </div>
             <div style={{height:'1px', backgroundColor:'#ececec'}}></div>
             <div style={{display:'flex', alignItems:'center'}}>
               <TextBox text='도착' />
-              <D_text_p width={70} value={reserveInfo.tourEndAirport} func={()=>{}}/>
-              <D_text_p width={100} value={reserveInfo.tourEndPeriod} func={()=>{}}/>
+              {/* <D_text_p width={70} value={reserveInfo.tourEndAirport} func={()=>{}}/>
+              <D_text_p width={100} value={reserveInfo.tourEndPeriod} func={()=>{}}/> */}
             </div>
           </div>
         </div>
         <div className="d-textrow">
           <D_Title text='여행지' />
           <div style={{flex:1}}>
-            <D_text_p width={190} value={reserveInfo.tourLocation} func={()=>{}}/>
+            {/* <D_text_p width={190} value={reserveInfo.tourLocation} func={()=>{}}/> */}
           </div>
           <D_Title text='항공사' />
           <div style={{flex:1}}>
-            <DropdownBox
+            {/* <DropdownBox
               widthmain='190px'
               height='35px'
               selectedValue={reserveInfo.airline}
               options={DropDownAirline}
               handleChange={(e)=>{''}}
-            />
+            /> */}
           </div>
         </div>
         <div className="d-textrow">
@@ -178,10 +182,10 @@ export default function DocumentReserve() {
         <div className="d-textrow">
           <D_Title text='여행상품가' />
           <TextBox text='1인 상품가' />
-          <D_text_p width={150} value={productCost.costAdult} func={()=>{}}/>
+          {/* <D_text_p width={150} value={productCost.costAdult} func={()=>{}}/> */}
           <TextBox text='원,' />
           <TextBox text='합계' />
-          <D_text_p width={150} value={productCost.costAll} func={()=>{}}/>
+          {/* <D_text_p width={150} value={productCost.costAll} func={()=>{}}/> */}
           <TextBox text='원' />
         </div>
         <div className="d-textrow">
@@ -191,7 +195,7 @@ export default function DocumentReserve() {
         <div className="d-textrow">
           <D_Title text='결제일' />
           <div style={{flex:1}}>
-            {
+            {/* {
               depositCostList.map((item:any, index:any)=>{
                 return (
                   <div style={{display:'flex'}} key={index}>
@@ -209,12 +213,12 @@ export default function DocumentReserve() {
                   </div>
                 )
               })
-            }
+            } */}
           </div>
         </div>
         <div className="d-textrow">
           <D_Title text='숙박호텔' />
-          <D_text_p width={520} value={hotelReserveState[0].hotelName} func={()=>{}}/>
+          {/* <D_text_p width={520} value={hotelReserveState[0].hotelName} func={()=>{}}/> */}
         </div>
         <div className="d-textrow">
           <D_Title text='현지여행사' />
@@ -345,12 +349,12 @@ export default function DocumentReserve() {
         <div className="d-textrow">
           <D_Title text='여행요금포함사항'/>
           <div style={{alignContent:'center'}}>
-            <D_text_p width={520} value={etcState.includes} func={()=>{}}/>
+            {/* <D_text_p width={520} value={etcState.includes} func={()=>{}}/> */}
           </div>
         </div>
         <div className="d-textrow">
           <D_Title text='불포함사항' />
-          <D_text_p width={520} value={etcState.notIncludes} func={()=>{}}/>
+          {/* <D_text_p width={520} value={etcState.notIncludes} func={()=>{}}/> */}
         </div>
         <div className="d-textrow">
           <D_Title text='고객필독사항' />

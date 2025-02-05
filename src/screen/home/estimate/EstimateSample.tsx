@@ -44,6 +44,7 @@ export default function EstimateSample (props:any) {
                 setTourPeriodEnd(e);
               }} 
               setSelectEndDate={(e:any)=>{ 
+                setTourPeriodStart(e);
                 setTourPeriodEnd(e);
               }} 
             />

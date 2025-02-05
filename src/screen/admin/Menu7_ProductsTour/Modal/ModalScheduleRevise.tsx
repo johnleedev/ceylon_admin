@@ -240,6 +240,7 @@ export default function ModalScheduleRevise (props : any) {
                 }} 
                 setSelectEndDate={(e:any)=>{ 
                   const inputs = {...seasonCost};
+                  inputs.periodStart = e;
                   inputs.periodEnd = e;
                   setSeasonCost(inputs);
                 }} 
@@ -415,6 +416,7 @@ export default function ModalScheduleRevise (props : any) {
               }} 
               setSelectEndDate={(e:any)=>{ 
                 const inputs = {...periodData};
+                inputs[0].periodStart = e;
                 inputs[0].periodEnd = e;
                 inputs[0].earlyPeriod = '';
                 setPeriodData(inputs)

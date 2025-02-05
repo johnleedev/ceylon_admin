@@ -69,8 +69,8 @@ export default function Sub1_CityAirplane (props:any) {
 	const [isViewAddNationModal, setIsViewAddNationModal] = useState<boolean>(false);
 	const [isViewAddCityModal, setIsViewAddCityModal] = useState<boolean>(false);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
-	const [directAirlineData, setDirectAirlineData] = useState([]);
-	const [viaAirlineData, setViaAirlineData] = useState([]);
+	const [onewayAirlineData, setOnewayAirlineData] = useState([]);
+	const [roundAirlineData, setRoundAirlineData] = useState([]);
 	const [trafficData, setTrafficData] = useState<any>();
 
 	// 항공편&교통편 가져오기
@@ -82,8 +82,7 @@ export default function Sub1_CityAirplane (props:any) {
 			});
 			const resTraffic = await axios.post(`${MainURL}/tournationcity/gettrafficdata`, {
 				nation: item.nation,
-				city: item.cityKo,
-				cityId : item.id
+				city: item.cityKo
 			});
 	  	if (resAirline.data !== false) {
 				const copy = resAirline.data;
@@ -91,10 +90,10 @@ export default function Sub1_CityAirplane (props:any) {
 					try {
 						const parsedItem = {
 							id : item.id,
-							tourPeriodNight: item.tourPeriodNight,
-							tourPeriodDay: item.tourPeriodDay,
 							departAirportMain: item.departAirportMain,
 							departAirline: item.departAirline,
+							departTime : item.departTime,
+							codeShare : item.codeShare,
 							airlineData: JSON.parse(item.airlineData)
 						};
 						const key = item.sort;
@@ -107,11 +106,11 @@ export default function Sub1_CityAirplane (props:any) {
 					}
 					return acc;
 				}, {});
-	  		setDirectAirlineData(sortedData.direct || []);
-				setViaAirlineData(sortedData.via || []);
+	  		setOnewayAirlineData(sortedData.direct || []);
+				setRoundAirlineData(sortedData.via || []);
 			} else {
-				setDirectAirlineData([]);
-				setViaAirlineData([]);
+				setOnewayAirlineData([]);
+				setRoundAirlineData([]);
 			}
 			if (resTraffic.data !== false) { 
 				const copy = resTraffic.data[0];
@@ -126,8 +125,8 @@ export default function Sub1_CityAirplane (props:any) {
 				setTrafficData([]);
 			}
 		} catch (err) {
-			setDirectAirlineData([]);
-			setViaAirlineData([]);
+			setOnewayAirlineData([]);
+			setRoundAirlineData([]);
 			setTrafficData([]);
 		} finally {
 			setIsViewAddCityModal(true);
@@ -320,8 +319,8 @@ export default function Sub1_CityAirplane (props:any) {
 								setIsViewAddCityModal={setIsViewAddCityModal}
 								nationData={nationData}
 								cityData={cityData}
-								directAirlineData={directAirlineData}
-								viaAirlineData={viaAirlineData}
+								onewayAirlineData={onewayAirlineData}
+								roundAirlineData={roundAirlineData}
 								trafficData={trafficData}
 						 />
           </div>

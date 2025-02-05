@@ -10,10 +10,10 @@ import { DeliveryInfoProps, DepositCostInfoProps, EtcStateProps, HotelReserveSta
         UserInfoProps, VisitPathInfoProps, ProductInfoProps,
         AirlineReserveStateProps,
         ReserveStateProps,
-        WorkStateProps} from '../../InterfaceData';
+        WorkStateProps,
+        UserSubInfoProps} from '../../InterfaceData';
 import Loading from '../../components/Loading';
 import { DropdownBox } from '../../../../boxs/DropdownBox';
-import ModalReserve from '../../Menu1_Schedule/ModalReserve/ModalReserve';
 import { TextBox } from '../../../../boxs/TextBox';
 import { FaCheck } from "react-icons/fa";
 import { format } from 'date-fns';
@@ -58,6 +58,7 @@ export default function ReserveDetail (props : any) {
   const [charger, setCharger] = useState('');
 
   const [userInfo, setUserInfo] = useState<UserInfoProps[]>([]);
+  const [userSubInfo, setUserSubInfo] = useState<UserSubInfoProps>();
   const [visitPathInfo, setVisitPathInfo] = useState<VisitPathInfoProps>();
   const [productInfo, setProductInfo] = useState<ProductInfoProps>();
   const [airlineReserveState, setAirlineReserveState] = useState<AirlineReserveStateProps>();
@@ -78,6 +79,7 @@ export default function ReserveDetail (props : any) {
       setVisitPath(copy.visitPath);
       setCharger(copy.charger);
       setUserInfo(JSON.parse(copy.userInfo));
+      setUserSubInfo(JSON.parse(copy.userSubInfo));
 			setVisitPathInfo(JSON.parse(copy.visitPathInfo));
       setProductInfo(JSON.parse(copy.productInfo));
       setAirlineReserveState(JSON.parse(copy.airlineReserveState));
@@ -91,18 +93,24 @@ export default function ReserveDetail (props : any) {
 	useEffect(() => {
 		fetchPosts();
   }, [refresh]);  
-  
-  // 수정 모달 ------------------------------------------------------------------------------------------------
-  const [isViewReserveModal, setIsViewReserveModal] = useState<boolean>(false);
-  const divAreaRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(0);
 
-  useEffect(() => {
-    if (divAreaRef.current) {
-      const copy = divAreaRef.current.offsetHeight
-      setHeight(copy);
+  // 예약 정보 삭제
+  const handleReserveInfoDelete = async () => {
+    const data = {
+      serialNum : serialNum
     }
-  }, [isViewReserveModal]);
+    await axios
+    .post(`${MainURL}/adminreserve/deletereserveinfo`, data)
+    .then((res)=>{
+      if (res.data) {
+        alert('삭제되었습니다.')
+        navigate('/admin/reserve');
+      }
+    })
+    .catch((err)=>{
+      alert('다시 시도해주세요.')
+    });
+  };
   
 
   // 오른쪽바 데이터 관련-----------------------------------------------------------------------------------------
@@ -186,7 +194,8 @@ export default function ReserveDetail (props : any) {
   )
 
   return (
-    (userInfo.length > 0 
+    ( userInfo.length > 0 
+      && (userSubInfo !== undefined && userSubInfo !== null)
       && (reserveState !== undefined && reserveState !== null)
       && (workState !== undefined && workState !== null)
       && (visitPathInfo !== undefined && visitPathInfo !== null) 
@@ -206,26 +215,24 @@ export default function ReserveDetail (props : any) {
           <div className="menu-btn-box">
             <div className="menu-btn"
               onClick={()=>{
-                // navigate('/admin/reserve/documentreserve', 
-                //   {state: {userInfo : userInfo, visitPathInfo: visitPathInfo, 
-                //          depositCostInfo: depositCostInfo}});
+                navigate('/admin/reserve/documentreserve', 
+                  {state: {userInfo : userInfo, hotelReserveState : hotelReserveState, visitPathInfo: visitPathInfo, depositCostInfo: depositCostInfo}});
               }}>
-              <p>계약서 생성</p>
+              <p>계약서</p>
             </div>
             <div className="menu-btn"
               onClick={()=>{
-                // navigate('/admin/reserve/documentarrange', 
-                //   {state: {userInfo : userInfo, visitPathInfo: visitPathInfo,
-                //          hotelReserveState: hotelReserveState}});
+                navigate('/admin/reserve/documentarrange', 
+                  {state: { userInfo : userInfo, productInfo : productInfo,
+                    visitPathInfo: visitPathInfo, hotelReserveState: hotelReserveState}});
               }}
             >
-              <p>수배서 보내기</p>
+              <p>수배서</p>
             </div>
             <div className="menu-btn"
               onClick={()=>{
-                // navigate('/admin/reserve/documentcalculate',
-                //   {state: {userInfo : userInfo, visitPathInfo: visitPathInfo, 
-                //            }});
+                navigate('/admin/reserve/documentcalculate',
+                  {state: {userInfo : userInfo, visitPathInfo: visitPathInfo }});
               }}
             >
               <p>정산서</p>
@@ -253,6 +260,7 @@ export default function ReserveDetail (props : any) {
                     visitPath:visitPath,
                     charger:charger,
                     userInfo:userInfo,
+                    userSubInfo:userSubInfo,
                     visitPathInfo:visitPathInfo,
                     productInfo:productInfo,
                     airlineReserveState:airlineReserveState,
@@ -266,9 +274,13 @@ export default function ReserveDetail (props : any) {
             >
               <p>수정</p>
             </div>
-            {/* <div className="btn" style={{backgroundColor: '#5fb7ef'}}>
-              <p>저장</p>
-            </div> */}
+            <div className="btn" style={{backgroundColor: '#FF9090'}}
+              onClick={()=>{
+                handleReserveInfoDelete();
+              }}
+            >
+              <p>삭제</p>
+            </div>
           </div>
 
           {/* <div className="search-box">
@@ -356,7 +368,12 @@ export default function ReserveDetail (props : any) {
                 userInfo.map((item:any, index:any)=>{
                   return(
                     <div className="coverbox info" key={index}>
-                      <p style={{width:'5%', fontSize:'14px'}}>{item.sort}</p>
+                      <p style={{width:'5%', fontSize:'14px'}}>
+                        <input className="input" type="checkbox"
+                          checked={item.isContact}
+                          style={{width:'20px', height:'20px'}}
+                        />
+                      </p>
                       <p style={{width:'7%', fontSize:'14px'}}>{item.nameKo}</p>
                       <p style={{width:'7%', fontSize:'14px'}}>{item.nameLast}</p>
                       <p style={{width:'12%', fontSize:'14px'}}>{item.nameFirst}</p>
@@ -372,7 +389,18 @@ export default function ReserveDetail (props : any) {
                 })
               }
             </div>
-
+            <div className='content' style={{marginTop:'20px'}}>
+              <div className="coverbox titlerow">
+                <TitleBox width='33%' text='신부성함'/>
+                <TitleBox width='33%' text='생일'/>
+                <TitleBox width='33%' text='결혼기념일'/>
+              </div>
+              <div className="coverbox info">
+                <TextBoxPL10 width="33%" text={userSubInfo.brideName}/>
+                <TextBoxPL10 width="33%" text={userSubInfo.birthDate}/>
+                <TextBoxPL10 width="33%" text={userSubInfo.weddingDate}/>
+              </div>
+            </div>
           </section>
 
           <section>
@@ -408,7 +436,7 @@ export default function ReserveDetail (props : any) {
           </section>
 
          <section>
-            <h1>4. 예약상품</h1>
+            <h1>4. 상품정보</h1>
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow hole">
@@ -451,65 +479,74 @@ export default function ReserveDetail (props : any) {
               <div className="coverrow hole">
                 <TitleBox width="100px" text='여행기간'/>
                 <TextBoxPL10 width="50%" 
-                  text={`${productInfo.tourStartAirport} ${productInfo.tourStartPeriod} ~ ${productInfo.tourEndAirport} ${productInfo.tourEndPeriod} `}/>
+                  text={`${productInfo.tourStartAirport}  ${productInfo.tourStartPeriod} ~ ${productInfo.tourEndPeriod} `}/>
               </div>
             </div>
             <div className="coverbox">
-              <div className="coverrow half">
-                <TitleBox width="100px" text='1인요금' height={160}/>
-                <div style={{width:'60%'}}>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px', width:'25%'}}>성인</h3>
-                    <TextBoxPL10 width="40%" text={productInfo.costAdult} justify='flex-end'/>
-                    <p>원</p>
-                    <TextBoxPL10 width="10%" text={JSON.stringify(productInfo.costAdultNum)} justify='flex-end'/>
-                    <p>명</p>
-                  </div>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px', width:'25%'}}>소아</h3>
-                    <TextBoxPL10 width="40%" text={productInfo.costChild} justify='flex-end'/>
-                    <p>원</p>
-                    <TextBoxPL10 width="10%" text={JSON.stringify(productInfo.costChildNum)} justify='flex-end'/>
-                    <p>명</p>
-                  </div>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px', width:'25%'}}>유아</h3>
-                    <TextBoxPL10 width="40%" text={productInfo.costInfant} justify='flex-end'/>
-                    <p>원</p>
-                    <TextBoxPL10 width="10%" text={JSON.stringify(productInfo.costInfantNum)} justify='flex-end'/>
-                    <p>명</p>
-                  </div>
-                </div>
-              </div>
-              <div className="coverrow half">
-                <TitleBox width="100px" text='전체요금' height={160}/>
-                <TextBoxPL10 width="50%" text={productInfo.costAll} justify='flex-end'/>
-                <p>원</p>
+            <div className="coverrow half">
+              <TitleBox width="100px" text='1인요금' height={160}/>
+              <div style={{flex:1}}>
+                {
+                  productInfo.personalCost.map((item:any, index:any)=>{
+                    return (
+                    <div style={{display:'flex', alignItems:'center'}} key={index}>
+                      <TextBoxPL10 width="30%" text={item.currency}/>
+                      <p style={{margin:'0 10px'}}>{item.sort}</p>
+                      <TextBoxPL10 width="30%" text={item.cost}/>
+                      <p style={{marginRight:'10px'}}>원</p>
+                      <TextBoxPL10 width="15%" text={item.num}/>
+                      <p>명</p>
+                    </div>
+                    )
+                  })
+                }
               </div>
             </div>
-            <div className="coverbox">
-              <div className="coverrow hole">
-                <TitleBox width="100px" text='계약당시 환율'/>
-                <div style={{width:'85%', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px'}}>1USD</h3>
-                    <TextBoxPL10 width="30px" text={JSON.stringify(productInfo.reserveExchangeRate)} justify='center'/>
-                  </div>
-                  <div style={{display:'flex', alignItems:'center', marginLeft: '10px'}}>
-                    <p># 잔금지불시 변동환율 적용여부 공지</p>
-                    <div style={{margin:'0 10px'}}>
-                      <FaCheck color={productInfo.isNotice ? '#1DDB16' : '#EAEAEA'}/>
-                    </div>
-                    <p>공지했음</p>
-                    <div style={{margin:'0 10px'}}>
-                      <FaCheck color={productInfo.isClientCheck ? '#1DDB16' : '#EAEAEA'}/>
-                    </div>
-                    <p>고객확인</p>
-                  </div>
-                </div>
+            <div className="coverrow half">
+              <TitleBox width="100px" text='전체요금' height={160}/>
+              <TextBoxPL10 width="40%" text={productInfo.personalCostAll}/>
+              <p>원</p>
+            </div>
+          </div>
+          <div className="coverbox">
+            <div className="coverrow half">
+              <TitleBox width="100px" text='환율타입구분'/>
+              <div style={{marginLeft: '1px', display:'flex', alignItems:'center'}}>
+                <TextBoxPL10 width="40%" text={productInfo.exchangeRate.rateType}/>
               </div>
             </div>
-          </section>
+            <div className="coverrow half">
+              <TitleBox width="100px" text='환율공지'/>
+              <div style={{marginLeft: '10px', display:'flex', alignItems:'center'}}>
+                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                  <input className="input" type="checkbox"
+                    checked={productInfo.exchangeRate.isNotice}
+                    style={{width:'20px', height:'20px'}}
+                  />
+                </div>
+                <p>공지했음</p>
+                <div style={{width:'40px', height:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                  <input className="input" type="checkbox"
+                    checked={productInfo.exchangeRate.isClientCheck}
+                    style={{width:'20px', height:'20px'}}
+                  />
+                </div>
+                <p>고객확인</p>
+              </div>
+            </div>
+          </div>
+          <div className="coverbox">
+            <div className="coverrow half">
+              <TitleBox width="100px" text='고지환율'/>
+              <TextBoxPL10 width="40%" text={productInfo.exchangeRate.noticeRate}/>
+            </div>
+            <div className="coverrow half">
+              <TitleBox width="100px" text='잔금지급시환율'/>
+              <TextBoxPL10 width="20%" text={productInfo.exchangeRate.restDepositDate}/>
+              <TextBoxPL10 width="20%" text={productInfo.exchangeRate.restDepositRate}/>
+            </div>
+          </div>
+        </section>
 
          <section>
             <h1>5. 항공 예약현황</h1>
@@ -557,8 +594,8 @@ export default function ReserveDetail (props : any) {
                       <TextBoxPL10 width="50%" text={item.date} />
                     </div>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
-                      <TitleBox width="60px" text='상태'/>
-                      <TextBoxPL10 width="50%" text={item.state} />
+                      <TitleBox width="60px" text='발권완료확인'/>
+                      <TextBoxPL10 width="50%" text={item.ticketing} />
                     </div>
                   </div>
                 )
@@ -569,11 +606,16 @@ export default function ReserveDetail (props : any) {
           <section>
             <h1>6. 호텔 예약현황</h1>
             <div className="bottombar"></div>
-            <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#E2E2E2' }}>
-              <TitleBox width="20%" text='체크인'/>
-              <TitleBox width="25%" text='여행지'/>
-              <TitleBox width="25%" text='호텔명'/>
-              <TitleBox width="20%" text='룸타입'/>
+            <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#f6f6f6' }}>
+              <TitleBox width="3%" text=''/>
+              <div style={{display:'flex', alignItems:'center', width:'300px', justifyContent:'center'}}>
+                <TitleBox width="150px" text='체크인'/>
+                <p style={{width:'20px'}}></p>
+                <TitleBox width="150px" text='체크아웃'/>
+              </div>
+              <TitleBox width="20%" text='여행지'/>
+              <TitleBox width="20%" text='호텔명'/>
+              <TitleBox width="15%" text='룸타입'/>
               <TitleBox width="10%" text='박수'/>
             </div>
             {
@@ -581,10 +623,11 @@ export default function ReserveDetail (props : any) {
                 return (
                   <div className="coverbox" key={index}>
                     <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                      <TextBoxPL10 width="20%" text={item.date1} justify='center'/>
-                      <TextBoxPL10 width="25%" text={item.location} justify='center'/>
-                      <TextBoxPL10 width="25%" text={item.hotelName} justify='center'/>
-                      <TextBoxPL10 width="20%" text={item.roomType} justify='center'/>
+                      <p style={{width:'3%'}}></p>
+                      <TextBoxPL10 width="300px" text={`${item.checkIn} ${item.checkOut}`} justify='center'/>
+                      <TextBoxPL10 width="20%" text={item.location} justify='center'/>
+                      <TextBoxPL10 width="20%" text={item.hotelName} justify='center'/>
+                      <TextBoxPL10 width="15%" text={item.roomType} justify='center'/>
                       <TextBoxPL10 width="10%" text={item.days} justify='center'/>
                     </div>
                   </div>
@@ -593,48 +636,47 @@ export default function ReserveDetail (props : any) {
             }
           </section>
      
-
           <section>
             <h1>7. 적립금/할인혜택/사은품/여행자보험 관리</h1>
             <div className="bottombar"></div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width="120px" text='할인행사'/>
+                <TitleBox width="100px" text='할인행사'/>
                 <TextBoxPL10 width="50%" text={etcState.salesEvent}/>
                 <TextBoxPL10 width="30%" text={etcState.salesEventCost}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width="120px" text='적립금'/>
+                <TitleBox width="100px" text='적립금'/>
                 <TextBoxPL10 width="50%" text={etcState.saveMoney}/>
                 <TextBoxPL10 width="30%" text={etcState.saveMoneyCost}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width="120px" text='계약혜택'/>
+                <TitleBox width="100px" text='계약혜택'/>
                 <TextBoxPL10 width="80%" text={etcState.contractBenefit}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow hole">
-                <TitleBox width="120px" text='사은품'/>
+                <TitleBox width="100px" text='사은품'/>
                 <TextBoxPL10 width="50%" text={etcState.freeGift}/>
                 <TextBoxPL10 width="30%" text={etcState.freeGiftCost}/>
               </div>
             </div>
             <div className="coverbox">
               <div className="coverrow third">
-                <TitleBox width="120px" text='여행자보험'/>
+                <TitleBox width="100px" text='여행자보험'/>
                 <TextBoxPL10 width="50%" text={etcState.insuranceIncludes}/>
               </div>
               <div className="coverrow third">
-                <TitleBox width="120px" text='보험회사'/>
+                <TitleBox width="100px" text='보험회사'/>
                 <TextBoxPL10 width="50%" text={etcState.insuranceCompany}/>
               </div>
               <div className="coverrow third">
-                <TitleBox width="120px" text='계약금액'/>
+                <TitleBox width="100px" text='계약금액'/>
                 <TextBoxPL10 width="50%" text={etcState.insuranceCost}/>
               </div>
             </div>
@@ -644,63 +686,55 @@ export default function ReserveDetail (props : any) {
             <h1>8. 입금내역</h1>
             <div className="bottombar"></div>
             <div className="coverbox">
-              <div className="coverrow third rightborder">
-                <TitleBox width="120px" text='1인요금' height={160}/>
+              <div className="coverrow half">
+                <TitleBox width="100px" text='1인요금' height={160}/>
                 <div style={{flex:1}}>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px'}}>성인</h3>
-                    <TextBoxPL10 width="50%" text={depositCostInfo.personalCost.costAdult} justify='flex-end'/>
-                    <p style={{marginRight:'10px'}}>원</p>
-                    <TextBoxPL10 width="50%" text={`${depositCostInfo.personalCost.costAdultNum}`} justify='flex-end'/>
-                    <p>명</p>
-                  </div>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px'}}>소아</h3>
-                    <TextBoxPL10 width="50%" text={depositCostInfo.personalCost.costChild} justify='flex-end'/>
-                    <p style={{marginRight:'10px'}}>원</p>
-                    <TextBoxPL10 width="50%" text={`${depositCostInfo.personalCost.costChildNum}`} justify='flex-end'/>
-                    <p>명</p>
-                  </div>
-                  <div style={{display:'flex', alignItems:'center'}}>
-                    <h3 style={{margin:'0 10px'}}>유아</h3>
-                    <TextBoxPL10 width="50%" text={depositCostInfo.personalCost.costInfant} justify='flex-end'/>
-                    <p style={{marginRight:'10px'}}>원</p>
-                    <TextBoxPL10 width="50%" text={`${depositCostInfo.personalCost.costInfantNum}`} justify='flex-end'/>
-                    <p>명</p>
-                  </div>
-                </div>
+                {
+                  depositCostInfo.personalCost.map((item:any, index:any)=>{
+                    return (
+                    <div style={{display:'flex', alignItems:'center'}} key={index}>
+                      <TextBoxPL10 width="15%" text={item.currency}/>
+                      <p style={{margin:'0 10px'}}>{item.sort}</p>
+                      <TextBoxPL10 width="35%" text={item.cost}/>
+                      <p style={{marginRight:'10px'}}>원</p>
+                      <TextBoxPL10 width="15%" text={item.num}/>
+                      <p>명</p>
+                    </div>
+                    )
+                  })
+                }
               </div>
-              <div className="coverrow third rightborder">
-                <TitleBox width="120px" text='총요금' height={160}/>
-                <TextBoxPL10 width="50%" text={depositCostInfo.personalCost.costAll} justify='flex-end'/>
+              </div>
+              <div className="coverrow half">
+                <TitleBox width="100px" text='총요금' height={160}/>
+                <TextBoxPL10 width="50%" text={depositCostInfo.personalCostAll} justify='flex-end'/>
                 <p>원</p>
               </div>
-              <div className="coverrow third" style={{flexDirection:'column', alignItems:'start'}}>
-                <div style={{width:'100%',  display:'flex', alignItems:'center'}}>
-                  <TitleBox width="120px" text='할인요금' />
-                  <TextBoxPL10 width="50%" text={depositCostInfo.discountCost} justify='flex-end'/>
-                  <p>원</p>
-                </div>
-                <div style={{width:'100%', display:'flex', alignItems:'center'}}>
-                  <TitleBox width="120px" text='추가요금'/>
-                  <TextBoxPL10 width="50%" text={depositCostInfo.additionCostAll} justify='flex-end'/>
-                  <p>원</p>
-                </div>
-                <div style={{width:'100%', display:'flex', alignItems:'center'}}>
-                  <TitleBox width="120px" text='최종요금'/>
-                  <TextBoxPL10 width="50%" text={depositCostInfo.resultCost} justify='flex-end'/>
-                  <p>원</p>
-                </div>
+            </div>
+            <div className="coverbox">
+              <div className="coverrow third">
+                <TitleBox width="100px" text='할인요금' />
+                <TextBoxPL10 width="50%" text={depositCostInfo.discountCost} justify='flex-end'/>
+                <p>원</p>
+              </div>
+              <div className="coverrow third">
+                <TitleBox width="100px" text='추가요금'/>
+                <TextBoxPL10 width="50%" text={depositCostInfo.additionCostAll} justify='flex-end'/>
+                <p>원</p>
+              </div>
+              <div className="coverrow third">
+                <TitleBox width="100px" text='최종요금'/>
+                <TextBoxPL10 width="50%" text={depositCostInfo.resultCost} justify='flex-end'/>
+                <p>원</p>
               </div>
             </div>
-
             <div className="coverbox">
-              <div className="coverrow dubbleThird rightborder ">
-                <TitleBox width="120px" text='할인행사사은품'/>
+              <div className="coverrow dubbleThird">
+                <TitleBox width="100px" text='할인행사사은품'/>
                 <TextBoxPL10 width="50%" text={depositCostInfo.freeGift} justify='flex-start'/>
               </div>
               <div className="coverrow third">
-                <TitleBox width="120px" text='적립금'/>
+                <TitleBox width="100px" text='적립금'/>
                 <TextBoxPL10 width="50%" text={depositCostInfo.savedMoney} justify='flex-end'/>
                 <p>원</p>
               </div>

@@ -16,6 +16,7 @@ import { IoClose } from 'react-icons/io5';
 import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti';
 import { BiSolidRightArrowAlt, BiSolidLeftArrowAlt, BiSolidArrowToRight, BiSolidArrowFromLeft, BiSolidArrowToLeft, BiSolidArrowFromRight } from "react-icons/bi";
 import { FiMinusCircle } from "react-icons/fi";
+import { RestAirlineProps } from '../../InterfaceData';
 
 export default function ModalAddCity (props : any) {
 	
@@ -36,6 +37,7 @@ export default function ModalAddCity (props : any) {
   const [resortCategory, setResortCategory] = useState(isAddOrRevise === 'revise' ? JSON.parse(cityData.resortCategory) : [""]);
   const [scheduleCategory, setScheduleCategory] = useState(isAddOrRevise === 'revise' ? JSON.parse(cityData.scheduleCategory) : [""]);
   const [hotelCategory, setHotelCategory] = useState(isAddOrRevise === 'revise' ? JSON.parse(cityData.hotelCategory) : [""]);
+  const [serviceCategory, setServiceCategory] = useState(isAddOrRevise === 'revise'? JSON.parse(cityData.serviceCategory): [{product : "", program : "", productCost : ""}]);
   
   const [lastImages, setLastImages]  = 
     useState((props.isAddOrRevise === 'revise' && (cityData.inputImage !== null && cityData.inputImage !== '')) ? JSON.parse(cityData.inputImage) : []);
@@ -43,6 +45,26 @@ export default function ModalAddCity (props : any) {
     useState((props.isAddOrRevise === 'revise' && (cityData.inputImage !== null && cityData.inputImage !== '')) ? JSON.parse(cityData.inputImage) : []);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
  
+
+
+  // 프로그램 입력된 숫자 금액으로 변경
+  const handleinputServiceCategoryChange = (
+    e: React.ChangeEvent<HTMLInputElement>, index: number,
+  ) => {
+    const text = e.target.value;
+    const copy = [...serviceCategory];
+    if (text === '') {
+      copy[index].productCost = ''; 
+      setServiceCategory(copy);
+      return;
+    }
+    const inputNumber = parseInt(text.replace(/,/g, ''), 10);
+    if (isNaN(inputNumber)) {return;}
+    const formattedNumber = inputNumber.toLocaleString('en-US');
+    copy[index].productCost = formattedNumber; 
+    setServiceCategory(copy);
+  };
+
   // 이미지 첨부 함수 ----------------------------------------------
   const currentDate = new Date();
   const date = format(currentDate, 'MMddHHmmss');
@@ -139,7 +161,8 @@ export default function ModalAddCity (props : any) {
         resortCategory: JSON.stringify(resortCategory),
         scheduleCategory : JSON.stringify(scheduleCategory),
         hotelCategory : JSON.stringify(hotelCategory),
-        inputImage : JSON.stringify(inputImage)
+        serviceCategory : JSON.stringify(serviceCategory),
+        inputImage : JSON.stringify(inputImage),
       }
       axios 
         .post(`${MainURL}/restnationcity/registercities`, formData, {
@@ -203,6 +226,7 @@ export default function ModalAddCity (props : any) {
       resortCategory: JSON.stringify(resortCategory),
       scheduleCategory : JSON.stringify(scheduleCategory),
       hotelCategory : JSON.stringify(hotelCategory),
+      serviceCategory : JSON.stringify(serviceCategory),
       inputImage : JSON.stringify(inputImage),
     }
     axios 
@@ -225,31 +249,8 @@ export default function ModalAddCity (props : any) {
 
   // 항공편 입력 ------------------------------------------------------------------------------------------------------------------------------------------
   const [airlineSelectInput, setAirlineSelectInput] = useState('direct');
-  interface AirlineDataProps {
-    sort : string;
-    airlineName: string;
-    departDate: string[];
-    planeName: string;
-    departAirport: string;
-    departTime: string;
-    arriveAirport: string;
-    arriveTime: string;
-  }
-  interface AirlineProps {
-    id : string;
-    tourPeriodNight: string;
-    tourPeriodDay: string;
-    departAirportMain : string;
-    departAirline: string;
-    airlineData: AirlineDataProps[];
-  }   
-
-  const [directAirline, setDirectAirline] = useState<AirlineProps[]>(
-    isAddOrRevise === 'revise' ? props.directAirlineData : []
-  )
-  const [viaAirline, setViaAirline] = useState<AirlineProps[]>(
-    isAddOrRevise === 'revise' ? props.viaAirlineData : []
-  )
+  const [directAirline, setDirectAirline] = useState<RestAirlineProps[]>(isAddOrRevise === 'revise' ? props.directAirlineData : [])
+  const [viaAirline, setViaAirline] = useState<RestAirlineProps[]>(isAddOrRevise === 'revise' ? props.viaAirlineData : [])
 
   // 항공편 내용변경
   const handleAirlineContentChange = (text:any, useState:any, setUseState:any, index:any, subIndex:any, name:any) => {
@@ -273,7 +274,7 @@ export default function ModalAddCity (props : any) {
     })
       .then((res) => {
         if (res.data) {
-          alert(res.data)
+          alert(res.data);
         }
       })
       .catch((error) => {
@@ -332,7 +333,6 @@ export default function ModalAddCity (props : any) {
       <div className='close'>
         <div className='close-btn'
           onClick={()=>{
-            props.setRefresh(!props.refresh);
             props.setIsViewAddCityModal(false);
           }} 
         >
@@ -577,10 +577,72 @@ export default function ModalAddCity (props : any) {
         </div>
       </section>
 
+      <section>
+        {/* 프로그램 이용요금 ----------------------------------------------------------------------------------------------------------------- */}
+        <div className="bottombar"></div>
+        <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+          <div className='chartbox' style={{width:'20%'}} ><p>상품명</p></div>
+          <div className="chart-divider"></div>
+          <div className='chartbox' style={{width:'55%'}} ><p>프로그램</p></div>
+          <div className="chart-divider"></div>
+          <div className='chartbox' style={{width:'15%'}} ><p>요금</p></div>
+          <div className="chart-divider"></div>
+          <div className='chartbox' style={{width:'10%'}} ><p></p></div>
+          <div className="chart-divider"></div>
+        </div>
+        {
+          serviceCategory.map((item:any, index:any)=>{
+            return (
+              <div className="coverbox">
+                <div className="coverrow hole" style={{minHeight:'60px'}} >
+                  <div style={{width:'20%', display:'flex'}} >
+                    <input className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
+                       value={item.product} onChange={(e)=>{const copy = [...serviceCategory]; copy[index].product = e.target.value; setServiceCategory(copy);}}/>
+                  </div>
+                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                  <div style={{width:'55%'}} >
+                    <input className="inputdefault" style={{width:'95%', marginLeft:'5px', minHeight:'40px', outline:'none'}} 
+                        value={item.program } onChange={(e)=>{const copy = [...serviceCategory]; copy[index].program = e.target.value; setServiceCategory(copy);}}/>
+                  </div>
+                  <div style={{width:'1px', height:'inherit', backgroundColor:'#d4d4d4'}}></div>
+                  <div style={{width:'15%'}} >
+                    <input className="inputdefault" type="text" style={{width:'100%', marginRight:'5px', textAlign:'right', paddingRight:'5px'}} 
+                      value={item.productCost} onChange={(e)=>{
+                          handleinputServiceCategoryChange(e, index)
+                    }}/>
+                  </div>
+                  <div className="dayBox" style={{width:'10%', justifyContent:'center'}} >
+                    <div className="dayBtn"
+                      onClick={()=>{
+                        const copy = [...serviceCategory, {product : "", program : "", productCost : ""}];
+                        setServiceCategory(copy);
+                      }}
+                    >
+                      <p>+추가</p>
+                    </div>
+                    {
+                      (serviceCategory.length > 1 && index !== 0) &&
+                      <div className="dayBtn"
+                        onClick={()=>{
+                          const copy = [...serviceCategory];
+                          copy.splice(index, 1);
+                          setServiceCategory(copy);
+                        }}
+                      >
+                        <p>-삭제</p>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            )
+          })
+        }
+      </section>
+
       <div className='btn-box'>
         <div className="btn" 
           onClick={()=>{
-            props.setRefresh(!props.refresh);
             props.setIsViewAddCityModal(false);
           }}
         >
@@ -1104,7 +1166,6 @@ export default function ModalAddCity (props : any) {
       <div className='btn-box'>
         <div className="btn" 
           onClick={()=>{
-            props.setRefresh(!props.refresh);
             props.setIsViewAddCityModal(false);
           }}
         >

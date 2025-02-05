@@ -299,43 +299,7 @@
     }
   }
 
-  .d-btn-box2 {
-    margin-top: 20px;
-    @include middle();
-    margin-bottom: 100px;
-
-    .d-btn2 {
-      width: 100px;
-      height: 30px;
-      border: 1px solid #cbcbcb;
-      @include middle();
-      padding: 3px 10px;
-      margin: 0 10px;
-      border-radius: 5px;
-
-      p {
-        font-size: 14px;
-      }
-    }
-  }
-  .d-selectbtn-box {
-    @include middle();
-    margin: 50px 0;
-
-    .d-selectbtn {
-      width: 15%;
-      padding: 5px 15px;
-      border: 1px solid #cbcbcb;
-      border-radius: 5px;
-      margin: 0 5px;
-      text-align: center;
-      background-color: #fff;
-    }
-    .d-selectbtn:hover {
-      cursor: pointer;
-      border: 1px solid #a6a6a6;
-    }
-  }
+  
 
   .btn-box {
     width: 100%;

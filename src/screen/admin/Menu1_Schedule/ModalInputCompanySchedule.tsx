@@ -146,7 +146,7 @@ export default function ModalCompanySchedule(props:any) {
 
       <div className='btn-box'>
         <div className="btn" style={{backgroundColor:'#b3b3b3'}}
-          onClick={()=>{props.setIsViewCounselModal(false)}}
+          onClick={()=>{props.setIsViewScheduleModal(false)}}
         >
           <p>취소</p>
         </div>

@@ -755,6 +755,7 @@ export default function PerDayCost (props : any) {
                       }} 
                       setSelectEndDate={(e:any)=>{ 
                         const inputs = [...inputCost];
+                        inputs[sectionIndex].reservePeriod.start = e;
                         inputs[sectionIndex].reservePeriod.end = e;
                         setInputCost(inputs);
                       }} 
@@ -837,6 +838,7 @@ export default function PerDayCost (props : any) {
                                       }} 
                                       setSelectEndDate={(e:any)=>{ 
                                         const inputs = [...inputCost];
+                                        inputs[sectionIndex].inputDefault[index].period[subIndex].start = e;
                                         inputs[sectionIndex].inputDefault[index].period[subIndex].end = e;
                                         setInputCost(inputs);
                                       }} 

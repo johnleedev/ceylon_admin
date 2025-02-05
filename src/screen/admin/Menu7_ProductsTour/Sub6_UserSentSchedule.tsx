@@ -3,7 +3,6 @@ import { TitleList } from '../../../boxs/TitleList';
 import { TextBox } from '../../../boxs/TextBox';
 import '../Products.scss'
 import { PiPencilSimpleLineFill } from 'react-icons/pi';
-import ModalAddTourProduct from './Modal/ModalAddTourProduct';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { DropdownBox } from '../../../boxs/DropdownBox';
@@ -41,11 +40,9 @@ interface ListProps {
 	reviseDate : string;
 }
 
-export default function Sub4_TourProduct (props:any) {
+export default function Sub6_UserSentSchedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-	const sorts = ["전체", "경유지일정", "기본일정", "해양스포츠", "우붓일정", "스파마사지", "리조트부대시설", "레스토랑/바/클럽", "VIP샌딩"];
-	const [selectSort, setSelectSort] = useState(0);
 
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
@@ -53,14 +50,14 @@ export default function Sub4_TourProduct (props:any) {
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
-    const res = await axios.get(`${MainURL}/resttourproduct/gettourproducts/${currentPage}`)
+    const res = await axios.get(`${MainURL}/tourtourproduct/gettourproducts/${currentPage}`)
     if (res.data.resultData) {
       const copy = res.data.resultData;
       setList(copy);
 			setListOrigin(copy);
       setListAllLength(res.data.totalCount);
     }
-		const nationCityRes = await axios.get(`${MainURL}/restnationcity/getnationcity`)
+		const nationCityRes = await axios.get(`${MainURL}/tournationcity/getnationcity`)
     if (nationCityRes.data !== false) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
@@ -107,7 +104,7 @@ export default function Sub4_TourProduct (props:any) {
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
-			const res = await axios.post(`${MainURL}/resttourproduct/gettourproductsearch`, {
+			const res = await axios.post(`${MainURL}/tourtourproduct/gettourproductsearch`, {
 				sort : searchSort,
 				word : searchWord
 			});
@@ -163,42 +160,8 @@ export default function Sub4_TourProduct (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>여행지상품 관리</h1>	
+					<h1>고객발송일정표</h1>	
 				</div>
-				<div className="addBtn"
-					onClick={()=>{
-						setIsAddOrRevise('add');
-						setIsViewAddTourProductModal(true);
-					}}
-				>
-					<PiPencilSimpleLineFill />
-					<p>상품등록</p>
-				</div>
-			</div>
-			
-
-			<div className="continentBtnbox">
-				{
-					sorts.map((item:any, index:any)=>{
-						return (
-							<div className="continentNtn"
-								style={{backgroundColor: selectSort === index ? '#242d3f' : '#fff'}}
-								onClick={()=>{
-									setSelectSort(index);
-									const copy = [...listOrigin]
-									if (item === '전체') {
-										setList(listOrigin);	
-									} else {
-										const result = copy.filter((e:any)=> e.sort === item);
-										setList(result);
-									}
-								}}
-							>
-								<p style={{color: selectSort === index ? '#fff' : '#333'}}>{item}</p>
-							</div>
-						)
-					})
-				}
 			</div>
 
 			<div className="searchbox">
@@ -311,24 +274,6 @@ export default function Sub4_TourProduct (props:any) {
 			</div>
 
 			
-
-			{/* 선택일정등록 모달창 */}
-      {
-        isViewAddTourProductModal &&
-        <div className='Modal'>
-          <div className='modal-backcover'></div>
-          <div className='modal-maincover'>
-             <ModalAddTourProduct
-								refresh={refresh}
-								setRefresh={setRefresh}
-								isAddOrRevise={isAddOrRevise}
-								nationlist={nationlist}
-								setIsViewAddTourProductModal={setIsViewAddTourProductModal}
-								tourProductData={tourProductInfo}
-						 />
-          </div>
-        </div>
-      }
 
 			<div style={{height:'200px'}}></div>
 		</div>

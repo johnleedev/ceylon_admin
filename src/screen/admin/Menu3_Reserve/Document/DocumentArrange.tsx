@@ -5,26 +5,30 @@ import { DropdownBox } from '../../../../boxs/DropdownBox';
 import { DropDownLandCompany } from '../../../DefaultData';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 export default function DocumentArrange() {
-
+  
+  let navigate = useNavigate();
   const adminUserName = sessionStorage.getItem('userName');
   const newDate = new Date();
   const currentDate = format(newDate, 'yyyy년 MM월 dd일', { locale: ko });
 
   const location = useLocation();
   const userInfo = location.state.userInfo;
+  const productInfo = location.state.productInfo;
+
+ 
   const reserveInfo = location.state.reserveInfo;
   const airportState = location.state.airportState;
   const hotelReserveState = location.state.hotelReserveState;
 
+  const [selectTab, setSelectTab] = useState('허니문');
+
   const [addLandCompany, setAddLandCompany] = useState('');
   const [request, setRequest] = useState('');
-  
-  const [selectTab1, setSelectTab1] = useState('selected');
-  const [selectTab2, setSelectTab2] = useState('');
+
 
   type DTitleProps = {
     width?: number;
@@ -49,21 +53,21 @@ export default function DocumentArrange() {
         <h1 className='d-title'>수배서</h1>
      
         <div className="d-select-row">
-          <div className={`d-select-btn ${selectTab1}`}
-            onClick={()=>{setSelectTab1('selected'); setSelectTab2('');}}
+          <div className={selectTab === '허니문' ? 'd-select-btn selected' : 'd-select-btn'}
+            onClick={()=>{setSelectTab('허니문');}}
           >
-            <p style={{color: selectTab1 === 'selected' ? '#333' : '#BDBDBD'}}>허니문</p>
+            <p style={{color: selectTab === '허니문' ? '#333' : '#BDBDBD'}}>허니문</p>
           </div>
-          <div className={`d-select-btn ${selectTab2}`}
-            onClick={()=>{setSelectTab1(''); setSelectTab2('selected')}}
+          <div className={selectTab === 'FIT/GROUP' ? 'd-select-btn selected' : 'd-select-btn'}
+            onClick={()=>{setSelectTab('FIT/GROUP');}}
           >
-            <p style={{color: selectTab2 === 'selected' ? '#333' : '#BDBDBD'}}>인센티브</p>
+            <p style={{color: selectTab === 'FIT/GROUP' ? '#333' : '#BDBDBD'}}>FIT/GROUP</p>
           </div>
         </div>
 
         <div style={{height:'10px'}}></div>
 
-        <p>&#8251; 수배서 내용이 정확하지 않은 경우 계약관리에서 수정하시기 바랍니다.</p>
+        <p>&#8251; 정확한 수배서 생성을 위해서는 정확한 예약상세등록이 필요합니다.</p>
 
         <div style={{height: '2px', backgroundColor: '#8e8e8e', marginTop:'10px'}}></div>
         
@@ -84,7 +88,13 @@ export default function DocumentArrange() {
         </div>
         <div className="d-textrow">
           <D_Title text='발신'/>
-          <h4>(주)실론투어 {adminUserName}</h4>
+          <div style={{flex:1}}>
+            <h4>(주)실론투어</h4>
+          </div>
+          <D_Title text='담당자'/>
+          <div style={{flex:1}}>
+            <h4>{adminUserName}</h4>
+          </div>
         </div>
         <div className="d-textrow">
           <D_Title text='날짜'/>
@@ -97,11 +107,11 @@ export default function DocumentArrange() {
         <div className="d-textrow">
           <D_Title text='여행지' />
           <div style={{flex:1}}>
-            <h4>{reserveInfo.tourLocation}</h4>
+            <h4>{productInfo.tourLocation}</h4>
           </div>
           <D_Title text='여행기간' />
           <div style={{flex:1}}>
-            <h4>{reserveInfo.tourStartPeriod} ~ {reserveInfo.tourEndPeriod}</h4>
+            <h4>{productInfo.tourStartPeriod} ~ {productInfo.tourEndPeriod}</h4>
           </div>
         </div>
         
@@ -150,7 +160,7 @@ export default function DocumentArrange() {
             <div className="divider"></div>
             <p className="box-one">도착시간</p>
           </div>
-          {
+          {/* {
             airportState.map((item:any, index:any)=>{
               return (
                 <div className="box-row" key={index}>
@@ -166,7 +176,7 @@ export default function DocumentArrange() {
                 </div>
               )
             })
-          }
+          } */}
           
         </div>
 
@@ -217,11 +227,16 @@ export default function DocumentArrange() {
       </div>
 
       
-      <div className='d-btn-box2'>
-        <div className="d-btn2" style={{backgroundColor:'#b3b3b3'}}>
+      <div className='btn-box'>
+        <div className="btn" style={{backgroundColor:'#b3b3b3'}}
+          onClick={()=>{
+            navigate(-1);
+          }}
+        >
           <p>취소</p>
         </div>
-        <div className="d-btn2" style={{backgroundColor:'#5fb7ef'}}>
+        <div className="btn" style={{backgroundColor:'#5fb7ef'}}
+        >
           <p>저장</p>
         </div>
       </div>

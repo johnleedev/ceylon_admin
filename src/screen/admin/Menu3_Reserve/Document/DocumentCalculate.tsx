@@ -16,7 +16,7 @@ export default function DocumentCalculate() {
   const productCost = location.state.productCost;
   const airportState = location.state.airportState;
 
-  const [landCompany, setLandCompany] = useState(JSON.parse(reserveInfo.landCompany));
+  // const [landCompany, setLandCompany] = useState(JSON.parse(reserveInfo.landCompany));
   
 
   type DTitleProps = {
@@ -29,11 +29,6 @@ export default function DocumentCalculate() {
       <h3>{text}</h3>
     </div>
   )
-
-  const handleLandCompanyInput = async (text: string, Idx : number) => {
-		const copy = [...landCompany];
-    
-	};
 
  
   return (
@@ -63,15 +58,15 @@ export default function DocumentCalculate() {
         <div className="d-textrow">
           <D_Title text='고유번호' />
           <div style={{flex:1}}>
-            <h4>{reserveInfo.serialNum}</h4>
+            {/* <h4>{reserveInfo.serialNum}</h4> */}
           </div>
           <D_Title text='상품명' />
           <div style={{flex:1}}>
-            <h4>{reserveInfo.productName}</h4>
+            {/* <h4>{reserveInfo.productName}</h4> */}
           </div>
           <D_Title text='담당자' />
           <div style={{flex:1}}>
-            <h4>{reserveInfo.charger}</h4>
+            {/* <h4>{reserveInfo.charger}</h4> */}
           </div>
         </div>
         <div className="d-textrow">
@@ -85,7 +80,7 @@ export default function DocumentCalculate() {
           </div>
           <D_Title text='출발일' />
           <div style={{flex:1}}>
-            <h4>{reserveInfo.tourStartPeriod}</h4>
+            {/* <h4>{reserveInfo.tourStartPeriod}</h4> */}
           </div>
         </div>
         <div className="d-textrow">
@@ -149,7 +144,7 @@ export default function DocumentCalculate() {
                 <div className="d-chart-divider"></div>
 
                 <div style={{flex:1}}>
-                  {
+                  {/* {
                     landCompany.map((item:any, index:any)=>{
                       return (
                         <div key={index}>
@@ -198,7 +193,7 @@ export default function DocumentCalculate() {
                         </div>
                       )
                     })
-                  }
+                  } */}
                 </div>
               </div>
 
@@ -209,7 +204,7 @@ export default function DocumentCalculate() {
                 <div className="d-chart-divider"></div>
 
                 <div style={{flex:1}}>
-                  {
+                  {/* {
                     airportState.map((item:any, index:any)=>{
                       return (
                         <div key={index}>
@@ -258,7 +253,7 @@ export default function DocumentCalculate() {
                         </div>
                       )
                     })
-                  }
+                  } */}
                 </div>
               </div>
 
@@ -569,13 +564,22 @@ export default function DocumentCalculate() {
        
       </div>
 
-      <div className="d-selectbtn-box">
-        <div className="d-selectbtn"
+      <div className='btn-box'>
+        <div className="btn" style={{backgroundColor:'#b3b3b3'}}
           onClick={()=>{navigate(-1)}}
-        ><p>예약사항보기</p></div>
-        <div className="d-selectbtn"><p>저장</p></div>
-        <div className="d-selectbtn"><p>저장 후 리스트</p></div>
-        <div className="d-selectbtn"><p>후정산서 완료</p></div>
+        >
+          <p>취소</p>
+        </div>
+        <div className="btn" style={{backgroundColor:'#5fb7ef'}}
+        >
+          <p style={{color:'#333'}}>저장</p>
+        </div>
+        <div className="btn">
+          <p style={{color:'#333'}}>저장 후 리스트</p>
+        </div>
+        <div className="btn">
+          <p style={{color:'#333'}}>후정산서 완료</p>
+        </div>
       </div>
 
     </div>

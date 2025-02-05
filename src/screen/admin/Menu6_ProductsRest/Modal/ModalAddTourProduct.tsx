@@ -19,6 +19,7 @@ import { DateBoxDouble } from '../../../../boxs/DateBoxDouble';
 export default function ModalAddTourProduct (props : any) {
 	
   let navigate = useNavigate();
+  const sorts = ["차량/가이드", "익스커션", "스파마사지", "골프", "강습/클래스", "VIP서비스", "1박투어", "호캉스즐기기", "경유지일정"];
   const userId = sessionStorage.getItem('userId');
   const isAddOrRevise = props.isAddOrRevise;
   const tourProductData = isAddOrRevise === 'revise' ? props.tourProductData : null;
@@ -312,20 +313,20 @@ export default function ModalAddTourProduct (props : any) {
         <h1>선택일정등록</h1>
       </div>
 
+
       <section>
         <div className="bottombar"></div>
         <div className="coverbox">
           <div className="coverrow hole" style={{height:'50px'}}>
             <TitleBox width="120px" text='투어타입'/>
             <div className='checkInputCover'>
-              <SelectBox text='경유지일정'/>
-              <SelectBox text='기본일정'/>
-              <SelectBox text='해양스포츠'/>
-              <SelectBox text='우붓일정'/>
-              <SelectBox text='스파마사지'/>
-              <SelectBox text='리조트부대시설'/>
-              <SelectBox text='레스토랑/바/클럽'/>
-              <SelectBox text='VIP샌딩'/>
+              {
+                sorts.map((item:any, index:any)=>{
+                  return (
+                    <SelectBox text={item} key={index}/>
+                  )
+                })
+              }
             </div>
           </div>
         </div>
@@ -503,6 +504,7 @@ export default function ModalAddTourProduct (props : any) {
                         }} 
                         setSelectEndDate={(e:any)=>{ 
                           const copy = {...programTimeCost};
+                          copy.periodStart = e;
                           copy.periodEnd = e;
                           setProgramTimeCost(copy);
                         }} 

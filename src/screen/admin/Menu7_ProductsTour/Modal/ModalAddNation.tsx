@@ -34,6 +34,7 @@ export default function ModalAddNation (props : any) {
   const [voltage, setVoltage] = useState(props.isAddOrRevise === 'revise' ? nationData.voltage : '');
   const [caution, setCaution] = useState(props.isAddOrRevise === 'revise' ? nationData.caution : '');
   const [taxFreeLimit, setTaxFreeLimit] = useState<TaxFreeLimitProps>(props.isAddOrRevise === 'revise' ? JSON.parse(nationData.taxFreeLimit) : {alcohol:'', cigarette:'', cash:'', all:'', notice:''});
+  const [taxRefund, setTaxRefund] = useState(props.isAddOrRevise === 'revise' ? nationData.taxRefund : '');
   const [lastImages, setLastImages]  = 
     useState((props.isAddOrRevise === 'revise' && (nationData.inputImage !== null && nationData.inputImage !== '')) ? JSON.parse(nationData.inputImage) : []);
   const [inputImage, setInputImage] = 
@@ -139,6 +140,7 @@ export default function ModalAddNation (props : any) {
         voltage : voltage,
         caution : caution,
         taxFreeLimit : JSON.stringify(taxFreeLimit),
+        taxRefund : taxRefund,
         inputImage : JSON.stringify(inputImage)
       }
       axios 
@@ -206,6 +208,7 @@ export default function ModalAddNation (props : any) {
       voltage : voltage,
       caution : caution,
       taxFreeLimit : JSON.stringify(taxFreeLimit),
+      taxRefund : taxRefund,
       inputImage : JSON.stringify(inputImage)
     }
     axios 
@@ -432,6 +435,28 @@ export default function ModalAddNation (props : any) {
                   setTaxFreeLimit(copy);
                 }}
               />
+          </div>
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
+            <TitleBox width="120px" text='택스 리펀드'/>
+            <input className="inputdefault" type="text" style={{width:'70%', marginLeft:'5px'}} 
+              value={taxRefund} onChange={(e)=>{setTaxRefund(e.target.value)}}/>
+            <div className='checkInputCover'>
+              <div className='checkInput'>
+                <input className="input" type="checkbox"
+                  checked={taxRefund === '해당사항없음'}
+                  onChange={()=>{
+                    if (taxRefund === '해당사항없음') {
+                      setTaxRefund('')  
+                    } else {
+                      setTaxRefund('해당사항없음')
+                    }
+                  }}
+                />
+              </div>
+              <p>해당사항없음</p>
+            </div>
           </div>
         </div>
         <div className="coverbox">

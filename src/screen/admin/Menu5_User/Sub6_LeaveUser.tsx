@@ -39,23 +39,17 @@ export default function Sub6_LeaveUser (props:any) {
 	const [searchLocationOption, setSearchLocationOption] = useState([]);
 
 	const fetchPosts = async () => {
-		const res = await axios.get(`${MainURL}/adminlist/getonlinelist/${currentPage}`);
+		const res = await axios.get(`${MainURL}/users/getusers/${currentPage}`);
 		if (res.data.resultData) {
 			const copy = res.data.resultData;
-      // setList(copy);   
+      setList(copy);   
       setListAllLength(res.data.totalCount);
-			const result = copy.map((item:any)=>
-        ({ value: item.tourLocation,  label:item.tourLocation })
-      );
-			result.unshift({ value: '선택', label: '선택' });
-			setSearchLocationOption(result);
 		}
 	};
 
 	useEffect(() => {
 		fetchPosts();
 	}, [refresh]);  
-
 
 	// State 변수 추가
 	const itemsPerPage = 10; // 한 페이지당 표시될 게시글 수
@@ -177,16 +171,15 @@ export default function Sub6_LeaveUser (props:any) {
 					{
 						list.map((item:any, index:any)=>{
 							return (
-								<div className="rowbox">
-									<TextBox width="5%" text={index+1} />
-									<TextBox width="7%" text={item.sort} />
+								<div className="rowbox" key={index}>
+									<TextBox width="5%" text={item.id} />
+									<TextBox width="7%" text={item.grade} />
 									<TextBox width="10%" text={item.name}  />
 									<TextBox width="15%" text={item.phone} />
-									<TextBox width="10%" text={item.lastTourDate} />
-									<TextBox width="25%" text={item.tourProduct} />
-									<TextBox width="7%" text={`${item.useNum}회`} />
-									<TextBox width="10%" text={item.useCost} />
-									<TextBox width="7%" text={item.present} />
+									<TextBox width="10%" text={`${item.usedNum}회/${item.usedCost}`} />
+									<TextBox width="10%" text={item.manageDate} />
+									<TextBox width="20%" text={''} />
+									<TextBox width="7%" text={item.point} />
 								</div>
 							)
 						})

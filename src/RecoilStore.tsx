@@ -9,6 +9,22 @@ export const recoilExchangeRate = atom({
     }]
 });
 
+export const recoilNoticeExchangeRate = atom({
+  key: "noticeExchangeRate",
+  default: [{
+      base : '',
+      KRW : 0
+    }]
+});
+
+export const recoilRestDepositExchangeRate = atom({
+  key: "restDepositExchangeRate",
+  default: [{
+      base : '',
+      KRW : 0
+    }]
+});
+
 
 export const recoilExchangeKey = atom({
   key: "exchangeKey",

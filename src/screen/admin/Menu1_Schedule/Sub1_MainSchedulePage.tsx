@@ -4,7 +4,6 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import ModalReserve from './ModalReserve/ModalReserve';
 import ModalCheckCounsel from './ModalCheck/ModalCheckCounsel';
 import ModalInputCounsel from './ModalInputCounsel';
 import axios from 'axios';

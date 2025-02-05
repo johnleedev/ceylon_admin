@@ -16,30 +16,6 @@ export default function Sub1_Online (props:any) {
 
 	let navigate = useNavigate();
 
-	// interface CheckBoxProps {
-  //   title: string;
-  // }
-
-  // const CheckBox: React.FC<CheckBoxProps> = ({ title }) => (
-  //   <div className='checkInputCover'>
-  //     <div className='checkInput'>
-  //       <input className="input" type="checkbox"
-  //         checked={searchSelect === title}
-  //         onChange={()=>{
-  //           setSearchSelect(title);
-  //         }}
-  //       />
-  //     </div>
-  //     <p>{title}</p>
-  //   </div>
-  // )
-
-	// const selectDays = [
-	// 	{name: "오늘", period: 0}, {name: "어제", period: 1}, {name: "3일", period: 3}, {name: "7일", period: 7}, 
-	// 	{name: "1개월", period: 30}, {name: "3개월", period: 90}, {name: "6개월", period: 180}
-	// ]
-
-
 	// 게시글 가져오기 ------------------------------------------------------
 	interface ListProps {
 		id: number;

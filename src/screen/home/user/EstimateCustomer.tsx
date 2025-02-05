@@ -49,6 +49,7 @@ export default function EstimateCustomer (props:any) {
                     setTourPeriodEnd(e);
                   }} 
                   setSelectEndDate={(e:any)=>{ 
+                    setTourPeriodStart(e);
                     setTourPeriodEnd(e);
                   }} 
                 />

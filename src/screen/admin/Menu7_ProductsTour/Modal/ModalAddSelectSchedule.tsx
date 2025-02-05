@@ -517,6 +517,7 @@ export default function ModalAddSelectSchedule (props : any) {
                         }} 
                         setSelectEndDate={(e:any)=>{ 
                           const copy = {...programTimeCost};
+                          copy.periodStart = e;
                           copy.periodEnd = e;
                           setProgramTimeCost(copy);
                         }} 
