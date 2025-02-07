@@ -1,14 +1,14 @@
-import "./TourDetailPage.scss";
+import "./MainPage.scss";
 import { useCallback, useState } from "react";
 import { IoLocationOutline } from "react-icons/io5";
 import { LuCalendarDays } from "react-icons/lu";
 import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
-import TourImageData from "../../common/TourImageData";
-import CommonImageData from "../../common/CommonImageData";
-import RatingBoard from "../../common/RatingBoard";
+import ProductImageData from "../common/ProductImageData";
+import CommonImageData from "../common/CommonImageData";
+import RatingBoard from "../common/RatingBoard";
 import { useNavigate } from "react-router-dom";
 
-export default function ResortDetailPage() {
+export default function TourMainPage() {
   
   let navigate = useNavigate();
   const categoryObjs = [
@@ -30,26 +30,20 @@ export default function ResortDetailPage() {
     { id: 7, title: "세인트", rating: 3, location: '발리/스미냑', image: CommonImageData.hotel_08 },
   ]
 
+  const hotelObjs22 = [
+    { id: 0, title: "파드라 리조트", rating: 3, image: CommonImageData.hotel_01,
+      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"} },
+    { id: 1, title: "더 카욘 정글 리조트 우붓", rating: 4, image: CommonImageData.hotel_02,
+      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"} },
+    { id: 2, title: "아야나 풀빌라", rating: 5, image: CommonImageData.hotel_03,
+      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"}}
+  ]
 
-
-  const formatRatingArray = useCallback((rating: number) => {
-    const integerPart = Math.floor(rating);
-    const fractionalPart = Math.round((rating - integerPart) * 100);
-
-    return new Array(5).fill(0).map((_, i) => {
-      if (i < integerPart) {
-        return 100;
-      }
-      if (i === integerPart) {
-        return fractionalPart;
-      }
-      return 0;
-    });
-  }, []);
 
   // -----------------------------------------------------------------------------------------------------------------------
   const [toUser, setToUser] = useState('발리');
   const [category, setCategory] = useState('resortinfo');
+  const [categoryMenu, setCategoryMenu] = useState('휴양지추천상품');
   const [categoryBtn, setCategoryBtn] = useState('recommend');
   const [sidebar, setSidebar] = useState('전체');
 
@@ -97,78 +91,31 @@ export default function ResortDetailPage() {
       </div>
 
       <div className="tour__header__section__wrapper">
-        <img className="bg__image" src={TourImageData.tourDetailMain_bg} alt="temp" />
-        <div className="header__info">
-          <span className="header__title">몰디브</span>
-          <span className="header__subtitle">Maldives</span>
+        <img className="bg__image" src={ProductImageData.paris} alt="temp" />
+      </div>
+
+      <div className="tour_detail_category__menu__section__wrapper">
+        <div className="tour_detail_category__menu__content">
+            {
+              ["유럽추천상품", "프랑스", "이탈리아", "스위스", "오스트리아", "스페인", "동유럽", "포르투갈", "크로아티아", "산토리니", "북유럽"]
+              .map((item:any, index:any)=>{
+                return (
+                  <div className={`category__menu-item ? ${categoryMenu === item ? 'on' : ''}`} 
+                    key={index} onClick={()=>{setCategoryMenu(item);}}
+                  >
+                    <div className={`category__menu-face ${categoryMenu !== '' ? 'on' : ''}`} >{item}</div>
+                    <div className={`category__menu-face2 ${categoryMenu === item ? 'on' : ''}`}> </div>
+                  </div>
+                )
+              })
+            }
         </div>
       </div>
+
+      {/* 중간 리스트 섹션 -------------------------------------------------------------------------------------------------- */}
       
       <div className="tour_detail_category__section__wrapper">
         
-        <div className="tour_detail_category__selector__box">
-          <div
-            className={`tour_detail_category__bar ${
-              category === "resortinfo" ? "on" : ""
-            }`}
-            onClick={() => setCategory("resortinfo")}
-          >
-            리조트 안내
-          </div>
-          <div
-            className={`tour_detail_category__bar ${
-              category === "nationinfo" ? "on" : ""
-            }`}
-            onClick={() => setCategory("nationinfo")}
-          >
-            발리 안내
-          </div>
-          <div
-            className={`tour_detail_category__bar ${
-              category === "schedule" ? "on" : ""
-            }`}
-            onClick={() => setCategory("schedule")}
-          >
-            일정 미리보기
-          </div>
-        </div>
-
-        <div className="tour_detail_category__selectorBtn__box">
-          <div
-            className={`tour_detail_category__Btn ${
-              categoryBtn === "recommend" ? "on" : ""
-            }`}
-            onClick={() => setCategoryBtn("recommend")}
-          >
-            추천 풀빌라
-          </div>
-          <div
-            className={`tour_detail_category__Btn ${
-              categoryBtn === "early" ? "on" : ""
-            }`}
-            onClick={() => setCategoryBtn("early")}
-          >
-            얼리버드 프로모션
-          </div>
-          <div
-            className={`tour_detail_category__Btn ${
-              categoryBtn === "family" ? "on" : ""
-            }`}
-            onClick={() => setCategoryBtn("family")}
-          >
-            가족여행 추천 리조트
-          </div>
-          <div
-            className={`tour_detail_category__Btn ${
-              categoryBtn === "stay" ? "on" : ""
-            }`}
-            onClick={() => setCategoryBtn("stay")}
-          >
-            우붓 스테이
-          </div>
-        </div>
-
-
         <div className="tour_detail_hotel__list__wrapper">
 
           <div className="tour_detail_pb-2">
@@ -216,6 +163,47 @@ export default function ResortDetailPage() {
             }
           </div>
         </div>
+      </div>
+
+      {/* 하단 리스트 섹션 -------------------------------------------------------------------------------------------------- */}
+      <div className="tour_bottom_best__section__wrapper">
+        <div className="section__header__wrapper">
+          <div className="section__title">
+            <span>Best</span>
+            <div className="section__main__title">
+              <span>실론투어</span>
+              <span>휴양지</span>
+            </div>
+            <div className="section__mobile__title">
+              <span>올인크루시브</span>
+              <span>리조트</span>
+            </div>
+          </div>
+          <div className="section__desc">
+            <span>여행전문가가 추천하는</span>
+            <span>최고의 휴식</span>
+          </div>
+        </div>
+        <div className="promotion__cards__wrapper">
+          {hotelObjs22.slice(0,3).map((obj) => (
+             <div className="recommend__card__wrapper">
+              <div className="recommend__image__wrapper">
+                <img src={obj.image} alt="temp" />
+              </div>
+              <span className="recommend__card__title">{obj.title}</span>
+              <div className="recommend__card__info">
+                <span>
+                  {obj.address.state}/{obj.address.city}
+                </span>
+                <div className="recommend__rating__wrapper">
+                  <RatingBoard rating={obj.rating} />
+                </div>
+              </div>
+
+            </div>
+          ))}
+        </div>
+    
       </div>
 
     </div>

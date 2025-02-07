@@ -1,4 +1,4 @@
-import "./TourMainPage.scss";
+import "./MainPage.scss";
 import { useCallback, useState } from "react";
 import { IoIosArrowForward , IoIosArrowBack } from "react-icons/io";
 import { IoLocationOutline } from "react-icons/io5";
@@ -8,7 +8,7 @@ import RatingBoard from "../../common/RatingBoard";
 import CommonImageData from "../../common/CommonImageData";
 import { useNavigate } from "react-router-dom";
 
-export default function ResortPage() {
+export default function RestMainPage() {
 
   let navigate = useNavigate();
   const [selectId, setSelectId] = useState(0);
@@ -50,14 +50,7 @@ export default function ResortPage() {
       desc: "즐길거리 등을 적는 곳입니다. 현지에서 하는 것, 유명한 장소, 재미있는 체험 등" },
   ];
 
-  const hotelObjs = [
-    { id: 0, title: "파드라 리조트", rating: 3, image: CommonImageData.hotel_01,
-      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"} },
-    { id: 1, title: "더 카욘 정글 리조트 우붓", rating: 4, image: CommonImageData.hotel_02,
-      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"} },
-    { id: 2, title: "아야나 풀빌라", rating: 5, image: CommonImageData.hotel_03,
-      address: { contury: "인도네시아", state: "발리", city: "쿠타", detailAddress: "Sauthon Road"}}
-  ]
+
   
   const handleClickBtn = (dir: "left" | "right") => {
     setSelectId((prev) => {
@@ -186,46 +179,7 @@ export default function ResortPage() {
         </div>
       </div>
 
-      {/* 하단 리스트 섹션 -------------------------------------------------------------------------------------------------- */}
-      <div className="tour_main_best__section__wrapper">
-        <div className="section__header__wrapper">
-          <div className="section__title">
-            <span>Best</span>
-            <div className="section__main__title">
-              <span>실론투어</span>
-              <span>휴양지</span>
-            </div>
-            <div className="section__mobile__title">
-              <span>올인크루시브</span>
-              <span>리조트</span>
-            </div>
-          </div>
-          <div className="section__desc">
-            <span>여행전문가가 추천하는</span>
-            <span>최고의 휴식</span>
-          </div>
-        </div>
-        <div className="promotion__cards__wrapper">
-          {hotelObjs.slice(0,3).map((obj) => (
-             <div className="recommend__card__wrapper">
-              <div className="recommend__image__wrapper">
-                <img src={obj.image} alt="temp" />
-              </div>
-              <span className="recommend__card__title">{obj.title}</span>
-              <div className="recommend__card__info">
-                <span>
-                  {obj.address.state}/{obj.address.city}
-                </span>
-                <div className="recommend__rating__wrapper">
-                  <RatingBoard rating={obj.rating} />
-                </div>
-              </div>
-
-            </div>
-          ))}
-        </div>
-    
-      </div>
+     
 
     </div>
   );

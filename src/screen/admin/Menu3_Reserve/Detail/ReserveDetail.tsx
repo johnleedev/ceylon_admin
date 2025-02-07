@@ -223,8 +223,7 @@ export default function ReserveDetail (props : any) {
             <div className="menu-btn"
               onClick={()=>{
                 navigate('/admin/reserve/documentarrange', 
-                  {state: { userInfo : userInfo, productInfo : productInfo,
-                    visitPathInfo: visitPathInfo, hotelReserveState: hotelReserveState}});
+                  {state: { userInfo : userInfo, productInfo : productInfo, airlineReserveState : airlineReserveState, hotelReserveState: hotelReserveState}});
               }}
             >
               <p>수배서</p>
@@ -232,7 +231,7 @@ export default function ReserveDetail (props : any) {
             <div className="menu-btn"
               onClick={()=>{
                 navigate('/admin/reserve/documentcalculate',
-                  {state: {userInfo : userInfo, visitPathInfo: visitPathInfo }});
+                  {state: {userInfo : userInfo, productInfo : productInfo }});
               }}
             >
               <p>정산서</p>
@@ -551,27 +550,27 @@ export default function ReserveDetail (props : any) {
          <section>
             <h1>5. 항공 예약현황</h1>
             <div className="bottombar"></div>
-            <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#E2E2E2' }}>
-              <TitleBox width="20%" text='항공편'/>
+            <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#f6f6f6'}}>
+              <TitleBox width="300px" text='날짜'/>
+              <TitleBox width="10%" text='항공사'/>
+              <TitleBox width="10%" text='항공편'/>
               <TitleBox width="10%" text='출발공항'/>
-              <TitleBox width="150px" text='출발일'/>
-              <TitleBox width="15%" text='출발시간'/>
+              <TitleBox width="10%" text='출발시간'/>
               <TitleBox width="10%" text='도착공항'/>
-              <TitleBox width="150px" text='도착일'/>
-              <TitleBox width="15%" text='도착시간'/>
+              <TitleBox width="10%" text='도착시간'/>
             </div>
             { 
               airlineReserveState.airlineState.map((item:any, index:any)=>{
                 return (
                   <div className="coverbox" key={index}>
                     <div className="coverrow hole" style={{justifyContent:'space-between'}}>
-                      <TextBoxPL10 width="20%" text={item.airportSection} justify='center'/>
+                      <TextBoxPL10 width="300px" text={`${item.departDate} ~ ${item.arriveDate}`} justify='center'/>
+                      <TextBoxPL10 width="10%" text={item.airlineCompany} justify='center'/>
+                      <TextBoxPL10 width="10%" text={item.airlineName} justify='center'/>
                       <TextBoxPL10 width="10%" text={item.departAirport} justify='center'/>
-                      <TextBoxPL10 width="150px" text={item.departDate} justify='center'/>
-                      <TextBoxPL10 width="15%" text={item.departTime} justify='center'/>
+                      <TextBoxPL10 width="10%" text={item.departTime} justify='center'/>
                       <TextBoxPL10 width="10%" text={item.arriveAirport} justify='center'/>
-                      <TextBoxPL10 width="150px" text={item.arriveDate} justify='center'/>
-                      <TextBoxPL10 width="15%" text={item.arriveTime} justify='center'/>
+                      <TextBoxPL10 width="10%" text={item.arriveTime} justify='center'/>
                     </div>
                   </div>
                 )
@@ -582,19 +581,19 @@ export default function ReserveDetail (props : any) {
                 return (
                   <div className="coverbox" key={index}>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
-                      <TitleBox width="60px" text='항공사'/>
-                      <TextBoxPL10 width="50%" text={item.company} />
-                    </div>
-                    <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
-                      <TitleBox width="60px" text='발권처'/>
+                      <TitleBox width="100px" text='발권처'/>
                       <TextBoxPL10 width="50%" text={item.ticketBooth} />
                     </div>
+                    <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
+                      <TitleBox width="100px" text='항공료'/>
+                      <TextBoxPL10 width="50%" text={item.company} />
+                    </div>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}} >
-                      <TitleBox width="60px" text='날짜'/>
+                      <TitleBox width="100px" text='발권일'/>
                       <TextBoxPL10 width="50%" text={item.date} />
                     </div>
                     <div className="coverrow quarter" style={{justifyContent:'space-between'}}>
-                      <TitleBox width="60px" text='발권완료확인'/>
+                      <TitleBox width="100px" text='발권완료확인'/>
                       <TextBoxPL10 width="50%" text={item.ticketing} />
                     </div>
                   </div>
@@ -609,9 +608,9 @@ export default function ReserveDetail (props : any) {
             <div className="coverbox titlerow" style={{justifyContent:'space-between', backgroundColor:'#f6f6f6' }}>
               <TitleBox width="3%" text=''/>
               <div style={{display:'flex', alignItems:'center', width:'300px', justifyContent:'center'}}>
-                <TitleBox width="150px" text='체크인'/>
-                <p style={{width:'20px'}}></p>
-                <TitleBox width="150px" text='체크아웃'/>
+                <TitleBox width="80px" text='체크인'/>
+                <p>~</p>
+                <TitleBox width="80px" text='체크아웃'/>
               </div>
               <TitleBox width="20%" text='여행지'/>
               <TitleBox width="20%" text='호텔명'/>

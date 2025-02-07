@@ -18,17 +18,11 @@ export default function DocumentArrange() {
   const location = useLocation();
   const userInfo = location.state.userInfo;
   const productInfo = location.state.productInfo;
-
- 
-  const reserveInfo = location.state.reserveInfo;
-  const airportState = location.state.airportState;
+  const airlineReserveState = location.state.airlineReserveState;
   const hotelReserveState = location.state.hotelReserveState;
-
+  
   const [selectTab, setSelectTab] = useState('허니문');
-
-  const [addLandCompany, setAddLandCompany] = useState('');
   const [request, setRequest] = useState('');
-
 
   type DTitleProps = {
     width?: number;
@@ -73,18 +67,9 @@ export default function DocumentArrange() {
         
         <div className="d-textrow">
           <D_Title text='수신' />
-          <DropdownBox
-            widthmain='190px'
-            height='35px'
-            selectedValue={''}
-            options={DropDownLandCompany}
-            handleChange={(e)=>{''}}
-          />
-          <input 
-            className="d-input-input" type="text" 
-            style={{width:`300px`}} value={addLandCompany}
-            onChange={(e)=>{setAddLandCompany(e.target.value)}}
-          />
+          <div style={{flex:1}}>
+            <h4>{productInfo.landCompany[0].companyName}</h4>
+          </div>
         </div>
         <div className="d-textrow">
           <D_Title text='발신'/>
@@ -101,10 +86,6 @@ export default function DocumentArrange() {
           <h4>{currentDate}</h4>
         </div>
         <div className="d-textrow">
-          <D_Title text='내용'/>
-          <h4></h4>
-        </div>
-        <div className="d-textrow">
           <D_Title text='여행지' />
           <div style={{flex:1}}>
             <h4>{productInfo.tourLocation}</h4>
@@ -114,33 +95,40 @@ export default function DocumentArrange() {
             <h4>{productInfo.tourStartPeriod} ~ {productInfo.tourEndPeriod}</h4>
           </div>
         </div>
+        <div className="d-textrow">
+          <D_Title text='여행상품' />
+          <div style={{flex:1}}>
+            <h4>{productInfo.productName}</h4>
+          </div>
+          <D_Title text='일정표' />
+          <div style={{flex:1}}>
+            <h4></h4>
+          </div>
+        </div>
         
         <div className="d-textrow">
           <D_Title text='여행객' />
           <div style={{flex:1}}>
-            <div style={{display:'flex', flex:1}}>
-              <div style={{flex:1, borderRight:'1px solid #EAEAEA'}}>
-                <h4>{userInfo[0].nameKo}</h4>
-              </div>
-              <div style={{flex:1, borderRight:'1px solid #EAEAEA'}}>
-                <h4>{userInfo[0].nameLast} {userInfo[0].nameFirst}</h4>
-              </div>
-              <div style={{flex:1}}>
-                <h4>{userInfo[0].phone}</h4>
-              </div>
-            </div>
-            <div style={{flex:1, height:'1px', backgroundColor:'#EAEAEA'}}></div>
-            <div style={{display:'flex', flex:1}}>
-              <div style={{flex:1, borderRight:'1px solid #EAEAEA'}}>
-                <h4>{userInfo[1].nameKo}</h4>
-              </div>
-              <div style={{flex:1, borderRight:'1px solid #EAEAEA'}}>
-                <h4>{userInfo[1].nameLast} {userInfo[1].nameFirst}</h4>
-              </div>
-              <div style={{flex:1}}>
-                <h4>{userInfo[1].phone}</h4>
-              </div>
-            </div>
+            {
+              userInfo.map((item:any, index:any)=>{
+                return (
+                  <div style={{width:'100%'}} key={index}>
+                    <div style={{display:'flex', flex:1}}>
+                      <div style={{flex:1, borderRight:'1px solid #EAEAEA'}}>
+                        <h4>{item.nameKo}</h4>
+                      </div>
+                      <div style={{flex:1, borderRight:'1px solid #EAEAEA'}}>
+                        <h4>{item.nameLast} {item.nameFirst}</h4>
+                      </div>
+                      <div style={{flex:1}}>
+                        <h4>{item.phone}</h4>
+                      </div>
+                    </div>
+                    <div style={{flex:1, height:'1px', backgroundColor:'#EAEAEA'}}></div>
+                  </div>
+                )
+              })
+            }
           </div>
         </div>
 
@@ -152,32 +140,37 @@ export default function DocumentArrange() {
           <div className="box-row" style={{backgroundColor:'#EAEAEA'}}>
             <p className="box-one">날짜</p>
             <div className="divider"></div>
+            <p className="box-one">항공편</p>
+            <div className="divider"></div>
             <p className="box-one">구간</p>
             <div className="divider"></div>
-            <p className="box-one">항공편명</p>
+            <p className="box-one">시간</p>
             <div className="divider"></div>
-            <p className="box-one">출발시간</p>
-            <div className="divider"></div>
-            <p className="box-one">도착시간</p>
+            <p className="box-one"></p>
           </div>
-          {/* {
-            airportState.map((item:any, index:any)=>{
+          {
+            airlineReserveState.airlineState.map((item:any, index:any)=>{
               return (
                 <div className="box-row" key={index}>
-                  <p className="box-one">{item.date}</p>
+                  <div className="box-one">
+                    <p>{item.departDate}</p>
+                    <p>~ {item.arriveDate}</p>
+                  </div>
                   <div className="divider"></div>
-                  <p className="box-one">{item.section}</p>
+                  <p className="box-one">{item.airlineName}</p>
                   <div className="divider"></div>
                   <p className="box-one">{item.airport}</p>
                   <div className="divider"></div>
-                  <p className="box-one">{item.timeDepart}</p>
+                  <div className="box-one">
+                    <p>{item.departTime}</p>
+                    <p>~ {item.arriveTime}</p>
+                  </div>
                   <div className="divider"></div>
                   <p className="box-one">{item.timeArrive}</p>
                 </div>
               )
             })
-          } */}
-          
+          }
         </div>
 
         <div style={{padding:'10px', textAlign:'center', marginTop:'20px', borderBottom:'1px solid #8C8C8C'}}>
@@ -186,7 +179,7 @@ export default function DocumentArrange() {
 
         <div className="d-textrow" style={{flexDirection:'column'}}>
           <div className="box-row" style={{backgroundColor:'#EAEAEA'}}>
-            <p className="box-one">체크인날짜</p>
+            <p className="box-one">체크인</p>
             <div className="divider"></div>
             <p className="box-one" style={{minWidth:'200px'}}>호텔</p>
             <div className="divider"></div>
@@ -198,7 +191,7 @@ export default function DocumentArrange() {
             hotelReserveState.map((item:any, index:any)=>{
               return (
                 <div className="box-row" key={index}>
-                  <p className="box-one">{item.date1}</p>
+                  <p className="box-one">{item.checkIn}</p>
                   <div className="divider"></div>
                   <p className="box-one"  style={{minWidth:'200px'}}>{item.hotelName}</p>
                   <div className="divider"></div>
@@ -209,7 +202,6 @@ export default function DocumentArrange() {
               )
             })
           }
-          
         </div>
 
         <div style={{padding:'10px', textAlign:'center', marginTop:'20px', borderBottom:'1px solid #8C8C8C'}}>

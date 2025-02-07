@@ -10,14 +10,15 @@ export default function DocumentCalculate() {
 
 
   let navigate = useNavigate();
+  const adminUserName = sessionStorage.getItem('userName');
+
   const location = useLocation();
   const userInfo = location.state.userInfo;
-  const reserveInfo = location.state.reserveInfo;
-  const productCost = location.state.productCost;
-  const airportState = location.state.airportState;
+  const productInfo = location.state.productInfo;
 
-  // const [landCompany, setLandCompany] = useState(JSON.parse(reserveInfo.landCompany));
+
   
+
 
   type DTitleProps = {
     width?: number;
@@ -45,59 +46,45 @@ export default function DocumentCalculate() {
         <div style={{height:'10px'}}></div>
 
         <div className="d-selectbtn-box">
-          <div className="d-selectbtn"
+          <div className="d-selectbtn" style={{backgroundColor:'#b3b3b3'}}
             onClick={()=>{navigate(-1)}}
-          ><p>예약사항보기</p></div>
-          <div className="d-selectbtn"><p>저장</p></div>
-          <div className="d-selectbtn"><p>저장 후 리스트</p></div>
-          <div className="d-selectbtn"><p>후정산서 완료</p></div>
+          ><p>계약서보기</p></div>
+          <div className="d-selectbtn" style={{backgroundColor:'#5fb7ef'}}><p>저장</p></div>
+          <div className="d-selectbtn"><p>가정산 완료</p></div>
+          <div className="d-selectbtn" style={{backgroundColor:'#5fb7ef'}}><p>지상비 결제 완료</p></div>
+          <div className="d-selectbtn"><p>정산 완료</p></div>
         </div>
 
         <div style={{height: '2px', backgroundColor: '#8e8e8e', marginTop:'30px'}}></div>
         
         <div className="d-textrow">
-          <D_Title text='고유번호' />
+          <D_Title text='고객명' />
           <div style={{flex:1}}>
-            {/* <h4>{reserveInfo.serialNum}</h4> */}
+            <h4>{userInfo[0].nameKo} {userInfo[1].nameKo}</h4>
           </div>
-          <D_Title text='상품명' />
+          <D_Title text='계약일' />
           <div style={{flex:1}}>
-            {/* <h4>{reserveInfo.productName}</h4> */}
+            <h4></h4>
+          </div>
+          <D_Title text='여행기간' />
+          <div style={{flex:1}}>
+            <h4>{productInfo.tourStartPeriod} ~ {productInfo.tourEndPeriod}</h4>
+          </div>
+        </div>
+        <div className="d-textrow">
+          <D_Title text='여행상품' />
+          <div style={{flex:1}}>
+            <h4>{productInfo.productName}</h4>
+          </div>
+          <D_Title text='총입금액' />
+          <div style={{flex:1}}>
+            <h4></h4>
           </div>
           <D_Title text='담당자' />
           <div style={{flex:1}}>
-            {/* <h4>{reserveInfo.charger}</h4> */}
+            <h4>{adminUserName}</h4>
           </div>
         </div>
-        <div className="d-textrow">
-          <D_Title text='성함' />
-          <div style={{flex:1}}>
-            <h4>{userInfo[0].nameKo}, {userInfo[1].nameKo}</h4>
-          </div>
-          <D_Title text='예약일' />
-          <div style={{flex:1}}>
-            <h4></h4>
-          </div>
-          <D_Title text='출발일' />
-          <div style={{flex:1}}>
-            {/* <h4>{reserveInfo.tourStartPeriod}</h4> */}
-          </div>
-        </div>
-        <div className="d-textrow">
-          <D_Title text='총 입금액' />
-          <div style={{flex:1}}>
-            <h4></h4>
-          </div>
-          <D_Title text='판매가' />
-          <div style={{flex:1}}>
-            <h4></h4>
-          </div>
-          <D_Title text='최종수정' />
-          <div style={{flex:1}}>
-            <h4></h4>
-          </div>
-        </div>
-
 
         <div style={{height: '2px', backgroundColor: '#8e8e8e', marginTop:'30px'}}></div>
 
@@ -110,7 +97,7 @@ export default function DocumentCalculate() {
             <div className="d-chart-divider"></div>
             <div style={{flex:1}}>
               <div className='d-chartbox' style={{borderBottom: '1px solid #D3D3D3'}}>
-                <p>선정산</p>
+                <p>가정산</p>
               </div>
               <div style={{display:'flex'}} className='d-chartbox'>
                 <p className='d-charttext' style={{flex:2}}>내역</p>
@@ -121,7 +108,7 @@ export default function DocumentCalculate() {
             <div className="d-chart-divider"></div>
             <div style={{flex:1}}>
               <div className='d-chartbox' style={{borderBottom: '1px solid #D3D3D3'}}>  
-                <p>후정산</p>
+                <p>정산</p>
               </div>
               <div style={{display:'flex'}}  className='d-chartbox'>
                 <p className='d-charttext'>내역</p>
@@ -144,8 +131,8 @@ export default function DocumentCalculate() {
                 <div className="d-chart-divider"></div>
 
                 <div style={{flex:1}}>
-                  {/* {
-                    landCompany.map((item:any, index:any)=>{
+                  {
+                    [1].map((item:any, index:any)=>{
                       return (
                         <div key={index}>
                           <div style={{flex:1, display:'flex'}}>
@@ -193,7 +180,7 @@ export default function DocumentCalculate() {
                         </div>
                       )
                     })
-                  } */}
+                  }
                 </div>
               </div>
 
@@ -204,8 +191,8 @@ export default function DocumentCalculate() {
                 <div className="d-chart-divider"></div>
 
                 <div style={{flex:1}}>
-                  {/* {
-                    airportState.map((item:any, index:any)=>{
+                  {
+                    [1].map((item:any, index:any)=>{
                       return (
                         <div key={index}>
                           <div style={{flex:1, display:'flex'}}>
@@ -253,14 +240,14 @@ export default function DocumentCalculate() {
                         </div>
                       )
                     })
-                  } */}
+                  }
                 </div>
               </div>
 
               <div className="d-chart-divider-row"></div>
 
               <div style={{display:'flex'}}>
-                <div className='d-chartbox item'><p>국내숙박</p></div>
+                <div className='d-chartbox item'><p>OTA</p></div>
                 <div className="d-chart-divider"></div>
 
                 <div style={{flex:1, display:'flex'}}>
@@ -299,7 +286,46 @@ export default function DocumentCalculate() {
               <div className="d-chart-divider-row"></div>
 
               <div style={{display:'flex'}}>
-                <div className='d-chartbox item'><p>국내교통</p></div>
+                <div className='d-chartbox item'><p>비자대행</p></div>
+                <div className="d-chart-divider"></div>
+
+                <div style={{flex:1, display:'flex'}}>
+                  <div style={{flex:1}}>
+                    <div style={{display:'flex'}} className='d-chartbox'>
+                      <p className='d-charttext' style={{flex:2}}>
+                      <input 
+                        className="d-input-input" type="text" 
+                        style={{width:`95%`}} value={''}
+                        onChange={(e)=>{}}
+                      />
+                      </p>
+                      <div className="d-chart-textdivider"></div>
+                      <p className='d-charttext' style={{flex:1}}>
+                      <input 
+                        className="d-input-cost" type="text" 
+                        style={{width:`95%`}} value={''}
+                        onChange={(e)=>{}}
+                      />
+                      </p>
+                    </div>
+                  </div>
+                  <div className="d-chart-divider"></div>
+                  <div style={{flex:1}}>
+                    <div style={{display:'flex'}}  className='d-chartbox'>
+                      <p className='d-charttext'></p>
+                      <div className="d-chart-textdivider"></div>
+                      <p className='d-charttext'></p>
+                      <div className="d-chart-textdivider"></div>
+                      <p className='d-charttext'></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="d-chart-divider-row"></div>
+
+              <div style={{display:'flex'}}>
+                <div className='d-chartbox item'><p>여행자보험</p></div>
                 <div className="d-chart-divider"></div>
 
                 <div style={{flex:1, display:'flex'}}>
@@ -348,7 +374,7 @@ export default function DocumentCalculate() {
             <div style={{flex:1}}>
               
               <div style={{display:'flex'}}>
-                <div className='d-chartbox item'><p>사은품</p></div>
+                <div className='d-chartbox item'><p>적립금 지원</p></div>
                 <div className="d-chart-divider"></div>
 
                 <div style={{flex:1, display:'flex'}}>
@@ -387,7 +413,7 @@ export default function DocumentCalculate() {
               <div className="d-chart-divider-row"></div>
 
               <div style={{display:'flex'}}>
-                <div className='d-chartbox item'><p>프로모션</p></div>
+                <div className='d-chartbox item'><p>사은품구입</p></div>
                 <div className="d-chart-divider"></div>
 
                 <div style={{flex:1, display:'flex'}}>
@@ -516,6 +542,45 @@ export default function DocumentCalculate() {
                 </div>
               </div>
 
+              <div className="d-chart-divider-row"></div>
+
+              <div style={{display:'flex'}}>
+                <div className='d-chartbox item'><p>프로모션비용</p></div>
+                <div className="d-chart-divider"></div>
+
+                <div style={{flex:1, display:'flex'}}>
+                  <div style={{flex:1}}>
+                    <div style={{display:'flex'}} className='d-chartbox'>
+                      <p className='d-charttext' style={{flex:2}}>
+                      <input 
+                        className="d-input-input" type="text" 
+                        style={{width:`95%`}} value={''}
+                        onChange={(e)=>{}}
+                      />
+                      </p>
+                      <div className="d-chart-textdivider"></div>
+                      <p className='d-charttext' style={{flex:1}}>
+                      <input 
+                        className="d-input-cost" type="text" 
+                        style={{width:`95%`}} value={''}
+                        onChange={(e)=>{}}
+                      />
+                      </p>
+                    </div>
+                  </div>
+                  <div className="d-chart-divider"></div>
+                  <div style={{flex:1}}>
+                    <div style={{display:'flex'}}  className='d-chartbox'>
+                      <p className='d-charttext'></p>
+                      <div className="d-chart-textdivider"></div>
+                      <p className='d-charttext'></p>
+                      <div className="d-chart-textdivider"></div>
+                      <p className='d-charttext'></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
           </div>
@@ -527,7 +592,7 @@ export default function DocumentCalculate() {
           <div className="box-row" style={{backgroundColor:'#EAEAEA'}}>
             <p className="box-one"></p>
             <div className="divider"></div>
-            <p className="box-one">입금액</p>
+            <p className="box-one">최종입금액</p>
             <div className="divider"></div>
             <p className="box-one">수탁경비</p>
             <div className="divider"></div>
@@ -539,49 +604,80 @@ export default function DocumentCalculate() {
             <div className="divider"></div>
             <p className="box-one">수수료</p>
           </div>
-          {
-            ['선정산','후정산','차액'].map((item:any, index:any)=>{
-              return (
-                <div className="box-row" key={index}>
-                  <div className="box-one">{item}</div>
-                  <div className="divider"></div>
-                  <p className="box-one"></p>
-                  <div className="divider"></div>
-                  <p className="box-one"></p>
-                  <div className="divider"></div>
-                  <p className="box-one"></p>
-                  <div className="divider"></div>
-                  <p className="box-one"></p>
-                  <div className="divider"></div>
-                  <p className="box-one"></p>
-                  <div className="divider"></div>
-                  <p className="box-one"></p>
-                </div>
-              )
-            })
-          }
+          
+          <div className="box-row">
+            <div className="box-one">가정산</div>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+          </div>
+
+          <div className="box-row">
+            <div className="box-one">정산</div>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+          </div>
+
+          <div className="box-row">
+            <div className="box-one">차액</div>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+            <div className="divider"></div>
+            <p className="box-one"></p>
+          </div>
+
         </div>
        
       </div>
 
-      <div className='btn-box'>
-        <div className="btn" style={{backgroundColor:'#b3b3b3'}}
+      <div className='d-selectbtn-box'>
+        <div className="d-selectbtn" style={{backgroundColor:'#b3b3b3'}}
           onClick={()=>{navigate(-1)}}
         >
           <p>취소</p>
         </div>
-        <div className="btn" style={{backgroundColor:'#5fb7ef'}}
+        <div className="d-selectbtn" style={{backgroundColor:'#5fb7ef'}}
         >
           <p style={{color:'#333'}}>저장</p>
         </div>
-        <div className="btn">
-          <p style={{color:'#333'}}>저장 후 리스트</p>
+        <div className="d-selectbtn">
+          <p style={{color:'#333'}}>가정산 완료</p>
         </div>
-        <div className="btn">
-          <p style={{color:'#333'}}>후정산서 완료</p>
+        <div className="d-selectbtn" style={{backgroundColor:'#5fb7ef'}}
+        >
+          <p style={{color:'#333'}}>지상비 결재완료</p>
+        </div>
+        <div className="d-selectbtn">
+          <p style={{color:'#333'}}>정산 완료</p>
         </div>
       </div>
-
     </div>
   )
 }

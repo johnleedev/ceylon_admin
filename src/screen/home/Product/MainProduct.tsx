@@ -1,23 +1,25 @@
 import Header from "../component/Header";
-import "./Product.scss";
-import TourMainPage from "./pages/TourMainPage";
-import TourDetailPage from "./pages/TourDetailPage";
-import HotelPage from "./pages/HotelPage";
 import { Route, Routes } from "react-router-dom";
-import HotelDetailPage from "./pages/HotelDetailPage";
+import RestMainPage from "./RestMainPage";
+import TourMainPage from "./TourMainPage";
+import ResortDetailPage from "./restpages/ResortDetailPage";
+import ResortCustomOrder from "./restpages/ResortCustomOrder";
+import ResortCustomOrderMC from "./restpages/ResortCustomOrderMC";
 
 
 export default function MainProduct() {
-
-
   return (
     <div>
       <Header />
       <Routes >
-          <Route path="/" element={<TourMainPage />}/>
-          <Route path="/tourdetail" element={<TourDetailPage/>}/>
-          <Route path="/hotelresort" element={<HotelPage/>}/>
-          <Route path="/hotelresortdetail" element={<HotelDetailPage/>}/>
+          <Route path="/restmain" element={<RestMainPage />}/>
+          <Route path="/resortdetail" element={<ResortDetailPage/>}/>
+          <Route path="/resortcustomorder" element={<ResortCustomOrder/>}/>
+          <Route path="/resortcustomordermc" element={<ResortCustomOrderMC/>}/>
+
+          <Route path="/tourmain" element={<TourMainPage />}/>
+          
+
         </Routes>
     </div>
   );

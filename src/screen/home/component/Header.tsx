@@ -11,10 +11,10 @@ const Header: React.FC = () => {
   let navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const menus = [
-    { title: "휴양지", url:"/products", links: [] },
-    { title: "유럽", url:"/products/tourdetail", links: [] },
-    { title: "여행지 미리가기", url:"/products/hotelresort", links: [] },
-    { title: "여행후기", url:"/products", links: [] },
+    { title: "휴양지", url:"/products/restmain", links: [] },
+    { title: "유럽", url:"/products/tourmain", links: [] },
+    { title: "여행지 미리가기", url:"/", links: [] },
+    { title: "여행후기", url:"/", links: [] },
     { title: "견적서만들기", url:"/estimate", links: [] },
     { title: "견적서고객용", url:"/user", links: [] },
     { title: "관리자", url:"/admin", links: [] }
@@ -120,15 +120,6 @@ const Header: React.FC = () => {
                   >
                       <div className={`menu-face ${activeIndex !== null ? 'on' : ''}`} onClick={()=>{navigate(item.url)}}>{item.title}</div>
                       <div className={`menu-face2 ${activeIndex === index ? 'on' : ''}`}> </div>
-                      {/* <div className="menu-body">
-                        {
-                            item.links.map((subItem:any, subIndex:any) => (
-                              <div className="menu-part" key={subIndex}>
-                                  <div onClick={()=>{navigate(subItem.subUrl)}}>{subItem.title}</div>
-                              </div>
-                          ))
-                        }
-                      </div> */}
                   </div>
                 ))
               }

@@ -11,7 +11,7 @@ import { IoMdClose } from "react-icons/io";
 import { FaStar, FaCheck } from "react-icons/fa";
 import AirlineData from "../../../AirlineData";
 import RatingBoard from "../../common/RatingBoard";
-import TourImageData from "../../common/TourImageData";
+import TourImageData from "../../common/ProductImageData";
 import { FaLocationDot } from "react-icons/fa6";
 
 

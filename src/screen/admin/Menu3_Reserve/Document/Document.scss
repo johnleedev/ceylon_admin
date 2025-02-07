@@ -24,7 +24,6 @@
   padding: 30px;
 
   .d-cover {
-    min-height: 1122.5px;
     border: 2px solid #cbcbcb;
     background-color: #fff;
     padding: 50px 70px;
@@ -109,7 +108,7 @@
         .box-one {
           width: 14%;
           text-align: center;
-          
+          font-size: 14px;
         }
         .divider {
           width: 1px;
@@ -174,7 +173,7 @@
       }
       > .textarea {
         margin-left: 5px;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: normal;
         flex: 1;
         min-height: 180px;
@@ -256,23 +255,7 @@
       }
     }
     
-    .d-selectbtn-box {
-      @include middle();
-      margin: 20px 0;
-
-      .d-selectbtn {
-        width: 15%;
-        padding: 5px 15px;
-        border: 1px solid #cbcbcb;
-        border-radius: 5px;
-        margin: 0 5px;
-        text-align: center;
-      }
-      .d-selectbtn:hover {
-        cursor: pointer;
-        border: 1px solid #a6a6a6;
-      }
-    }
+    
 
 
     .d-btn-box {
@@ -296,6 +279,25 @@
     .datebox {
       @include middle();
       padding: 20px;
+    }
+  }
+
+  .d-selectbtn-box {
+    @include middle();
+    margin: 20px 0;
+
+    .d-selectbtn {
+      width: 15%;
+      padding: 5px 15px;
+      border: 1px solid #cbcbcb;
+      border-radius: 5px;
+      margin: 0 5px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .d-selectbtn:hover {
+      cursor: pointer;
+      border: 1px solid #a6a6a6;
     }
   }
 
