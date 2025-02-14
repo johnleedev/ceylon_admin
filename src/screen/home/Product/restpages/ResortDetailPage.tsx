@@ -957,7 +957,7 @@ export default function HotelPage() {
             <div className="resort_custom_bottom__rightbox">
               <div className="custom_bottom__box_btn"
                 onClick={()=>{
-                  navigate(`/products/resortcustomorder`);
+                  navigate(`/products/resortcustomorder`, {state : scheduleList});
                   window.scrollTo(0, 0);
                 }}
               >

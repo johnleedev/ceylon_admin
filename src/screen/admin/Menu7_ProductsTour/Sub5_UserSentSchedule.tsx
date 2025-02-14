@@ -134,7 +134,7 @@ export default function Sub6_UserSentSchedule (props:any) {
 			images : JSON.parse(item.inputImage)
 		}
 		axios 
-			.post(`${MainURL}/resttourproduct/deletetourproduct`, getParams)
+			.post(`${MainURL}/restscheduledetailbox/deletetourproduct`, getParams)
 			.then((res) => {
 				if (res.data) {
 					setRefresh(!refresh);

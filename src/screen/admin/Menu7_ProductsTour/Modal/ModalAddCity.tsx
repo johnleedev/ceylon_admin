@@ -16,7 +16,7 @@ import { IoClose } from 'react-icons/io5';
 import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti';
 import { BiSolidRightArrowAlt, BiSolidLeftArrowAlt, BiSolidArrowToRight, BiSolidArrowFromLeft, BiSolidArrowToLeft, BiSolidArrowFromRight } from "react-icons/bi";
 import { FiMinusCircle } from "react-icons/fi";
-import { TourAirlineProps } from '../../InterfaceData';
+import { TourAirlineProps, TrafficListProps, TrafficProps } from '../../InterfaceData';
 
 export default function ModalAddCity (props : any) {
 	
@@ -240,10 +240,9 @@ export default function ModalAddCity (props : any) {
       nation : nation,
       city : cityKo,
       sort : sort,
-      tourPeriodNight : item.tourPeriodNight,
-      tourPeriodDay : item.tourPeriodDay,
       departAirportMain : item.departAirportMain,
       departAirline : item.departAirline,
+      departTime: item.departTime,
       airlineData : JSON.stringify(item.airlineData)
     })
       .then((res) => {
@@ -300,18 +299,6 @@ export default function ModalAddCity (props : any) {
 
 
   // 역내 교통 입력 ------------------------------------------------------------------------------------------------------------------------------------------
-  interface TrafficProps {
-    sort : string;
-    trafficList: TrafficListProps[]
-  }
-  interface TrafficListProps {
-    terminal: string;
-    trafficName : string;
-    operateDay : string;
-    connectCity : string;
-    moveTime : string;
-  }
-
   const [trafficData, setTrafficData] = useState<TrafficProps[]>(
     isAddOrRevise === 'revise' 
     ? props.trafficData
@@ -619,111 +606,108 @@ export default function ModalAddCity (props : any) {
         <h1>역내 교통</h1>
       </div>
 
-      { 
-        airlineSelectInput === 'oneway' &&
-        <section>
-          <div className="bottombar"></div>
-          <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
-            <div className='chartbox' style={{width:'15%'}} ><p>기간</p></div>
+      <section>
+        <div className="bottombar"></div>
+        <div className='chart-box-cover' style={{backgroundColor:'#EAEAEA'}}>
+          <div className='chartbox' style={{width:'15%'}} ><p>기간</p></div>
+          <div className="chart-divider"></div>
+          <div style={{width:'85%', display:'flex'}}>
+            <div className='chartbox' style={{width:'19%'}} ><p>터미널</p></div>
             <div className="chart-divider"></div>
-            <div style={{width:'85%', display:'flex'}}>
-              <div className='chartbox' style={{width:'19%'}} ><p>터미널</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'19%'}} ><p>교통편</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'19%'}} ><p>운영요일</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'19%'}} ><p>연결도시</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'19%'}} ><p>이동시간</p></div>
-              <div className="chart-divider"></div>
-              <div className='chartbox' style={{width:'5%'}} ><p></p></div>
-            </div>
+            <div className='chartbox' style={{width:'19%'}} ><p>교통편</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'19%'}} ><p>운영요일</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'19%'}} ><p>연결도시</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'19%'}} ><p>이동시간</p></div>
+            <div className="chart-divider"></div>
+            <div className='chartbox' style={{width:'5%'}} ><p></p></div>
           </div>
-          {
-            trafficData.map((item:any, index:any)=>{
-              return (
-                <div className="coverbox">
-                  <div className="coverrow hole">
-                     <div style={{width:'15%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 10px'}} >
-                      <p>{item.sort}</p>
-                      <div>
-                        <div className='trafficaddBtn'
-                          onClick={()=>{
-                            const copy = [...trafficData];
-                            copy[index].trafficList = [...copy[index].trafficList,
-                              { terminal: "", trafficName : "", operateDay : "", connectCity : "", moveTime : ""}
-                            ]
-                            setTrafficData(copy);
-                          }}
-                        >+</div>
-                      </div>
-                    </div>
-                    <div style={{width:'85%'}} >
-                    {
-                      item.trafficList.map((subItem:any, subIndex:any)=>{
-
-                        return (
-                          <div style={{width:'100%', display:'flex', alignItems:'center'}} key={subIndex}>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'19%', textAlign:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'95%'}} 
-                                value={subItem.terminal} 
-                                onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'terminal');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'19%', textAlign:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'95%'}} 
-                                value={subItem.trafficName} 
-                                onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'trafficName');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'19%', textAlign:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'95%'}} 
-                                value={subItem.operateDay} 
-                                onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'operateDay');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'19%', textAlign:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'95%'}} 
-                                value={subItem.connectCity} 
-                                onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'connectCity');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            <div style={{width:'19%', textAlign:'center'}} >
-                              <input className="inputdefault" type="text" style={{width:'95%'}} 
-                                value={subItem.moveTime} 
-                                onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'moveTime');}}/>
-                            </div>
-                            <div style={verticalBar40}></div>
-                            { subIndex === 0 
-                              ?
-                              <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                              </div>
-                              :
-                              <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
-                                <div className='deleteRowBtn'
-                                  onClick={()=>{
-                                    const copy = [...trafficData];
-                                    copy[index].trafficList.splice(subIndex, 1);
-                                    setTrafficData(copy);
-                                  }}
-                                  ><FiMinusCircle  color='#FF0000'/>
-                                </div>
-                              </div>
-                            }
-                          </div>
-                        )
-                      })
-                    }
+        </div>
+        {
+          trafficData.map((item:any, index:any)=>{
+            return (
+              <div className="coverbox">
+                <div className="coverrow hole">
+                    <div style={{width:'15%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 10px'}} >
+                    <p>{item.sort}</p>
+                    <div>
+                      <div className='trafficaddBtn'
+                        onClick={()=>{
+                          const copy = [...trafficData];
+                          copy[index].trafficList = [...copy[index].trafficList,
+                            { terminal: "", trafficName : "", operateDay : "", connectCity : "", moveTime : ""}
+                          ]
+                          setTrafficData(copy);
+                        }}
+                      >+</div>
                     </div>
                   </div>
+                  <div style={{width:'85%'}} >
+                  {
+                    item.trafficList.map((subItem:any, subIndex:any)=>{
+
+                      return (
+                        <div style={{width:'100%', display:'flex', alignItems:'center'}} key={subIndex}>
+                          <div style={verticalBar40}></div>
+                          <div style={{width:'19%', textAlign:'center'}} >
+                            <input className="inputdefault" type="text" style={{width:'95%'}} 
+                              value={subItem.terminal} 
+                              onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'terminal');}}/>
+                          </div>
+                          <div style={verticalBar40}></div>
+                          <div style={{width:'19%', textAlign:'center'}} >
+                            <input className="inputdefault" type="text" style={{width:'95%'}} 
+                              value={subItem.trafficName} 
+                              onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'trafficName');}}/>
+                          </div>
+                          <div style={verticalBar40}></div>
+                          <div style={{width:'19%', textAlign:'center'}} >
+                            <input className="inputdefault" type="text" style={{width:'95%'}} 
+                              value={subItem.operateDay} 
+                              onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'operateDay');}}/>
+                          </div>
+                          <div style={verticalBar40}></div>
+                          <div style={{width:'19%', textAlign:'center'}} >
+                            <input className="inputdefault" type="text" style={{width:'95%'}} 
+                              value={subItem.connectCity} 
+                              onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'connectCity');}}/>
+                          </div>
+                          <div style={verticalBar40}></div>
+                          <div style={{width:'19%', textAlign:'center'}} >
+                            <input className="inputdefault" type="text" style={{width:'95%'}} 
+                              value={subItem.moveTime} 
+                              onChange={(e)=>{handleTrafficContentChange(e.target.value, index, subIndex, 'moveTime');}}/>
+                          </div>
+                          <div style={verticalBar40}></div>
+                          { subIndex === 0 
+                            ?
+                            <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                            </div>
+                            :
+                            <div style={{width:'5%', display:'flex', alignItems:'center', justifyContent:'center'}} >
+                              <div className='deleteRowBtn'
+                                onClick={()=>{
+                                  const copy = [...trafficData];
+                                  copy[index].trafficList.splice(subIndex, 1);
+                                  setTrafficData(copy);
+                                }}
+                                ><FiMinusCircle  color='#FF0000'/>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      )
+                    })
+                  }
+                  </div>
                 </div>
-              )
-            })
-          }
-        </section>
-      }
+              </div>
+            )
+          })
+        }
+      </section>
 
       <div className='btn-box'>
         <div className="btn" 
@@ -787,7 +771,7 @@ export default function ModalAddCity (props : any) {
               const copy = [...onewayAirline]
               if (copy.length === 0) {
                 setOnewayAirline([...onewayAirline, 
-                  {id: "", departTime: "", codeShare: "", departAirportMain : "",  departAirline : "",
+                  {id: "", departTime: "", departAirportMain : "",  departAirline : "",
                     airlineData : [
                       { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
                     ]
@@ -796,7 +780,7 @@ export default function ModalAddCity (props : any) {
               } else {
                 const lastItem = copy[copy.length - 1];
                 setOnewayAirline([...onewayAirline, 
-                  {id: "", departTime: "", codeShare: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                  {id: "", departTime: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
                     airlineData : [
                       { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""}
                     ]
@@ -807,7 +791,7 @@ export default function ModalAddCity (props : any) {
               const copy = [...roundAirline];
               if (copy.length === 0) { 
                 setRoundAirline([...roundAirline,
-                  {id: "", departTime: "", codeShare: "", departAirportMain : "",  departAirline : "",
+                  {id: "", departTime: "", departAirportMain : "",  departAirline : "",
                     airlineData : [
                       { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
                       { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
@@ -817,7 +801,7 @@ export default function ModalAddCity (props : any) {
               } else {
                 const lastItem = copy[copy.length - 1];
                 setRoundAirline([...roundAirline,
-                  {id: "", departTime: "", codeShare: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                  {id: "", departTime: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
                     airlineData : [
                       { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
                       { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""},
@@ -845,9 +829,7 @@ export default function ModalAddCity (props : any) {
             <div className="chart-divider"></div>
             <div className='chartbox' style={{width:'7%'}} ><p>출발시간</p></div>
             <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'6%'}} ><p>코드쉐어</p></div>
-            <div className="chart-divider"></div>
-            <div style={{width:'68%', display:'flex'}}>
+            <div style={{width:'74%', display:'flex'}}>
               <div className='chartbox' style={{width:'3%'}} ><p></p></div>
               <div className="chart-divider"></div>
               <div className='chartbox' style={{width:'15%'}} ><p>항공사</p></div>
@@ -865,6 +847,7 @@ export default function ModalAddCity (props : any) {
           </div>
           {
             onewayAirline.map((item:any, index:any)=>{
+              
               return (
                 <div className="coverbox">
                   <div className="coverrow hole">
@@ -929,18 +912,7 @@ export default function ModalAddCity (props : any) {
                       />
                     </div>
                     <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'6%'}} >
-                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
-                        value={item.codeShare}
-                        onChange={(e)=>{
-                          const inputtext = e.target.value;
-                          const copy = [...onewayAirline];
-                          copy[index].codeShare = inputtext;
-                          setOnewayAirline(copy);
-                        }}/>
-                    </div>
-                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'68%'}} >
+                    <div style={{width:'74%'}} >
                     {
                       item.airlineData.map((subItem:any, subIndex:any)=>{
                         return (
@@ -1063,9 +1035,7 @@ export default function ModalAddCity (props : any) {
             <div className="chart-divider"></div>
             <div className='chartbox' style={{width:'7%'}} ><p>출발시간</p></div>
             <div className="chart-divider"></div>
-            <div className='chartbox' style={{width:'6%'}} ><p>코드쉐어</p></div>
-            <div className="chart-divider"></div>
-            <div style={{width:'68%', display:'flex'}}>
+            <div style={{width:'74%', display:'flex'}}>
               <div className='chartbox' style={{width:'3%'}} ><p></p></div>
               <div className="chart-divider"></div>
               <div className='chartbox' style={{width:'15%'}} ><p>항공사</p></div>
@@ -1147,18 +1117,7 @@ export default function ModalAddCity (props : any) {
                       />
                     </div>
                     <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'6%'}} >
-                      <input className="inputdefault" type="text" style={{width:'90%', marginLeft:'5px', height:'35px'}} 
-                        value={item.codeShare}
-                        onChange={(e)=>{
-                          const inputtext = e.target.value;
-                          const copy = [...roundAirline];
-                          copy[index].codeShare = inputtext;
-                          setRoundAirline(copy);
-                        }}/>
-                    </div>
-                    <div style={{width:'1px', minHeight:'80px', backgroundColor:'#d4d4d4'}}></div>
-                    <div style={{width:'68%'}} >
+                    <div style={{width:'74%'}} >
                     {
                       item.airlineData.map((subItem:any, subIndex:any)=>{
                         return (
@@ -1287,7 +1246,7 @@ export default function ModalAddCity (props : any) {
               const copy = [...onewayAirline]
               if (copy.length === 0) {
                 setOnewayAirline([...onewayAirline, 
-                  {id: "", departTime: "", codeShare: "", departAirportMain : "",  departAirline : "",
+                  {id: "", departTime: "", departAirportMain : "",  departAirline : "",
                     airlineData : [
                       { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
                     ]
@@ -1296,7 +1255,7 @@ export default function ModalAddCity (props : any) {
               } else {
                 const lastItem = copy[copy.length - 1];
                 setOnewayAirline([...onewayAirline, 
-                  {id: "", departTime: "", codeShare: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                  {id: "", departTime: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
                     airlineData : [
                       { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""}
                     ]
@@ -1307,7 +1266,7 @@ export default function ModalAddCity (props : any) {
               const copy = [...roundAirline];
               if (copy.length === 0) { 
                 setRoundAirline([...roundAirline,
-                  {id: "", departTime: "", codeShare: "", departAirportMain : "",  departAirline : "",
+                  {id: "", departTime: "", departAirportMain : "",  departAirline : "",
                     airlineData : [
                       { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""},
                       { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:"", departTime:"", arriveAirport:"", arriveTime:""}
@@ -1317,7 +1276,7 @@ export default function ModalAddCity (props : any) {
               } else {
                 const lastItem = copy[copy.length - 1];
                 setRoundAirline([...roundAirline,
-                  {id: "", departTime: "", codeShare: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
+                  {id: "", departTime: "", departAirportMain : lastItem.departAirportMain,  departAirline : "",
                     airlineData : [
                       { sort:"depart", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[0].departAirport, departTime:"", arriveAirport:lastItem.airlineData[0].arriveAirport, arriveTime:""},
                       { sort:"arrive", airlineName:"", departDate:[], planeName:"", departAirport:lastItem.airlineData[1].departAirport, departTime:"", arriveAirport:lastItem.airlineData[1].arriveAirport, arriveTime:""},

@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { TitleList } from '../../../boxs/TitleList';
 import { TextBox } from '../../../boxs/TextBox';
 import '../Products.scss'
-import { PiPencilSimpleLineFill } from 'react-icons/pi';
-import ModalAddSelectSchedule from './Modal/ModalAddSelectSchedule';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { DropdownBox } from '../../../boxs/DropdownBox';
@@ -41,11 +39,9 @@ interface ListProps {
 	reviseDate : string;
 }
 
-export default function Sub4_SelectSchedule (props:any) {
+export default function Sub6_UserSentSchedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-	const sorts = ["전체", "가이드투어", "입장권", "탑승권", "공연/경기", "식사", "카페/바/클럽"];
-	const [selectSort, setSelectSort] = useState(0);
 
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
@@ -53,14 +49,14 @@ export default function Sub4_SelectSchedule (props:any) {
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
-    const res = await axios.get(`${MainURL}/tourselectschedule/getselectschedules/${currentPage}`)
+    const res = await axios.get(`${MainURL}/restscheduledetailbox/gettourproducts/${currentPage}`)
     if (res.data.resultData) {
       const copy = res.data.resultData;
       setList(copy);
 			setListOrigin(copy);
       setListAllLength(res.data.totalCount);
     }
-		const nationCityRes = await axios.get(`${MainURL}/tournationcity/getnationcity`)
+		const nationCityRes = await axios.get(`${MainURL}/restnationcity/getnationcity`)
     if (nationCityRes.data !== false) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
@@ -107,7 +103,7 @@ export default function Sub4_SelectSchedule (props:any) {
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
-			const res = await axios.post(`${MainURL}/tourselectschedule/getselectschedulesearch`, {
+			const res = await axios.post(`${MainURL}/restscheduledetailbox/gettourproductsearch`, {
 				sort : searchSort,
 				word : searchWord
 			});
@@ -126,18 +122,18 @@ export default function Sub4_SelectSchedule (props:any) {
 	
 	
 	// 모달 ---------------------------------------------------------
-	const [isViewAddSelectScheduleModal, setIsViewAddSelectScheduleModal] = useState<boolean>(false);
+	const [isViewAddTourProductModal, setIsViewAddTourProductModal] = useState<boolean>(false);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
-	const [selectScheduleInfo, setSelectScheduleInfo] = useState<ListProps>();
+	const [tourProductInfo, setTourProductInfo] = useState<ListProps>();
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
-	const deleteSelectSchedule = async (item:any) => {
+	const deleteTourProduct = async (item:any) => {
 		const getParams = {
 			postId : item.id,
 			images : JSON.parse(item.inputImage)
 		}
 		axios 
-			.post(`${MainURL}/tourselectschedule/deleteselectschedule`, getParams)
+			.post(`${MainURL}/restscheduledetailbox/deletetourproduct`, getParams)
 			.then((res) => {
 				if (res.data) {
 					setRefresh(!refresh);
@@ -151,7 +147,7 @@ export default function Sub4_SelectSchedule (props:any) {
 	const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.id}번 일정을 정말 삭제하시겠습니까?`);
 			if (costConfirmed) {
-				deleteSelectSchedule(item);
+				deleteTourProduct(item);
 		} else {
 			return
 		}
@@ -163,42 +159,9 @@ export default function Sub4_SelectSchedule (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>선택일정관리</h1>	
+					<h1>고객발송일정표</h1>	
 				</div>
-				<div className="addBtn"
-					onClick={()=>{
-						setIsAddOrRevise('add');
-						setIsViewAddSelectScheduleModal(true);
-					}}
-				>
-					<PiPencilSimpleLineFill />
-					<p>선택일정등록</p>
-				</div>
-			</div>
-			
-
-			<div className="continentBtnbox">
-				{
-					sorts.map((item:any, index:any)=>{
-						return (
-							<div className="continentNtn"
-								style={{backgroundColor: selectSort === index ? '#242d3f' : '#fff'}}
-								onClick={()=>{
-									setSelectSort(index);
-									const copy = [...listOrigin]
-									if (item === '전체') {
-										setList(listOrigin);	
-									} else {
-										const result = copy.filter((e:any)=> e.sort === item);
-										setList(result);
-									}
-								}}
-							>
-								<p style={{color: selectSort === index ? '#fff' : '#333'}}>{item}</p>
-							</div>
-						)
-					})
-				}
+				
 			</div>
 
 			<div className="searchbox">
@@ -237,7 +200,6 @@ export default function Sub4_SelectSchedule (props:any) {
 				</div>
 			</div>
 
-
 			<div className="seachlist">
 				<div className="main-list-cover">
 					<div className="TitleList">
@@ -269,9 +231,9 @@ export default function Sub4_SelectSchedule (props:any) {
 									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn2"
 											onClick={()=>{
-												setSelectScheduleInfo(item);
+												setTourProductInfo(item);
 												setIsAddOrRevise('revise');
-												setIsViewAddSelectScheduleModal(true);
+												setIsViewAddTourProductModal(true);
 											}}
 										>
 											<p>수정</p>
@@ -313,23 +275,7 @@ export default function Sub4_SelectSchedule (props:any) {
 
 			
 
-			{/* 선택일정등록 모달창 */}
-      {
-        isViewAddSelectScheduleModal &&
-        <div className='Modal'>
-          <div className='modal-backcover'></div>
-          <div className='modal-maincover'>
-             <ModalAddSelectSchedule
-								refresh={refresh}
-								setRefresh={setRefresh}
-								isAddOrRevise={isAddOrRevise}
-								nationlist={nationlist}
-								setIsViewAddSelectScheduleModal={setIsViewAddSelectScheduleModal}
-								selectScheduleData={selectScheduleInfo}
-						 />
-          </div>
-        </div>
-      }
+		
 
 			<div style={{height:'200px'}}></div>
 		</div>

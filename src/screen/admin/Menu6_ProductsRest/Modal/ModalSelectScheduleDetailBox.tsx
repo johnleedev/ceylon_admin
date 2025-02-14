@@ -6,7 +6,7 @@ import MainURL from '../../../../MainURL';
 import { ImLocation } from 'react-icons/im';
 
 
-export default function ModalSelectScheduleBox (props : any) {
+export default function ModalSelectScheduleDetailBox (props : any) {
 	
   let navigate = useNavigate();
   const userId = sessionStorage.getItem('userId');
@@ -15,8 +15,8 @@ export default function ModalSelectScheduleBox (props : any) {
   const subIndexCopy = props.subIndex ? props.subIndex : 0
   const detailIndexCopy = props.detailIndex ? props.detailIndex : 0;
   const subDetailIndexCopy = props.subDetailIndex ? props.subDetailIndex : 0;
-  const tourLocationList = props.selectedTourLocationList ? props.selectedTourLocationList : [];
-
+  const detailLocationList = props.detailLocationList ? props.detailLocationList : [];
+  
   return (
     <div className='modal-addinput' style={{width:'100%', height:'700px', overflowY:'auto'}}>
 
@@ -35,24 +35,24 @@ export default function ModalSelectScheduleBox (props : any) {
       </div>
       
        <div className="modal-header">
-        <h1>{nation} 일정박스</h1>
+        <h1>{nation} 세부일정박스</h1>
       </div>
 
       <section>
       <div className="bottombar"></div>
-      { tourLocationList.length > 0 
+      { detailLocationList.length > 0 
         ?
-        tourLocationList.map((subItem:any, subIndex:any)=>{ 
+        detailLocationList.map((subItem:any, subIndex:any)=>{ 
 
-          const postImages = subItem.postImage ? JSON.parse(subItem.postImage) : "";
+          const postImages = subItem.inputImage ? JSON.parse(subItem.inputImage) : "";
 
           return (
             <div className='input-area selectScheduleboxList' key={subIndex}
               onClick={()=>{
                 const copy = [...props.scheduleList];
-                copy[indexCopy].scheduleDetail[subIndexCopy].locationDetail[detailIndexCopy].subLocationDetail[subDetailIndexCopy].postImage = subItem.postImage;
-                copy[indexCopy].scheduleDetail[subIndexCopy].locationDetail[detailIndexCopy].subLocationDetail[subDetailIndexCopy].locationTitle = subItem.locationTitle;
-                copy[indexCopy].scheduleDetail[subIndexCopy].locationDetail[detailIndexCopy].subLocationDetail[subDetailIndexCopy].locationContent = subItem.locationContent;
+                copy[indexCopy].scheduleDetail[subIndexCopy].locationDetail[detailIndexCopy].subLocationDetail[subDetailIndexCopy].postImage = subItem.inputImage;
+                copy[indexCopy].scheduleDetail[subIndexCopy].locationDetail[detailIndexCopy].subLocationDetail[subDetailIndexCopy].locationTitle = subItem.productName;
+                copy[indexCopy].scheduleDetail[subIndexCopy].locationDetail[detailIndexCopy].subLocationDetail[subDetailIndexCopy].locationContent = subItem.detailNotice;
                 props.setScheduleList(copy);
                 const viewAutoCopy = [...props.viewAutoCompleteTourLocation];
                 viewAutoCopy[indexCopy][subIndexCopy][detailIndexCopy][subDetailIndexCopy] = false;
@@ -61,52 +61,20 @@ export default function ModalSelectScheduleBox (props : any) {
               }}
             >
               <div className="cover">
-                <div className="selectBtn-box">
-                  <p>선택</p>
-                </div>
                 <div className='rowbox'>
-                  <div className='icon-box'>
-                    <ImLocation color='#5fb7ef' size={20}/>
-                  </div>
-                  <input style={{width:'45%'}} value={subItem.location} 
-                    className="inputdefault" type="text" maxLength={100}
-                  />
-                </div>
-                <div className='rowbox'>
-                  <div className="icon-box">
-                    <div className="dot__icon" />
-                  </div>
-                  <input style={{width:'45%'}} value={subItem.subLocation} 
-                    className="inputdefault" type="text" maxLength={100}
-                    onChange={(e) => {
-                      // setSubLocation(e.target.value);
-                    }}/>
-                </div>
-                <div className='rowbox'>
-                  <div className="icon-box">
-                  </div>
                   <div className='scheduletextbox'>
                     <div className="scheduletextbox-imagebox">
                       <div className="imagebox">
                         <img style={{height:'100%', width:'100%'}}
-                          src={`${MainURL}/images/scheduleboximages/${postImages[0]}`}
+                          src={`${MainURL}/images/scheduledetailboximages/${postImages[0]}`}
                         />                                                
                       </div>
                     </div>
                     <div className="scheduletextbox-textbox">
-                      <input style={{width:'95%'}} value={subItem.locationTitle} 
-                          className="inputdefault" type="text" maxLength={100}
-                          onChange={(e) => {
-                            // setLocationTitle(e.target.value);
-                          }}/>
-                      <textarea 
-                          className="textarea" style={{minHeight: '150px'}}
-                          maxLength={300}
-                          value={subItem.locationContent}
-                          onChange={(e)=>{
-                            // setLocationContent(e.target.value)
-                          }}
-                        />
+                      <div style={{width:'95%', display:'flex', alignItems:'center'}} className="inputdefault" 
+                      >{subItem.productName}</div>
+                      <div className="textarea" style={{minHeight: '150px'}}
+                      >{subItem.detailNotice}</div>
                     </div>
                   </div>
                 </div>

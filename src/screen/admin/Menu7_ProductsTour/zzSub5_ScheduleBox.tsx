@@ -1,64 +1,43 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TitleList } from '../../../boxs/TitleList';
 import { TextBox } from '../../../boxs/TextBox';
+import '../SearchList.scss'
 import '../Products.scss'
-import { PiPencilSimpleLineFill } from 'react-icons/pi';
-import ModalAddTourProduct from './Modal/ModalAddTourProduct';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
+import { PiPencilSimpleLineFill } from "react-icons/pi";
+import ModalAddScheduleBox from './Modal/zzModalAddScheduleBox';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 
-
 interface ListProps {
-	id: string,
-	sort : string,
-	nation : string,
-	city : string,
-	productName : string,
-	nativeLanguage : string,
-	address : string,
-	site : string,
-	detailNotice : string,
-	tourTime : string,
-	runTime : string,
-	openDate : string,
-	closeDate : string,
-	meetLocation : string,
-	phone : string,
-	caution : string,
-	programTimeCost : string,
-	mainMenuCost : string,
-	includeNoteText : string,
-	notIncludeNoteText : string,
-	recommendPoint : string,
-	reserveWay : string,
-	cancelNotice : string,
-	keyword : string,
-	badges : string,
-	scores : string,
-	lastImages : string,
-	inputImage : string,
-	reviseDate : string;
+	id: string;
+	sort : string;
+	nation: string;
+	city: string;
+	location: string;
+	subLocation: string;
+	locationTitle: string;
+	locationContent: string;
+	locationContentDetail: string;
+	date : string;
+	postImage : string;
 }
 
-export default function Sub6_UserSentSchedule (props:any) {
+export default function Sub5_ScheduleBox (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
-
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
 	const [list, setList] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
-    const res = await axios.get(`${MainURL}/resttourproduct/gettourproducts/${currentPage}`)
+    const res = await axios.get(`${MainURL}/tourschedulebox/getschedulebox/${currentPage}`)
     if (res.data.resultData) {
       const copy = res.data.resultData;
       setList(copy);
-			setListOrigin(copy);
       setListAllLength(res.data.totalCount);
     }
-		const nationCityRes = await axios.get(`${MainURL}/restnationcity/getnationcity`)
+		const nationCityRes = await axios.get(`${MainURL}/tournationcity/getnationcity`)
     if (nationCityRes.data !== false) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
@@ -68,7 +47,7 @@ export default function Sub6_UserSentSchedule (props:any) {
 
 	useEffect(() => {
 		fetchPosts();
-	}, [refresh, currentPage]);  
+	}, [refresh, currentPage]);   
 
   // State 변수 추가
   const itemsPerPage = 15; // 한 페이지당 표시될 게시글 수
@@ -98,14 +77,13 @@ export default function Sub6_UserSentSchedule (props:any) {
     return pageNumbers;
   };
 
-
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
 	const [searchSort, setSearchSort] = useState('전체');
 	const [searchWord, setSearchWord] = useState('');
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
-			const res = await axios.post(`${MainURL}/resttourproduct/gettourproductsearch`, {
+			const res = await axios.post(`${MainURL}/tourschedulebox/getscheduleboxsearch`, {
 				sort : searchSort,
 				word : searchWord
 			});
@@ -122,20 +100,20 @@ export default function Sub6_UserSentSchedule (props:any) {
 		}	
 	};
 	
-	
+
 	// 모달 ---------------------------------------------------------
-	const [isViewAddTourProductModal, setIsViewAddTourProductModal] = useState<boolean>(false);
+	const [isViewAddScheduleBoxModal, setIsViewAddScheduleBoxModal] = useState<boolean>(false);
+	const [locationInfo, setLocationInfo] = useState<ListProps>();
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
-	const [tourProductInfo, setTourProductInfo] = useState<ListProps>();
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
-	const deleteTourProduct = async (item:any) => {
+	const deleteHotel = async (item:any) => {
 		const getParams = {
 			postId : item.id,
-			images : JSON.parse(item.inputImage)
+			images : JSON.parse(item.postImage)
 		}
 		axios 
-			.post(`${MainURL}/resttourproduct/deletetourproduct`, getParams)
+			.post(`${MainURL}/tourschedulebox/deletelocation`, getParams)
 			.then((res) => {
 				if (res.data) {
 					setRefresh(!refresh);
@@ -149,21 +127,28 @@ export default function Sub6_UserSentSchedule (props:any) {
 	const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.id}번 일정을 정말 삭제하시겠습니까?`);
 			if (costConfirmed) {
-				deleteTourProduct(item);
+				deleteHotel(item);
 		} else {
 			return
 		}
 	};
-
 
 	return (
 		<div className='Main-cover'>
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>고객발송일정표</h1>	
+					<h1>일정박스 관리</h1>	
 				</div>
-				
+				<div className="addBtn"
+					onClick={()=>{
+						setIsAddOrRevise('add');
+						setIsViewAddScheduleBoxModal(true);
+					}}
+				>
+					<PiPencilSimpleLineFill />
+					<p>여행지등록</p>
+				</div>
 			</div>
 
 			<div className="searchbox">
@@ -175,13 +160,9 @@ export default function Sub6_UserSentSchedule (props:any) {
 							selectedValue={searchSort}
 							options={[
 								{ value: '전체', label: '전체' },
-								{ value: '풀빌라', label: '풀빌라' },
-								{ value: '리조트', label: '리조트' },
-								{ value: '호텔', label: '호텔' },
-								{ value: '박당', label: '박당' },
-								{ value: '선투숙', label: '선투숙' },
-								{ value: '후투숙', label: '후투숙' },
-								{ value: '경유호텔', label: '경유호텔' }
+								{ value: '텍스트', label: '텍스트' },
+								{ value: '선택', label: '선택' },
+								{ value: '상세', label: '상세' }
 							]}
 							handleChange={(e)=>{setSearchSort(e.target.value)}}
 						/>
@@ -206,16 +187,16 @@ export default function Sub6_UserSentSchedule (props:any) {
 				<div className="main-list-cover">
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
-						<TitleList width='10%' text='구분'/>
-						<TitleList width='25%' text='상품명'/>
-						<TitleList width='15%' text='운영일'/>
-						<TitleList width='15%' text='진행시간'/>
-						<TitleList width='10%' text='요금'/>
-						<TitleList width='10%' text='예약'/>
+						<TitleList width='10%' text='종류'/>
+						<TitleList width='10%' text='국가'/>
+						<TitleList width='10%' text='도시'/>
+						<TitleList width='10%' text='여행지명'/>
+						<TitleList width='10%' text='여행지명(서브)'/>
+						<TitleList width='10%' text='수정일'/>
 						<TitleList width='10%' text=''/>
   				</div>
 					
-					{
+					{ list.length > 0 &&
 						list.map((item:any, index:any)=>{
 							return (
 								<div key={index}
@@ -225,17 +206,17 @@ export default function Sub6_UserSentSchedule (props:any) {
 								>
 									<TextBox width='3%' text={item.id} />
 									<TextBox width='10%' text={item.sort} />
-									<TextBox width='25%' text={item.productName} />
-									<TextBox width='15%' text={item.openDate} />
-									<TextBox width='15%' text={item.runTime} />
-									<TextBox width='10%' text={''} />
-									<TextBox width='10%' text={''} />
+									<TextBox width='10%' text={item.nation} />
+									<TextBox width='10%' text={item.city} />
+									<TextBox width='10%' text={item.location} />
+									<TextBox width='10%' text={item.subLocation}/>
+									<TextBox width='10%' text={item.date.slice(0,10)} />
 									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn2"
 											onClick={()=>{
-												setTourProductInfo(item);
 												setIsAddOrRevise('revise');
-												setIsViewAddTourProductModal(true);
+												setLocationInfo(item);
+												setIsViewAddScheduleBoxModal(true);
 											}}
 										>
 											<p>수정</p>
@@ -275,12 +256,24 @@ export default function Sub6_UserSentSchedule (props:any) {
 				</div>
 			</div>
 
-			
+			{/* 일정등록 모달창 */}
+      {
+        isViewAddScheduleBoxModal &&
+        <div className='Modal'>
+          <div className='modal-backcover'></div>
+          <div className='modal-maincover'>
+             <ModalAddScheduleBox
+								refresh={refresh}
+								setRefresh={setRefresh}
+								nationlist={nationlist}
+								isAddOrRevise={isAddOrRevise}
+								locationInfo={locationInfo}
+								setIsViewAddScheduleBoxModal={setIsViewAddScheduleBoxModal}
+						 />
+          </div>
+        </div>
+      }
 
-		
-
-			<div style={{height:'200px'}}></div>
 		</div>
 	);
 }
-

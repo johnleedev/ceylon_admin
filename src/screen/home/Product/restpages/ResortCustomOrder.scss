@@ -453,7 +453,77 @@
     }
   }
 
+  // 일정 커스텀 선택 박스 ------------------------------
 
+  .custom-scheduleTypeBtnCover-row {
+    display: flex; 
+    align-items: center;
+    justify-content: space-between;
+     
+
+    .custom-scheduleTypeBtnCover {
+      width: 40%;
+      display: flex;
+      align-items: center;
+  
+      .scheduleTypeBox {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        margin-right: 20px;
+        p {
+          padding: 10px 30px;
+        }
+      }
+      .scheduleTypeBox:hover {
+        cursor: pointer;
+        border-color: #37b0d9;
+      }
+      .selected {
+        background-color: #37b0d9;
+        p {
+          color: #fff;
+        }
+      }
+     
+    }
+    .custom-scheduleDayBtnCover {
+      width: 40%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .scheduleBtnBox {
+        padding: 5px 15px;
+        border-radius: 5px;
+        color: #9fa6ae;
+      }
+      .scheduleBtnBox:hover {
+        cursor: pointer;
+        border: 1px solid #333;
+        color: #333;
+      }
+      .selected {
+        border: 1px solid #333;
+        color: #333;
+      }
+    }
+  }
+  
+
+  .custom-scheduleContent-Cover {
+    width: 100%;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+
+    .custom-scheduleContent-leftBox {
+      width: 75%;
+    }
+    
+  }
+
+
+  // 총요금 ------------------------------
   .custom-bottom-cost-cover {
     display: flex;
     width: 100%;

@@ -13,7 +13,7 @@ import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci';
 import { ImLocation } from 'react-icons/im';
 import { IoClose } from 'react-icons/io5';
 
-export default function ModalAddScheduleBox (props : any) {
+export default function zzModalAddScheduleBox (props : any) {
   
   const userId = sessionStorage.getItem('userId');
   const isAddOrRevise = props.isAddOrRevise;

@@ -73,6 +73,8 @@ export default function Sub1_CityAirplane (props:any) {
 	const [roundAirlineData, setRoundAirlineData] = useState([]);
 	const [trafficData, setTrafficData] = useState<any>();
 
+	console.log(onewayAirlineData);
+
 	// 항공편&교통편 가져오기
 	const fetchPostAirline = async (item: any) => {
 		try {
@@ -106,8 +108,8 @@ export default function Sub1_CityAirplane (props:any) {
 					}
 					return acc;
 				}, {});
-	  		setOnewayAirlineData(sortedData.direct || []);
-				setRoundAirlineData(sortedData.via || []);
+	  		setOnewayAirlineData(sortedData.oneway || []);
+				setRoundAirlineData(sortedData.round || []);
 			} else {
 				setOnewayAirlineData([]);
 				setRoundAirlineData([]);
@@ -141,7 +143,7 @@ export default function Sub1_CityAirplane (props:any) {
 			images : JSON.parse(images)
 		}
 		axios 
-			.post(`${MainURL}/restnationcity/deletecity`, getParams)
+			.post(`${MainURL}/tournationcity/deletecity`, getParams)
 			.then((res) => {
 				if (res.data) {
 					setRefresh(!refresh);

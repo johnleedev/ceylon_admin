@@ -6,7 +6,7 @@ import '../Products.scss'
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { PiPencilSimpleLineFill } from "react-icons/pi";
-import ModalAddScheduleBox from './Modal/ModalAddScheduleBox';
+import ModalAddScheduleBox from './Modal/zzModalAddScheduleBox';
 import { DropdownBox } from '../../../boxs/DropdownBox';
 
 interface ListProps {

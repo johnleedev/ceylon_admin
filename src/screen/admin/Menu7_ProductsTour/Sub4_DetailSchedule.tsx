@@ -6,35 +6,55 @@ import '../Products.scss'
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { PiPencilSimpleLineFill } from "react-icons/pi";
-import ModalAddScheduleBox from './Modal/ModalAddScheduleBox';
 import { DropdownBox } from '../../../boxs/DropdownBox';
+import ModalAddScheduleDetailBox from './Modal/ModalAddScheduleDetailBox';
+import { ScheduleDatailSorts } from './CommonTourData';
 
 interface ListProps {
 	id: string;
 	sort : string;
 	nation: string;
 	city: string;
-	location: string;
-	subLocation: string;
-	locationTitle: string;
-	locationContent: string;
-	locationContentDetail: string;
-	date : string;
-	postImage : string;
+	productName: string;
+	detailNotice: string;
+	tourTime: string;
+	runTime: string;
+	openDate: string;
+	closeDate: string;
+	meetLocation: string;
+	phone: string;
+	caution: string;
+	programTimeCost: string;
+	includeNoteText: string;
+	notIncludeNoteText: string;
+	cancelNotice: string;
+	badges: string;
+	scores: string;
+	inputImage: string;
+	reviseDate: string;
 }
 
-export default function Sub5_ScheduleBox (props:any) {
+
+export default function Sub4_DetailSchedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
+	const sorts = ScheduleDatailSorts;
+	const [selectSort, setSelectSort] = useState('전체');
+
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [list, setList] = useState<ListProps[]>([]);
+	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
-  const fetchPosts = async () => {
-    const res = await axios.get(`${MainURL}/tourschedulebox/getschedulebox/${currentPage}`)
+	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
+	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
+	
+	const fetchPosts = async () => {
+    const res = await axios.get(`${MainURL}/tourscheduledetailbox/getdetailproducts/${currentPage}`)
     if (res.data.resultData) {
       const copy = res.data.resultData;
       setList(copy);
+			setListOrigin(copy);
       setListAllLength(res.data.totalCount);
     }
 		const nationCityRes = await axios.get(`${MainURL}/tournationcity/getnationcity`)
@@ -42,6 +62,11 @@ export default function Sub5_ScheduleBox (props:any) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
       setNationList(copy);
+			const searchNationsResult = copy.map((item:any)=>
+        ({ value:`${item.nationKo}`,  label:`${item.nationKo}` })
+      );
+      searchNationsResult.unshift({ value: '전체', label: '전체' });
+			setSearchNationsOptions(searchNationsResult);
     }
   };
 
@@ -78,13 +103,15 @@ export default function Sub5_ScheduleBox (props:any) {
   };
 
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
-	const [searchSort, setSearchSort] = useState('전체');
+	const [searchNation, setSearchNation] = useState('전체');
+	const [searchCity, setSearchCity] = useState('전체');
 	const [searchWord, setSearchWord] = useState('');
+
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
-			const res = await axios.post(`${MainURL}/tourschedulebox/getscheduleboxsearch`, {
-				sort : searchSort,
+			const res = await axios.post(`${MainURL}/tourscheduledetailbox/getdetailproductsearch`, {
+				city : searchCity,
 				word : searchWord
 			});
 			if (res.data.resultData) {
@@ -102,8 +129,8 @@ export default function Sub5_ScheduleBox (props:any) {
 	
 
 	// 모달 ---------------------------------------------------------
-	const [isViewAddScheduleBoxModal, setIsViewAddScheduleBoxModal] = useState<boolean>(false);
-	const [locationInfo, setLocationInfo] = useState<ListProps>();
+	const [isViewAddScheduleDetailBox, setIsViewAddScheduleDetailBox] = useState<boolean>(false);
+	const [scheduleDetailInfo, setScheduleDetailInfo] = useState<ListProps>();
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -138,16 +165,16 @@ export default function Sub5_ScheduleBox (props:any) {
 
 			<div className="main-title">
 				<div className='title-box'>
-					<h1>일정박스 관리</h1>	
+					<h1>세부일정 관리</h1>	
 				</div>
 				<div className="addBtn"
 					onClick={()=>{
 						setIsAddOrRevise('add');
-						setIsViewAddScheduleBoxModal(true);
+						setIsViewAddScheduleDetailBox(true);
 					}}
 				>
 					<PiPencilSimpleLineFill />
-					<p>여행지등록</p>
+					<p>상품등록</p>
 				</div>
 			</div>
 
@@ -157,14 +184,31 @@ export default function Sub5_ScheduleBox (props:any) {
 						<DropdownBox
 							widthmain='150px'
 							height='35px'
-							selectedValue={searchSort}
+							selectedValue={searchNation}
+							options={searchNationsOptions}
+							handleChange={(e)=>{
+								setSearchNation(e.target.value);
+								const copy : any = [...nationlist];
+                const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+								setSearchCityOptions(filtered[0].cities)
+							}}
+						/>
+						<DropdownBox
+							widthmain='150px'
+							height='35px'
+							selectedValue={searchCity}
 							options={[
-								{ value: '전체', label: '전체' },
-								{ value: '텍스트', label: '텍스트' },
-								{ value: '선택', label: '선택' },
-								{ value: '상세', label: '상세' }
-							]}
-							handleChange={(e)=>{setSearchSort(e.target.value)}}
+                { value: '선택', label: '선택' },
+                ...searchCityOptions.map((nation:any) => (
+                  { value: nation.cityKo, label: nation.cityKo }
+                ))
+              ]}    
+							handleChange={(e)=>{
+								const text = e.target.value;
+								setSearchCity(text);
+								const copy = listOrigin.filter((e:any) => e.city === text);
+								setList(copy);
+							}}
 						/>
 						<input className="inputdefault" type="text" style={{width:'30%', textAlign:'left'}} 
 								value={searchWord} onChange={(e)=>{setSearchWord(e.target.value)}} 
@@ -179,44 +223,85 @@ export default function Sub5_ScheduleBox (props:any) {
 								<p>검색</p>
 							</div>
 						</div>
+						<div className="buttons" style={{margin:'20px 0'}}>
+							<div className="btn searching"
+								style={{backgroundColor:'#fff'}}
+								onClick={()=>{
+									setSearchNation("");
+									setSearchCityOptions([{ value: '선택', label: '선택' }]);
+									setSearchCity("");
+									setList(listOrigin);
+								}}
+							>
+								<p style={{color:"#333"}}>초기화</p>
+							</div>
+						</div>
 					</div>
 				</div>
+			</div>
+
+			<div className="continentBtnbox">
+				{
+					sorts.map((item:any, index:any)=>{
+						return (
+							<div className="continentNtn" key={index}
+								style={{backgroundColor: selectSort === item ? '#242d3f' : '#fff'}}
+								onClick={()=>{
+									if (item === '전체') {
+										setList(listOrigin);
+									} else {
+										const copy = listOrigin.filter((e:any) => e.sort === item);
+										setList(copy);
+									}
+								}}
+							>
+								<p style={{color: selectSort === item ? '#fff' : '#333'}}>{item}</p>
+							</div>
+						)
+					})
+				}
 			</div>
 
 			<div className="seachlist">
 				<div className="main-list-cover">
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
-						<TitleList width='10%' text='종류'/>
-						<TitleList width='10%' text='국가'/>
-						<TitleList width='10%' text='도시'/>
-						<TitleList width='10%' text='여행지명'/>
-						<TitleList width='10%' text='여행지명(서브)'/>
+						<TitleList width='20%' text='이미지'/>
+						<TitleList width='10%' text='상품명'/>
+						<TitleList width='15%' text='상품설명'/>
 						<TitleList width='10%' text='수정일'/>
 						<TitleList width='10%' text=''/>
   				</div>
 					
 					{ list.length > 0 &&
 						list.map((item:any, index:any)=>{
+
+							const image = JSON.parse(item.inputImage);
+
 							return (
 								<div key={index}
 									className="rowbox"
+									style={{height:'200px'}}
 									onClick={()=>{
+										window.scrollTo(0, 0);
+										setIsAddOrRevise('revise');
+										setScheduleDetailInfo(item);
+										setIsViewAddScheduleDetailBox(true);
 									}}
 								>
 									<TextBox width='3%' text={item.id} />
-									<TextBox width='10%' text={item.sort} />
-									<TextBox width='10%' text={item.nation} />
-									<TextBox width='10%' text={item.city} />
-									<TextBox width='10%' text={item.location} />
-									<TextBox width='10%' text={item.subLocation}/>
-									<TextBox width='10%' text={item.date.slice(0,10)} />
-									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
+									<div className="text" style={{width:`20%`, textAlign:'center'}}>
+										<img src={`${MainURL}/images/scheduledetailboximages/${image[0]}`} alt="" style={{height:'200px'}}/>
+									</div>
+									<TextBox width='10%' text={item.productName} />
+									<TextBox width='15%' text={item.detailNotice}/>
+									<TextBox width='10%' text={item.reviseDate} />
+									<div className="text" style={{width:`10%`, textAlign:'center'}}>
 										<div className="hotelControlBtn2"
 											onClick={()=>{
 												setIsAddOrRevise('revise');
-												setLocationInfo(item);
-												setIsViewAddScheduleBoxModal(true);
+												setScheduleDetailInfo(item);
+												setIsViewAddScheduleDetailBox(true);
 											}}
 										>
 											<p>수정</p>
@@ -258,17 +343,17 @@ export default function Sub5_ScheduleBox (props:any) {
 
 			{/* 일정등록 모달창 */}
       {
-        isViewAddScheduleBoxModal &&
+        isViewAddScheduleDetailBox &&
         <div className='Modal'>
           <div className='modal-backcover'></div>
           <div className='modal-maincover'>
-             <ModalAddScheduleBox
+             <ModalAddScheduleDetailBox
 								refresh={refresh}
 								setRefresh={setRefresh}
 								nationlist={nationlist}
 								isAddOrRevise={isAddOrRevise}
-								locationInfo={locationInfo}
-								setIsViewAddScheduleBoxModal={setIsViewAddScheduleBoxModal}
+								scheduleDetailInfo={scheduleDetailInfo}
+								setIsViewAddScheduleDetailBox={setIsViewAddScheduleDetailBox}
 						 />
           </div>
         </div>

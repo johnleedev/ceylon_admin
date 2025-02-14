@@ -192,6 +192,18 @@ export interface TourAirlineProps {
   departAirportMain : string;
   departAirline: string;
   departTime: string;
-  codeShare: string;
   airlineData: TourAirlineDataProps[];
 }   
+
+// 관광지 교통
+export interface TrafficProps {
+  sort : string;
+  trafficList: TrafficListProps[]
+}
+export interface TrafficListProps {
+  terminal: string;
+  trafficName : string;
+  operateDay : string;
+  connectCity : string;
+  moveTime : string;
+}

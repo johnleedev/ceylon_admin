@@ -183,8 +183,8 @@ export default function AdminMenuBar () {
               <RowBox num={2} text='호텔&요금관리' link="/admin/productsrest/hotelregister"/>
               <RowBox num={3} text='일정표관리' link="/admin/productsrest/schedule"/>
               <RowBox num={4} text='세부일정관리' link="/admin/productsrest/detailschedule"/>
-              <RowBox num={5} text='일정박스관리' link="/admin/productsrest/schedulebox"/>
-              <RowBox num={6} text='고객발송일정표' link="/admin/productsrest/usersentschedule"/>
+              <RowBox num={5} text='고객발송일정표' link="/admin/productsrest/usersentschedule"/>
+              {/* <RowBox num={5} text='일정박스관리' link="/admin/productsrest/schedulebox"/> */}
             </div>
           }
 
@@ -195,9 +195,9 @@ export default function AdminMenuBar () {
               <RowBox num={1} text='도시&항공&교통관리' link="/admin/productstour"/>
               <RowBox num={2} text='여행일정관리' link="/admin/productstour/tourschedule"/>
               <RowBox num={3} text='호텔관리' link="/admin/productstour/tourhotelregister"/>
-              <RowBox num={4} text='선택일정관리' link="/admin/productstour/selectschedule"/>
-              <RowBox num={5} text='일정박스관리' link="/admin/productstour/schedulebox"/>
-              <RowBox num={6} text='고객발송일정표' link="/admin/productstour/usersentschedule"/>
+              <RowBox num={4} text='선택일정/상품관리' link="/admin/productstour/detailschedule"/>
+              <RowBox num={5} text='고객발송일정표' link="/admin/productstour/usersentschedule"/>
+              {/* <RowBox num={5} text='일정박스관리' link="/admin/productstour/schedulebox"/> */}
             </div>
           }
 

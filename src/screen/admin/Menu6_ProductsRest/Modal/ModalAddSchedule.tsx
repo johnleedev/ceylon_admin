@@ -10,7 +10,7 @@ import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { ImLocation } from 'react-icons/im';
 import { formatDate, set } from 'date-fns';
 import * as XLSX from 'xlsx';
-import ModalSelectScheduleBox from './ModalSelectScheduleBox';
+import ModalSelectScheduleDetailBox from './ModalSelectScheduleDetailBox';
 import { FiMinusCircle } from 'react-icons/fi';
 import { BiSolidArrowFromLeft, BiSolidArrowFromRight, BiSolidArrowToLeft, BiSolidArrowToRight, BiSolidLeftArrowAlt, BiSolidRightArrowAlt } from 'react-icons/bi';
 import AirlineData from '../../../AirlineData';
@@ -181,8 +181,8 @@ export default function ModalAddSchedule (props : any) {
   const [directAirline, setDirectAirline] = useState<AirlineProps[]>([])
   const [viaAirline, setViaAirline] = useState<AirlineProps[]>([])
 
-  const fetchTourPeriod = async (tourLocationSelected: string) => {
-    const res = await axios.get(`${MainURL}/product/getairplane/${nation}/${tourLocationSelected}`);
+  const fetchAirlineData = async (tourLocationSelected: string) => {
+    const res = await axios.get(`${MainURL}/restproductschedule/getairplanedata/${nation}/${tourLocationSelected}`);
     if (res.data) {
       const copy = res.data;
       const directAirlineCopy = copy.filter((e:any) => e.sort === 'direct');
@@ -246,33 +246,38 @@ export default function ModalAddSchedule (props : any) {
 
   // 일정 정보 등록 함수 ----------------------------------------------
   const registerPost = async () => {
-    const getParams = {
-      isView : isView,
-      nation : nation,
-      tourLocation: tourLocation,
-      landCompany: landCompany,
-      productType : productType,
-      tourPeriod : tourPeriod,
-      departAirport: departAirport,
-      departFlight: departFlight,
-      cautionNote: cautionNote,
-      includeNote: JSON.stringify(includeNote),
-      includeNoteText: includeNoteText,
-      notIncludeNote: JSON.stringify(notIncludeNote),
-      notIncludeNoteText: notIncludeNoteText
+    if ( nation === '' || tourLocation === '' || tourPeriod === '' || departAirport === '' || departFlight === '' || landCompany === '') {
+      alert('빈칸을 먼저 채워주셔야 합니다.');
+    } else {
+      const getParams = {
+        isView : isView,
+        nation : nation,
+        tourLocation: tourLocation,
+        landCompany: landCompany,
+        productType : productType,
+        tourPeriod : tourPeriod,
+        departAirport: departAirport,
+        departFlight: departFlight,
+        cautionNote: cautionNote,
+        includeNote: JSON.stringify(includeNote),
+        includeNoteText: includeNoteText,
+        notIncludeNote: JSON.stringify(notIncludeNote),
+        notIncludeNoteText: notIncludeNoteText
+      }
+      axios 
+        .post(`${MainURL}/restproductschedule/registerschedule`, getParams)
+        .then((res) => {
+          if (res.data.success) {
+            alert('등록되었습니다.');
+            props.setRefresh(!props.refresh);
+            setPostId(res.data.id);
+          }
+        })
+        .catch(() => {
+          console.log('실패함')
+        })
     }
-    axios 
-      .post(`${MainURL}/restproductschedule/registerschedule`, getParams)
-      .then((res) => {
-        if (res.data.success) {
-          alert('등록되었습니다.');
-          props.setRefresh(!props.refresh);
-          setPostId(res.data.id);
-        }
-      })
-      .catch(() => {
-        console.log('실패함')
-      })
+    
   };
 
   // 일정 정보 수정 함수 ----------------------------------------------
@@ -318,27 +323,31 @@ export default function ModalAddSchedule (props : any) {
 
   // 일정 데이별 디테일 등록&저장 함수 ----------------------------------------------
   const registerDetailPost = async (item:any) => {
-    const getParams = {
-      scheduleID : postId,
-      day: item.day,
-      breakfast: item.breackfast,
-      lunch: item.lunch, 
-      dinner: item.dinner,
-      hotel: item.hotel,
-      score: item.score,
-      scheduleDetail: JSON.stringify(item.scheduleDetail)
+    if (postId === '') {
+      alert('기본 정보를 먼저 저장하셔야 합니다.')
+    } else {
+      const getParams = {
+        scheduleID : postId,
+        day: item.day,
+        breakfast: item.breackfast,
+        lunch: item.lunch, 
+        dinner: item.dinner,
+        hotel: item.hotel,
+        score: item.score,
+        scheduleDetail: JSON.stringify(item.scheduleDetail)
+      }
+      axios 
+        .post(`${MainURL}/restproductschedule/registerscheduledetail`, getParams)
+        .then((res) => {
+          if (res.data) {
+            alert('저장되었습니다.');
+            props.setRefresh(!props.refresh);
+          }
+        })
+        .catch(() => {
+          console.log('실패함')
+        })
     }
-    axios 
-      .post(`${MainURL}/restproductschedule/registerscheduledetail`, getParams)
-      .then((res) => {
-        if (res.data) {
-          alert('저장되었습니다.');
-          props.setRefresh(!props.refresh);
-        }
-      })
-      .catch(() => {
-        console.log('실패함')
-      })
   };
 
   // 일정 검색 & 자동완성기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -422,64 +431,6 @@ export default function ModalAddSchedule (props : any) {
 		}
   }
 
-
-  // 엑셀파일 삽입 기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // if (!e.target.files || e.target.files.length === 0) return; // 파일이 없으면 함수 종료
-  
-    // const file = e.target.files[0];
-    // const reader = new FileReader();
-  
-    // reader.onload = (event: ProgressEvent<FileReader>) => {
-    //   const arrayBuffer = event.target?.result as ArrayBuffer;
-    //   const uint8Array = new Uint8Array(arrayBuffer);
-    //   // Excel 데이터 읽기
-    //   const workbook = XLSX.read(uint8Array, { type: 'array' });
-    //   const sheetName = workbook.SheetNames[0];
-    //   const worksheet = workbook.Sheets[sheetName];
-    //   const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
-    //   if (!Array.isArray(jsonData) || jsonData.length === 0) {
-    //     console.error("Uploaded file is empty or not in the expected format.");
-    //     return; // 데이터가 없으면 함수 종료
-    //   }
-    //   // 데이터 변환
-    //   const transformedData: ScheduleProps[] = jsonData.reduce((acc: ScheduleProps[], item: any) => {
-    //     let dayEntry = acc.find(entry => entry.day === item.day.toString());
-    //     if (!dayEntry) {
-    //       dayEntry = {
-    //         day: item.day.toString(),
-    //         breakfast: '',
-    //         lunch: '',
-    //         dinner: '',
-    //         hotel: '',
-    //         score: '',
-    //         scheduleDetail: []
-    //       };
-    //       acc.push(dayEntry);
-    //     }
-    //     let locationEntry = dayEntry.scheduleDetail.find((detail:any) => detail.location === item.location);
-    //     if (!locationEntry) {
-    //       locationEntry = {
-    //         id: '',
-    //         isViaSort : '',
-    //         sort: item.sort,
-    //         nation: nation,
-    //         city : '',
-    //         location: item.location,
-    //         subLocation: item.subLocation,
-    //         locationTitle: item.locationTitle,
-    //         locationContent: item.locationContent,
-    //         postImage: ''
-    //       };
-    //       dayEntry.scheduleDetail.push(locationEntry);
-    //     } 
-    //     return acc;
-    //   }, []);
-    //   setScheduleList(transformedData);
-    // };
-    // reader.readAsArrayBuffer(file);
-  };
 
   // 항공편 선택 기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -583,8 +534,8 @@ export default function ModalAddSchedule (props : any) {
   // 여행지 검색 & 자동완성기능 -----------------------------------------------------------------------------------------------------------------------------------------------------
 	const [isViewSelectScheduleBoxModal, setIsViewSelectScheduleBoxModal] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
-  const [tourLocationList, setTourLocationList] = useState<ScheduleDetailProps[]>([]);
-  const [selectedTourLocationList, setselectedTourLocationList] = useState<ScheduleDetailProps[]>([]);
+  const [detailLocationList, setDetailLocationList] = useState<ScheduleDetailProps[]>([]);
+  // const [selectedDetailLocationList, setselectedDetailLocationList] = useState<ScheduleDetailProps[]>([]);
   const [viewAutoCompleteTourLocation, setViewAutoCompleteTourLocation] = useState<boolean[][][][]>(
     () =>
       scheduleList?.map((schedule: ScheduleProps) =>
@@ -595,43 +546,23 @@ export default function ModalAddSchedule (props : any) {
         )
       ) || []
   );
-  const [locationOptions, setLocationOptions] = useState([{ value: '선택', label: '선택' }]);
-  const [subLocationOptions, setSubLocationOptions] = useState([{ value: '선택', label: '선택' }]);
-
+  
   // 여행지 리스트 가져오기 & location 셋팅
-  const fetchPostsTourList = async (selectedCity:any) => {
+  const fetchPostsDetailProductList = async (selectedCity:any) => {
     let res = await axios.get(`${MainURL}/restproductschedule/getscheduleboxforpost/${selectedCity}`);
     if (res.data) {
       let copy = res.data;
-      setTourLocationList(copy);
-      const locationresult = copy.map((item:any)=>
-        ({ value:`${item.location}`,  label:`${item.location}` })
-      );
-      locationresult.unshift({ value: '선택', label: '선택' });
-      setLocationOptions(locationresult);
+      setDetailLocationList(copy);
     }
   };
 
-  const handleSubLocationOption = (text: string ) => {
-    const tourLocationCopy = [...tourLocationList];
-    const result = tourLocationCopy.filter((item:any)=> item.location === text);
-    const locationresult = result.map((item:any)=>
-      ({ value:`${item.subLocation}`,  label:`${item.subLocation}` })
-    );
-    locationresult.unshift({ value: '선택', label: '선택' });
-    setSubLocationOptions(locationresult);
-  }
-
-  const handleSelectScheduleBoxChange = (index: number, subIndex: number, detailIndex:number, subDetailIndex:number, locationCopy:string, subLocationCopy:string ) => {
-    const tourLocationCopy = [...tourLocationList];
-    const result = tourLocationCopy.filter((item:any)=> item.location === locationCopy && item.subLocation === subLocationCopy );
-    setselectedTourLocationList(result);
+  const handleSelectScheduleDetailBoxChange = (index: number, subIndex: number, detailIndex:number, subDetailIndex:number, locationCopy:string, subLocationCopy:string ) => {
     const viewAutoComplete = [...viewAutoCompleteTourLocation];
     viewAutoComplete[index][subIndex][detailIndex][subDetailIndex] = true;
     setViewAutoCompleteTourLocation(viewAutoComplete);
     setIsViewSelectScheduleBoxModal(true);
   }
-  
+ 
 
   // 데이 추가
   const handleDayAdd = async () => {
@@ -768,7 +699,7 @@ export default function ModalAddSchedule (props : any) {
 
   const verticalBar40 = {width:'1px', minHeight:'40px', backgroundColor:'#d4d4d4'};
 
- 
+
   return (
     <div className='modal-addinput'>
 
@@ -815,11 +746,11 @@ export default function ModalAddSchedule (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='국가/도시'/>
-            {/* {
+            {
               isAddOrRevise === 'revise' 
               ? 
               <p>{nation}</p>
-              : */}
+              :
               <DropdownBox
                 widthmain='20%'
                 height='35px'
@@ -837,12 +768,12 @@ export default function ModalAddSchedule (props : any) {
                   setSelectedNation(filtered[0].cities);
                 }}
               />
-            {/* }
+            }
             {
               isAddOrRevise === 'revise' 
               ? 
               <p>{tourLocation}</p>
-              : */}
+              :
               <DropdownBox
                 widthmain='20%'
                 height='35px'
@@ -855,12 +786,12 @@ export default function ModalAddSchedule (props : any) {
                 ]}    
                 handleChange={(e)=>{
                   setTourLocation(e.target.value);
-                  fetchTourPeriod(e.target.value);
+                  fetchAirlineData(e.target.value);
                   fetchHotelInNation(e.target.value);
-                  fetchPostsTourList(e.target.value);
+                  fetchPostsDetailProductList(e.target.value);
                 }}
               />
-            {/* } */}
+            }
           </div>
         </div>
         <div className="coverbox">
@@ -937,40 +868,6 @@ export default function ModalAddSchedule (props : any) {
             </div>
           </div>
         </div>
-        {/* <div className="coverbox">
-          <div className="coverrow hole">
-            <TitleBox width="120px" text='일정검색'/>
-            <input className="inputdefault" type="text" style={{width:'60%', marginLeft:'5px'}} 
-              placeholder='등록된 일정 가져오기'
-              // value={selectedSchedule} 
-              onChange={(e) => {
-                handleFetchScheduleChange(e.target.value)
-              }}
-              onKeyDown={(e)=>{handleDropDownKeyFetchSchedule(e)}}
-              onCompositionStart={() => setIsComposingFetchSchedule(true)}
-              onCompositionEnd={() => setIsComposingFetchSchedule(false)}
-            />
-          </div>
-          {
-            (selectedSchedule !== '' && viewAutoCompleteFetchSchedule) &&
-            <div className="scheduleAutoComplete">
-              { 
-                dropDownListFetchSchedule.slice(0, 10).map((item:any, index:any)=>{
-                  return(
-                    <div key={index} className={dropDownItemIndexFetchSchedule === index ? 'dropDownList selected' : 'dropDownList'}>{item.tourLocation} {item.tourPeriod}</div>
-                  )
-                })
-              }
-            </div>  
-          }
-        </div>
-        <div className="coverbox">
-          <div className="coverrow hole">
-            <TitleBox width="120px" text='엑셀파일'/>
-            <input type="file" style={{marginLeft: '10px'}} 
-              accept=".xlsx, .xls" onChange={handleFileUpload}/>
-          </div>
-        </div> */}
       </section>
         
       <section>
@@ -1037,7 +934,7 @@ export default function ModalAddSchedule (props : any) {
         </div>
         <div className="btn" style={{backgroundColor:'#5fb7ef'}}
             onClick={()=>{
-              isAddOrRevise === 'add' 
+              isAddOrRevise === 'add'
               ? registerPost()
               : reviseSchedule();
             }}
@@ -1446,26 +1343,14 @@ export default function ModalAddSchedule (props : any) {
                             <div className='icon-box'>
                               <ImLocation color='#5fb7ef' size={20}/>
                             </div>
-                            {
-                              subItem.location === '' 
-                              ? 
-                              <DropdownBox
-                                widthmain='30%'
-                                height='35px'
-                                selectedValue={subItem.location}
-                                options={locationOptions}
-                                handleChange={(e)=>{
-                                  const inputs = [...scheduleList];
-                                  inputs[index].scheduleDetail[subIndex].location = e.target.value;
-                                  setScheduleList(inputs);
-                                  handleSubLocationOption(e.target.value);
-                                }}
-                              />
-                              :
-                              <input style={{width:'30%'}} value={subItem.location}
-                                className="inputdefault" type="text" maxLength={100}
-                              />
-                            }
+                            <input style={{width:'30%'}} value={subItem.location}
+                              className="inputdefault" type="text" maxLength={100}
+                              onChange={(e)=>{
+                                const inputs = [...scheduleList];
+                                inputs[index].scheduleDetail[subIndex].location = e.target.value;
+                                setScheduleList(inputs);
+                              }}
+                            />
                           </div>
                           {
                             subItem.locationDetail.map((detailItem:any, detailIndex:any)=>{
@@ -1476,25 +1361,14 @@ export default function ModalAddSchedule (props : any) {
                                     <div className="icon-box">
                                       <div className="dot__icon" />
                                     </div>
-                                    {
-                                      detailItem.subLocation === '' 
-                                      ? 
-                                      <DropdownBox
-                                        widthmain='30%'
-                                        height='35px'
-                                        selectedValue={detailItem.subLocation}
-                                        options={subLocationOptions}
-                                        handleChange={(e)=>{
-                                          const inputs = [...scheduleList];
-                                          inputs[index].scheduleDetail[subIndex].locationDetail[detailIndex].subLocation = e.target.value;
-                                          setScheduleList(inputs);
-                                        }}
-                                      />
-                                      :
-                                      <input style={{width:'30%'}} value={detailItem.subLocation}
-                                        className="inputdefault" type="text" maxLength={100}
-                                      />
-                                    }
+                                    <input style={{width:'30%'}} value={detailItem.subLocation}
+                                      className="inputdefault" type="text" maxLength={100}
+                                      onChange={(e)=>{
+                                        const inputs = [...scheduleList];
+                                        inputs[index].scheduleDetail[subIndex].locationDetail[detailIndex].subLocation = e.target.value;
+                                        setScheduleList(inputs);
+                                      }}
+                                    />
                                     <div className="schedule-dayBox">
                                       <div className="schedule-dayBtn"
                                         onClick={()=>{
@@ -1547,7 +1421,7 @@ export default function ModalAddSchedule (props : any) {
                                                 {
                                                   subDetailItem.postImage !== '' &&
                                                   <img style={{height:'100%', width:'100%'}}
-                                                    src={`${MainURL}/images/scheduleboximages/${postImages}`}
+                                                    src={`${MainURL}/images/scheduledetailboximages/${postImages[0]}`}
                                                   />
                                                 }                                                    
                                               </div>
@@ -1556,7 +1430,7 @@ export default function ModalAddSchedule (props : any) {
                                               <input style={{width:'95%'}} value={subDetailItem.locationTitle} 
                                                 className="inputdefault" type="text" maxLength={100}
                                                 onClick={(e) => {
-                                                  handleSelectScheduleBoxChange(index, subIndex, detailIndex, subDetailIndex, subItem.location, detailItem.subLocation)
+                                                  handleSelectScheduleDetailBoxChange(index, subIndex, detailIndex, subDetailIndex, subItem.location, detailItem.subLocation)
                                                 }}
                                                 onChange={(e)=>{
                                                   const copy = [...scheduleList];
@@ -1578,14 +1452,14 @@ export default function ModalAddSchedule (props : any) {
                                           </div>
                                           { (isViewSelectScheduleBoxModal && viewAutoCompleteTourLocation[index][subIndex][detailIndex][subDetailIndex]) &&
                                             <div className="selectScheduleBox-autoComplete">
-                                              <ModalSelectScheduleBox
+                                              <ModalSelectScheduleDetailBox
                                                 refresh={refresh}
                                                 setRefresh={setRefresh}
                                                 setIsViewSelectScheduleBoxModal={setIsViewSelectScheduleBoxModal}
                                                 viewAutoCompleteTourLocation={viewAutoCompleteTourLocation}
                                                 setViewAutoCompleteTourLocation={setViewAutoCompleteTourLocation}
                                                 nation={nation}
-                                                selectedTourLocationList={selectedTourLocationList}
+                                                detailLocationList={detailLocationList}
                                                 scheduleList={scheduleList}
                                                 setScheduleList={setScheduleList}
                                                 index={index}
