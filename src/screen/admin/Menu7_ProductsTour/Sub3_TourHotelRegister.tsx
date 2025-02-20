@@ -81,6 +81,11 @@ export default function Sub3_TourHotelRegister (props:any) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
       setNationList(copy);
+			const searchNationsResult = copy.map((item:any)=>
+        ({ value:`${item.nationKo}`,  label:`${item.nationKo}` })
+      );
+      searchNationsResult.unshift({ value: '전체', label: '전체' });
+			setSearchNationsOptions(searchNationsResult);
     }
   };
 
@@ -119,13 +124,17 @@ export default function Sub3_TourHotelRegister (props:any) {
 
 
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
-	const [searchSort, setSearchSort] = useState('전체');
+	const [searchNation, setSearchNation] = useState('전체');
+	const [searchCity, setSearchCity] = useState('전체');
 	const [searchWord, setSearchWord] = useState('');
+	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
+	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
+
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
 			const res = await axios.post(`${MainURL}/tourproducthotel/gethotelssearch`, {
-				sort : searchSort,
+				city : searchCity,
 				word : searchWord
 			});
 			if (res.data.resultData) {
@@ -222,23 +231,41 @@ export default function Sub3_TourHotelRegister (props:any) {
 						<DropdownBox
 							widthmain='150px'
 							height='35px'
-							selectedValue={searchSort}
+							selectedValue={searchNation}
+							options={searchNationsOptions}
+							handleChange={(e)=>{
+								if (e.target.value === '전체') {
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									fetchPosts();
+								} else {
+									setSearchNation(e.target.value);
+									const copy : any = [...nationlist];
+									const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+									setSearchCityOptions(filtered[0].cities)
+								}
+							}}
+						/>
+						<DropdownBox
+							widthmain='150px'
+							height='35px'
+							selectedValue={searchCity}
 							options={[
-								{ value: '전체', label: '전체' },
-								{ value: '풀빌라', label: '풀빌라' },
-								{ value: '리조트', label: '리조트' },
-								{ value: '호텔', label: '호텔' },
-								{ value: '박당', label: '박당' },
-								{ value: '선투숙', label: '선투숙' },
-								{ value: '후투숙', label: '후투숙' },
-								{ value: '경유호텔', label: '경유호텔' }
-							]}
-							handleChange={(e)=>{setSearchSort(e.target.value)}}
+                { value: '선택', label: '선택' },
+                ...searchCityOptions.map((nation:any) => (
+                  { value: nation.cityKo, label: nation.cityKo }
+                ))
+              ]}    
+							handleChange={(e)=>{
+								setSearchCity(e.target.value);
+							}}
 						/>
 						<input className="inputdefault" type="text" style={{width:'30%', textAlign:'left'}} 
 								value={searchWord} onChange={(e)=>{setSearchWord(e.target.value)}} 
 								onKeyDown={(e)=>{if (e.key === 'Enter') {handleWordSearching();}}}
-								/>
+								placeholder='호텔명'
+						/>
 						<div className="buttons" style={{margin:'20px 0'}}>
 							<div className="btn searching"
 								onClick={()=>{
@@ -246,6 +273,17 @@ export default function Sub3_TourHotelRegister (props:any) {
 								}}
 							>
 								<p>검색</p>
+							</div>
+							<div className="btn reset"
+								onClick={()=>{
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									setSearchWord('');
+									fetchPosts();
+								}}
+							>
+								<p>초기화</p>
 							</div>
 						</div>
 					</div>

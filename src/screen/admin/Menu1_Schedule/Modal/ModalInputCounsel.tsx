@@ -1,39 +1,49 @@
 import React, { useState } from 'react'
 import './ModalInput.scss'
 import { IoMdClose } from "react-icons/io";
-import { TitleBox } from '../../../boxs/TitleBox';
+import { TitleBox } from '../../../../boxs/TitleBox';
 import axios from 'axios'
-import MainURL from "../../../MainURL";
-import { DateBoxDouble } from '../../../boxs/DateBoxDouble';
-import { DateBoxSingle } from '../../../boxs/DateBoxSingle';
-import { DropdownBox } from '../../../boxs/DropdownBox';
-import { DropDowncharger, DropDownNum, DropDownTime, DropDownVisitPath } from '../../DefaultData';
+import MainURL from "../../../../MainURL";
+import { DateBoxDouble } from '../../../../boxs/DateBoxDouble';
+import { DateBoxSingle } from '../../../../boxs/DateBoxSingle';
+import { DropdownBox } from '../../../../boxs/DropdownBox';
+import { DropDowncharger, DropDownNum, DropDownTime, DropDownVisitPath } from '../../../DefaultData';
+import { DateBoxSingleTime } from '../../../../boxs/DateBoxSingleTime';
+import { format } from 'date-fns';
 
 
 
-export default function ModalCounsel(props:any) {
+export default function ModalInputCounsel(props:any) {
 
-  const [sort, setSort] = useState('honeymoon');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [dateCeremony, setDateCeremony] = useState();
-  const [dateStart, setDateStart] = useState();
-  const [dateEnd, setDateEnd] = useState();
-  const [tourLocation, setTourLocation] = useState('');
-  const [tourPersonNum, setTourPersonNum] = useState(DropDownNum[0].value);
-  const [requestion, setRequestion] = useState('');
-  const [visitPath, setVisitPath] = useState(DropDownVisitPath[0].value);
-  const [visitDate, setVisitDate] = useState(props.selectDate);
-  const [visitTime, setVisitTime] = useState(DropDownTime[0].value);
-  const [charger, setcharger] = useState(DropDowncharger[0].value);
-  const [accepter, setAccepter] = useState('');
-  const [notice, setNotice] = useState('');
+  const isAddOrRevise = props.isAddOrRevise;
+  const counselData = isAddOrRevise === 'revise' ? props.modalData : null;
 
-  // 수정저장 함수
+  const [scheduleStart, setScheduleStart] = useState<Date | null>(isAddOrRevise === 'revise' ? new Date(counselData.scheduleStart): null);
+  const [scheduleEnd, setScheduleEnd] = useState<Date | null>(isAddOrRevise === 'revise' ? new Date(counselData.scheduleEnd) : null);
+  const [fontColor, setFontColor] = useState(isAddOrRevise === 'revise' ? counselData.fontColor : '');
+  const [sort, setSort] = useState(isAddOrRevise === 'revise' ? counselData.sort : 'honeymoon');
+  const [name, setName] = useState(isAddOrRevise === 'revise' ? counselData.name : '');
+  const [phone, setPhone] = useState(isAddOrRevise === 'revise' ? counselData.phone : '');
+  const [dateCeremony, setDateCeremony] = useState(isAddOrRevise === 'revise' ? counselData.dateCeremony : '');
+  const [dateStart, setDateStart] = useState(isAddOrRevise === 'revise' ? counselData.dateStart : '');
+  const [dateEnd, setDateEnd] = useState(isAddOrRevise === 'revise' ? counselData.dateEnd : '');
+  const [tourLocation, setTourLocation] = useState(isAddOrRevise === 'revise' ? counselData.tourLocation : '');
+  const [tourPersonNum, setTourPersonNum] = useState(isAddOrRevise === 'revise' ? counselData.tourPersonNum : DropDownNum[0].value);
+  const [requestion, setRequestion] = useState(isAddOrRevise === 'revise' ? counselData.requestion : '');
+  const [visitPath, setVisitPath] = useState(isAddOrRevise === 'revise' ? counselData.visitPath : DropDownVisitPath[0].value);
+  const [charger, setcharger] = useState(isAddOrRevise === 'revise' ? counselData.charger : DropDowncharger[0].value);
+  const [accepter, setAccepter] = useState(isAddOrRevise === 'revise' ? counselData.accepter : '');
+  const [notice, setNotice] = useState(isAddOrRevise === 'revise' ? counselData.notice : '');
+
+  // 저장 함수
   const handleCounselSave = async () => {
   
     await axios
     .post(`${MainURL}/adminschedule/savecounsel`, {
+      scheduleStart: scheduleStart,
+      scheduleEnd : scheduleEnd,
+      scheduleTitle : name,
+      fontColor: fontColor,
       sort : sort,
       name : name,
       phone: phone,
@@ -44,8 +54,6 @@ export default function ModalCounsel(props:any) {
       tourPersonNum: tourPersonNum,
       requestion: requestion,
       visitPath: visitPath,
-      visitDate: visitDate,
-      visitTime: visitTime,
       charger: charger,
       accepter: accepter,
       notice: notice
@@ -63,6 +71,60 @@ export default function ModalCounsel(props:any) {
     })
   };
 
+  // 수정 함수
+  const handleCounselRevise = async () => {
+  
+    await axios
+    .post(`${MainURL}/adminschedule/revisecounsel`, {
+      postId: counselData.id,
+      scheduleStart: scheduleStart ? format(scheduleStart, 'yyyy-MM-dd HH:mm') : '',
+      scheduleEnd : scheduleEnd ? format(scheduleEnd, 'yyyy-MM-dd HH:mm') : '',
+      scheduleTitle : name,
+      fontColor: fontColor,
+      sort : sort,
+      name : name,
+      phone: phone,
+      dateCeremony : dateCeremony,
+      dateStart: dateStart,
+      dateEnd : dateEnd,
+      tourLocation: tourLocation,
+      tourPersonNum: tourPersonNum,
+      requestion: requestion,
+      visitPath: visitPath,
+      charger: charger,
+      accepter: accepter,
+      notice: notice
+    })
+    .then((res)=>{
+      if (res.data) {
+        alert('수정되었습니다.');
+        props.fetchCounselPosts();
+      }
+    })
+    .catch((err)=>{
+      alert('다시 시도해주세요.')
+    })
+  };
+
+  interface ColorCheckBoxProps {
+    fontColorCopy : string;
+  }
+
+  const ColorCheckBox: React.FC<ColorCheckBoxProps> = ({ fontColorCopy }) => (
+    <div className='checkInputCover' style={{margin:'0'}}>
+      <div className='checkInput'>
+        <input className="input" type="checkbox"
+          checked={fontColor === fontColorCopy}
+          style={{backgroundColor:fontColorCopy}}
+          onChange={()=>{
+            setFontColor(fontColorCopy);
+          }}
+        />
+      </div>
+      <p style={{backgroundColor:fontColorCopy, fontSize:'14px'}}>{fontColorCopy}</p>
+    </div>
+  )
+
   return (
     <div className='modal-counsel'>
       <div className='close'
@@ -71,7 +133,11 @@ export default function ModalCounsel(props:any) {
       </div>
       
       <div className="modal-header">
-        <h1>[{props.selectDate}]</h1>
+        {
+          isAddOrRevise === 'revise' 
+          ? <h1>[{scheduleStart && format(scheduleStart, 'yyyy-MM-dd HH:mm')}]</h1>
+          : <h1>[{props.selectDate && format(props.selectDate, 'yyyy-MM-dd')}]</h1>
+        }
       </div>
 
       <section>
@@ -168,20 +234,23 @@ export default function ModalCounsel(props:any) {
         <div className="bottombar"></div>
         <div className="coverbox">
           <div className="coverrow hole">
-            <TitleBox width="120px" text='방문일'/>
-            <DateBoxSingle setSelectDate={setVisitDate} date={visitDate}/>
+            <TitleBox width="120px" text='방문일시'/>
+            <DateBoxSingleTime setSelectDate={setScheduleStart} date={scheduleStart}/>
+            <p>~</p>
+            <DateBoxSingleTime setSelectDate={setScheduleEnd} date={scheduleEnd}/>
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
-            <TitleBox width="120px" text='방문시간'/>
-            <DropdownBox
-              widthmain='20%'
-              height='35px'
-              selectedValue={visitTime}
-              options={DropDownTime}   
-              handleChange={(e)=>{setVisitTime(e.target.value)}}
-            />
+            <TitleBox width="120px" text='일정색상'/>
+            <div style={{marginLeft: '10px', display:'flex', alignItems:'center'}}>
+              <ColorCheckBox fontColorCopy='#F15F5F'/>
+              <ColorCheckBox fontColorCopy='#F29661'/>
+              <ColorCheckBox fontColorCopy='#F2CB61'/>
+              <ColorCheckBox fontColorCopy='#86E57F'/>
+              <ColorCheckBox fontColorCopy='#6799FF'/>
+              <ColorCheckBox fontColorCopy='#A566FF'/>
+            </div>
           </div>
         </div>
         <div className="coverbox">
@@ -225,7 +294,11 @@ export default function ModalCounsel(props:any) {
           <p>취소</p>
         </div>
         <div className="btn" style={{backgroundColor:'#5fb7ef'}}
-          onClick={handleCounselSave}
+          onClick={()=>{
+            isAddOrRevise === 'revise'
+            ? handleCounselRevise()
+            : handleCounselSave()
+          }}
         >
           <p>저장</p>
         </div>

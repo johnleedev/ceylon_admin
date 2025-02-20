@@ -269,14 +269,7 @@ export default function Sub1_CityAirplane (props:any) {
 							selectedNation?.cities.map((item:any, index:any)=>{
 
 								return (
-									<div key={index} className='cities__row'
-										onClick={()=>{
-											window.scrollTo(0, 0);
-											setCityData(item);
-											setIsAddOrRevise('revise');
-											fetchPostAirline(item);
-										}}
-									>
+									<div key={index} className='cities__row'>
 										<div style={{display:'flex', alignItems:'center'}}>
 										{
 											item.isView === 'true' 

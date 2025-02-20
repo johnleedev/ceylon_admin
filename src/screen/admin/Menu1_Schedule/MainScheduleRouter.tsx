@@ -1,10 +1,8 @@
 import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Sub1_MainSchdulePage from './Sub1_MainSchedulePage';
-import ReservePage from './ModalReserve/ReservePage';
+import ReservePage from './ReservePage/ReservePage';
 import Sub2_CustomFeedback from './Sub2_CustomFeedback';
-
-
 
 export default function MainScheduleRouter() {
 

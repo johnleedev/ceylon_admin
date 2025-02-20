@@ -187,10 +187,17 @@ export default function Sub4_DetailSchedule (props:any) {
 							selectedValue={searchNation}
 							options={searchNationsOptions}
 							handleChange={(e)=>{
-								setSearchNation(e.target.value);
-								const copy : any = [...nationlist];
-                const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
-								setSearchCityOptions(filtered[0].cities)
+								if (e.target.value === '전체') {
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									fetchPosts();
+								} else {
+									setSearchNation(e.target.value);
+									const copy : any = [...nationlist];
+									const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+									setSearchCityOptions(filtered[0].cities)
+								}
 							}}
 						/>
 						<DropdownBox
@@ -227,10 +234,11 @@ export default function Sub4_DetailSchedule (props:any) {
 							<div className="btn searching"
 								style={{backgroundColor:'#fff'}}
 								onClick={()=>{
-									setSearchNation("");
-									setSearchCityOptions([{ value: '선택', label: '선택' }]);
-									setSearchCity("");
-									setList(listOrigin);
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									setSearchWord('');
+									fetchPosts();
 								}}
 							>
 								<p style={{color:"#333"}}>초기화</p>

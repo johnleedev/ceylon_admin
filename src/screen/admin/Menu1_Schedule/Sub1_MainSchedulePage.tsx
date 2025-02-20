@@ -4,173 +4,104 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import ModalCheckCounsel from './ModalCheck/ModalCheckCounsel';
-import ModalInputCounsel from './ModalInputCounsel';
+import ModalCheckCounsel from './Modal/zzModalCheckCounsel';
+import ModalInputCounsel from './Modal/ModalInputCounsel';
 import axios from 'axios';
 import MainURL from '../../../MainURL';
 import { DropdownBox } from '../../../boxs/DropdownBox';
-import ModalCheckVisit from './ModalCheck/ModalCheckVisit';
-import ModalInputCompanySchedule from './ModalInputCompanySchedule';
-import ModalCheckCompanySchedule from './ModalCheck/ModalCheckCompanySchedule';
+import ModalCheckVisit from './Modal/zzModalCheckVisit';
+import ModalInputCompanySchedule from './Modal/ModalInputCompanySchedule';
+import ModalCheckCompanySchedule from './Modal/zzModalCheckCompanySchedule';
 import { useNavigate } from 'react-router-dom';
-import ModalCheckEstimate from './ModalCheck/ModalCheckEsimate';
+import ModalCheckEstimate from './Modal/zzModalCheckEsimate';
 import { useRecoilValue } from 'recoil';
 import { recoilExchangeRate } from '../../../RecoilStore';
-import { format } from 'date-fns';
+import { isValid, format } from 'date-fns';
+import CalendarBoxMonth from './CalendarBoxMonth';
+import CalendarBoxWeeks from './CalendarBoxWeeks';
 
 
 interface EventsProps {
   date: string;
-  charger: string;
-  name: string;
-  visitTime : string;
+  start: string;
+  end: string;
+  title: string;
+  fontColor: string;
 }
-
-interface SelectBoxProps {
-  num: number;
-  text: string;
-}
-
 
 export default function MainSchdulePage() {
 
   let navigate = useNavigate();
   const recoilExchangeRateCopy = useRecoilValue(recoilExchangeRate);
 
-  const [calendarType, setCalendarType] = useState('timeGridWeek');
-  const [currentTab, setCurrentTab] = useState(1);
+  const [calendarType, setCalendarType] = useState('month');
+  const [currentTab, setCurrentTab] = useState('회사일정');
   const [refresh, setRefresh] = useState<boolean>(false);
   const [sort, setSort] = useState('H');
-  const [events, setEvents] = useState<EventsProps[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<EventsProps[]>([]);
   const [currentMonth, setCurrentMonth] = useState('');
 
 
-  const SelectBox: React.FC<SelectBoxProps> = ({ num, text }) => (
+  const SelectBox: React.FC<{text: string}> = ({ text }) => (
     <div 
       className="select-box" 
-      style={{backgroundColor: currentTab === num ? '#242d3f' : '#fff', 
-              color: currentTab === num ? '#fff' : '#242d3f' }}
+      style={{backgroundColor: currentTab === text ? '#242d3f' : '#fff', 
+              color: currentTab === text ? '#fff' : '#242d3f' }}
       onClick={()=>{
-        setEvents([]);
-        setCurrentTab(num);
-        if (num === 1) {fetchScheduleCoPosts();}
-        if (num === 2) {fetchOnlinePosts();}
-        if (num === 3) {fetchCounselPosts();}
-        if (num === 4) {fetchReservePosts();}
-        if (num === 5) {fetchReserveDepartPosts();}
+        setCalendarEvents([]);
+        setCurrentTab(text);
+        if (text === '회사일정') {fetchScheduleCoPosts();}
+        if (text === 'NewDB') {fetchOnlinePosts();}
+        if (text === '방문스케줄') {fetchCounselPosts();}
+        if (text === '예약건') {fetchReservePosts();}
+        // if (num === 5) {fetchReserveDepartPosts();}
       }}
     >{text}</div>
   )
 
   // 게시글 가져오기 ------------------------------------------------------
+
   const fetchScheduleCoPosts = async () => {
-    const resScheduleCo = await axios.get(`${MainURL}/adminschedule/getschedulecompany`)
+    const resScheduleCo = await axios.get(`${MainURL}/adminschedule/getschedulecompany`);
     if (resScheduleCo) {
-      setEvents(resScheduleCo.data);
+      setCalendarEvents(resScheduleCo.data);
     }
   };
   const fetchOnlinePosts = async () => {
-    const resOnline = await axios.get(`${MainURL}/adminschedule/getonlinelist`)
+    const resOnline = await axios.get(`${MainURL}/adminschedule/getonlinelist`);
     if (resOnline.data) {
-      setEvents(resOnline.data)
+      setCalendarEvents(resOnline.data);
     }
   };
-
   const fetchCounselPosts = async () => {
     const resCounsel = await axios.get(`${MainURL}/adminschedule/getcounsellist`)
     if (resCounsel) {
-      setEvents(resCounsel.data);
+      setCalendarEvents(resCounsel.data);
     }
   };
   const fetchReservePosts = async () => {
     const resReserve = await axios.get(`${MainURL}/adminreserve/getreserve`)
     if (resReserve) {
       const copy = [...resReserve.data];
-      const result = copy.map((item) => ({
-        ...item,
-        userInfo: JSON.parse(item.userInfo).map((user:any) => user.nameKo).join('/')
-      }));
-      setEvents(result);
+      setCalendarEvents(copy);
     }
   };
-  const fetchReserveDepartPosts = async () => {
-    const resReserve = await axios.get(`${MainURL}/adminreserve/getreserve`)
-    if (resReserve) {
-      const copy = resReserve.data;
-      copy.map((item:any, index:any)=>{
-        item.date = item.tourStartPeriod;
-      })
-      setEvents(copy);
-    }
-  };
+  // const fetchReserveDepartPosts = async () => {
+  //   const resReserve = await axios.get(`${MainURL}/adminreserve/getreserve`)
+  //   if (resReserve) {
+  //     const copy = resReserve.data;
+  //     copy.map((item:any, index:any)=>{
+  //       item.date = item.tourStartPeriod;
+  //     })
+  //     setCalendarEvents(copy);
+  //   }
+  // };
 
   useEffect(() => {
     fetchScheduleCoPosts();
   }, []);  
 
-
-  // 달력 ---------------------------------------------------------------------------------------------
-  const [checkContent, setCheckContent] = useState();
-  const [which_Visit_Counsel, setWhich_Visit_Counsel] = useState(1);
-
-  // 현재 월 데이터 가져오기
-  const handleDatesSet = (dateInfo:any) => {
-    const calendarApi = dateInfo.view.calendar;
-    const startDate = calendarApi.getDate();
-    const month = startDate.getMonth() + 1; 
-    setCurrentMonth(month);
-  };
-
-
-  function renderEventContent(eventInfo:any) {
-    const start : any = new Date(eventInfo.event.start);
-    const end : any = new Date(eventInfo.event.end);
-    
-    return (
-      <div
-        onClick={()=>{
-          if (currentTab === 4) {
-            navigate(`/admin/reserve/reservedetail`, {state : eventInfo.event.extendedProps.serialNum});
-          } else {
-            if (currentTab === 2) {
-              eventInfo.event.extendedProps.sort === '상담' ? setWhich_Visit_Counsel(1) : setWhich_Visit_Counsel(2);
-            }
-            setIsViewCheckModal(true);
-            setCheckContent(eventInfo.event);
-          }
-        }}
-        className='dayBox'
-        style={{border: currentTab === 1 ? `1px solid ${eventInfo.event.extendedProps.fontColor}` : 'none'}}
-      >
-        { currentTab === 1 && <>
-          <div style={{backgroundColor:`${eventInfo.event.extendedProps.fontColor}`, padding:'2px 5px',
-                      borderRadius:'3px', marginRight:'5px'}}>
-            <p style={{color:'#fff'}}>{eventInfo.event.extendedProps.sort}</p>
-          </div>
-          <h3 style={{color: `${eventInfo.event.extendedProps.fontColor}`}}>{eventInfo.event.title}</h3>
-        </>}
-        { currentTab === 2 && <>
-          <div style={{padding:'1px 3px', border:'1px solid #BDBDBD', borderRadius:'3px', marginRight:'3px', 
-                      backgroundColor:eventInfo.event.extendedProps.sort === '상담' ? '#3a9fe5' : '#b8d257'}}>
-            <p style={{color:'#fff'}}>{eventInfo.event.extendedProps.sort}신청</p>
-          </div>
-          <p>{eventInfo.event.extendedProps.name}</p>
-        </>}
-        { currentTab === 3 &&<>
-          <h2>{eventInfo.event.extendedProps.charger}</h2>
-          <p>{eventInfo.event.extendedProps.name}</p>
-        </>}
-        { currentTab === 4 &&<>
-          <h2>{eventInfo.event.extendedProps.charger}</h2>
-          <p>{eventInfo.event.extendedProps.userInfo}</p>
-        </>}
-        { currentTab === 5 &&<>
-          <h2>{eventInfo.event.extendedProps.charger}</h2>
-          <p>{eventInfo.event.extendedProps.name}</p>
-        </>}
-      </div>
-    )
-  }
+ 
 
   // 날짜 선택 --------------------------------------------------------------
   const currentDate = new Date();
@@ -178,19 +109,6 @@ export default function MainSchdulePage() {
   const [selectDate, setSelectDate] = useState(formattedDate);
   const [selectStartDate, setSelectStartDate] = useState(formattedDate);
   const [selectEndDate, setSelectEndDate] = useState(formattedDate);
-  const handleSelectDate = (e:any) => {
-    setSelectDate(e.date);
-    setSelectStartDate(e.date);
-  }
-
-  const handleSelect = (selectInfo:any) => {
-    const start = selectInfo.start; 
-    const end = selectInfo.end;     
-    const startCopy = format(start, 'yyyy-MM-dd hh:mm:ss');
-    const endCopy = format(end, 'yyyy-MM-dd hh:mm:ss');
-    setSelectStartDate(startCopy);
-    setSelectEndDate(endCopy);
-  };
 
   // 예약 등록 함수 --------------------------------------------------------------------------------------------
   // alert
@@ -221,16 +139,11 @@ export default function MainSchdulePage() {
 
 
   // 모달 ---------------------------------------------------------
-  const [isViewCounselModal, setIsViewCounselModal] = useState<boolean>(false);
-  // const [isViewReserveModal, setIsViewReserveModal] = useState<boolean>(false);
-  const [isViewCheckModal, setIsViewCheckModal] = useState<boolean>(false);
   const [isViewScheduleModal, setIsViewScheduleModal] = useState<boolean>(false);
+  const [isViewCounselModal, setIsViewCounselModal] = useState<boolean>(false);
+
   
   return (
-    // events.length === 0 
-    // ?
-    // <Loading />
-    // :
     <div className='Menu1'>
 
       <div className="top-row">
@@ -253,27 +166,27 @@ export default function MainSchdulePage() {
 
       <div className="top-row">
         <div className='rowbox' style={{justifyContent:'flex-start'}}>
-          <SelectBox num={1} text='회사일정'/>
-          <SelectBox num={2} text='New DB'/>
-          <SelectBox num={3} text='방문스케줄'/>
-          <SelectBox num={4} text='예약건'/>
-          <SelectBox num={5} text='출발건'/>
+          <SelectBox text='회사일정'/>
+          <SelectBox text='NewDB'/>
+          <SelectBox text='방문스케줄'/>
+          <SelectBox text='예약건'/>
+          {/* <SelectBox num={5} text='출발건'/> */}
         </div>
 
         <div className='rowbox' style={{justifyContent:'center'}}>
-          <p className={calendarType === 'timeGridWeek' ? 'selected calendar-btn' : 'calendar-btn'}
+          <p className={calendarType === 'month' ? 'selected calendar-btn' : 'calendar-btn'}
             onClick={()=>{
-              setCalendarType('timeGridWeek');
+              setCalendarType('month');
             }}
           >주</p>
-          <p className={calendarType === 'dayGridMonth' ? 'selected calendar-btn' : 'calendar-btn'}
+          <p className={calendarType === 'weeks' ? 'selected calendar-btn' : 'calendar-btn'}
             onClick={()=>{
-              setCalendarType('dayGridMonth');
+              setCalendarType('weeks');
             }}
           >월</p>
         </div>
         {
-          currentTab === 1
+          currentTab === '회사일정'
           ?
           <div className='rowbox' style={{justifyContent:'flex-end'}}>
             <div 
@@ -312,85 +225,26 @@ export default function MainSchdulePage() {
       </div>
 
       {/* 달력 -------------------------------------------------------------------------------------- */}
-      <div className='calendar'>
-        {
-          calendarType === 'timeGridWeek' &&
-          <FullCalendar
-            locale= "ko"
-            plugins={[interactionPlugin, dayGridPlugin, timeGridPlugin]}
-            initialView='timeGridWeek'
-            events={events}
-            eventContent={renderEventContent}
-            headerToolbar={{
-              left: 'prev,next',
-              center: 'title',
-              right: 'timeGridWeek,timeGridDay'
-            }}
-            titleFormat={{
-              year: 'numeric',
-              month: 'long'
-            }}
-            selectable={true}
-            dateClick={(e)=>{handleSelectDate(e)}}
-            datesSet={handleDatesSet}
-            editable={true}
-            nowIndicator={true} // 현재 시간 표시
-            select={handleSelect} 
-            slotMinTime="09:00:00"
-            slotMaxTime="24:00:00"
-          />
-        }
-         {
-          calendarType === 'dayGridMonth' &&
-          <FullCalendar
-            locale= "ko"
-            plugins={[interactionPlugin, dayGridPlugin, timeGridPlugin]}
-            initialView='dayGridMonth'
-            events={events}
-            eventContent={renderEventContent}
-            headerToolbar={{
-              left: 'prevYear prev today',
-              center: 'title',
-              right: 'next nextYear'
-            }}
-            titleFormat={{
-              year: 'numeric',
-              month: 'long'
-            }}
-            selectable={true}
-            dateClick={(e)=>{handleSelectDate(e)}}
-            datesSet={handleDatesSet}
-          />
-        }
-       
-        {/* 확인 모달창 */}
-        { 
-          isViewCheckModal &&
-          <div className="modalcheck-cover">
-            <div className="modalcheck-backcover"
-              onClick={()=>{setIsViewCheckModal(false);}}
-            ></div>
-            { currentTab === 1 && 
-              <ModalCheckCompanySchedule selectStartDate={selectStartDate} selectEndDate={selectEndDate} setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>
-            }
-            { currentTab === 2 && 
-              ( which_Visit_Counsel === 2
-                ? <ModalCheckVisit setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>
-                : <ModalCheckEstimate setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>
-              )
-            }
-            { currentTab === 3 && <ModalCheckCounsel setIsViewCheckModal={setIsViewCheckModal} checkContent={checkContent}/>}
-          </div>
-        }
-      </div>
+      {
+        calendarType === 'month' &&
+        <CalendarBoxMonth 
+          calendarEvents={calendarEvents} currentTab={currentTab} fetchCounselPosts={fetchCounselPosts} fetchScheduleCoPosts={fetchScheduleCoPosts}/>
+      }
+      {
+        calendarType === 'weeks' &&
+        <CalendarBoxWeeks 
+          calendarEvents={calendarEvents} currentTab={currentTab} fetchCounselPosts={fetchCounselPosts} fetchScheduleCoPosts={fetchScheduleCoPosts}/>
+      }
+      
 
-      {/* 방문등록 모달창 */}
+      {/* 방문일정등록 모달창 */}
       {
         isViewCounselModal &&
         <div className='Modal'>
           <div className='modal-backcover'></div>
           <div className='modal-maincover'>
             <ModalInputCounsel 
+              isAddOrRevise="new"
               selectDate={selectDate}
               setIsViewCounselModal={setIsViewCounselModal}
               refresh={refresh}
@@ -401,24 +255,6 @@ export default function MainSchdulePage() {
         </div>
       }
 
-      {/* 예약등록 모달창 */}
-      {/* {
-        isViewReserveModal &&
-        <div className='Modal'>
-          <div className='modal-backcover' style={{height : height + 100}}></div>
-          <div className='modal-maincover' ref={divAreaRef}>
-             <ModalReserve 
-              // serialNum={serialNum}
-              // setIsViewModal={setIsViewReserveModal}
-              // refresh={refresh}
-              // setRefresh={setRefresh}
-              // modalSort={modalSort}
-              // setModalSort={setModalSort}
-              fetchReservePosts={fetchReservePosts}
-             />
-          </div>
-        </div>
-      } */}
 
       {/* 회사일정 등록 모달창 */}
       {

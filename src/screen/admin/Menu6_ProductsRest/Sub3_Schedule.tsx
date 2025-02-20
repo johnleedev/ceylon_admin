@@ -60,6 +60,11 @@ export default function Sub3_Schedule (props:any) {
 			const copy = [...nationCityRes.data];
 			copy.sort((a, b) => a.nationKo.localeCompare(b.nationKo, 'ko-KR'));
       setNationList(copy);
+			const searchNationsResult = copy.map((item:any)=>
+        ({ value:`${item.nationKo}`,  label:`${item.nationKo}` })
+      );
+      searchNationsResult.unshift({ value: '전체', label: '전체' });
+			setSearchNationsOptions(searchNationsResult);
     }
   };
 
@@ -98,13 +103,17 @@ export default function Sub3_Schedule (props:any) {
 
 
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
-	const [searchSort, setSearchSort] = useState('전체');
+	const [searchNation, setSearchNation] = useState('전체');
+	const [searchCity, setSearchCity] = useState('전체');
 	const [searchWord, setSearchWord] = useState('');
+	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
+	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
+
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
 			const res = await axios.post(`${MainURL}/restproductschedule/getproductschedulesearch`, {
-				sort : searchSort,
+				city : searchCity,
 				word : searchWord
 			});
 			if (res.data.resultData) {
@@ -191,14 +200,35 @@ export default function Sub3_Schedule (props:any) {
 						<DropdownBox
 							widthmain='150px'
 							height='35px'
-							selectedValue={searchSort}
+							selectedValue={searchNation}
+							options={searchNationsOptions}
+							handleChange={(e)=>{
+								if (e.target.value === '전체') {
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									fetchPosts();
+								} else {
+									setSearchNation(e.target.value);
+									const copy : any = [...nationlist];
+									const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+									setSearchCityOptions(filtered[0].cities)
+								}
+							}}
+						/>
+						<DropdownBox
+							widthmain='150px'
+							height='35px'
+							selectedValue={searchCity}
 							options={[
-								{ value: '전체', label: '전체' },
-								{ value: '선투숙+풀빌라', label: '선투숙+풀빌라' },
-								{ value: '경유지+선투숙+풀빌라', label: '경유지+선투숙+풀빌라' },
-								{ value: '같은리조트+풀빌라', label: '같은리조트+풀빌라' }
-							]}
-							handleChange={(e)=>{setSearchSort(e.target.value)}}
+                { value: '선택', label: '선택' },
+                ...searchCityOptions.map((nation:any) => (
+                  { value: nation.cityKo, label: nation.cityKo }
+                ))
+              ]}    
+							handleChange={(e)=>{
+								setSearchCity(e.target.value);
+							}}
 						/>
 						<input className="inputdefault" type="text" style={{width:'30%', textAlign:'left'}} 
 								value={searchWord} onChange={(e)=>{setSearchWord(e.target.value)}} 
@@ -211,6 +241,17 @@ export default function Sub3_Schedule (props:any) {
 								}}
 							>
 								<p>검색</p>
+							</div>
+							<div className="btn reset"
+								onClick={()=>{
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									setSearchWord('');
+									fetchPosts();
+								}}
+							>
+								<p>초기화</p>
 							</div>
 						</div>
 					</div>
@@ -225,10 +266,11 @@ export default function Sub3_Schedule (props:any) {
 						<TitleList width='3%' text='NO'/>
 						<TitleList width='3%' text='노출'/>
 						<TitleList width='10%' text='여행지'/>
-						<TitleList width='10%' text='여행기간'/>
 						<TitleList width='10%' text='랜드사'/>
-						<TitleList width='10%' text='상품타입'/>
-						<TitleList width='20%' text='관리'/>
+						<TitleList width='20%' text='여행기간'/>
+						<TitleList width='10%' text='최저가'/>
+						<TitleList width='10%' text='최고가'/>
+						<TitleList width='15%' text='관리'/>
 						<TitleList width='5%' text='수정일'/>
 						<TitleList width='10%' text=''/>
   				</div>
@@ -249,32 +291,24 @@ export default function Sub3_Schedule (props:any) {
 										}
 									</div>
 									<TextBox width='10%' text={item.tourLocation} />
-									<TextBox width='10%' text={item.tourPeriod}/>
 									<TextBox width='10%' text={item.landCompany} />
-									<TextBox width='10%' text={item.productType} />
-									<div className="text" style={{width:`20%`, height: '50px', textAlign:'center'}}>
+									<TextBox width='20%' text={`${item.productType} / ${item.tourPeriod}`}/>
+									<TextBox width='10%' text={''} />
+									<TextBox width='10%' text={''} />
+									<div className="text" style={{width:`15%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn"
 											onClick={()=>{
 	  										
 											}}
 										>
-											<p>0건</p>
-										</div>
-										<div className="hotelControlBtn"
-											onClick={()=>{
-	  										setIsAddOrRevise('revise');
-												setScheduleInfo(item);
-												fetchPostCost(item.id);
-											}}
-										>
-											<p>일정변경</p>
+											<p>항공</p>
 										</div>
 										<div className="hotelControlBtn"
 											onClick={()=>{
 													
 											}}
 										>
-											<p>적용호텔</p>
+											<p>호텔</p>
 										</div>
 									</div>
 									<TextBox width='5%' text={item.reviseDate} />

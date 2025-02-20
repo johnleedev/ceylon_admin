@@ -49,7 +49,8 @@ export default function ModalAddHotel (props : any) {
   const [customerScore, setCustomerScore] = useState(isAddOrRevise === 'revise' ? hotelData.customerScore : '');
   const [tripAdviser, setTripAdviser] = useState(isAddOrRevise === 'revise' ? hotelData.tripAdviser : '');
 
-  const [productSort, setProductSort] = useState(isAddOrRevise === 'revise'? JSON.parse(hotelData.productSort): [{resort:"", hotelCustom:""}]);
+  const [resortCategory, setResortCategory] = useState(isAddOrRevise === 'revise' ? JSON.parse(hotelData.resortCategory) : [""]);
+  const [hotelCategory, setHotelCategory] = useState(isAddOrRevise === 'revise' ? JSON.parse(hotelData.hotelCategory) : [""]);
   const [serviceCategory, setServiceCategory] = useState(isAddOrRevise === 'revise'? JSON.parse(hotelData.serviceCategory): [{product : "", program : "", productCost : ""}]);
 
   interface ImageNoticeProps {
@@ -383,7 +384,8 @@ export default function ModalAddHotel (props : any) {
       hotelParking: hotelParking,
       customerScore: customerScore,
       tripAdviser : tripAdviser,
-      productSort : JSON.stringify(productSort),
+      resortCategory: JSON.stringify(resortCategory),
+      hotelCategory : JSON.stringify(hotelCategory),
       serviceCategory : JSON.stringify(serviceCategory),
       imageNamesAllView : JSON.stringify(imageNamesAllView),
       imageNamesRoomView : JSON.stringify(imageNamesRoomView),
@@ -472,7 +474,8 @@ export default function ModalAddHotel (props : any) {
       hotelParking: hotelParking,
       customerScore: customerScore,
       tripAdviser : tripAdviser,
-      productSort : JSON.stringify(productSort),
+      resortCategory: JSON.stringify(resortCategory),
+      hotelCategory : JSON.stringify(hotelCategory),
       serviceCategory : JSON.stringify(serviceCategory),
       imageNamesAllView : imageNamesAllView.length === 0 ? JSON.stringify(lastImageNamesAllView) : JSON.stringify(imageNamesAllView),
       imageNamesRoomView : imageNamesRoomView.length === 0 ? JSON.stringify(lastImageNamesRoomView) : JSON.stringify(imageNamesRoomView),
@@ -1249,46 +1252,55 @@ export default function ModalAddHotel (props : any) {
       <section>
         <div className="bottombar"></div>
         <div className="coverbox">
-          <div className="coverrow half">
+          <div className="coverrow hole">
             <TitleBox width="120px" text='리조트분류'/>
-            <DropdownBox
-              widthmain='50%'
-              height='35px'
-              selectedValue={productSort.resort}
-              options={[
-                { value: '선택', label: '선택' },
-                { value: 'MZ감성자극', label: 'MZ감성자극' },
-                { value: '정글VIEW', label: '정글VIEW' },
-                { value: '인피니티오션VIEW', label: '인피니티오션VIEW' },
-                { value: 'HOT특가럭셔리', label: 'HOT특가럭셔리' }
-              ]}    
-              handleChange={(e)=>{
-                const copy = {...productSort};
-                copy.resort = e.target.value;
-                setProductSort(copy)
-              }}
-            />
+            {
+              resortCategory.map((item:any, index:any)=>(
+                <input key={index} value={item} 
+                  className="inputdefault" type="text" style={{width:'120px', marginLeft:'5px'}} 
+                  onChange={(e)=>{
+                    const copy = [...resortCategory];
+                    copy[index] = e.target.value;
+                    setResortCategory(copy);
+                  }}/>
+              ))
+            }
+            <div className="dayBox">
+              <div className="dayBtn"
+                onClick={()=>{
+                  const copy = [...resortCategory, ""];
+                  setResortCategory(copy);
+                }}
+              >
+                <p>+</p>
+              </div>
+            </div>  
           </div>
-          <div className="coverrow half">
+        </div>
+        <div className="coverbox">
+          <div className="coverrow hole">
             <TitleBox width="120px" text='호텔커스텀분류'/>
-            <DropdownBox
-              widthmain='50%'
-              height='35px'
-              selectedValue={productSort.hotelCustom}
-              options={[
-                { value: '선택', label: '선택' },
-                { value: '기본구성', label: '기본구성' },
-                { value: '힙스터/클러버PICK', label: '힙스터/클러버PICK' },
-                { value: '우붓/정글스테이', label: '우붓/정글스테이' },
-                { value: '섬/바다스테이', label: '섬/바다스테이' },
-                { value: '럭셔리조합', label: '럭셔리조합' }
-              ]}    
-              handleChange={(e)=>{
-                const copy = {...productSort};
-                copy.hotelCustom = e.target.value;
-                setProductSort(copy)
-              }}
-            />
+            {
+              hotelCategory.map((item:any, index:any)=>(
+                <input key={index} value={item} 
+                  className="inputdefault" type="text" style={{width:'120px', marginLeft:'5px'}} 
+                  onChange={(e)=>{
+                    const copy = [...hotelCategory];
+                    copy[index] = e.target.value;
+                    setHotelCategory(copy);
+                  }}/>
+              ))
+            }
+            <div className="dayBox">
+              <div className="dayBtn"
+                onClick={()=>{
+                  const copy = [...hotelCategory, ""];
+                  setHotelCategory(copy);
+                }}
+              >
+                <p>+</p>
+              </div>
+            </div>  
           </div>
         </div>
       </section>

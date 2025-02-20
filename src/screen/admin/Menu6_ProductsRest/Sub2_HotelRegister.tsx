@@ -69,8 +69,7 @@ export default function Sub2_HotelRegister (props:any) {
 	const [list, setList] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<ListProps[]>([]);
-	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
-	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
+
 
   const fetchPosts = async () => {
     const res = await axios.get(`${MainURL}/restproducthotel/gethotels/${currentPage}`)
@@ -128,15 +127,16 @@ export default function Sub2_HotelRegister (props:any) {
 
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
 	const [searchNation, setSearchNation] = useState('전체');
-	const [searchSort, setSearchSort] = useState('전체');
+	const [searchCity, setSearchCity] = useState('전체');
 	const [searchWord, setSearchWord] = useState('');
+	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
+	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
 
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
 			const res = await axios.post(`${MainURL}/restproducthotel/gethotelssearch`, {
-				nation : searchNation,
-				sort : searchSort,
+				city : searchCity,
 				word : searchWord
 			});
 			if (res.data.resultData) {
@@ -286,16 +286,23 @@ export default function Sub2_HotelRegister (props:any) {
 							selectedValue={searchNation}
 							options={searchNationsOptions}
 							handleChange={(e)=>{
-								setSearchNation(e.target.value);
-								const copy : any = [...nationlist];
-                const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
-								setSearchCityOptions(filtered[0].cities)
+								if (e.target.value === '전체') {
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									fetchPosts();
+								} else {
+									setSearchNation(e.target.value);
+									const copy : any = [...nationlist];
+									const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+									setSearchCityOptions(filtered[0].cities)
+								}
 							}}
 						/>
 						<DropdownBox
 							widthmain='150px'
 							height='35px'
-							selectedValue={searchSort}
+							selectedValue={searchCity}
 							options={[
                 { value: '선택', label: '선택' },
                 ...searchCityOptions.map((nation:any) => (
@@ -303,13 +310,14 @@ export default function Sub2_HotelRegister (props:any) {
                 ))
               ]}    
 							handleChange={(e)=>{
-								setSearchSort(e.target.value);
+								setSearchCity(e.target.value);
 							}}
 						/>
 						<input className="inputdefault" type="text" style={{width:'30%', textAlign:'left'}} 
 								value={searchWord} onChange={(e)=>{setSearchWord(e.target.value)}} 
 								onKeyDown={(e)=>{if (e.key === 'Enter') {handleWordSearching();}}}
-								/>
+								placeholder='리조트명'
+						/>
 						<div className="buttons" style={{margin:'20px 0'}}>
 							<div className="btn searching"
 								onClick={()=>{
@@ -317,6 +325,17 @@ export default function Sub2_HotelRegister (props:any) {
 								}}
 							>
 								<p>검색</p>
+							</div>
+							<div className="btn reset"
+								onClick={()=>{
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									setSearchWord('');
+									fetchPosts();
+								}}
+							>
+								<p>초기화</p>
 							</div>
 						</div>
 					</div>

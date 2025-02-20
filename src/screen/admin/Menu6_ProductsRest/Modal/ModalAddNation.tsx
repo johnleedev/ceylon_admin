@@ -223,19 +223,23 @@ export default function ModalAddNation (props : any) {
       })
   };
 
-  const deleteNation = async (itemId:any, images:any) => {
+  const deleteNation = async (itemId:any, nation:string, images:any) => {
 		const getParams = {
 			postId : itemId,
+      nation : nation,
       images: JSON.parse(images)
 		}
 		axios 
 			.post(`${MainURL}/restnationcity/deletenation`, getParams)
 			.then((res) => {
 				if (res.data) {
-					alert('삭제되었습니다.');
-					props.setRefresh(!props.refresh);
-          props.setIsViewAddNationModal(false);
-				}
+          if (res.data.isRemainNation) {
+            alert('해당 국가의 도시를 모두 삭제해주세요.');
+          } else {
+            props.setRefresh(!props.refresh);
+            props.setIsViewAddNationModal(false);
+          }
+				} 
 			})
 			.catch(() => {
 				console.log('실패함')
@@ -244,7 +248,7 @@ export default function ModalAddNation (props : any) {
   const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.nationKo}(${item.nationEn})를 정말 삭제하시겠습니까?`);
 			if (costConfirmed) {
-				deleteNation(item.id, item.inputImage);
+				deleteNation(item.id, item.nationKo, item.inputImage);
 		} else {
 			return
 		}

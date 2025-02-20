@@ -54,8 +54,7 @@ export default function Sub2_TourSchedule (props:any) {
 	const [list, setList] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
-	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
-	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
+
 
   const fetchPosts = async () => {
     const res = await axios.get(`${MainURL}/tourproductschedule/getproductschedule/${currentPage}`)
@@ -114,14 +113,16 @@ export default function Sub2_TourSchedule (props:any) {
 
 	// 검색 기능 ------------------------------------------------------------------------------------------------------------------------------------------  
 	const [searchNation, setSearchNation] = useState('전체');
-	const [searchSort, setSearchSort] = useState('전체');
+	const [searchCity, setSearchCity] = useState('전체');
 	const [searchWord, setSearchWord] = useState('');
+	const [searchNationsOptions, setSearchNationsOptions] = useState([{ value: '선택', label: '선택' }]);
+	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
+	
 	const handleWordSearching = async () => {
 		setList([]);
 		try {
 			const res = await axios.post(`${MainURL}/tourproductschedule/getproductschedulesearch`, {
-				nation : searchNation,
-				sort : searchSort,
+				city : searchCity,
 				word : searchWord
 			});
 			if (res.data.resultData) {
@@ -227,23 +228,30 @@ export default function Sub2_TourSchedule (props:any) {
 							selectedValue={searchNation}
 							options={searchNationsOptions}
 							handleChange={(e)=>{
-								setSearchNation(e.target.value);
-								const copy : any = [...nationlist];
-                const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
-								setSearchCityOptions(filtered[0].cities)
+								if (e.target.value === '전체') {
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									fetchPosts();
+								} else {
+									setSearchNation(e.target.value);
+									const copy : any = [...nationlist];
+									const filtered = copy.filter((list:any)=> list.nationKo === e.target.value)
+									setSearchCityOptions(filtered[0].cities)
+								}
 							}}
 						/>
 						<DropdownBox
 							widthmain='150px'
 							height='35px'
-							selectedValue={searchSort}
+							selectedValue={searchCity}
 							options={[
                 { value: '선택', label: '선택' },
                 ...searchCityOptions.map((nation:any) => (
                   { value: nation.cityKo, label: nation.cityKo }
                 ))
               ]}    
-							handleChange={(e)=>{setSearchSort(e.target.value)}}
+							handleChange={(e)=>{setSearchCity(e.target.value)}}
 						/>
 						<input className="inputdefault" type="text" style={{width:'30%', textAlign:'left'}} 
 								value={searchWord} onChange={(e)=>{setSearchWord(e.target.value)}} 
@@ -257,6 +265,20 @@ export default function Sub2_TourSchedule (props:any) {
 							>
 								<p>검색</p>
 							</div>
+							<div className="buttons" style={{margin:'20px 0'}}>
+							<div className="btn searching"
+								style={{backgroundColor:'#fff'}}
+								onClick={()=>{
+									setCurrentPage(1);
+									setSearchNation('전체');
+									setSearchCity('선택');
+									setSearchWord('');
+									fetchPosts();
+								}}
+							>
+								<p style={{color:"#333"}}>초기화</p>
+							</div>
+						</div>
 						</div>
 					</div>
 				</div>
@@ -267,10 +289,10 @@ export default function Sub2_TourSchedule (props:any) {
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
 						<TitleList width='3%' text='노출'/>
-						<TitleList width='10%' text='상품명'/>
-						<TitleList width='10%' text='여행기간'/>
+						<TitleList width='20%' text='상품명/기간'/>
 						<TitleList width='10%' text='랜드사코드'/>
 						<TitleList width='10%' text='입금가'/>
+						<TitleList width='10%' text='판매가'/>
 						<TitleList width='15%' text='관리'/>
 						<TitleList width='10%' text='수정일'/>
 						<TitleList width='10%' text=''/>
@@ -291,24 +313,24 @@ export default function Sub2_TourSchedule (props:any) {
 											: <IoCloseOutline />
 										}
 									</div>
-									<TextBox width='10%' text={item.tourProductName} />
-									<TextBox width='10%' text={item.tourPeriod}/>
+									<TextBox width='20%' text={`${item.tourProductName} / ${item.tourPeriod}`} />
 									<TextBox width='10%' text={item.landCompanyCode} />
 									<TextBox width='10%' text={item.depositCost} />
+									<TextBox width='10%' text={''} />
 									<div className="text" style={{width:`15%`, height: '50px', textAlign:'center'}}>
 										<div className="hotelControlBtn"
 											onClick={()=>{
-												setIsViewHotelReviseModal(true);
+												
 											}}
 										>
-											<p>호텔변경</p>
+											<p>항공</p>
 										</div>
 										<div className="hotelControlBtn"
 											onClick={()=>{
-												setIsViewScheduleReviseModal(true);
+												
 											}}
 										>
-											<p>일정변경</p>
+											<p>호텔</p>
 										</div>
 									</div>
 									<TextBox width='10%' text={item.reviseDate} />

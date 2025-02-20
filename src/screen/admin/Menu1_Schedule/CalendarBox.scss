@@ -1,0 +1,223 @@
+@mixin middle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+};
+
+
+// 헤더
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #fff;
+
+  .calendar-header-box {
+    display: flex;
+    align-items: center;
+    .calendar-header-btn {
+      margin-right: 30px;
+      font-size: 18px;
+    }
+    .calendar-header-btn:hover {
+      cursor: pointer;
+      opacity: 0.8;
+    }
+  }
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+}
+
+// 월간 달력 -------------------------------------------
+.calendar-container-month {
+  padding: 20px;
+  background-color: #fff;
+
+  // 요일
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #e9ecef;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  // 달력
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 150px);
+
+    .calendar-day {
+      border: 1px solid #ddd;
+      min-height: 100px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    
+      &.selected-day {
+        background-color: rgba(0, 123, 255, 0.2);
+        border: 2px solid #007bff;
+      }
+
+      .date-number {
+        padding: 5px;
+      }
+      .eventbox {
+        font-size: 14px;
+        padding: 4px 6px;
+        cursor: pointer;
+        margin-top: 2px;
+        width: 100%;
+        text-align: left;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+
+        .titlebox {
+          width: 10px;
+          height: 10px;
+          margin-right: 5px;
+        }
+        p {
+          font-size: 14px;
+        }
+        p:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+
+
+// 주간 달력 -------------------------------------------
+.calendar-container-weeks {
+  padding: 20px;
+  background-color: #fff;
+
+  // 요일
+  .week-days-grid {
+    display: flex;
+    background-color: #ddd;
+
+    .time-area {
+      width: 80px;
+      border-right: 1px solid #b6b6b6;
+    }
+    .day-header {
+      flex: 1;
+      padding: 5px;
+      border-right: 1px solid #b6b6b6;
+    }
+  }
+
+  // 종일 일정
+  .all-day-events-grid {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    background-color: #fff;
+
+    .time-area {
+      width: 80px;
+      border-right: 1px solid #ddd;
+      @include middle;
+
+      h3 {
+        font-weight: bold;
+      }
+    }
+
+    .all-day-column {
+      flex: 1;
+      min-height: 40px;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      
+      .all-day-event {
+        width: 100%;
+        padding: 4px 8px;
+        text-align: center;
+        font-size: 12px;
+        margin: 1px 0;
+        cursor: pointer;
+        p {
+          font-size: 14px;
+        }
+        p:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+  
+  
+
+  .calendar-grid {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+
+    .time-column {
+      width: 80px;
+      display: flex;
+      flex-direction: column;
+      background: #f5f5f5;
+      border-right: 1px solid #ddd;
+
+    }
+
+    .calendar-day-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #ddd;
+      position: relative;
+    }
+
+    .time-slot {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.8em;
+      color: #666;
+
+      .eventbox {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        @include middle();
+        cursor: pointer;
+
+        p {
+          width: 100%;
+          text-align: left;
+          color: #fff;
+          font-size: 14px;
+          font-weight: bold;
+          padding-left: 10px;
+        }
+        p:hover {
+          cursor: pointer;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .calendar-day-column .time-slot {
+      position: relative;
+    }
+  }
+
+}
+  

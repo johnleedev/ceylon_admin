@@ -133,6 +133,7 @@ export default function Sub1_CityAirplane (props:any) {
 				console.log('실패함')
 			})
 	};
+
 	const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.nation}(${item.sort}/${item.continent})의 도시 ${item.cityKo}를 정말 삭제하시겠습니까?`);
       if (costConfirmed) {
@@ -248,14 +249,7 @@ export default function Sub1_CityAirplane (props:any) {
 							selectedNation?.cities.map((item:any, index:any)=>{
 
 								return (
-									<div key={index} className='cities__row'
-										onClick={()=>{
-												window.scrollTo(0, 0);
-												setCityData(item);
-												setIsAddOrRevise('revise');
-												fetchPostAirline(item);
-										}}
-									>
+									<div key={index} className='cities__row'>
 										<div style={{display:'flex', alignItems:'center'}}>
 										{
 											item.isView === 'true' 
