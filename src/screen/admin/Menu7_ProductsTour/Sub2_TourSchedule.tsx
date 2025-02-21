@@ -14,6 +14,7 @@ import { FaWonSign } from "react-icons/fa";
 import ModalCondition from './Modal/ModalCondition';
 import ModalHotelRevise from './Modal/ModalHotelRevise';
 import ModalScheduleRevise from './Modal/ModalScheduleRevise';
+import ModalAddScheduleAddAirline from './Modal/ModalAddScheduleAddAirline';
 
 interface ListProps {
 	id: string;
@@ -51,17 +52,26 @@ export default function Sub2_TourSchedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [list, setList] = useState<ListProps[]>([]);
+	const [viewList, setViewList] = useState<ListProps[]>([]);
+	const [viewAirlineList, setViewAirlineList] = useState<boolean[]>([]);
+	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
+	const [expandedList, setExpandedList] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
 
 
   const fetchPosts = async () => {
+		const resall = await axios.get(`${MainURL}/tourproductschedule/getproductscheduleall`)
+    if (resall.data) {
+      const copy = resall.data;
+      setListOrigin(copy);
+    }
     const res = await axios.get(`${MainURL}/tourproductschedule/getproductschedule/${currentPage}`)
     if (res.data.resultData) {
       const copy = res.data.resultData;
 			copy.reverse();
-      setList(copy);
+      setViewList(copy);
+			setViewAirlineList(() => copy.map(() => false));
       setListAllLength(res.data.totalCount);
     }
 		const nationCityRes = await axios.get(`${MainURL}/tournationcity/getnationcity`)
@@ -81,6 +91,13 @@ export default function Sub2_TourSchedule (props:any) {
 		fetchPosts();
 	}, [refresh, currentPage]);  
 
+	// 항공 버튼 클릭 시 추가 항목 표시
+	const handleAirlineClick = (item: ListProps) => {
+		const additionalItems = listOrigin.filter(
+				(el:any) => (el.nation === item.nation) && (el.tourLocation === item.tourLocation) && (el.sort === "addairline")
+		);
+		setExpandedList(additionalItems);
+	};
 
   // State 변수 추가
   const itemsPerPage = 10; // 한 페이지당 표시될 게시글 수
@@ -119,7 +136,7 @@ export default function Sub2_TourSchedule (props:any) {
 	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
 	
 	const handleWordSearching = async () => {
-		setList([]);
+		setViewList([]);
 		try {
 			const res = await axios.post(`${MainURL}/tourproductschedule/getproductschedulesearch`, {
 				city : searchCity,
@@ -128,10 +145,10 @@ export default function Sub2_TourSchedule (props:any) {
 			if (res.data.resultData) {
 				const copy = [...res.data.resultData];
 				copy.reverse();
-				setList(copy);
+				setViewList(copy);
 				setListAllLength(res.data.totalCount);
 			} else {
-				setList([]);
+				setViewList([]);
 				setListAllLength(0);
 			}
 		} catch (error) {
@@ -143,6 +160,7 @@ export default function Sub2_TourSchedule (props:any) {
 	// 모달 ---------------------------------------------------------
 	const [isViewAddConditionModal, setIsViewAddConditionModal] = useState<boolean>(false);
 	const [isViewAddScheduleModal, setIsViewAddScheduleModal] = useState<boolean>(false);
+	const [isViewAddAirlineModal, setIsViewAddAirlineModal] = useState<boolean>(false);
 	const [isViewHotelReviseModal, setIsViewHotelReviseModal] = useState<boolean>(false);
 	const [isViewScheduleReviseModal, setIsViewScheduleReviseModal] = useState<boolean>(false);
 	const [scheduleInfo, setScheduleInfo] = useState<ListProps>();
@@ -161,6 +179,20 @@ export default function Sub2_TourSchedule (props:any) {
 			setScheduleDetails(result);
 		}
 		setIsViewAddScheduleModal(true);
+	};
+
+	// 수정 상세 스케줄 가져오기
+	const fetchPostAirline = async (id:string) => {
+		const res = await axios.get(`${MainURL}/tourproductschedule/getproductscheduledetails/${id}`)
+		if (res.data !== false) {
+			const copy = res.data;
+			const result = copy.map((item:any) => ({
+				...item,
+				scheduleDetail: JSON.parse(item.scheduleDetail)
+			}));
+			setScheduleDetails(result);
+		}
+		setIsViewAddAirlineModal(true);
 	};
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -289,68 +321,154 @@ export default function Sub2_TourSchedule (props:any) {
 					<div className="TitleList">
 						<TitleList width='3%' text='NO'/>
 						<TitleList width='3%' text='노출'/>
-						<TitleList width='20%' text='상품명/기간'/>
-						<TitleList width='10%' text='랜드사코드'/>
+						<TitleList width='10%' text='여행지'/>
+						<TitleList width='10%' text='랜드사'/>
+						<TitleList width='10%' text='항공사'/>
+						<TitleList width='20%' text='여행기간'/>
 						<TitleList width='10%' text='입금가'/>
 						<TitleList width='10%' text='판매가'/>
-						<TitleList width='15%' text='관리'/>
-						<TitleList width='10%' text='수정일'/>
-						<TitleList width='10%' text=''/>
+						<TitleList width='10%' text='관리'/>
+						<TitleList width='7%' text='수정일'/>
+						<TitleList width='7%' text=''/>
   				</div>
-					
 					{
-						list.map((item:any, index:any)=>{
+						viewList.map((item:any, index:any)=>{
+
 							return (
-								<div key={index}
-									className="rowbox"
-									onClick={()=>{
-									}}
-								>
-									<TextBox width='3%' text={item.id} />
-									<div className="text" style={{width:`3%`, height: '50px', textAlign:'center'}}>
-										{ item.isView  
-											? <FaCircle color='#5fb7ef'/>
-											: <IoCloseOutline />
-										}
+								<div key={index} >
+									<div className="rowbox" style={{backgroundColor: viewAirlineList[index] ? '#f0f9ff' : '#fff' }}>
+										<TextBox width='3%' text={item.id} />
+										<div className="text" style={{width:`3%`, height: '50px', textAlign:'center'}}>
+											{ item.isView  
+												? <FaCircle color='#5fb7ef'/>
+												: <IoCloseOutline />
+											}
+										</div>
+										<TextBox width='10%' text={item.tourLocation} />
+										<TextBox width='10%' text={item.landCompany} />
+										<TextBox width='10%' text={item.departFlight} />
+										<TextBox width='20%' text={`${item.productType} / ${item.tourPeriod}`}/>
+										<TextBox width='10%' text={''} />
+										<TextBox width='10%' text={''} />
+										<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
+											<div className="hotelControlBtn"
+												onClick={()=>{
+													handleAirlineClick(item);
+													const copy = viewAirlineList.map((_, i) => i === index);
+													setViewAirlineList(copy);
+												}}
+											>
+												<p>항공</p>
+											</div>
+											<div className="hotelControlBtn"
+												onClick={()=>{
+														
+												}}
+											>
+												<p>호텔</p>
+											</div>
+										</div>
+										<TextBox width='7%' text={item.reviseDate} />
+										<div className="text" style={{width:`7%`, height: '50px', textAlign:'center'}}>
+											<div className="hotelControlBtn2"
+												onClick={()=>{
+													setIsAddOrRevise('revise');
+													setScheduleInfo(item);
+													fetchPostCost(item.id);
+												}}
+											>
+												<p>수정</p>
+											</div>
+											<div className="divider"></div>
+											<div className="hotelControlBtn2"
+												onClick={()=>{handleDeleteAlert(item);}}
+											>
+												<p>삭제</p>
+											</div>
+										</div>
 									</div>
-									<TextBox width='20%' text={`${item.tourProductName} / ${item.tourPeriod}`} />
-									<TextBox width='10%' text={item.landCompanyCode} />
-									<TextBox width='10%' text={item.depositCost} />
-									<TextBox width='10%' text={''} />
-									<div className="text" style={{width:`15%`, height: '50px', textAlign:'center'}}>
-										<div className="hotelControlBtn"
-											onClick={()=>{
-												
-											}}
-										>
-											<p>항공</p>
+									{
+										viewAirlineList[index] &&
+										<div style={{border:'2px solid #333'}}>
+											<div className="TitleList">
+												<TitleList width='3%' text='NO'/>
+												<TitleList width='3%' text='노출'/>
+												<TitleList width='10%' text='출발지'/>
+												<TitleList width='10%' text='항공사'/>
+												<TitleList width='20%' text='여행기간'/>
+												<TitleList width='10%' text='코드'/>
+												<TitleList width='10%' text='입금가'/>
+												<TitleList width='10%' text='판매가'/>
+												<TitleList width='7%' text='등록일'/>
+												<TitleList width='7%' text=''/>
+												<div className="text" style={{width:`7%`, height:'40px', textAlign:'center'}}>
+													<div className='addAirlineBtnBox'
+														onClick={()=>{
+															handleAirlineClick(item);
+															const copy = viewAirlineList.map((_, i) => i === index);
+															setViewAirlineList(copy);
+														}}
+													>
+														<p className='addAirlineBtn'
+															onClick={()=>{
+																setIsAddOrRevise('revise');
+																setScheduleInfo(item);
+																fetchPostAirline(item.id);
+															}}
+														>항공추가</p>
+													</div>
+													<div className='addAirlineBtnBox' style={{marginLeft:'3px'}}
+														onClick={()=>{
+															setViewAirlineList(() => viewAirlineList.map(() => false));
+														}}
+													>
+														<p className='addAirlineBtn'>X</p>
+													</div>
+												</div>
+											</div>
+											{ expandedList.length > 0 &&
+												expandedList.map((subItem:any, subIndex:any)=>{
+
+													return (
+														<div className="rowbox" key={subIndex} style={{backgroundColor: '#f0f9ff' }}>
+															<TextBox width='3%' text={subItem.id} />
+															<div className="text" style={{width:`3%`, height: '50px', textAlign:'center'}}>
+																{ subItem.isView  
+																	? <FaCircle color='#5fb7ef'/>
+																	: <IoCloseOutline />
+																}
+															</div>
+															<TextBox width='10%' text={subItem.departAirport} />
+															<TextBox width='10%' text={subItem.departFlight} />
+															<TextBox width='20%' text={`${subItem.productType} / ${subItem.tourPeriod}`}/>
+															<TextBox width='10%' text={''} />
+															<TextBox width='10%' text={''} />
+															<TextBox width='10%' text={''} />
+															<TextBox width='7%' text={subItem.reviseDate} />
+															<div className="text" style={{width:`7%`, height: '50px', textAlign:'center'}}>
+																<div className="hotelControlBtn2"
+																	onClick={()=>{
+																		setIsAddOrRevise('revise');
+																		setScheduleInfo(subItem);
+																		fetchPostCost(subItem.id);
+																	}}
+																>
+																	<p>수정</p>
+																</div>
+																<div className="divider"></div>
+																<div className="hotelControlBtn2"
+																	onClick={()=>{handleDeleteAlert(subItem);}}
+																>
+																	<p>삭제</p>
+																</div>
+															</div>
+															<TextBox width='7%' text={''} />
+														</div>
+													)
+												})
+											}
 										</div>
-										<div className="hotelControlBtn"
-											onClick={()=>{
-												
-											}}
-										>
-											<p>호텔</p>
-										</div>
-									</div>
-									<TextBox width='10%' text={item.reviseDate} />
-									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
-										<div className="hotelControlBtn2"
-											onClick={()=>{
-												setIsAddOrRevise('revise');
-												setScheduleInfo(item);
-												fetchPostCost(item.id);
-											}}
-										>
-											<p>수정</p>
-										</div>
-										<div className="divider"></div>
-										<div className="hotelControlBtn2"
-											onClick={()=>{handleDeleteAlert(item);}}
-										>
-											<p>삭제</p>
-										</div>
-									</div>
+									}
 								</div>
 							)
 						})
@@ -417,6 +535,27 @@ export default function Sub2_TourSchedule (props:any) {
           </div>
         </div>
       }
+			{/* 항공변경 모달창 */}
+			{
+        isViewAddAirlineModal &&
+        <div className='Modal'>
+          <div className='modal-backcover'></div>
+          <div className='modal-maincover'>
+             <ModalAddScheduleAddAirline
+								refresh={refresh}
+								setRefresh={setRefresh}
+								setIsViewAddAirlineModal={setIsViewAddAirlineModal}
+								scheduleInfo={scheduleInfo}
+								scheduleDetails={scheduleDetails}
+								isAddOrRevise={isAddOrRevise}
+								nationlist={nationlist}
+						 />
+          </div>
+        </div>
+      }
+
+
+
 			{/* 호텔변경 모달창 */}
 			{
         isViewHotelReviseModal &&
@@ -446,11 +585,9 @@ export default function Sub2_TourSchedule (props:any) {
 								refresh={refresh}
 								setRefresh={setRefresh}
 								setIsViewScheduleReviseModal={setIsViewScheduleReviseModal}
-								
 								setScheduleDetails={setScheduleDetails}
 								scheduleInfo={scheduleInfo}
 								scheduleDetails={scheduleDetails}
-								
 								isAddOrRevise={isAddOrRevise}
 								nationlist={nationlist}
 						 />

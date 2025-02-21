@@ -229,6 +229,20 @@
         padding: 0 5px;
         border-top: 1px solid #333;
         border-bottom: 1px solid #acacac;
+
+        .addAirlineBtnBox {
+          border: 1px solid #ccc;
+          border-radius: 5px;
+
+          .addAirlineBtn {
+            font-size: 14px;
+            padding: 3px 5px;
+          }
+        }
+        .addAirlineBtnBox:hover {
+          cursor: pointer;
+          border: 1px solid #a8a8a8;
+        }
       }
       .rowbox {
         display: flex;

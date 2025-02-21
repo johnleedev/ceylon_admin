@@ -327,8 +327,9 @@ export default function Sub3_TourHotelRegister (props:any) {
 									<div className="text" style={{width:`25%`, textAlign:'center'}}>
 										<div className="hotelControlBtn"
 											onClick={()=>{
-												setHotelInfo(item);
-												setIsViewHotelInfoModal(true);
+												// setHotelInfo(item);
+												// setIsViewHotelInfoModal(true);
+												alert('홈페이지에 보여지는 호텔 정보입니다. / 미완성')
 											}}
 										>
 											<p>보기</p>

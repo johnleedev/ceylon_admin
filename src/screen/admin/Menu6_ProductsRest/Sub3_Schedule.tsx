@@ -10,10 +10,13 @@ import ModalAddSchedule from './Modal/ModalAddSchedule';
 import { FaCircle } from 'react-icons/fa';
 import { IoCloseOutline } from 'react-icons/io5';
 import { DropdownBox } from '../../../boxs/DropdownBox';
+import ModalAddScheduleAddAirline from './Modal/ModalAddScheduleAddAirline';
 
 interface ListProps {
-	id: string;
+	id: number;
 	isView : string;
+	sort : string;
+	nation: string;
 	tourLocation: string;
 	landCompany : string;
 	productType: string;
@@ -45,14 +48,23 @@ export default function Sub3_Schedule (props:any) {
 
 	const [refresh, setRefresh] = useState<boolean>(false);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [list, setList] = useState<ListProps[]>([]);
+	const [viewList, setViewList] = useState<ListProps[]>([]);
+	const [viewAirlineList, setViewAirlineList] = useState<boolean[]>([]);
+	const [listOrigin, setListOrigin] = useState<ListProps[]>([]);
+	const [expandedList, setExpandedList] = useState<ListProps[]>([]);
 	const [listAllLength, setListAllLength] = useState<number>(0);
 	const [nationlist, setNationList] = useState<any>([]);
   const fetchPosts = async () => {
+		const resall = await axios.get(`${MainURL}/restproductschedule/getproductscheduleall`)
+    if (resall.data) {
+      const copy = resall.data;
+      setListOrigin(copy);
+    }
     const res = await axios.get(`${MainURL}/restproductschedule/getproductschedule/${currentPage}`)
     if (res.data.resultData) {
       const copy = res.data.resultData;
-      setList(copy);
+      setViewList(copy);
+			setViewAirlineList(() => copy.map(() => false));
       setListAllLength(res.data.totalCount);
     }
 		const nationCityRes = await axios.get(`${MainURL}/restnationcity/getnationcity`)
@@ -72,6 +84,13 @@ export default function Sub3_Schedule (props:any) {
 		fetchPosts();
 	}, [refresh, currentPage]);  
 
+	// 항공 버튼 클릭 시 추가 항목 표시
+	const handleAirlineClick = (item: ListProps) => {
+		const additionalItems = listOrigin.filter(
+				(el:any) => (el.nation === item.nation) && (el.tourLocation === item.tourLocation) && (el.sort === "addairline")
+		);
+		setExpandedList(additionalItems);
+	};
 
   // State 변수 추가
   const itemsPerPage = 10; // 한 페이지당 표시될 게시글 수
@@ -110,7 +129,7 @@ export default function Sub3_Schedule (props:any) {
 	const [searchCityOptions, setSearchCityOptions] = useState<any>([]);
 
 	const handleWordSearching = async () => {
-		setList([]);
+		setViewList([]);
 		try {
 			const res = await axios.post(`${MainURL}/restproductschedule/getproductschedulesearch`, {
 				city : searchCity,
@@ -118,25 +137,25 @@ export default function Sub3_Schedule (props:any) {
 			});
 			if (res.data.resultData) {
 				const copy = [...res.data.resultData];
-				setList(copy);
+				setViewList(copy);
 				setListAllLength(res.data.totalCount);
 			} else {
-				setList([]);
+				setViewList([]);
 				setListAllLength(0);
 			}
 		} catch (error) {
 			console.error("Failed to fetch search results:", error);
 		}	
 	};
-	
 
 	// 모달 ---------------------------------------------------------
 	const [isViewAddScheduleModal, setIsViewAddScheduleModal] = useState<boolean>(false);
+	const [isViewAddAirlineModal, setIsViewAddAirlineModal] = useState<boolean>(false);
 	const [scheduleInfo, setScheduleInfo] = useState<ListProps>();
 	const [scheduleDetails, setScheduleDetails] = useState<DetailsProps[]>([]);
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
 
-	// 상세 스케줄 가져오기
+	// 수정 상세 스케줄 가져오기
 	const fetchPostCost = async (id:string) => {
 		const res = await axios.get(`${MainURL}/restproductschedule/getproductscheduledetails/${id}`)
 		if (res.data !== false) {
@@ -148,6 +167,20 @@ export default function Sub3_Schedule (props:any) {
 			setScheduleDetails(result);
 		}
 		setIsViewAddScheduleModal(true);
+	};
+
+	// 수정 상세 스케줄 가져오기
+	const fetchPostAirline = async (id:string) => {
+		const res = await axios.get(`${MainURL}/restproductschedule/getproductscheduledetails/${id}`)
+		if (res.data !== false) {
+			const copy = res.data;
+			const result = copy.map((item:any) => ({
+				...item,
+				scheduleDetail: JSON.parse(item.scheduleDetail)
+			}));
+			setScheduleDetails(result);
+		}
+		setIsViewAddAirlineModal(true);
 	};
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -168,7 +201,7 @@ export default function Sub3_Schedule (props:any) {
 			})
 	};
 	const handleDeleteAlert = (item:any) => {
-		const costConfirmed = window.confirm(`${item.id}번 일정을 정말 삭제하시겠습니까?`);
+		const costConfirmed = window.confirm(`${item.id}번 ${item.tourLocation}/${item.departFlight} 일정을 정말 삭제하시겠습니까?`);
 			if (costConfirmed) {
 				deleteHotel(item.id);
 		} else {
@@ -258,7 +291,6 @@ export default function Sub3_Schedule (props:any) {
 				</div>
 			</div>
 
-		
 
 			<div className="seachlist">
 				<div className="main-list-cover">
@@ -267,68 +299,152 @@ export default function Sub3_Schedule (props:any) {
 						<TitleList width='3%' text='노출'/>
 						<TitleList width='10%' text='여행지'/>
 						<TitleList width='10%' text='랜드사'/>
+						<TitleList width='10%' text='항공사'/>
 						<TitleList width='20%' text='여행기간'/>
 						<TitleList width='10%' text='최저가'/>
 						<TitleList width='10%' text='최고가'/>
-						<TitleList width='15%' text='관리'/>
-						<TitleList width='5%' text='수정일'/>
-						<TitleList width='10%' text=''/>
+						<TitleList width='10%' text='관리'/>
+						<TitleList width='7%' text='수정일'/>
+						<TitleList width='7%' text=''/>
   				</div>
-					
 					{
-						list.map((item:any, index:any)=>{
+						viewList.map((item:any, index:any)=>{
+
 							return (
-								<div key={index}
-									className="rowbox"
-									onClick={()=>{
-									}}
-								>
-									<TextBox width='3%' text={item.id} />
-									<div className="text" style={{width:`3%`, height: '50px', textAlign:'center'}}>
-										{ item.isView  
-											? <FaCircle color='#5fb7ef'/>
-											: <IoCloseOutline />
-										}
+								<div key={index} >
+									<div className="rowbox" style={{backgroundColor: viewAirlineList[index] ? '#f0f9ff' : '#fff' }}>
+										<TextBox width='3%' text={item.id} />
+										<div className="text" style={{width:`3%`, height: '50px', textAlign:'center'}}>
+											{ item.isView  
+												? <FaCircle color='#5fb7ef'/>
+												: <IoCloseOutline />
+											}
+										</div>
+										<TextBox width='10%' text={item.tourLocation} />
+										<TextBox width='10%' text={item.landCompany} />
+										<TextBox width='10%' text={item.departFlight} />
+										<TextBox width='20%' text={`${item.productType} / ${item.tourPeriod}`}/>
+										<TextBox width='10%' text={''} />
+										<TextBox width='10%' text={''} />
+										<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
+											<div className="hotelControlBtn"
+												onClick={()=>{
+													handleAirlineClick(item);
+													const copy = viewAirlineList.map((_, i) => i === index);
+													setViewAirlineList(copy);
+												}}
+											>
+												<p>항공</p>
+											</div>
+											<div className="hotelControlBtn"
+												onClick={()=>{
+														
+												}}
+											>
+												<p>호텔</p>
+											</div>
+										</div>
+										<TextBox width='7%' text={item.reviseDate} />
+										<div className="text" style={{width:`7%`, height: '50px', textAlign:'center'}}>
+											<div className="hotelControlBtn2"
+												onClick={()=>{
+													setIsAddOrRevise('revise');
+													setScheduleInfo(item);
+													fetchPostCost(item.id);
+												}}
+											>
+												<p>수정</p>
+											</div>
+											<div className="divider"></div>
+											<div className="hotelControlBtn2"
+												onClick={()=>{handleDeleteAlert(item);}}
+											>
+												<p>삭제</p>
+											</div>
+										</div>
 									</div>
-									<TextBox width='10%' text={item.tourLocation} />
-									<TextBox width='10%' text={item.landCompany} />
-									<TextBox width='20%' text={`${item.productType} / ${item.tourPeriod}`}/>
-									<TextBox width='10%' text={''} />
-									<TextBox width='10%' text={''} />
-									<div className="text" style={{width:`15%`, height: '50px', textAlign:'center'}}>
-										<div className="hotelControlBtn"
-											onClick={()=>{
-	  										
-											}}
-										>
-											<p>항공</p>
+									{
+										viewAirlineList[index] &&
+										<div style={{border:'2px solid #333'}}>
+											<div className="TitleList">
+												<TitleList width='3%' text='NO'/>
+												<TitleList width='3%' text='노출'/>
+												<TitleList width='10%' text='출발지'/>
+												<TitleList width='10%' text='항공사'/>
+												<TitleList width='20%' text='여행기간'/>
+												<TitleList width='10%' text='최저가'/>
+												<TitleList width='10%' text='최고가'/>
+												<TitleList width='10%' text='평균가'/>
+												<TitleList width='7%' text='등록일'/>
+												<TitleList width='7%' text=''/>
+												<div className="text" style={{width:`7%`, height:'40px', textAlign:'center'}}>
+													<div className='addAirlineBtnBox'
+														onClick={()=>{
+															handleAirlineClick(item);
+															const copy = viewAirlineList.map((_, i) => i === index);
+															setViewAirlineList(copy);
+														}}
+													>
+														<p className='addAirlineBtn'
+															onClick={()=>{
+																setIsAddOrRevise('revise');
+																setScheduleInfo(item);
+																fetchPostAirline(item.id);
+															}}
+														>항공추가</p>
+													</div>
+													<div className='addAirlineBtnBox' style={{marginLeft:'3px'}}
+														onClick={()=>{
+															setViewAirlineList(() => viewAirlineList.map(() => false));
+														}}
+													>
+														<p className='addAirlineBtn'>X</p>
+													</div>
+												</div>
+											</div>
+											{ expandedList.length > 0 &&
+												expandedList.map((subItem:any, subIndex:any)=>{
+
+													return (
+														<div className="rowbox" key={subIndex} style={{backgroundColor: '#f0f9ff' }}>
+															<TextBox width='3%' text={subItem.id} />
+															<div className="text" style={{width:`3%`, height: '50px', textAlign:'center'}}>
+																{ subItem.isView  
+																	? <FaCircle color='#5fb7ef'/>
+																	: <IoCloseOutline />
+																}
+															</div>
+															<TextBox width='10%' text={subItem.departAirport} />
+															<TextBox width='10%' text={subItem.departFlight} />
+															<TextBox width='20%' text={`${subItem.productType} / ${subItem.tourPeriod}`}/>
+															<TextBox width='10%' text={''} />
+															<TextBox width='10%' text={''} />
+															<TextBox width='10%' text={''} />
+															<TextBox width='7%' text={subItem.reviseDate} />
+															<div className="text" style={{width:`7%`, height: '50px', textAlign:'center'}}>
+																<div className="hotelControlBtn2"
+																	onClick={()=>{
+																		setIsAddOrRevise('revise');
+																		setScheduleInfo(subItem);
+																		fetchPostCost(subItem.id);
+																	}}
+																>
+																	<p>수정</p>
+																</div>
+																<div className="divider"></div>
+																<div className="hotelControlBtn2"
+																	onClick={()=>{handleDeleteAlert(subItem);}}
+																>
+																	<p>삭제</p>
+																</div>
+															</div>
+															<TextBox width='7%' text={''} />
+														</div>
+													)
+												})
+											}
 										</div>
-										<div className="hotelControlBtn"
-											onClick={()=>{
-													
-											}}
-										>
-											<p>호텔</p>
-										</div>
-									</div>
-									<TextBox width='5%' text={item.reviseDate} />
-									<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
-										<div className="hotelControlBtn2"
-											onClick={()=>{
-												setIsAddOrRevise('revise');
-												setScheduleInfo(item);
-												fetchPostCost(item.id);
-											}}
-										>
-											<p>수정</p>
-										</div>
-										<div className="divider"></div>
-										<div className="hotelControlBtn2"
-											onClick={()=>{handleDeleteAlert(item);}}
-										>
-											<p>삭제</p>
-										</div>
-									</div>
+									}
 								</div>
 							)
 						})
@@ -368,6 +484,25 @@ export default function Sub3_Schedule (props:any) {
 								setRefresh={setRefresh}
 								setIsViewAddScheduleModal={setIsViewAddScheduleModal}
 								setScheduleDetails={setScheduleDetails}
+								scheduleInfo={scheduleInfo}
+								scheduleDetails={scheduleDetails}
+								isAddOrRevise={isAddOrRevise}
+								nationlist={nationlist}
+						 />
+          </div>
+        </div>
+      }
+
+			{/* 항공변경 모달창 */}
+      {
+        isViewAddAirlineModal &&
+        <div className='Modal'>
+          <div className='modal-backcover'></div>
+          <div className='modal-maincover'>
+             <ModalAddScheduleAddAirline
+								refresh={refresh}
+								setRefresh={setRefresh}
+								setIsViewAddAirlineModal={setIsViewAddAirlineModal}
 								scheduleInfo={scheduleInfo}
 								scheduleDetails={scheduleDetails}
 								isAddOrRevise={isAddOrRevise}

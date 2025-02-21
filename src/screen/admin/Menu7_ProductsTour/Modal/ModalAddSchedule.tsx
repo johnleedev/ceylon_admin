@@ -597,10 +597,6 @@ export default function ModalAddSchedule (props : any) {
 
   const verticalBar40 = {width:'1px', minHeight:'40px', backgroundColor:'#d4d4d4'};
 
-  
-  console.log(trafficData);
-
-
   return (
     <div className='modal-addinput'>
 

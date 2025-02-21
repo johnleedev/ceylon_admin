@@ -251,6 +251,7 @@ export default function ModalAddSchedule (props : any) {
     } else {
       const getParams = {
         isView : isView,
+        sort : 'default',
         nation : nation,
         tourLocation: tourLocation,
         landCompany: landCompany,
