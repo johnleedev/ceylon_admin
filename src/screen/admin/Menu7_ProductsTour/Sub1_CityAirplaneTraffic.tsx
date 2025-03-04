@@ -73,7 +73,6 @@ export default function Sub1_CityAirplane (props:any) {
 	const [roundAirlineData, setRoundAirlineData] = useState([]);
 	const [trafficData, setTrafficData] = useState<any>();
 
-	console.log(onewayAirlineData);
 
 	// 항공편&교통편 가져오기
 	const fetchPostAirline = async (item: any) => {

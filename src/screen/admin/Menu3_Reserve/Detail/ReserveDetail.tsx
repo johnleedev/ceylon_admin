@@ -50,6 +50,7 @@ export default function ReserveDetail (props : any) {
   const serialNum = location.state;
   const [refresh, setRefresh] = useState<boolean>(false);
 
+  const [reserveDate, setReserveDate] = useState('');
   const [reserveState, setReserveState] = useState<ReserveStateProps>();
   const [workState, setWorkState] = useState<WorkStateProps>();
   const [productName, setProductName] = useState('');
@@ -72,6 +73,7 @@ export default function ReserveDetail (props : any) {
     const resinfo = await axios.get(`${MainURL}/adminreserve/getreserveinfo/${serialNum}`)
     if (resinfo) {
       const copy = {...resinfo.data[0]}
+      setReserveDate(format(copy.scheduleStart, 'yyyy-MM-dd'))
       setReserveState(JSON.parse(copy.reserveState));
       setWorkState(JSON.parse(copy.workState));
       setProductName(copy.productName);
@@ -252,6 +254,7 @@ export default function ReserveDetail (props : any) {
                   { 
                     serialNum: serialNum, 
                     modalSort:'revise',
+                    reserveDate : reserveDate,
                     reserveState:reserveState,
                     workState:workState,
                     productName:productName,

@@ -19,15 +19,15 @@ export default function TourMainPage() {
     { idx: 4, title: "우붓" },
   ];
 
-  const hotelObjs = [
-    { id: 0, title: "콘레드", rating: 3, location: '발리/스미냑', image: CommonImageData.hotel_01 },
-    { id: 1, title: "반얀트리", rating: 4, location: '발리/스미냑', image: CommonImageData.hotel_02 },
-    { id: 2, title: "세인트레지스", rating: 5, location: '발리/스미냑', image: CommonImageData.hotel_03 },
-    { id: 3, title: "르메르디앙", rating: 3, location: '발리/스미냑', image: CommonImageData.hotel_04 },
-    { id: 4, title: "노보텔", rating: 4, location: '발리/스미냑', image: CommonImageData.hotel_05 },
-    { id: 5, title: "콘래드", rating: 5, location: '발리/스미냑', image: CommonImageData.hotel_06 },
-    { id: 6, title: "반얀트리", rating: 4, location: '발리/스미냑', image: CommonImageData.hotel_07 },
-    { id: 7, title: "세인트", rating: 3, location: '발리/스미냑', image: CommonImageData.hotel_08 },
+  const nationObjs = [
+    { id: 0, title: "프랑스", rating: 3, location: '발리/스미냑', image: ProductImageData.paris },
+    { id: 1, title: "파리+이태리", rating: 4, location: '발리/스미냑', image: ProductImageData.paris },
+    { id: 2, title: "파리+프라하", rating: 5, location: '발리/스미냑', image: ProductImageData.paris },
+    { id: 3, title: "파리+스위스", rating: 3, location: '발리/스미냑', image: ProductImageData.paris },
+    { id: 4, title: "파리+스위스+이태리", rating: 4, location: '발리/스미냑', image: ProductImageData.paris },
+    { id: 5, title: "파리+스페인", rating: 5, location: '발리/스미냑', image: ProductImageData.paris },
+    { id: 6, title: "파리+런던", rating: 4, location: '발리/스미냑', image: ProductImageData.paris },
+    { id: 7, title: "파리+이태리", rating: 3, location: '발리/스미냑', image: ProductImageData.paris },
   ]
 
   const hotelObjs22 = [
@@ -136,12 +136,12 @@ export default function TourMainPage() {
 
           <div className="tour_detail_category__items__wrapper">
             {
-              hotelObjs.map((hotelObj:any) => (
+              nationObjs.map((hotelObj:any) => (
                 <div key={hotelObj.id}>
                   <div className="tour_detail_card__wrapper"
                     onClick={()=>{
                       window.scrollTo(0, 0);
-                      navigate("/products/hotelresort");
+                      navigate(`/products/nationdetail?id=1`);
                     }}
                   >
                     <div className="tour_detail_image__wrapper">

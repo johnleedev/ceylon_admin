@@ -213,9 +213,12 @@ export default function ModalAddSchedule (props : any) {
   useEffect(() => {
     if (isAddOrRevise === 'revise') {
       fetchHotelInNation(tourLocation);
+      setTourLocation(tourLocation);
+      fetchAirlineData(tourLocation);
+      fetchHotelInNation(tourLocation);
+      fetchPostsDetailProductList(tourLocation);
     }
-	}, []);  
-
+  }, []);  
 
      
   // 일정 정보 등록 함수 ----------------------------------------------
@@ -225,6 +228,7 @@ export default function ModalAddSchedule (props : any) {
     } else {
       const getParams = {
         isView : isView,
+        sort : 'default',
         landCompany: landCompany,
         landCompanyCode: landCompanyCode,
         nation : nation,
@@ -760,34 +764,22 @@ export default function ModalAddSchedule (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='적용항공편'/>
-            {
-              isAddOrRevise === 'revise' 
-              ? 
-              <p>{departAirport}</p>
-              :
-              <DropdownBox
-                widthmain='20%'
-                height='35px'
-                selectedValue={departAirport}
-                options={departAirportOptions}
-                handleChange={(e)=>{setDepartAirport(e.target.value)}}
-              />
-            }
-            {
-              isAddOrRevise === 'revise' 
-              ? 
-              <p>{departFlight}</p>
-              :
-              <DropdownBox
-                widthmain='20%'
-                height='35px'
-                selectedValue={departFlight}
-                options={airlineNameOptions}    
-                handleChange={(e)=>{
-                  setDepartFlight(e.target.value)
-                }}
-              />
-            }
+            <DropdownBox
+              widthmain='20%'
+              height='35px'
+              selectedValue={departAirport}
+              options={departAirportOptions}
+              handleChange={(e)=>{setDepartAirport(e.target.value)}}
+            />
+            <DropdownBox
+              widthmain='20%'
+              height='35px'
+              selectedValue={departFlight}
+              options={airlineNameOptions}    
+              handleChange={(e)=>{
+                setDepartFlight(e.target.value)
+              }}
+            />
           </div>
         </div>
         <div className="coverbox">
@@ -1404,9 +1396,15 @@ export default function ModalAddSchedule (props : any) {
                                                 maxLength={300}
                                                 value={subDetailItem.locationContent}
                                                 onChange={(e)=>{
+                                                  const filteredValue = e.target.value.replace(/\t/g, ""); 
                                                   const copy = [...scheduleList];
-                                                  copy[index].scheduleDetail[subIndex].locationDetail[detailIndex].subLocationDetail[subDetailIndex].locationContent = e.target.value
+                                                  copy[index].scheduleDetail[subIndex].locationDetail[detailIndex].subLocationDetail[subDetailIndex].locationContent = filteredValue;
                                                   setScheduleList(copy);
+                                                }}
+                                                onKeyDown={(e) => {
+                                                  if (e.key === "Tab") {
+                                                    alert('탭문자는 입력이 불가능합니다.')
+                                                  }
                                                 }}
                                               />
                                             </div>

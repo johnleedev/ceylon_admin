@@ -86,16 +86,6 @@ export default function MainSchdulePage() {
       setCalendarEvents(copy);
     }
   };
-  // const fetchReserveDepartPosts = async () => {
-  //   const resReserve = await axios.get(`${MainURL}/adminreserve/getreserve`)
-  //   if (resReserve) {
-  //     const copy = resReserve.data;
-  //     copy.map((item:any, index:any)=>{
-  //       item.date = item.tourStartPeriod;
-  //     })
-  //     setCalendarEvents(copy);
-  //   }
-  // };
 
   useEffect(() => {
     fetchScheduleCoPosts();
@@ -107,8 +97,7 @@ export default function MainSchdulePage() {
   const currentDate = new Date();
   const formattedDate = format(currentDate, 'yyyy-MM-dd h:mm:ss');
   const [selectDate, setSelectDate] = useState(formattedDate);
-  const [selectStartDate, setSelectStartDate] = useState(formattedDate);
-  const [selectEndDate, setSelectEndDate] = useState(formattedDate);
+
 
   // 예약 등록 함수 --------------------------------------------------------------------------------------------
   // alert
@@ -134,7 +123,7 @@ export default function MainSchdulePage() {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     const uniqueNum = `${sort}${formattedDate.substring(2)}${result}`;
-    navigate('/admin/schedule/reservepage', {state : {serialNum: uniqueNum, modalSort:'new' } });
+    navigate('/admin/schedule/reservepage', {state : {serialNum: uniqueNum, modalSort:'new', selectDate: format(selectDate, 'yyyy-MM-dd') } });
   };
 
 
@@ -228,16 +217,16 @@ export default function MainSchdulePage() {
       {
         calendarType === 'month' &&
         <CalendarBoxMonth 
-          calendarEvents={calendarEvents} currentTab={currentTab} fetchCounselPosts={fetchCounselPosts} fetchScheduleCoPosts={fetchScheduleCoPosts}/>
+          calendarEvents={calendarEvents} currentTab={currentTab} fetchCounselPosts={fetchCounselPosts} fetchScheduleCoPosts={fetchScheduleCoPosts} setSelectDate={setSelectDate}/>
       }
       {
         calendarType === 'weeks' &&
         <CalendarBoxWeeks 
-          calendarEvents={calendarEvents} currentTab={currentTab} fetchCounselPosts={fetchCounselPosts} fetchScheduleCoPosts={fetchScheduleCoPosts}/>
+          calendarEvents={calendarEvents} currentTab={currentTab} fetchCounselPosts={fetchCounselPosts} fetchScheduleCoPosts={fetchScheduleCoPosts} setSelectDate={setSelectDate}/>
       }
       
 
-      {/* 방문일정등록 모달창 */}
+      {/* 방문일정 등록 모달창 */}
       {
         isViewCounselModal &&
         <div className='Modal'>
@@ -263,8 +252,6 @@ export default function MainSchdulePage() {
           <div className='modal-backcover'></div>
           <div className='modal-maincover'>
             <ModalInputCompanySchedule
-              selectStartDate={selectStartDate} 
-              selectEndDate={selectEndDate}
               setIsViewScheduleModal={setIsViewScheduleModal}
               refresh={refresh}
               setRefresh={setRefresh}

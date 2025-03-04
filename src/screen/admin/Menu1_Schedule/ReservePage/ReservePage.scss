@@ -22,33 +22,18 @@ $BGColor-grayBox: #f5f5f5;
     overflow-y: auto; 
   }
 
-  .reserve-top-titleBox {
+  .reserve-top-title-row {
     display: flex;
     justify-content: space-between;
 
+    .reserve-top-textbox {
+      display: flex;
+      align-items: center;
+    }
     h1 {
       margin-bottom: 10px;
       font-weight: bold;
       font-size: 20px;
-    }
-    // close버튼
-    .close {
-      display: flex;
-      justify-content: end;
-      .close-btn {
-        
-      }
-      .close-btn:hover {
-        cursor: pointer;
-        opacity: 0.7;
-      }
-    }
-    .close-btn {
-        
-    }
-    .close-btn:hover {
-      cursor: pointer;
-      opacity: 0.7;
     }
   }
 

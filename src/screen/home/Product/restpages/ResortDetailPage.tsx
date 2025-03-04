@@ -1,4 +1,4 @@
-import "./ResortPage.scss";
+import "./ResortDetailPage.scss";
 import { useEffect, useState } from "react";
 import { FaCheck, FaRegCircle, FaStar } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
@@ -56,7 +56,7 @@ interface ScheduleDetailProps {
   postImage : string;
 }
 
-export default function HotelPage() {
+export default function ResortDetailPage() {
   
   const url = new URL(window.location.href);
   const ID = url.searchParams.get("id");
@@ -221,7 +221,7 @@ export default function HotelPage() {
 
 
   return (
-    <div className="resort_page">
+    <div className="resort_detail_page">
 
        <div className="resort_page__header__section___wrapper">
         <img className="resort_page_bg__image" src={hotelDataSub.mainBgImage} alt="temp" />
@@ -461,8 +461,7 @@ export default function HotelPage() {
             {scheduleInfo.map((item, idx) => (
               <div className="package__item__wrapper"
                 onClick={()=>{
-                  window.scrollTo(0, 0);
-                  navigate(`/products/resortdetail?id=${item.id}`);
+
                 }}
               >
                 <div className="image__wrapper">

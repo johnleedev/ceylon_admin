@@ -27,7 +27,7 @@ export default function ReservePage (props : any) {
   const location = useLocation(); 
   const serialNum = location.state.serialNum;
   const modalSort = location.state.modalSort;
-
+  
   const [inputState, setInputState] = useState(modalSort);
 
    // 환율 정보 ---------------------------------------------------------------------------------------------------------------------
@@ -132,6 +132,7 @@ export default function ReservePage (props : any) {
     {name:'환불/과입금', requestDate:'', completeDate:'', deliveryType:'카톡', charger:''}
   ]
 
+  const [reserveDate, setReserveDate] = useState(modalSort === 'revise' ? location.state.reserveDate : location.state.selectDate);
   const [reserveState, setReserveState] = useState<ReserveStateProps>(modalSort === 'revise' ? location.state.reserveState 
     : {contractCompleted : false, ticketIssued : false, reserveConfirm : false, fullPayReceived : false, departNoticeSent : false});
   const [workState, setWorkState] = useState<WorkStateProps>(modalSort === 'revise' ? location.state.workState 
@@ -429,8 +430,10 @@ export default function ReservePage (props : any) {
   const handleReserveSave = async () => {
     const data = {
       serialNum : serialNum,
-      reserveDate : modalSort === 'new' ? todayDate : '',
-      reviseDate : modalSort === 'new' ? '' : todayDate,
+      reserveDate : reserveDate,
+      reviseDate : todayDate,
+      scheduleTitle : `${userInfo[0].nameKo}${userInfo[1]?.nameKo}`,
+      fontColor : '#6799FF',
       reserveState : JSON.stringify(reserveState),
       workState : JSON.stringify(workState),
       productName : productName,
@@ -594,14 +597,19 @@ export default function ReservePage (props : any) {
     fetchRestDepositExchangeRate();
   }, []);
 
+
   return (
     <div className='reserve-page'>
       
       <div className="reserve-top">
-        <div className='reserve-top-titleBox'>
-          <div style={{display:'flex', alignItems:'center'}}>
+        <div className='reserve-top-title-row'>
+          <div className='reserve-top-textbox'>
             <h1>예약하기</h1>
-            <p style={{marginLeft:'10px', color:'#ccc', fontSize:'14px'}}>{serialNum}</p>
+          </div>
+          <div className='reserve-top-textbox'>
+            <p>예약날짜:</p>
+            <DateBoxSingle date={reserveDate} setSelectDate={setReserveDate} />
+            <p style={{marginLeft:'10px', color:'#ccc', fontSize:'14px'}}>SN : {serialNum}</p>
           </div>
         </div>
 
@@ -845,7 +853,7 @@ export default function ReservePage (props : any) {
                   const copy = {...visitPathInfo}
                   copy.charger = e.target.value;
                   setVisitPathInfo(copy);
-                  setCharger(copy);
+                  setCharger(e.target.value);
                 }}
               />
               <p style={{marginLeft:'20px'}}>인수자</p>

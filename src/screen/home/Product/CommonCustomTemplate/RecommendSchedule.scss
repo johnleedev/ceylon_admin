@@ -11,9 +11,6 @@
   background-color: #fff;
   border-radius: 20px;
   font-size: 14px;
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
   margin-bottom: 50px;
 
   .schedule__table__wrapper {
@@ -60,7 +57,8 @@
       
       .schedule__element__wrapper {
         position: relative;
-        margin-left: 30px;
+        margin-left: 20px;
+        margin-right: 20px;
         padding-top: 30px;
         padding-bottom: 20px;
         border-left: 1px dotted rgba(180, 180, 180, 1);
@@ -204,6 +202,7 @@
           min-height: 200px;
           margin-top: 20px;
           margin-left: 30px;
+          margin-right: 30px;
           border: 1px solid #ccc;
           display: flex;
           

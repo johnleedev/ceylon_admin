@@ -192,6 +192,11 @@
       font-size: 0.8em;
       color: #666;
 
+      &.selected-day-hour {
+        background-color: rgba(0, 123, 255, 0.2);
+        border: 2px solid #007bff;
+      }
+
       .eventbox {
         position: absolute;
         width: 100%;

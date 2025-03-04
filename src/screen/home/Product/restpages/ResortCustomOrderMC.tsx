@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import "./ResortCustomOrder.scss";
 import { useNavigate } from 'react-router-dom';
-
 import { FaCheck, FaRegCircle } from "react-icons/fa";
 import sampleImage1 from "../../images/hotels/hotel_01.png"
 import sampleImage2 from "../../images/hotels/hotel_02.png"
@@ -36,7 +35,7 @@ export default function ResortCustomOrderMC (props:any) {
   ]);
   
   return (
-    <div className='custom-order-cover'>
+    <div className='resort-custom-order-cover'>
       
       <div className='menucover'></div>
      

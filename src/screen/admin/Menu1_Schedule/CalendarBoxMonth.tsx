@@ -117,6 +117,7 @@ export default function CalendarBoxMonth (props:any) {
             <div key={index}
               className={`calendar-day ${isSameDay(day, selectedDate) ? "selected-day" : ""}`}
               onClick={() => {
+                props.setSelectDate(format(day, 'yyyy-MM-dd 12:00'));
                 setSelectedDate(day);
               }}
             >
@@ -153,7 +154,7 @@ export default function CalendarBoxMonth (props:any) {
       }
     </div>
 
-    {/* 방문일정등록 모달창 */}
+    {/* 방문일정 수정 모달창 */}
     {
       isViewCounselModal &&
       <div className='Modal'>
@@ -170,7 +171,7 @@ export default function CalendarBoxMonth (props:any) {
       </div>
     }
 
-    {/* 회사일정 등록 모달창 */}
+    {/* 회사일정 수정 모달창 */}
     {
       isViewScheduleModal &&
       <div className='Modal'>

@@ -174,9 +174,10 @@ export default function Sub2_TourSchedule (props:any) {
 			const copy = res.data;
 			const result = copy.map((item:any) => ({
 				...item,
-				scheduleDetail: JSON.parse(item.scheduleDetail)
+				scheduleDetail: JSON.parse(item.scheduleDetail.replace(/\t/g, ""))
 			}));
-			setScheduleDetails(result);
+			const sortedResult = result.sort((a: any, b: any) => Number(a.day) - Number(b.day));
+			setScheduleDetails(sortedResult);
 		}
 		setIsViewAddScheduleModal(true);
 	};
@@ -188,9 +189,10 @@ export default function Sub2_TourSchedule (props:any) {
 			const copy = res.data;
 			const result = copy.map((item:any) => ({
 				...item,
-				scheduleDetail: JSON.parse(item.scheduleDetail)
+				scheduleDetail: JSON.parse(item.scheduleDetail.replace(/\t/g, ""))
 			}));
-			setScheduleDetails(result);
+			const sortedResult = result.sort((a: any, b: any) => Number(a.day) - Number(b.day));
+			setScheduleDetails(sortedResult);
 		}
 		setIsViewAddAirlineModal(true);
 	};
@@ -347,7 +349,7 @@ export default function Sub2_TourSchedule (props:any) {
 										<TextBox width='10%' text={item.tourLocation} />
 										<TextBox width='10%' text={item.landCompany} />
 										<TextBox width='10%' text={item.departFlight} />
-										<TextBox width='20%' text={`${item.productType} / ${item.tourPeriod}`}/>
+										<TextBox width='20%' text={`${item.tourProductName} / ${item.tourPeriod}`}/>
 										<TextBox width='10%' text={''} />
 										<TextBox width='10%' text={''} />
 										<div className="text" style={{width:`10%`, height: '50px', textAlign:'center'}}>
@@ -440,7 +442,7 @@ export default function Sub2_TourSchedule (props:any) {
 															</div>
 															<TextBox width='10%' text={subItem.departAirport} />
 															<TextBox width='10%' text={subItem.departFlight} />
-															<TextBox width='20%' text={`${subItem.productType} / ${subItem.tourPeriod}`}/>
+															<TextBox width='20%' text={`${subItem.tourProductName} / ${subItem.tourPeriod}`}/>
 															<TextBox width='10%' text={''} />
 															<TextBox width='10%' text={''} />
 															<TextBox width='10%' text={''} />

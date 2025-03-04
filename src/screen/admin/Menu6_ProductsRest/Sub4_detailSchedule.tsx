@@ -134,13 +134,13 @@ export default function Sub4_DetailSchedule (props:any) {
 	const [isAddOrRevise, setIsAddOrRevise] = useState('');
 
 	// 삭제 함수 ------------------------------------------------------------------------------------------------------------------------------------------
-	const deleteHotel = async (item:any) => {
+	const deleteDetailBox = async (item:any) => {
 		const getParams = {
 			postId : item.id,
-			images : JSON.parse(item.postImage)
+			images : JSON.parse(item.inputImage)
 		}
 		axios 
-			.post(`${MainURL}/restschedulebox/deletelocation`, getParams)
+			.post(`${MainURL}/restscheduledetailbox/deletedetailbox`, getParams)
 			.then((res) => {
 				if (res.data) {
 					setRefresh(!refresh);
@@ -154,11 +154,18 @@ export default function Sub4_DetailSchedule (props:any) {
 	const handleDeleteAlert = (item:any) => {
 		const costConfirmed = window.confirm(`${item.id}번 일정을 정말 삭제하시겠습니까?`);
 			if (costConfirmed) {
-				deleteHotel(item);
+				deleteDetailBox(item);
 		} else {
 			return
 		}
 	};
+
+	const renderPreview = (content : string) => {
+    if (content?.length > 200) {
+      return content.substring(0, 200) + '...';
+    }
+    return content;
+  };
 
 	return (
 		<div className='Main-cover'>
@@ -276,7 +283,7 @@ export default function Sub4_DetailSchedule (props:any) {
 						<TitleList width='3%' text='NO'/>
 						<TitleList width='20%' text='이미지'/>
 						<TitleList width='10%' text='상품명'/>
-						<TitleList width='15%' text='상품설명'/>
+						<TitleList width='30%' text='상품설명'/>
 						<TitleList width='10%' text='수정일'/>
 						<TitleList width='10%' text=''/>
   				</div>
@@ -290,23 +297,19 @@ export default function Sub4_DetailSchedule (props:any) {
 								<div key={index}
 									className="rowbox"
 									style={{height:'200px'}}
-									onClick={()=>{
-										window.scrollTo(0, 0);
-										setIsAddOrRevise('revise');
-										setScheduleDetailInfo(item);
-										setIsViewAddScheduleDetailBox(true);
-									}}
 								>
 									<TextBox width='3%' text={item.id} />
 									<div className="text" style={{width:`20%`, textAlign:'center'}}>
-										<img src={`${MainURL}/images/scheduledetailboximages/${image[0]}`} alt="" style={{height:'200px'}}/>
+										<img src={`${MainURL}/images/scheduledetailboximages/${image[0]}`} alt="" 
+											style={{height:'200px', width:'300px'}}/>
 									</div>
 									<TextBox width='10%' text={item.productName} />
-									<TextBox width='15%' text={item.detailNotice}/>
+									<TextBox width='30%' text={renderPreview(item.detailNotice)}/>
 									<TextBox width='10%' text={item.reviseDate} />
 									<div className="text" style={{width:`10%`, textAlign:'center'}}>
 										<div className="hotelControlBtn2"
 											onClick={()=>{
+												window.scrollTo(0, 0);
 												setIsAddOrRevise('revise');
 												setScheduleDetailInfo(item);
 												setIsViewAddScheduleDetailBox(true);

@@ -261,13 +261,11 @@ export default function ModalAddCity (props : any) {
       nation : nation,
       city : cityKo,
       sort : sort,
-      tourPeriodNight : item.tourPeriodNight,
-      tourPeriodDay : item.tourPeriodDay,
-      departAirportMain : item.departAirportMain,
-      departAirline : item.departAirline
+      departTime: item.departTime,
+      departAirline : item.departAirline,
 		}
 		axios 
-			.post(`${MainURL}/restnationcity/deleteairline`, getParams)
+			.post(`${MainURL}/tournationcity/deleteairline`, getParams)
 			.then((res) => {
 				if (res.data) {
 					alert('삭제되었습니다.');
@@ -289,7 +287,7 @@ export default function ModalAddCity (props : any) {
 			})
 	};
   const handleDeleteAlert = (item:any, sort:string) => {
-    const costConfirmed = window.confirm(`${item.tourPeriodNight}${item.tourPeriodDay}(편명:${item.departAirline})의 항공편을 정말 삭제하시겠습니까?`);
+    const costConfirmed = window.confirm(`${item.departAirportMain}/${item.departTime}(편명:${item.departAirline})의 항공편을 정말 삭제하시겠습니까?`);
 			if (costConfirmed) {
 				deleteAirline(item, sort);
 		} else {

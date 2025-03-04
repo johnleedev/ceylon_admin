@@ -51,7 +51,11 @@ export default function AdminTopBar () {
 
       <div className="menubtn-box">
        <div className="menubtn">
-        <p onClick={()=>{navigate('/admin');}}
+        <p onClick={()=>{
+          (sessionStorage.getItem('userName') === null || sessionStorage.getItem('userName') === undefined)
+          ? navigate('/admin')
+          : navigate('/admin/schedule')
+        }}
         >관리자</p> 
         <div className="divider"></div>
         {

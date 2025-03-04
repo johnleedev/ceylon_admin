@@ -77,6 +77,8 @@ export default function ModalAddSchedule (props : any) {
   const [isAddOrRevise, setIsAddOrRevise] = useState(props.isAddOrRevise);
   const scheduleData = props.scheduleInfo;
   const [selectedNation, setSelectedNation] = useState<any>([]);
+  const [isReviseDepartAirportFlight, setIsReviseDepartAirportFlight] = useState(false);
+  const [isReviseLandCompany, setIsReviseLandCompany] = useState(false);
 
   const [postId, setPostId] = useState(isAddOrRevise === 'revise' ? scheduleData.id : '');
   const [isView, setIsView] = useState<boolean>(isAddOrRevise === 'revise' ? scheduleData.isView : true);
@@ -94,7 +96,7 @@ export default function ModalAddSchedule (props : any) {
   const [notIncludeNote, setNotIncludeNote] = useState(isAddOrRevise === 'revise' ? JSON.parse(scheduleData.notIncludeNote) : [""]);
   const [notIncludeNoteText, setNotIncludeNoteText] = useState(isAddOrRevise === 'revise' ? scheduleData.notIncludeNoteText : '');
 
-  const [scheduleList, setScheduleList] = useState<ScheduleProps[]>( 
+    const [scheduleList, setScheduleList] = useState<ScheduleProps[]>( 
     isAddOrRevise === 'revise' 
     ? props.scheduleDetails 
     : [{ id: '', day : '1', breakfast :'', lunch:'', dinner :'', hotel:'', score:'', 
@@ -241,6 +243,10 @@ export default function ModalAddSchedule (props : any) {
   useEffect(() => {
     if (isAddOrRevise === 'revise') {
       fetchHotelInNation(tourLocation);
+      setTourLocation(tourLocation);
+      fetchAirlineData(tourLocation);
+      fetchHotelInNation(tourLocation);
+      fetchPostsDetailProductList(tourLocation);
     }
 	}, []);  
 
@@ -816,47 +822,29 @@ export default function ModalAddSchedule (props : any) {
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='적용항공편'/>
-            {
-              isAddOrRevise === 'revise' 
-              ? 
-              <p>{departAirport}</p>
-              :
-              <DropdownBox
-                widthmain='20%'
-                height='35px'
-                selectedValue={departAirport}
-                options={departAirportOptions}
-                handleChange={(e)=>{setDepartAirport(e.target.value)}}
-              />
-            }
-            {
-              isAddOrRevise === 'revise' 
-              ? 
-              <p>{departFlight}</p>
-              :
-              <DropdownBox
-                widthmain='20%'
-                height='35px'
-                selectedValue={departFlight}
-                options={airlineNameOptions}    
-                handleChange={(e)=>{
-                  setDepartFlight(e.target.value)
-                }}
-              />
-            }
+            <DropdownBox
+              widthmain='20%'
+              height='35px'
+              selectedValue={departAirport}
+              options={departAirportOptions}
+              handleChange={(e)=>{setDepartAirport(e.target.value)}}
+            />
+            <DropdownBox
+              widthmain='20%'
+              height='35px'
+              selectedValue={departFlight}
+              options={airlineNameOptions}    
+              handleChange={(e)=>{
+                setDepartFlight(e.target.value)
+              }}
+            />
           </div>
         </div>
         <div className="coverbox">
           <div className="coverrow hole">
             <TitleBox width="120px" text='랜드사'/>
-            {
-              isAddOrRevise === 'revise' 
-              ? 
-              <p>{landCompany}</p>
-              :
-              <input className="inputdefault" type="text" style={{width:'50%', marginLeft:'5px'}} 
-                value={landCompany} onChange={(e)=>{setLandCompany(e.target.value)}}/>
-            }
+            <input className="inputdefault" type="text" style={{width:'50%', marginLeft:'5px'}} 
+               value={landCompany} onChange={(e)=>{setLandCompany(e.target.value)}}/>
           </div>
         </div>
         <div className="coverbox">
@@ -1444,9 +1432,15 @@ export default function ModalAddSchedule (props : any) {
                                                 maxLength={300}
                                                 value={subDetailItem.locationContent}
                                                 onChange={(e)=>{
+                                                  const filteredValue = e.target.value.replace(/\t/g, ""); 
                                                   const copy = [...scheduleList];
-                                                  copy[index].scheduleDetail[subIndex].locationDetail[detailIndex].subLocationDetail[subDetailIndex].locationContent = e.target.value
+                                                  copy[index].scheduleDetail[subIndex].locationDetail[detailIndex].subLocationDetail[subDetailIndex].locationContent = filteredValue;
                                                   setScheduleList(copy);
+                                                }}
+                                                onKeyDown={(e) => {
+                                                  if (e.key === "Tab") {
+                                                    alert('탭문자는 입력이 불가능합니다.')
+                                                  }
                                                 }}
                                               />
                                             </div>

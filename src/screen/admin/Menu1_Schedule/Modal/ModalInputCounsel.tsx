@@ -37,73 +37,75 @@ export default function ModalInputCounsel(props:any) {
 
   // 저장 함수
   const handleCounselSave = async () => {
-  
-    await axios
-    .post(`${MainURL}/adminschedule/savecounsel`, {
-      scheduleStart: scheduleStart,
-      scheduleEnd : scheduleEnd,
-      scheduleTitle : name,
-      fontColor: fontColor,
-      sort : sort,
-      name : name,
-      phone: phone,
-      dateCeremony : dateCeremony,
-      dateStart: dateStart,
-      dateEnd : dateEnd,
-      tourLocation: tourLocation,
-      tourPersonNum: tourPersonNum,
-      requestion: requestion,
-      visitPath: visitPath,
-      charger: charger,
-      accepter: accepter,
-      notice: notice
-    })
-    .then((res)=>{
-      if (res.data) {
-        props.setRefresh(!props.refresh);
-        alert('입력되었습니다.');
-        props.setIsViewCounselModal(false);
-        props.fetchCounselPosts();
-      }
-    })
-    .catch((err)=>{
-      alert('다시 시도해주세요.')
-    })
+    if ( scheduleStart === null || scheduleEnd === null) {
+      alert('방문일시는 시작&끝 시간을 모두 채워주셔야 합니다.')
+    } else {
+      await axios
+        .post(`${MainURL}/adminschedule/savecounsel`, {
+          scheduleStart: scheduleStart,
+          scheduleEnd : scheduleEnd,
+          scheduleTitle : name,
+          fontColor: fontColor,
+          sort : sort,
+          name : name,
+          phone: phone,
+          dateCeremony : dateCeremony,
+          dateStart: dateStart,
+          dateEnd : dateEnd,
+          tourLocation: tourLocation,
+          tourPersonNum: tourPersonNum,
+          requestion: requestion,
+          visitPath: visitPath,
+          charger: charger,
+          accepter: accepter,
+          notice: notice
+        })
+        .then((res)=>{
+          if (res.data) {
+            props.setRefresh(!props.refresh);
+            alert('입력되었습니다.');
+            props.setIsViewCounselModal(false);
+            props.fetchCounselPosts();
+          }
+        })
+        .catch((err)=>{
+          alert('다시 시도해주세요.')
+        })
+    }
   };
 
   // 수정 함수
   const handleCounselRevise = async () => {
-  
     await axios
-    .post(`${MainURL}/adminschedule/revisecounsel`, {
-      postId: counselData.id,
-      scheduleStart: scheduleStart ? format(scheduleStart, 'yyyy-MM-dd HH:mm') : '',
-      scheduleEnd : scheduleEnd ? format(scheduleEnd, 'yyyy-MM-dd HH:mm') : '',
-      scheduleTitle : name,
-      fontColor: fontColor,
-      sort : sort,
-      name : name,
-      phone: phone,
-      dateCeremony : dateCeremony,
-      dateStart: dateStart,
-      dateEnd : dateEnd,
-      tourLocation: tourLocation,
-      tourPersonNum: tourPersonNum,
-      requestion: requestion,
-      visitPath: visitPath,
-      charger: charger,
-      accepter: accepter,
-      notice: notice
-    })
-    .then((res)=>{
-      if (res.data) {
-        alert('수정되었습니다.');
-        props.fetchCounselPosts();
-      }
-    })
-    .catch((err)=>{
-      alert('다시 시도해주세요.')
-    })
+      .post(`${MainURL}/adminschedule/revisecounsel`, {
+        postId: counselData.id,
+        scheduleStart: scheduleStart ? format(scheduleStart, 'yyyy-MM-dd HH:mm') : '',
+        scheduleEnd : scheduleEnd ? format(scheduleEnd, 'yyyy-MM-dd HH:mm') : '',
+        scheduleTitle : name,
+        fontColor: fontColor,
+        sort : sort,
+        name : name,
+        phone: phone,
+        dateCeremony : dateCeremony,
+        dateStart: dateStart,
+        dateEnd : dateEnd,
+        tourLocation: tourLocation,
+        tourPersonNum: tourPersonNum,
+        requestion: requestion,
+        visitPath: visitPath,
+        charger: charger,
+        accepter: accepter,
+        notice: notice
+      })
+      .then((res)=>{
+        if (res.data) {
+          alert('수정되었습니다.');
+          props.fetchCounselPosts();
+        }
+      })
+      .catch((err)=>{
+        alert('다시 시도해주세요.')
+      })
   };
 
   interface ColorCheckBoxProps {

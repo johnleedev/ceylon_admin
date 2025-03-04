@@ -13,7 +13,6 @@ export default function MainAdmin () {
 
   const [refresh, setRefresh] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState(1);
-  const [sessionedUserName, setSessionedUserName] = useState('');
   const [userId, setUserId] = useState('');
   const [userPasswd, setUserPasswd] = useState('');
 
@@ -22,34 +21,19 @@ export default function MainAdmin () {
   const [logisterPasswd, setLogisterPasswd] = useState('');
   const [logisterPasswdCheck, setLogisterPasswdCheck] = useState('');
 
-  useEffect(() => {
-		const copy = sessionStorage.getItem('userName');
-    if (copy !== null && copy !== undefined) {
-      setSessionedUserName(copy);
-      setCurrentTab(3);
-    }
-	}, [refresh]);  
-
-
   const handleLogin = async () => {
-    if (userId === 'johnleedev') {
-      sessionStorage.setItem('userName', '이요한');
-      sessionStorage.setItem('userId', 'johnleedev');
-      setCurrentTab(3);
-      setRefresh(!refresh);
-    } else {
-      await axios
+    await axios
       .post(`${MainURL}/admincontrol/loginadmin`, {
         userId : userId,
         passwd : userPasswd
       })
       .then((res)=>{
         if (res.data.success) {
-         alert('로그인 되었습니다.');
-         sessionStorage.setItem('userName', res.data.name);
-         sessionStorage.setItem('userId', res.data.userId);
-         setCurrentTab(3);
-         setRefresh(!refresh);
+          alert('로그인 되었습니다.');
+          sessionStorage.setItem('userName', res.data.name);
+          sessionStorage.setItem('userId', res.data.userId);
+          setRefresh(!refresh);
+          navigate('/admin/schedule');
         } else {
          if (res.data.which === 'id') {
            alert('없는 아이디입니다.');  
@@ -62,7 +46,6 @@ export default function MainAdmin () {
       .catch((err)=>{
         alert('다시 시도해주세요.')
       })
-    }    
    };
  
   const handleLogister = async () => {
@@ -177,7 +160,7 @@ export default function MainAdmin () {
           </div> 
         }
 
-        { currentTab === 3 &&
+        {/* { currentTab === 3 &&
           <div className="loginBox" style={{textAlign:'center'}}>
             <div className="inputbox">
               <p>{sessionedUserName}님</p>
@@ -185,7 +168,7 @@ export default function MainAdmin () {
             </div>
             <p>현재 로그인 상태입니다.</p>
           </div> 
-        }
+        } */}
         
       </div>
      

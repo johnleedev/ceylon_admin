@@ -30,6 +30,7 @@ export default function CalendarBoxWeeks (props:any) {
   const today = new Date();
   const [currentWeek, setCurrentWeek] = useState(today);
   const [selectedDate, setSelectedDate] = useState(today);
+  const [selectedHour, setSelectedHour] = useState<any>();
 
   const startWeek = startOfWeek(currentWeek);
   const endWeek = endOfWeek(currentWeek);
@@ -78,6 +79,7 @@ export default function CalendarBoxWeeks (props:any) {
   const [isViewScheduleModal, setIsViewScheduleModal] = useState<boolean>(false);
   const [isViewCounselModal, setIsViewCounselModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState();
+
 
   return (
     <div className="calendar-container-weeks">
@@ -138,7 +140,13 @@ export default function CalendarBoxWeeks (props:any) {
         {days.map((day, index) => (
           <div key={index} className="calendar-day-column">
             {hours.map((hour:any) => (
-              <div key={hour} className="time-slot">
+              <div key={hour} className={`time-slot ${(format(selectedDate, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd') && selectedHour === hour) ? "selected-day-hour" : ""}`}
+                onClick={() => {
+                   props.setSelectDate(format(day, `yyyy-MM-dd ${hour < 10 ? `0${hour}` : hour}:00`));
+                  setSelectedDate(day);
+                  setSelectedHour(hour);
+                }}
+              >
                 {(() => {
                   const events = getEventsForTimeSlot(day, hour); // 해당 시간대의 모든 이벤트 가져오기
                   return events.map((event:any) => {
@@ -170,7 +178,7 @@ export default function CalendarBoxWeeks (props:any) {
       </div>
 
 
-    {/* 방문일정등록 모달창 */}
+    {/* 방문일정 수정 모달창 */}
     {
       isViewCounselModal &&
       <div className='Modal'>
@@ -185,7 +193,7 @@ export default function CalendarBoxWeeks (props:any) {
       </div>
     }
 
-    {/* 회사일정 등록 모달창 */}
+    {/* 회사일정 수정 모달창 */}
     {
       isViewScheduleModal &&
       <div className='Modal'>

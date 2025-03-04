@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import "./MadeMySchedule.scss";
-import { DropdownBox } from '../../../../../boxs/DropdownBox';
+import { DropdownBox } from '../../../../boxs/DropdownBox';
 import { ImLocation } from 'react-icons/im';
 import axios from 'axios';
-import MainURL from '../../../../../MainURL';
-import ModalSelectScheduleBox from '../../../../admin/Menu6_ProductsRest/Modal/ModalSelectScheduleDetailBox';
+import MainURL from '../../../../MainURL';
+import ModalSelectScheduleBox from '../../../admin/Menu6_ProductsRest/Modal/ModalSelectScheduleDetailBox';
 import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci';
 
 

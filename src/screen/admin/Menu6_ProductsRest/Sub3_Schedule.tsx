@@ -162,9 +162,10 @@ export default function Sub3_Schedule (props:any) {
 			const copy = res.data;
 			const result = copy.map((item:any) => ({
 				...item,
-				scheduleDetail: JSON.parse(item.scheduleDetail)
+				scheduleDetail: JSON.parse(item.scheduleDetail.replace(/\t/g, ""))
 			}));
-			setScheduleDetails(result);
+			const sortedResult = result.sort((a: any, b: any) => Number(a.day) - Number(b.day));
+			setScheduleDetails(sortedResult);
 		}
 		setIsViewAddScheduleModal(true);
 	};
@@ -176,9 +177,10 @@ export default function Sub3_Schedule (props:any) {
 			const copy = res.data;
 			const result = copy.map((item:any) => ({
 				...item,
-				scheduleDetail: JSON.parse(item.scheduleDetail)
+				scheduleDetail: JSON.parse(item.scheduleDetail.replace(/\t/g, ""))
 			}));
-			setScheduleDetails(result);
+			const sortedResult = result.sort((a: any, b: any) => Number(a.day) - Number(b.day));
+			setScheduleDetails(sortedResult);
 		}
 		setIsViewAddAirlineModal(true);
 	};

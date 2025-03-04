@@ -347,18 +347,24 @@ export default function ModalAddScheduleDetailBox (props : any) {
           </div>
           <div className="coverrow half">
             <TitleBox width="120px" text='여행지(도시)'/>
-            <DropdownBox
-              widthmain='50%'
-              height='35px'
-              selectedValue={city}
-              options={[
-                { value: '선택', label: '선택' },
-                ...selectedNation.map((nation:any) => (
-                  { value: nation.cityKo, label: nation.cityKo }
-                ))
-              ]}    
-              handleChange={(e)=>{setCity(e.target.value)}}
-            />
+            {
+              isAddOrRevise === 'revise'
+              ?
+              <p>{city}</p>
+              :
+              <DropdownBox
+                widthmain='50%'
+                height='35px'
+                selectedValue={city}
+                options={[
+                  { value: '선택', label: '선택' },
+                  ...selectedNation.map((nation:any) => (
+                    { value: nation.cityKo, label: nation.cityKo }
+                  ))
+                ]}    
+                handleChange={(e)=>{setCity(e.target.value)}}
+              />
+            }
           </div>
         </div>
         <div className="coverbox">
@@ -538,40 +544,40 @@ export default function ModalAddScheduleDetailBox (props : any) {
                   {
                     programTimeCost.map((item:any, index:any)=>{
                       return (
-                        <div style={{display:'flex', alignItems:'center'}}>
+                        <div style={{display:'flex', alignItems:'center'}} key={index}>
                           <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                            <input className="inputdefault" value={programTimeCost.program} 
+                            <input className="inputdefault" value={item.program} 
                               style={{width:'95%', minHeight:'40px', outline:'none'}} 
                               onChange={(e)=>{
-                                const copy = {...programTimeCost};
-                                copy.program = e.target.value;
+                                const copy = [...programTimeCost];
+                                copy[index].program = e.target.value;
                                 setProgramTimeCost(copy);
                               }}/>
                           </div>
                           <div style={{width:'30%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                            <input className="inputdefault" value={programTimeCost.content} 
+                            <input className="inputdefault" value={item.content} 
                               style={{width:'95%', minHeight:'40px', outline:'none'}} 
                               onChange={(e)=>{
-                                const copy = {...programTimeCost};
-                                copy.content = e.target.value;
+                                const copy = [...programTimeCost];
+                                copy[index].content = e.target.value;
                                 setProgramTimeCost(copy);
                               }}/>
                           </div>
                           <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                            <input className="inputdefault" value={programTimeCost.time} 
+                            <input className="inputdefault" value={item.time} 
                               style={{width:'95%', minHeight:'40px', outline:'none'}} 
                               onChange={(e)=>{
-                                const copy = {...programTimeCost};
-                                copy.time = e.target.value;
+                                const copy = [...programTimeCost];
+                                copy[index].time = e.target.value;
                                 setProgramTimeCost(copy);
                               }}/>
                           </div>
                           <div style={{width:'20%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                            <input className="inputdefault" value={programTimeCost.saleCost} 
+                            <input className="inputdefault" value={item.saleCost} 
                               style={{width:'95%', minHeight:'40px', outline:'none'}} 
                               onChange={(e)=>{
-                                const copy = {...programTimeCost};
-                                copy.saleCost = e.target.value;
+                                const copy = [...programTimeCost];
+                                copy[index].saleCost = e.target.value;
                                 setProgramTimeCost(copy);
                               }}/>
                           </div>

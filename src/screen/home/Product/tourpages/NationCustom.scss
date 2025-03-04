@@ -5,7 +5,7 @@
   align-items: center;
 };
 
-.resort-custom-order-cover {
+.nation-custom-order-cover {
   width: 100%;
 
   .menucover {
@@ -170,21 +170,44 @@
     width: 100%;
     display: flex;
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
     align-items: center;
+    border-bottom: 1px solid #ccc;
 
     .left-maintext {
       width: 200px;
       height: 100%;
-      display: flex;
-      align-items: center;
-      font-weight: bold;
+
+      .maintext_title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
     }
     .right-contenttext {
       width: 100%;
-      display: flex;
-      align-items: center;
       gap: 10px;
+
+      .subMenu_box {
+        display: flex;
+
+        .subMenu {
+          color: #9e9e9e;
+          margin-right: 20px;
+          font-size: 15px;
+          font-weight: bold;
+          padding-bottom: 5px;
+          margin-bottom: 10px;
+        }
+        .subMenu:hover {
+          cursor: pointer;
+        }
+        .selectedSubMenu {
+          color: #37b0d9;
+          border-bottom: 2px solid #37b0d9;
+        }
+      }
     }
   }
   
@@ -288,6 +311,17 @@
     
       p {
         margin: 0 30px 0 5px;
+      }
+      span {
+        border: 1px solid #ccc;
+        padding: 1px 10px;
+        font-weight: 300;
+        font-size: 14px;
+        margin-left: 10px;
+      }
+      span:hover {
+        cursor: pointer;
+        border: 1px solid #adadad;
       }
     }
     .hotelRoomType-select-cover {
@@ -798,6 +832,139 @@
     }
   }
 
+  // 커스텀 오더 공통 ----------------------------------------
+
+  .custom-order-title {
+    display: flex;
+    align-items: center;
+
+    h3 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      margin-right: 20px;
+    }
+    p {
+      margin: 5px;
+    }
+  }
+
+  .custom-order-textbox-row {
+    width: 100%;
+    height: 55px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+
+    .custom-order-textbox-left {
+      width: 20%;
+      background-color: #ededed;
+      @include middle();
+
+      .custom-order-textbox-left-title {
+        @include middle();
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+    .custom-order-textbox-right {
+      width: 80%;
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      padding: 10px;
+
+      .checkInputBox {
+        width: 20%;
+        display: flex;
+        align-items: end;
+  
+        .checkinput {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+        }
+        .check-text {
+          @include middle();
+        }
+      }
+      
+
+      .custom-order-inputdefault {
+        width: 98%;
+        font-size: 14px;
+        font-weight: normal;
+        height: 40px;
+        text-align: left;
+        border: 1px solid #E9E9E9;
+        box-sizing: border-box;
+        border-radius: 5px;
+        padding-left: 5px;
+      }
+    }
+  }
+
+  // 원하는 방문 도시 ----------------------------------------
+
+  .custom-order-locationcity-cover {
+    width: 100%;
+    display: grid;
+    justify-content: space-between;
+    grid-template-columns: 24% 24% 24% 24%;
+    padding-top: 30px;
+    margin-bottom: 50px;
+    gap: 10px;
+
+    .custom-order-locationcity {
+      margin-bottom: 20px;
+
+      .custom-order-locationcity-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .custom-order-locationcity-sub {
+        padding: 10px 0;
+
+        .custom-order-locationcity-sub-city {
+          display: flex;
+          align-items: end;
+
+          .checkInputBox {
+            @include middle();
+            margin-right: 10px;
+        
+            .checkinput {
+              width: 20px;
+              height: 20px;
+            }
+          }
+          p {
+            @include middle();
+          }
+        }
+      }
+    }
+  }
+
+  .custom-order-requestBox-cover {
+    width: 100%;
+    padding: 10px;
+
+    .custom-order-textarea {
+      width: 100%;
+      font-size: 14px;
+      font-weight: normal;
+      flex: 1;
+      min-height: 180px;
+      text-align: start;
+      border: 1px solid #E9E9E9;
+      box-sizing: border-box;
+      border-radius: 5px;
+      padding: 10px;
+      outline: none;
+    }
+  }
+
+  //  하단 버튼 --------------------------------------------
 
   .custom-bottom-btn-cover {
     width: 100%;

@@ -15,9 +15,9 @@ const Header: React.FC = () => {
     { title: "유럽", url:"/products/tourmain", links: [] },
     { title: "여행지 미리가기", url:"/", links: [] },
     { title: "여행후기", url:"/", links: [] },
-    { title: "견적서만들기", url:"/estimate", links: [] },
-    { title: "견적서고객용", url:"/user", links: [] },
-    { title: "관리자", url:"/admin", links: [] }
+    // { title: "견적서만들기", url:"/estimate", links: [] },
+    // { title: "견적서고객용", url:"/user", links: [] },
+    { title: "관리자", url: (sessionStorage.getItem('userName') === null || sessionStorage.getItem('userName') === undefined) ? "/admin" : "/admin/schedule", links: [] }
   ];
 
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
@@ -55,6 +55,7 @@ const Header: React.FC = () => {
     <div className={`header ${activeIndex !== null ? 'on' : ''}`}>
       <div className="header-content">
         <div className="container header-content-container">
+            
             <div className={`header-hamburger_menu ${menuOpen ? 'header-hamburger_menu--open' : ''}`}>
               <div className="header-hamburger_icon" onClick={toggleMenu}></div>
               <div className="header-mobile_menu">
@@ -150,6 +151,7 @@ const Header: React.FC = () => {
                   </div>
                 }
             </div>
+
             <div className={`header-hamburger_menu ${menuOpen ? 'header-hamburger_menu--open' : ''}`}>
               <div className="header-person_icon" onClick={toggleMenu}>
                 <img src={person} />
@@ -189,7 +191,9 @@ const Header: React.FC = () => {
                                       <div className="mobile_menu-body">
                                           {
                                             item.links.map((subItem:any, subIndex:any) => (
-                                              <div className="mobile_menu-part" onClick={()=>{navigate(subItem.subUrl); toggleMenu();}} key={subIndex}>{subItem.title}</div>
+                                              <div className="mobile_menu-part" onClick={()=>{
+                                                navigate(subItem.subUrl); toggleMenu();
+                                              }} key={subIndex}>{subItem.title}</div>
                                           ))}
                                       </div>
                                   </div>

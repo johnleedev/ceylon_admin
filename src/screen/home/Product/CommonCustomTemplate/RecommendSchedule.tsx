@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import { FaCheck, FaRegCircle, FaStar } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import axios from "axios";
-import MainURL from "../../../../../MainURL";
+import MainURL from "../../../../MainURL";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { PiPencilSimpleLineDuotone } from "react-icons/pi";
-import AirlineData from "../../../../AirlineData";
-import locationIcon from "../../../images/tourPage/location.png"
-import hotelbuildingIcon from "../../../images/tourPage/hotelbuilding.png"
-import hotelplateIcon from "../../../images/tourPage/hotelplate.png"
-import RatingBoard from "../../../common/RatingBoard";
+import AirlineData from "../../../AirlineData";
+import locationIcon from "../../images/tourPage/location.png"
+import hotelbuildingIcon from "../../images/tourPage/hotelbuilding.png"
+import hotelplateIcon from "../../images/tourPage/hotelplate.png"
+import RatingBoard from "../../common/RatingBoard";
 
 
 

@@ -77,6 +77,7 @@ export const DropDowncharger = [
   { value: '박정준', label: '박정준' },
   { value: '박지혜', label: '박지혜' },
   { value: '이한나', label: '이한나' },
+  { value: '최윤경', label: '최윤경' }
 ]
 
 export const DropDownVisitPath = [
